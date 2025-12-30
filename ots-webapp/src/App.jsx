@@ -12,6 +12,8 @@ import ExportTools from './components/Reports/ExportTools'
 import QuickOrderForm from './components/Orders/QuickOrderForm'
 import NotificationCenter from './components/Notifications/NotificationCenter'
 import ActivityLog from './components/Activity/ActivityLog'
+import BulkActions from './components/Orders/BulkActions'
+import ZoneMap from './components/Logistics/ZoneMap'
 
 function App() {
   const [activeTab, setActiveTab] = useState('dashboard')
@@ -31,8 +33,10 @@ function App() {
           <ul className="nav-links">
             <li className={activeTab === 'dashboard' ? 'active' : ''} onClick={() => setActiveTab('dashboard')}>📊 Analytics</li>
             <li className={activeTab === 'orderlist' ? 'active' : ''} onClick={() => setActiveTab('orderlist')}>📋 Orders</li>
+            <li className={activeTab === 'bulk' ? 'active' : ''} onClick={() => setActiveTab('bulk')}>⚡ Bulk Actions</li>
             <li className={activeTab === 'orders' ? 'active' : ''} onClick={() => setActiveTab('orders')}>📦 Import</li>
-            <li className={activeTab === 'logistics' ? 'active' : ''} onClick={() => setActiveTab('logistics')}>🚚 Logistics</li>
+            <li className={activeTab === 'logistics' ? 'active' : ''} onClick={() => setActiveTab('logistics')}>🚚 Carriers</li>
+            <li className={activeTab === 'zones' ? 'active' : ''} onClick={() => setActiveTab('zones')}>🗺️ Zones</li>
             <li className={activeTab === 'dispatcher' ? 'active' : ''} onClick={() => setActiveTab('dispatcher')}>📷 Dispatch</li>
             <li className={activeTab === 'inventory' ? 'active' : ''} onClick={() => setActiveTab('inventory')}>🏷️ SKU Master</li>
             <li className={activeTab === 'dealers' ? 'active' : ''} onClick={() => setActiveTab('dealers')}>🤝 Dealers</li>
@@ -71,7 +75,9 @@ function App() {
         <section className="view-container">
           {activeTab === 'dashboard' && <AnalyticsDashboard />}
           {activeTab === 'orderlist' && <OrderList />}
+          {activeTab === 'bulk' && <BulkActions />}
           {activeTab === 'logistics' && <CarrierSelection />}
+          {activeTab === 'zones' && <ZoneMap />}
           {activeTab === 'orders' && <UniversalImporter />}
           {activeTab === 'inventory' && <SKUMaster />}
           {activeTab === 'dispatcher' && <BarcodeDispatcher />}
