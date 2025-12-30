@@ -299,3 +299,134 @@ button[id*='html5-qrcode-button']:hover {
   border-radius: 8px;
   opacity: 0.3;
 }
+/* ============================================
+   MOBILE RESPONSIVE STYLES
+   ============================================ */
+
+/* Tablet (1024px and below) */
+@media (max-width: 1024px) {
+  .app-container {
+    padding: 16px;
+    gap: 16px;
+  }
+
+  .sidebar {
+    width: 220px;
+    padding: 24px 12px;
+  }
+
+  .nav-links li {
+    padding: 10px 14px;
+    font-size: 0.85rem;
+  }
+
+  .view-container {
+    padding: 20px;
+  }
+}
+
+/* Mobile Landscape (768px and below) */
+@media (max-width: 768px) {
+  .app-container {
+    flex-direction: column;
+    padding: 12px;
+  }
+
+  .sidebar {
+    width: 100%;
+    flex-direction: row;
+    flex-wrap: wrap;
+    padding: 16px;
+    gap: 8px;
+  }
+
+  .logo-section {
+    width: 100%;
+    margin-bottom: 16px;
+  }
+
+  .nav-items {
+    width: 100%;
+    margin-top: 0;
+  }
+
+  .nav-links {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .nav-links li {
+    padding: 8px 12px;
+    font-size: 0.75rem;
+    white-space: nowrap;
+  }
+
+  .nav-footer {
+    display: none;
+  }
+
+  .top-bar {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .search-bar {
+    width: 100%;
+  }
+
+  .actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .view-container {
+    padding: 16px;
+  }
+
+  .section-header h2 {
+    font-size: 1.3rem;
+  }
+}
+
+/* Mobile Portrait (480px and below) */
+@media (max-width: 480px) {
+  .app-container {
+    padding: 8px;
+  }
+
+  .nav-links {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .nav-links li {
+    padding: 8px;
+    font-size: 0.65rem;
+    text-align: center;
+    justify-content: center;
+  }
+
+  .view-container {
+    padding: 12px;
+  }
+
+  .section-header {
+    flex-direction: column;
+    gap: 12px;
+    align-items: flex-start !important;
+  }
+
+  .btn-primary, .btn-secondary {
+    padding: 10px 16px;
+    font-size: 0.85rem;
+  }
+}
+
+/* Touch-friendly interactions */
+@media (hover: none) {
+  .glass-hover:active {
+    transform: scale(0.98);
+    background: var(--glass-bg-hover);
+  }
+}

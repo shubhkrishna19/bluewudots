@@ -4,39 +4,52 @@ const RoadmapPage = () => {
     const [selectedPhase, setSelectedPhase] = useState(null);
 
     const completedFeatures = [
-        { name: 'Analytics Dashboard', desc: 'Real-time business metrics with interactive charts', status: 'live', module: 'Dashboard' },
-        { name: 'Multi-Channel Order Import', desc: 'Import orders from Amazon, Flipkart, Shopify, and 5 more platforms', status: 'live', module: 'Automation' },
-        { name: 'Order Management', desc: 'Search, filter, and track all orders in one place', status: 'live', module: 'Orders' },
-        { name: 'Bulk Operations', desc: 'Update multiple orders at once - save hours of work', status: 'live', module: 'Orders' },
-        { name: 'Carrier Selection', desc: 'Compare shipping rates from 4 major carriers instantly', status: 'live', module: 'Logistics' },
-        { name: 'Pan-India Zone Mapping', desc: 'Visualize order distribution across all 28 states', status: 'live', module: 'Logistics' },
-        { name: 'Barcode Dispatch Scanner', desc: 'Scan products with your phone camera to mark as shipped', status: 'live', module: 'Dispatch' },
-        { name: 'SKU/Product Master', desc: 'Track profitability with GST calculations built-in', status: 'live', module: 'Commercial' },
-        { name: 'Dealer Network', desc: 'View all dealers and their order history from CRM', status: 'live', module: 'Dealers' },
-        { name: 'Activity Audit Log', desc: 'Complete history of all system activities', status: 'live', module: 'Activity' },
-        { name: 'Export Reports', desc: 'Download data as CSV or JSON for analysis', status: 'live', module: 'Reports' },
-        { name: 'Quick Order Creation', desc: 'Add orders manually in seconds', status: 'live', module: 'Orders' },
-        { name: 'Notification Center', desc: 'Stay updated on important events', status: 'live', module: 'System' },
-        { name: 'Settings Panel', desc: 'Configure app preferences and API connections', status: 'live', module: 'System' }
+        { name: 'User Authentication', desc: 'Secure login with role-based access control (Admin, Manager, Operator)', status: 'live', module: 'Security' },
+        { name: 'Analytics Dashboard', desc: 'Real-time business metrics with interactive Recharts visualizations', status: 'live', module: 'Dashboard' },
+        { name: 'Performance KPIs', desc: 'Key performance indicators with delivery rates and pipeline view', status: 'live', module: 'Dashboard' },
+        { name: 'Multi-Channel Order Import', desc: 'Import orders from 8 platforms: Amazon, Flipkart, Shopify, and more', status: 'live', module: 'Automation' },
+        { name: 'Order Management', desc: 'Search, filter, and track all orders with detailed modal view', status: 'live', module: 'Orders' },
+        { name: 'Bulk Operations', desc: 'Mass update order statuses - save hours of manual work', status: 'live', module: 'Orders' },
+        { name: 'RTO Management', desc: 'Track failed deliveries with reason codes and recovery actions', status: 'live', module: 'Orders' },
+        { name: 'Quick Order Form', desc: 'Manual order entry in seconds with state dropdown', status: 'live', module: 'Orders' },
+        { name: 'Live Shipment Tracker', desc: 'Real-time tracking with route visualization and timeline', status: 'live', module: 'Logistics' },
+        { name: 'Carrier Selection', desc: 'Compare rates from Delhivery, BlueDart, XpressBees, Ecom Express', status: 'live', module: 'Logistics' },
+        { name: 'Carrier Performance', desc: 'Analytics on delivery rates, RTO rates, and smart recommendations', status: 'live', module: 'Logistics' },
+        { name: 'Pan-India Zone Mapping', desc: 'Order distribution across North, South, East, West zones', status: 'live', module: 'Logistics' },
+        { name: 'Barcode Dispatch Scanner', desc: 'Scan products with your camera to mark as shipped', status: 'live', module: 'Dispatch' },
+        { name: 'Warehouse Inventory', desc: 'Track stock levels, locations, and low-stock alerts', status: 'live', module: 'Warehouse' },
+        { name: 'SKU/Product Master', desc: 'Profitability analysis with GST (18%) calculations', status: 'live', module: 'Commercial' },
+        { name: 'Invoice Generator', desc: 'GST-compliant invoices with PDF preview and download', status: 'live', module: 'Commercial' },
+        { name: 'COD Reconciliation', desc: 'Track cash on delivery remittances from carriers', status: 'live', module: 'Commercial' },
+        { name: 'Dealer Network', desc: 'View dealers and their order history from CRM', status: 'live', module: 'Dealers' },
+        { name: 'Customer Lookup', desc: 'Customer directory with order history aggregation', status: 'live', module: 'Customers' },
+        { name: 'Activity Audit Log', desc: 'Complete timeline of all system activities', status: 'live', module: 'Activity' },
+        { name: 'Export Reports', desc: 'Download orders, SKU, and carrier data as CSV/JSON', status: 'live', module: 'Reports' },
+        { name: 'Notification Center', desc: 'Slide-out panel with filtered alerts', status: 'live', module: 'System' },
+        { name: 'Help Center', desc: 'Documentation, keyboard shortcuts, and FAQ', status: 'live', module: 'System' },
+        { name: 'Settings Panel', desc: 'Company info, logistics config, API connections', status: 'live', module: 'System' },
+        { name: 'Mobile Responsive', desc: 'Full functionality on tablets and mobile devices', status: 'live', module: 'System' },
+        { name: 'This Roadmap Page', desc: 'Investor-friendly feature overview with tech stack', status: 'live', module: 'System' }
     ];
 
     const upcomingFeatures = [
-        { name: 'Amazon SP-API Integration', desc: 'Automatic order sync directly from Amazon Seller Central', phase: 'Phase 6', priority: 'High' },
+        { name: 'Amazon SP-API Integration', desc: 'Automatic order sync from Amazon Seller Central', phase: 'Phase 6', priority: 'High' },
         { name: 'Flipkart API Integration', desc: 'Real-time order import from Flipkart Seller Hub', phase: 'Phase 6', priority: 'High' },
-        { name: 'Carrier Label Generation', desc: 'Generate shipping labels directly from Delhivery/BlueDart APIs', phase: 'Phase 6', priority: 'High' },
-        { name: 'Zoho CRM Live Sync', desc: 'Real-time dealer and account data from your CRM', phase: 'Phase 6', priority: 'Medium' },
-        { name: 'Mobile Responsive Design', desc: 'Full functionality on tablets and phones', phase: 'Phase 7', priority: 'Medium' },
-        { name: 'WhatsApp Notifications', desc: 'Send order updates via WhatsApp to customers', phase: 'Phase 7', priority: 'Low' },
-        { name: 'Customer Portal', desc: 'Let customers track their orders online', phase: 'Phase 8', priority: 'Low' },
-        { name: 'Advanced Analytics', desc: 'Predictive insights and trend analysis', phase: 'Phase 8', priority: 'Low' }
+        { name: 'Delhivery AWB Generation', desc: 'Generate shipping labels via Delhivery API', phase: 'Phase 6', priority: 'High' },
+        { name: 'BlueDart Label API', desc: 'Shipping labels via BlueDart integration', phase: 'Phase 6', priority: 'High' },
+        { name: 'Zoho CRM Live Sync', desc: 'Real-time dealer data via Catalyst bridge', phase: 'Phase 6', priority: 'Medium' },
+        { name: 'WhatsApp Notifications', desc: 'Send order updates via WhatsApp Business API', phase: 'Phase 7', priority: 'Medium' },
+        { name: 'Customer Self-Service Portal', desc: 'Let customers track their orders online', phase: 'Phase 8', priority: 'Low' },
+        { name: 'AI Demand Forecasting', desc: 'Predictive insights using order history', phase: 'Phase 8', priority: 'Low' }
     ];
 
     const developmentPhases = [
-        { phase: 'Phase 1-4', title: 'Foundation', status: 'Complete', desc: 'Core architecture, design system, basic modules' },
-        { phase: 'Phase 5', title: 'MVP Polish', status: 'Complete', desc: '14+ modules with full functionality' },
-        { phase: 'Phase 6', title: 'API Integrations', status: 'In Progress', desc: 'Connect to Amazon, Flipkart, carriers' },
-        { phase: 'Phase 7', title: 'Mobile & Scale', status: 'Planned', desc: 'Responsive design and performance optimization' },
-        { phase: 'Phase 8', title: 'Intelligence', status: 'Future', desc: 'AI-powered insights and automation' }
+        { phase: 'Phase 1-4', title: 'Foundation', status: 'Complete', desc: 'Architecture, design system, core modules' },
+        { phase: 'Phase 5', title: 'MVP Complete', status: 'Complete', desc: '26 modules with full functionality' },
+        { phase: 'Phase 5.5', title: 'Auth & Mobile', status: 'Complete', desc: 'User login, roles, responsive design' },
+        { phase: 'Phase 6', title: 'API Integrations', status: 'In Progress', desc: 'Amazon, Flipkart, carrier APIs' },
+        { phase: 'Phase 7', title: 'Notifications', status: 'Planned', desc: 'WhatsApp, Email, Push alerts' },
+        { phase: 'Phase 8', title: 'Intelligence', status: 'Future', desc: 'AI insights and automation' }
     ];
 
     const techStack = [
@@ -44,7 +57,8 @@ const RoadmapPage = () => {
         { name: 'Vite', purpose: 'Build Tool', icon: '⚡' },
         { name: 'Recharts', purpose: 'Charts & Graphs', icon: '📊' },
         { name: 'Zoho Catalyst', purpose: 'Cloud Backend', icon: '☁️' },
-        { name: 'Zoho CRM', purpose: 'Customer Data', icon: '👥' }
+        { name: 'Zoho CRM', purpose: 'Customer Data', icon: '👥' },
+        { name: 'GitHub', purpose: 'Version Control', icon: '🐙' }
     ];
 
     return (
