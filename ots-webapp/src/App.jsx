@@ -21,6 +21,9 @@ import RoadmapPage from './components/Roadmap/RoadmapPage'
 import RTOManager from './components/Orders/RTOManager'
 import CarrierPerformance from './components/Logistics/CarrierPerformance'
 import ShipmentTracker from './components/Tracking/ShipmentTracker'
+import InvoiceGenerator from './components/Commercial/InvoiceGenerator'
+import CODReconciliation from './components/Commercial/CODReconciliation'
+import WarehouseManager from './components/Warehouse/WarehouseManager'
 
 function App() {
   const [activeTab, setActiveTab] = useState('dashboard')
@@ -49,7 +52,10 @@ function App() {
             <li className={activeTab === 'carrierperf' ? 'active' : ''} onClick={() => setActiveTab('carrierperf')}>🏆 Performance</li>
             <li className={activeTab === 'zones' ? 'active' : ''} onClick={() => setActiveTab('zones')}>🗺️ Zones</li>
             <li className={activeTab === 'dispatcher' ? 'active' : ''} onClick={() => setActiveTab('dispatcher')}>📷 Dispatch</li>
+            <li className={activeTab === 'warehouse' ? 'active' : ''} onClick={() => setActiveTab('warehouse')}>🏭 Warehouse</li>
             <li className={activeTab === 'inventory' ? 'active' : ''} onClick={() => setActiveTab('inventory')}>🏷️ SKU</li>
+            <li className={activeTab === 'invoice' ? 'active' : ''} onClick={() => setActiveTab('invoice')}>🧾 Invoice</li>
+            <li className={activeTab === 'cod' ? 'active' : ''} onClick={() => setActiveTab('cod')}>💰 COD</li>
             <li className={activeTab === 'dealers' ? 'active' : ''} onClick={() => setActiveTab('dealers')}>🤝 Dealers</li>
             <li className={activeTab === 'customers' ? 'active' : ''} onClick={() => setActiveTab('customers')}>👥 Customers</li>
             <li className={activeTab === 'activity' ? 'active' : ''} onClick={() => setActiveTab('activity')}>📜 Log</li>
@@ -97,7 +103,10 @@ function App() {
           {activeTab === 'zones' && <ZoneMap />}
           {activeTab === 'tracking' && <ShipmentTracker />}
           {activeTab === 'orders' && <UniversalImporter />}
+          {activeTab === 'warehouse' && <WarehouseManager />}
           {activeTab === 'inventory' && <SKUMaster />}
+          {activeTab === 'invoice' && <InvoiceGenerator />}
+          {activeTab === 'cod' && <CODReconciliation />}
           {activeTab === 'dispatcher' && <BarcodeDispatcher />}
           {activeTab === 'dealers' && <DealerLookup />}
           {activeTab === 'customers' && <CustomerLookup />}
