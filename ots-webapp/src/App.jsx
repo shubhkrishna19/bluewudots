@@ -3,6 +3,8 @@ import './App.css'
 import CarrierSelection from './components/Logistics/CarrierSelection'
 import AmazonMapper from './components/Automation/AmazonMapper'
 import SKUMaster from './components/Commercial/SKUMaster'
+import BarcodeDispatcher from './components/Orders/BarcodeDispatcher'
+import AnalyticsDashboard from './components/Dashboard/AnalyticsDashboard'
 
 function App() {
   const [activeTab, setActiveTab] = useState('dashboard')
@@ -24,30 +26,13 @@ function App() {
         </div>
 
         <div className="nav-items">
-          <button
-            className={`nav-btn ${activeTab === 'dashboard' ? 'active' : ''}`}
-            onClick={() => setActiveTab('dashboard')}
-          >
-            Dashboard
-          </button>
-          <button
-            className={`nav-btn ${activeTab === 'orders' ? 'active' : ''}`}
-            onClick={() => setActiveTab('orders')}
-          >
-            Orders
-          </button>
-          <button
-            className={`nav-btn ${activeTab === 'logistics' ? 'active' : ''}`}
-            onClick={() => setActiveTab('logistics')}
-          >
-            Logistics
-          </button>
-          <button
-            className={`nav-btn ${activeTab === 'inventory' ? 'active' : ''}`}
-            onClick={() => setActiveTab('inventory')}
-          >
-            SKU Master
-          </button>
+          <ul className="nav-links">
+            <li className={activeTab === 'dashboard' ? 'active' : ''} onClick={() => setActiveTab('dashboard')}>Analytics</li>
+            <li className={activeTab === 'orders' ? 'active' : ''} onClick={() => setActiveTab('orders')}>OMS Import</li>
+            <li className={activeTab === 'logistics' ? 'active' : ''} onClick={() => setActiveTab('logistics')}>Logistics</li>
+            <li className={activeTab === 'dispatcher' ? 'active' : ''} onClick={() => setActiveTab('dispatcher')}>Dispatch</li>
+            <li className={activeTab === 'inventory' ? 'active' : ''} onClick={() => setActiveTab('inventory')}>SKU Master</li>
+          </ul>
         </div>
 
         <div className="nav-footer glass">
@@ -74,52 +59,15 @@ function App() {
         </header>
 
         <section className="view-container">
-          {activeTab === 'dashboard' && (
-            <div className="dashboard-view">
-              <div className="welcome-header">
-                <h1>Logistics Command Centre</h1>
-                <p>Real-time Pan-India Operational Overview</p>
-              </div>
-
-              <div className="stats-grid">
-                {stats.map((stat, i) => (
-                  <div key={i} className="stat-card glass glass-hover">
-                    <p className="stat-label">{stat.label}</p>
-                    <div className="stat-value-row">
-                      <h2 style={{ color: stat.color }}>{stat.value}</h2>
-                      <span className="stat-trend">{stat.trend}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              <div className="content-grid">
-                <div className="chart-placeholder glass">
-                  <h3>Shipment Velocity</h3>
-                  <div className="visual-indicator"></div>
-                </div>
-                <div className="recent-activity glass">
-                  <h3>Recent Transformations</h3>
-                  <div className="activity-list">
-                    <div className="activity-item">
-                      <p>Order #BW-9901 mapped to SKU: BL-DESK-01</p>
-                      <span>2 mins ago</span>
-                    </div>
-                    <div className="activity-item">
-                      <p>Carrier Assigned: Delhivery (Zone: North)</p>
-                      <span>15 mins ago</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
+          {activeTab === 'dashboard' && <AnalyticsDashboard />}
 
           {activeTab === 'logistics' && <CarrierSelection />}
 
           {activeTab === 'orders' && <AmazonMapper />}
 
           {activeTab === 'inventory' && <SKUMaster />}
+
+          {activeTab === 'dispatcher' && <BarcodeDispatcher />}
 
           {['settings'].includes(activeTab) && (
             <div className="placeholder-view glass animate-fade">

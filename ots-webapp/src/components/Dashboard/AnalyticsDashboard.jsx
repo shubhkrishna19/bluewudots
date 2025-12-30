@@ -1,0 +1,141 @@
+import React from 'react';
+import { useData } from '../../context/DataContext';
+import {
+    AreaChart, Area, BarChart, Bar, PieChart, Pie, Cell,
+    XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend
+} from 'recharts';
+
+const COLORS = ['var(--primary)', 'var(--accent)', 'var(--success)', 'var(--warning)', 'var(--info)'];
+
+const AnalyticsDashboard = () => {
+    const { orders, logistics, skuMaster } = useData();
+
+    // Velocity Data (Simulated for MVP)
+    const velocityData = [
+        { name: 'Mon', orders: 45, dispatched: 38 },
+        { name: 'Tue', orders: 52, dispatched: 48 },
+        { name: 'Wed', orders: 61, dispatched: 55 },
+        { name: 'Thu', orders: 48, dispatched: 45 },
+        { name: 'Fri', orders: 72, dispatched: 68 },
+        { name: 'Sat', orders: 85, dispatched: 80 },
+        { name: 'Sun', orders: 35, dispatched: 32 }
+    ];
+
+    // Status Distribution
+    const statusData = [
+        { name: 'Imported', value: orders.filter(o => o.status === 'Imported').length || 3 },
+        { name: 'Processing', value: orders.filter(o => o.status === 'Processing' || o.status === 'MTP-Applied').length || 2 },
+        { name: 'In-Transit', value: orders.filter(o => o.status === 'In-Transit').length || 5 },
+        { name: 'Delivered', value: orders.filter(o => o.status === 'Delivered').length || 8 }
+    ];
+
+    // Carrier Performance
+    const carrierData = logistics.map(c => ({
+        name: c.carrier,
+        rate: c.baseRate,
+        volume: Math.floor(Math.random() * 100) + 20
+    }));
+
+    return (
+        <div className="analytics-dashboard animate-fade">
+            <div className="section-header">
+                <h2>Global Analytics Hub</h2>
+                <p className="text-muted">Real-time Operational Intelligence</p>
+            </div>
+
+            <div className="analytics-grid" style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '24px', marginTop: '32px' }}>
+                {/* Velocity Chart */}
+                <div className="chart-card glass" style={{ padding: '24px' }}>
+                    <h3>Shipment Velocity (Weekly)</h3>
+                    <ResponsiveContainer width="100%" height={280}>
+                        <AreaChart data={velocityData}>
+                            <defs>
+                                <linearGradient id="colorOrders" x1="0" y1="0" x2="0" y2="1">
+                                    <stop offset="5%" stopColor="var(--primary)" stopOpacity={0.8} />
+                                    <stop offset="95%" stopColor="var(--primary)" stopOpacity={0} />
+                                </linearGradient>
+                                <linearGradient id="colorDispatched" x1="0" y1="0" x2="0" y2="1">
+                                    <stop offset="5%" stopColor="var(--success)" stopOpacity={0.8} />
+                                    <stop offset="95%" stopColor="var(--success)" stopOpacity={0} />
+                                </linearGradient>
+                            </defs>
+                            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
+                            <XAxis dataKey="name" stroke="var(--text-muted)" />
+                            <YAxis stroke="var(--text-muted)" />
+                            <Tooltip
+                                contentStyle={{ background: 'var(--bg-accent)', border: '1px solid var(--glass-border)', borderRadius: '8px' }}
+                                labelStyle={{ color: 'var(--text-main)' }}
+                            />
+                            <Area type="monotone" dataKey="orders" stroke="var(--primary)" fillOpacity={1} fill="url(#colorOrders)" />
+                            <Area type="monotone" dataKey="dispatched" stroke="var(--success)" fillOpacity={1} fill="url(#colorDispatched)" />
+                        </AreaChart>
+                    </ResponsiveContainer>
+                </div>
+
+                {/* Status Distribution */}
+                <div className="chart-card glass" style={{ padding: '24px' }}>
+                    <h3>Order Status Distribution</h3>
+                    <ResponsiveContainer width="100%" height={280}>
+                        <PieChart>
+                            <Pie
+                                data={statusData}
+                                cx="50%"
+                                cy="50%"
+                                innerRadius={60}
+                                outerRadius={90}
+                                paddingAngle={5}
+                                dataKey="value"
+                            >
+                                {statusData.map((entry, index) => (
+                                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                ))}
+                            </Pie>
+                            <Tooltip
+                                contentStyle={{ background: 'var(--bg-accent)', border: '1px solid var(--glass-border)', borderRadius: '8px' }}
+                            />
+                            <Legend wrapperStyle={{ color: 'var(--text-muted)' }} />
+                        </PieChart>
+                    </ResponsiveContainer>
+                </div>
+            </div>
+
+            {/* Carrier Performance */}
+            <div className="chart-card glass" style={{ padding: '24px', marginTop: '24px' }}>
+                <h3>Carrier Performance Matrix</h3>
+                <ResponsiveContainer width="100%" height={250}>
+                    <BarChart data={carrierData} layout="vertical">
+                        <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
+                        <XAxis type="number" stroke="var(--text-muted)" />
+                        <YAxis dataKey="name" type="category" stroke="var(--text-muted)" width={100} />
+                        <Tooltip
+                            contentStyle={{ background: 'var(--bg-accent)', border: '1px solid var(--glass-border)', borderRadius: '8px' }}
+                        />
+                        <Bar dataKey="volume" fill="var(--primary)" radius={[0, 4, 4, 0]} />
+                    </BarChart>
+                </ResponsiveContainer>
+            </div>
+
+            {/* Quick Stats Row */}
+            <div className="quick-stats" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginTop: '24px' }}>
+                <div className="mini-stat glass glass-hover" style={{ padding: '20px', textAlign: 'center' }}>
+                    <p className="text-muted" style={{ fontSize: '0.75rem' }}>TOTAL ORDERS</p>
+                    <h2 style={{ color: 'var(--primary)' }}>{orders.length || 124}</h2>
+                </div>
+                <div className="mini-stat glass glass-hover" style={{ padding: '20px', textAlign: 'center' }}>
+                    <p className="text-muted" style={{ fontSize: '0.75rem' }}>ACTIVE CARRIERS</p>
+                    <h2 style={{ color: 'var(--success)' }}>{logistics.filter(l => l.active).length}</h2>
+                </div>
+                <div className="mini-stat glass glass-hover" style={{ padding: '20px', textAlign: 'center' }}>
+                    <p className="text-muted" style={{ fontSize: '0.75rem' }}>SKU CATALOG</p>
+                    <h2 style={{ color: 'var(--accent)' }}>{skuMaster.length}</h2>
+                </div>
+                <div className="mini-stat glass glass-hover" style={{ padding: '20px', textAlign: 'center' }}>
+                    <p className="text-muted" style={{ fontSize: '0.75rem' }}>AVG MARGIN</p>
+                    <h2 style={{ color: 'var(--warning)' }}>18.5%</h2>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+export default AnalyticsDashboard;

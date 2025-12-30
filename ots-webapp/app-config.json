@@ -1,0 +1,7 @@
+{
+    "base": "ots-webapp",
+    "app_config": {
+        "index": "index.html",
+        "login": "login.html"
+    }
+}

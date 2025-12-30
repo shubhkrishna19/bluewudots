@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useData } from '../../context/DataContext';
+import { generatePackingSlip, generateShippingLabel } from '../../utils/labelGenerator';
 
 const STAGES = [
     { key: 'Imported', label: 'IMPORTED', color: 'var(--text-muted)' },
@@ -12,10 +13,20 @@ const STAGES = [
 const OrderJourney = ({ orderId }) => {
     const { orders, updateOrderStatus } = useData();
     const order = orders.find(o => o.id === orderId);
+    const [showLabelMenu, setShowLabelMenu] = useState(false);
 
     if (!order) return null;
 
     const currentStageIndex = STAGES.findIndex(s => s.key === order.status);
+
+    const handleGenerateLabel = (type) => {
+        if (type === 'packing') {
+            generatePackingSlip(order);
+        } else {
+            generateShippingLabel(order);
+        }
+        setShowLabelMenu(false);
+    };
 
     return (
         <div className="order-journey-card glass animate-fade" style={{ padding: '24px', marginTop: '20px' }}>
@@ -32,7 +43,6 @@ const OrderJourney = ({ orderId }) => {
             </div>
 
             <div className="journey-track" style={{ display: 'flex', justifyContent: 'space-between', position: 'relative', marginTop: '40px' }}>
-                {/* Connecting Line */}
                 <div style={{
                     position: 'absolute',
                     top: '10px',
@@ -87,9 +97,42 @@ const OrderJourney = ({ orderId }) => {
                 })}
             </div>
 
-            <div className="journey-actions" style={{ marginTop: '32px', display: 'flex', gap: '12px' }}>
+            <div className="journey-actions" style={{ marginTop: '32px', display: 'flex', gap: '12px', position: 'relative' }}>
                 <button className="btn-secondary glass-hover" style={{ flex: 1, fontSize: '0.8rem' }}>View Log</button>
-                <button className="btn-primary glass-hover" style={{ flex: 1, fontSize: '0.8rem' }}>Generate Label</button>
+                <div style={{ flex: 1, position: 'relative' }}>
+                    <button
+                        className="btn-primary glass-hover"
+                        style={{ width: '100%', fontSize: '0.8rem' }}
+                        onClick={() => setShowLabelMenu(!showLabelMenu)}
+                    >
+                        Generate Label ▾
+                    </button>
+                    {showLabelMenu && (
+                        <div className="label-menu glass" style={{
+                            position: 'absolute',
+                            top: '100%',
+                            left: 0,
+                            right: 0,
+                            marginTop: '8px',
+                            borderRadius: '8px',
+                            overflow: 'hidden',
+                            zIndex: 10
+                        }}>
+                            <button
+                                onClick={() => handleGenerateLabel('packing')}
+                                style={{ width: '100%', padding: '12px', background: 'transparent', border: 'none', color: '#fff', cursor: 'pointer', textAlign: 'left' }}
+                            >
+                                📄 Packing Slip (PDF)
+                            </button>
+                            <button
+                                onClick={() => handleGenerateLabel('thermal')}
+                                style={{ width: '100%', padding: '12px', background: 'transparent', border: 'none', color: '#fff', cursor: 'pointer', textAlign: 'left', borderTop: '1px solid var(--glass-border)' }}
+                            >
+                                🏷️ Thermal Label (4x6)
+                            </button>
+                        </div>
+                    )}
+                </div>
             </div>
         </div>
     );
