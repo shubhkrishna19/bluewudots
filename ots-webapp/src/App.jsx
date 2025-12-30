@@ -1,5 +1,8 @@
 import React, { useState } from 'react'
 import './App.css'
+import { useAuth } from './context/AuthContext'
+import LoginPage from './components/Auth/LoginPage'
+import UserProfile from './components/Auth/UserProfile'
 import CarrierSelection from './components/Logistics/CarrierSelection'
 import UniversalImporter from './components/Automation/UniversalImporter'
 import SKUMaster from './components/Commercial/SKUMaster'
@@ -26,9 +29,28 @@ import CODReconciliation from './components/Commercial/CODReconciliation'
 import WarehouseManager from './components/Warehouse/WarehouseManager'
 
 function App() {
+  const { isAuthenticated, isLoading, user } = useAuth()
   const [activeTab, setActiveTab] = useState('dashboard')
   const [showQuickOrder, setShowQuickOrder] = useState(false)
   const [showNotifications, setShowNotifications] = useState(false)
+  const [showProfile, setShowProfile] = useState(false)
+
+  // Show loading spinner while checking auth
+  if (isLoading) {
+    return (
+      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg-main)' }}>
+        <div style={{ textAlign: 'center' }}>
+          <div className="logo-icon" style={{ width: '80px', height: '80px', borderRadius: '20px', background: 'linear-gradient(135deg, #6366F1, #8B5CF6)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px', fontSize: '2.5rem', fontWeight: '800', color: '#fff' }}>B</div>
+          <p style={{ color: 'var(--text-muted)' }}>Loading...</p>
+        </div>
+      </div>
+    )
+  }
+
+  // Show login if not authenticated
+  if (!isAuthenticated) {
+    return <LoginPage />
+  }
 
   return (
     <div className="app-container animate-fade">
@@ -67,11 +89,11 @@ function App() {
         </div>
 
         <div className="nav-footer glass">
-          <div className="user-profile">
-            <div className="avatar">JD</div>
+          <div className="user-profile" style={{ cursor: 'pointer' }} onClick={() => setShowProfile(true)}>
+            <div className="avatar">{user?.avatar || 'U'}</div>
             <div className="user-info">
-              <p className="username">Admin User</p>
-              <p className="role">Logistics Head</p>
+              <p className="username">{user?.name || 'User'}</p>
+              <p className="role">{user?.role?.charAt(0).toUpperCase() + user?.role?.slice(1) || 'Role'}</p>
             </div>
           </div>
         </div>
@@ -132,6 +154,9 @@ function App() {
 
       {/* Notification Panel */}
       <NotificationCenter isOpen={showNotifications} onClose={() => setShowNotifications(false)} />
+
+      {/* User Profile Panel */}
+      {showProfile && <UserProfile onClose={() => setShowProfile(false)} />}
     </div>
   )
 }
