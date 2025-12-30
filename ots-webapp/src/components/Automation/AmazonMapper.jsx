@@ -1,7 +1,7 @@
-```javascript
 import React, { useState } from 'react';
 import Papa from 'papaparse';
 import { useData } from '../../context/DataContext';
+import OrderJourney from '../Orders/OrderJourney';
 
 const AmazonMapper = () => {
     const { setOrders } = useData();
@@ -18,10 +18,10 @@ const AmazonMapper = () => {
             skipEmptyLines: true,
             complete: (results) => {
                 const rawData = results.data;
-                
+
                 // Bluewud Node Transformation Logic
                 const transformed = rawData.map(row => ({
-                    id: row['order-id'] || `BW - IMP - ${ Math.random().toString(36).substr(2, 5).toUpperCase() } `,
+                    id: row['order-id'] || `BW-IMP-${Math.random().toString(36).substr(2, 5).toUpperCase()}`,
                     customer: row['buyer-name'] || 'Marketplace Customer',
                     city: row['ship-city'] || 'Unknown',
                     state: row['ship-state'] || 'Unknown',
@@ -49,7 +49,7 @@ const AmazonMapper = () => {
                 <h2>Universal Import Pipeline</h2>
                 <p className="text-muted">Amazon IN Node Connector</p>
             </div>
-            
+
             <div className="mapping-dashboard grid" style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '24px', marginTop: '32px' }}>
                 <div className="upload-zone glass glass-hover" style={{ padding: '40px', textAlign: 'center', border: '2px dashed var(--glass-border)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
                     {isUploading ? (
@@ -94,9 +94,16 @@ const AmazonMapper = () => {
                     </div>
                 </div>
             </div>
+            <div className="synced-orders-list" style={{ marginTop: '40px' }}>
+                <h3>Synced Lifecycle Stream</h3>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(450px, 1fr))', gap: '20px', marginTop: '20px' }}>
+                    {orders.filter(o => o.source === 'Amazon' || o.status === 'Imported').map(order => (
+                        <OrderJourney key={order.id} orderId={order.id} />
+                    ))}
+                </div>
+            </div>
         </div>
     );
 };
 
 export default AmazonMapper;
-```

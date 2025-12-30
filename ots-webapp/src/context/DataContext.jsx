@@ -74,6 +74,14 @@ export const DataProvider = ({ children }) => {
         setLogistics,
         setSkuMaster,
 
+        // Transition Engine: Update State Workflow
+        updateOrderStatus: (orderId, newStatus) => {
+            setOrders(prev => prev.map(order =>
+                order.id === orderId ? { ...order, status: newStatus } : order
+            ));
+            console.log(`ORCHESTRATION: Order ${orderId} moved to ${newStatus}`);
+        },
+
         // Industrial Logic: Rank Carriers by Cost for a specific order
         getRecommendations: (state, city, weight) => {
             const zone = LogisticsLib.getZoneFromLocation(state, city);
