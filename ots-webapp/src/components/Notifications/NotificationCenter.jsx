@@ -1,97 +1,211 @@
 import React, { useState, useEffect } from 'react';
-
-const MOCK_NOTIFICATIONS = [
-    { id: 1, type: 'success', title: 'Order Delivered', message: 'BW-9901 delivered to Mumbai', time: '2 mins ago', read: false },
-    { id: 2, type: 'warning', title: 'Carrier Delay', message: 'Delhivery shipments delayed by 24hrs in North Zone', time: '15 mins ago', read: false },
-    { id: 3, type: 'info', title: 'New Import', message: '12 orders synced from Amazon', time: '1 hour ago', read: true },
-    { id: 4, type: 'success', title: 'Dispatch Complete', message: 'Batch #45 dispatched via BlueDart', time: '2 hours ago', read: true },
-    { id: 5, type: 'danger', title: 'RTO Alert', message: 'BW-9856 returned - Address incomplete', time: '3 hours ago', read: false }
-];
+import {
+    getNotifications,
+    markAsRead,
+    markAllAsRead,
+    getUnreadCount,
+    subscribe,
+    createNotification,
+    NOTIFICATION_TYPES
+} from '../../services/notificationService';
+import { getRelativeTime } from '../../utils/dataUtils';
 
 const NotificationCenter = ({ isOpen, onClose }) => {
-    const [notifications, setNotifications] = useState(MOCK_NOTIFICATIONS);
+    const [notifications, setNotifications] = useState([]);
     const [filter, setFilter] = useState('all');
+    const [unreadCount, setUnreadCount] = useState(0);
 
-    const unreadCount = notifications.filter(n => !n.read).length;
+    // Fetch notifications and subscribe to updates
+    useEffect(() => {
+        const refreshNotifications = () => {
+            let notifs = getNotifications({ limit: 50 });
+
+            // If no notifications, seed with demo data
+            if (notifs.length === 0) {
+                seedDemoNotifications();
+                notifs = getNotifications({ limit: 50 });
+            }
+
+            setNotifications(notifs);
+            setUnreadCount(getUnreadCount());
+        };
+
+        refreshNotifications();
+
+        // Subscribe to new notifications
+        const unsubscribe = subscribe((newNotif) => {
+            setNotifications(prev => [newNotif, ...prev.slice(0, 49)]);
+            setUnreadCount(getUnreadCount());
+        });
+
+        return () => unsubscribe();
+    }, []);
+
+    // Seed demo notifications
+    const seedDemoNotifications = () => {
+        createNotification({
+            type: 'ORDER_DELIVERED',
+            title: 'Order Delivered',
+            message: 'BW-9901 delivered to Mumbai successfully',
+            data: { orderId: 'BW-9901' }
+        });
+        createNotification({
+            type: 'ORDER_SHIPPED',
+            title: 'Order Shipped',
+            message: 'BW-9902 picked up by BlueDart. AWB: BD987654321',
+            data: { orderId: 'BW-9902', awb: 'BD987654321' }
+        });
+        createNotification({
+            type: 'CARRIER_ISSUE',
+            title: 'Carrier Delay Alert',
+            message: 'Delhivery shipments delayed in North Zone due to weather',
+            data: { carrier: 'Delhivery', zone: 'NORTH' }
+        });
+        createNotification({
+            type: 'BULK_IMPORT',
+            title: 'Bulk Import Complete',
+            message: '12 orders imported from Amazon marketplace',
+            data: { count: 12, source: 'Amazon' }
+        });
+        createNotification({
+            type: 'COD_PENDING',
+            title: 'COD Remittance Pending',
+            message: '5 COD orders awaiting reconciliation (₹45,000)',
+            data: { count: 5, amount: 45000 }
+        });
+        createNotification({
+            type: 'ORDER_RTO',
+            title: 'RTO Initiated',
+            message: 'BW-9856 returned - Customer refused delivery',
+            data: { orderId: 'BW-9856', reason: 'Customer refused' }
+        });
+        createNotification({
+            type: 'LOW_STOCK',
+            title: 'Low Stock Alert',
+            message: 'BL-DESK-01 is below reorder level (8/15 units)',
+            data: { sku: 'BL-DESK-01', currentStock: 8, reorderLevel: 15 }
+        });
+    };
+
+    const handleMarkAsRead = (id) => {
+        markAsRead(id);
+        setNotifications(prev => prev.map(n =>
+            n.id === id ? { ...n, read: true } : n
+        ));
+        setUnreadCount(getUnreadCount());
+    };
+
+    const handleMarkAllRead = () => {
+        markAllAsRead();
+        setNotifications(prev => prev.map(n => ({ ...n, read: true })));
+        setUnreadCount(0);
+    };
 
     const filteredNotifications = notifications.filter(n => {
         if (filter === 'all') return true;
         if (filter === 'unread') return !n.read;
+        if (filter === 'critical') return n.priority === 'critical' || n.priority === 'high';
         return n.type === filter;
     });
 
-    const markAsRead = (id) => {
-        setNotifications(prev => prev.map(n => n.id === id ? { ...n, read: true } : n));
-    };
+    const getTypeColor = (type, priority) => {
+        if (priority === 'critical') return 'var(--danger)';
+        if (priority === 'high') return 'var(--warning)';
 
-    const markAllRead = () => {
-        setNotifications(prev => prev.map(n => ({ ...n, read: true })));
-    };
-
-    const getTypeIcon = (type) => {
-        switch (type) {
-            case 'success': return '✅';
-            case 'warning': return '⚠️';
-            case 'danger': return '🚨';
-            case 'info': return 'ℹ️';
-            default: return '📬';
-        }
-    };
-
-    const getTypeColor = (type) => {
-        switch (type) {
-            case 'success': return 'var(--success)';
-            case 'warning': return 'var(--warning)';
-            case 'danger': return 'var(--danger)';
-            case 'info': return 'var(--info)';
-            default: return 'var(--primary)';
-        }
+        const typeColors = {
+            'order_created': 'var(--primary)',
+            'order_shipped': 'var(--info)',
+            'order_delivered': 'var(--success)',
+            'order_rto': 'var(--danger)',
+            'low_stock': 'var(--warning)',
+            'carrier_issue': 'var(--danger)',
+            'cod_pending': 'var(--warning)',
+            'bulk_import': 'var(--success)',
+            'system_alert': 'var(--primary)'
+        };
+        return typeColors[type] || 'var(--glass-border)';
     };
 
     if (!isOpen) return null;
 
     return (
-        <div className="notification-overlay" style={{
+        <div className="notification-overlay animate-fade" style={{
             position: 'fixed',
             top: 0,
             right: 0,
             bottom: 0,
-            width: '400px',
+            width: '420px',
             background: 'var(--bg-main)',
             borderLeft: '1px solid var(--glass-border)',
             zIndex: 1000,
             display: 'flex',
-            flexDirection: 'column'
+            flexDirection: 'column',
+            boxShadow: '-5px 0 30px rgba(0,0,0,0.3)'
         }}>
+            {/* Header */}
             <div className="notification-header glass" style={{ padding: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div>
-                    <h3>Notifications</h3>
-                    {unreadCount > 0 && <span className="badge" style={{ background: 'var(--danger)', marginLeft: '8px' }}>{unreadCount} new</span>}
+                    <h3 style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        🔔 Notifications
+                        {unreadCount > 0 && (
+                            <span className="badge" style={{
+                                background: 'var(--danger)',
+                                padding: '4px 10px',
+                                fontSize: '0.75rem',
+                                animation: 'pulse 2s infinite'
+                            }}>
+                                {unreadCount} new
+                            </span>
+                        )}
+                    </h3>
                 </div>
-                <button onClick={onClose} style={{ background: 'transparent', border: 'none', color: '#fff', fontSize: '1.5rem', cursor: 'pointer' }}>×</button>
+                <button
+                    onClick={onClose}
+                    style={{
+                        background: 'transparent',
+                        border: 'none',
+                        color: '#fff',
+                        fontSize: '1.5rem',
+                        cursor: 'pointer',
+                        padding: '4px 10px',
+                        borderRadius: '4px'
+                    }}
+                    className="glass-hover"
+                >
+                    ×
+                </button>
             </div>
 
-            <div className="notification-filters" style={{ padding: '12px 20px', display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                {['all', 'unread', 'success', 'warning', 'danger'].map(f => (
+            {/* Filters */}
+            <div className="notification-filters" style={{ padding: '12px 20px', display: 'flex', gap: '8px', flexWrap: 'wrap', borderBottom: '1px solid var(--glass-border)' }}>
+                {[
+                    { key: 'all', label: 'All', icon: '📋' },
+                    { key: 'unread', label: 'Unread', icon: '🔵' },
+                    { key: 'critical', label: 'Critical', icon: '🚨' },
+                    { key: 'order_delivered', label: 'Delivered', icon: '✅' },
+                    { key: 'order_rto', label: 'RTO', icon: '↩️' }
+                ].map(f => (
                     <button
-                        key={f}
-                        className={`btn-secondary glass-hover ${filter === f ? 'active' : ''}`}
+                        key={f.key}
+                        className="btn-secondary glass-hover"
                         style={{
                             padding: '6px 12px',
                             fontSize: '0.75rem',
-                            background: filter === f ? 'var(--primary)' : 'transparent'
+                            background: filter === f.key ? 'var(--primary)' : 'transparent'
                         }}
-                        onClick={() => setFilter(f)}
+                        onClick={() => setFilter(f.key)}
                     >
-                        {f.charAt(0).toUpperCase() + f.slice(1)}
+                        {f.icon} {f.label}
                     </button>
                 ))}
             </div>
 
+            {/* Notification List */}
             <div className="notification-list" style={{ flex: 1, overflowY: 'auto', padding: '12px' }}>
                 {filteredNotifications.length === 0 ? (
-                    <div style={{ padding: '40px', textAlign: 'center' }}>
-                        <p className="text-muted">No notifications</p>
+                    <div style={{ padding: '60px 20px', textAlign: 'center' }}>
+                        <p style={{ fontSize: '2.5rem', marginBottom: '12px' }}>🔕</p>
+                        <p className="text-muted">No notifications to show</p>
                     </div>
                 ) : (
                     filteredNotifications.map(notif => (
@@ -100,33 +214,95 @@ const NotificationCenter = ({ isOpen, onClose }) => {
                             className={`notification-item glass glass-hover ${!notif.read ? 'unread' : ''}`}
                             style={{
                                 padding: '16px',
-                                marginBottom: '8px',
-                                borderRadius: '8px',
-                                borderLeft: `4px solid ${getTypeColor(notif.type)}`,
+                                marginBottom: '10px',
+                                borderRadius: '10px',
+                                borderLeft: `4px solid ${getTypeColor(notif.type, notif.priority)}`,
                                 opacity: notif.read ? 0.7 : 1,
-                                cursor: 'pointer'
+                                cursor: 'pointer',
+                                background: !notif.read ? 'rgba(99, 102, 241, 0.1)' : 'transparent',
+                                transition: 'all 0.2s ease'
                             }}
-                            onClick={() => markAsRead(notif.id)}
+                            onClick={() => handleMarkAsRead(notif.id)}
                         >
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                                <div style={{ display: 'flex', gap: '12px' }}>
-                                    <span style={{ fontSize: '1.2rem' }}>{getTypeIcon(notif.type)}</span>
-                                    <div>
-                                        <p style={{ fontWeight: '700', marginBottom: '4px' }}>{notif.title}</p>
+                                <div style={{ display: 'flex', gap: '12px', flex: 1 }}>
+                                    <span style={{ fontSize: '1.4rem' }}>{notif.icon}</span>
+                                    <div style={{ flex: 1 }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+                                            <p style={{ fontWeight: '700' }}>{notif.title}</p>
+                                            {notif.priority === 'critical' && (
+                                                <span className="badge" style={{ background: 'var(--danger)', fontSize: '0.6rem', padding: '2px 6px' }}>
+                                                    CRITICAL
+                                                </span>
+                                            )}
+                                            {notif.priority === 'high' && (
+                                                <span className="badge" style={{ background: 'var(--warning)', fontSize: '0.6rem', padding: '2px 6px' }}>
+                                                    HIGH
+                                                </span>
+                                            )}
+                                        </div>
                                         <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>{notif.message}</p>
+
+                                        {/* Action buttons for specific types */}
+                                        {notif.data?.orderId && (
+                                            <button
+                                                className="btn-secondary glass-hover"
+                                                style={{ marginTop: '10px', padding: '6px 12px', fontSize: '0.75rem' }}
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    // Would navigate to order details
+                                                    console.log('View order:', notif.data.orderId);
+                                                }}
+                                            >
+                                                View Order →
+                                            </button>
+                                        )}
                                     </div>
                                 </div>
-                                {!notif.read && <div style={{ width: '8px', height: '8px', background: 'var(--primary)', borderRadius: '50%' }}></div>}
+                                {!notif.read && (
+                                    <div style={{
+                                        width: '10px',
+                                        height: '10px',
+                                        background: 'var(--primary)',
+                                        borderRadius: '50%',
+                                        flexShrink: 0
+                                    }}></div>
+                                )}
                             </div>
-                            <p className="text-muted" style={{ fontSize: '0.7rem', marginTop: '8px' }}>{notif.time}</p>
+                            <p className="text-muted" style={{ fontSize: '0.7rem', marginTop: '10px' }}>
+                                {getRelativeTime(notif.createdAt)}
+                            </p>
                         </div>
                     ))
                 )}
             </div>
 
-            <div className="notification-footer glass" style={{ padding: '16px 20px' }}>
-                <button className="btn-secondary glass-hover" style={{ width: '100%' }} onClick={markAllRead}>
-                    Mark All as Read
+            {/* Footer */}
+            <div className="notification-footer glass" style={{ padding: '16px 20px', display: 'flex', gap: '10px' }}>
+                <button
+                    className="btn-secondary glass-hover"
+                    style={{ flex: 1 }}
+                    onClick={handleMarkAllRead}
+                    disabled={unreadCount === 0}
+                >
+                    ✓ Mark All Read
+                </button>
+                <button
+                    className="btn-primary glass-hover"
+                    style={{ flex: 1 }}
+                    onClick={() => {
+                        // Simulate new notification for demo
+                        createNotification({
+                            type: 'SYSTEM_ALERT',
+                            title: 'Test Notification',
+                            message: 'This is a test notification created just now',
+                            data: {}
+                        });
+                        setNotifications(getNotifications({ limit: 50 }));
+                        setUnreadCount(getUnreadCount());
+                    }}
+                >
+                    🧪 Test
                 </button>
             </div>
         </div>
