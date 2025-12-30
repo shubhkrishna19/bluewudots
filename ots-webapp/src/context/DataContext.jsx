@@ -15,8 +15,16 @@ export const DataProvider = ({ children }) => {
             try {
                 console.log('Synchronizing with Bluewud India Nodes...');
                 setOrders([
-                    { id: 'BW-9901', customer: 'John Doe', status: 'Ordered', city: 'Mumbai', state: 'Maharashtra', sku: 'DESK-01', weight: 12.5 },
-                    { id: 'BW-9902', customer: 'Alice Smith', status: 'Processing', city: 'Delhi', state: 'Delhi', sku: 'CAB-05', weight: 8.0 }
+                    { id: 'BW-9901', customer: 'Rajesh Kumar', status: 'Delivered', city: 'Mumbai', state: 'Maharashtra', sku: 'BL-DESK-01', weight: 12.5, source: 'Amazon' },
+                    { id: 'BW-9902', customer: 'Priya Sharma', status: 'In-Transit', city: 'Delhi', state: 'Delhi', sku: 'BL-CAB-05', weight: 8.0, source: 'Flipkart' },
+                    { id: 'BW-9903', customer: 'Amit Patel', status: 'Carrier-Assigned', city: 'Bangalore', state: 'Karnataka', sku: 'BL-SHELF-02', weight: 15.0, source: 'Amazon' },
+                    { id: 'BW-9904', customer: 'Sneha Reddy', status: 'MTP-Applied', city: 'Hyderabad', state: 'Telangana', sku: 'BL-TABLE-03', weight: 20.0, source: 'Shopify' },
+                    { id: 'BW-9905', customer: 'Vikram Singh', status: 'Imported', city: 'Jaipur', state: 'Rajasthan', sku: 'BL-CHAIR-01', weight: 5.0, source: 'Urban Ladder' },
+                    { id: 'BW-9906', customer: 'Meera Iyer', status: 'Delivered', city: 'Chennai', state: 'Tamil Nadu', sku: 'BL-DESK-02', weight: 14.0, source: 'Pepperfry' },
+                    { id: 'BW-9907', customer: 'Arjun Nair', status: 'In-Transit', city: 'Kochi', state: 'Kerala', sku: 'BL-RACK-01', weight: 18.0, source: 'Amazon' },
+                    { id: 'BW-9908', customer: 'Furniture World', status: 'Imported', city: 'Bangalore', state: 'Karnataka', sku: 'BL-BULK-SET', weight: 45.0, source: 'Dealer' },
+                    { id: 'BW-9909', customer: 'Local Customer', status: 'Carrier-Assigned', city: 'Pune', state: 'Maharashtra', sku: 'BL-STOOL-01', weight: 3.5, source: 'Local Shop' },
+                    { id: 'BW-9910', customer: 'Home Decor Hub', status: 'Delivered', city: 'Ahmedabad', state: 'Gujarat', sku: 'BL-COMBO-01', weight: 25.0, source: 'Dealer' }
                 ]);
 
                 // Comprehensive Carrier Configurations

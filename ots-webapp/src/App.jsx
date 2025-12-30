@@ -7,6 +7,8 @@ import BarcodeDispatcher from './components/Orders/BarcodeDispatcher'
 import AnalyticsDashboard from './components/Dashboard/AnalyticsDashboard'
 import DealerLookup from './components/Dealers/DealerLookup'
 import SettingsPanel from './components/Settings/SettingsPanel'
+import OrderList from './components/Orders/OrderList'
+import ExportTools from './components/Reports/ExportTools'
 
 function App() {
   const [activeTab, setActiveTab] = useState('dashboard')
@@ -23,11 +25,13 @@ function App() {
         <div className="nav-items">
           <ul className="nav-links">
             <li className={activeTab === 'dashboard' ? 'active' : ''} onClick={() => setActiveTab('dashboard')}>📊 Analytics</li>
-            <li className={activeTab === 'orders' ? 'active' : ''} onClick={() => setActiveTab('orders')}>📦 OMS Import</li>
+            <li className={activeTab === 'orderlist' ? 'active' : ''} onClick={() => setActiveTab('orderlist')}>📋 Orders</li>
+            <li className={activeTab === 'orders' ? 'active' : ''} onClick={() => setActiveTab('orders')}>📦 Import</li>
             <li className={activeTab === 'logistics' ? 'active' : ''} onClick={() => setActiveTab('logistics')}>🚚 Logistics</li>
             <li className={activeTab === 'dispatcher' ? 'active' : ''} onClick={() => setActiveTab('dispatcher')}>📷 Dispatch</li>
             <li className={activeTab === 'inventory' ? 'active' : ''} onClick={() => setActiveTab('inventory')}>🏷️ SKU Master</li>
             <li className={activeTab === 'dealers' ? 'active' : ''} onClick={() => setActiveTab('dealers')}>🤝 Dealers</li>
+            <li className={activeTab === 'reports' ? 'active' : ''} onClick={() => setActiveTab('reports')}>📄 Reports</li>
             <li className={activeTab === 'settings' ? 'active' : ''} onClick={() => setActiveTab('settings')}>⚙️ Settings</li>
           </ul>
         </div>
@@ -57,11 +61,13 @@ function App() {
 
         <section className="view-container">
           {activeTab === 'dashboard' && <AnalyticsDashboard />}
+          {activeTab === 'orderlist' && <OrderList />}
           {activeTab === 'logistics' && <CarrierSelection />}
           {activeTab === 'orders' && <UniversalImporter />}
           {activeTab === 'inventory' && <SKUMaster />}
           {activeTab === 'dispatcher' && <BarcodeDispatcher />}
           {activeTab === 'dealers' && <DealerLookup />}
+          {activeTab === 'reports' && <ExportTools />}
           {activeTab === 'settings' && <SettingsPanel />}
         </section>
       </main>
