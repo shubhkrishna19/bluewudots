@@ -1,0 +1,449 @@
+/*
+ * Author       : bluewudindia
+ * Generated on : 30-Dec-2025 05:29:19
+ * Version      : 1.0
+ */
+ application "Bluewud Commercial Model"
+ {
+ 	date format = "dd-MMM-yyyy"
+ 	time zone = "Asia/Kolkata"
+ 	time format = "24-hr"
+ 	forms
+	{
+		form MTP_Master
+		{
+			displayname = "MTP Master"
+			success message = "Mtp Master Added Successfully"
+			Section
+			(
+				type = section
+	 			row = 1
+	 			column = 0   
+				width = medium
+			)
+			Comm_MTP_SKU
+			(
+    			type = text
+				displayname = "Parent MTP Code"
+    			description
+    			[
+    				type = help_text
+    			 	message = "THis is the Parent MTP Code"
+    			]
+	 			row = 1
+	 			column = 1   
+				width = medium
+			)
+			must have TMS_Level
+			(
+				type = picklist
+				displayname = "TMS Level"
+				maxchar = 100
+				values = {"TL1","TL2","TL3"}
+    			description
+    			[
+    				type = help_text
+    			 	message = "TL1 - 16-18%"
+    			]
+	 			row = 1
+	 			column = 1   
+				width = medium
+			)
+			Comm_BOM_Cost
+			(
+				displayname = "BOM Cost"
+				type = INR
+				format = commadotindian
+				decimalplace = 0
+	 			row = 1
+	 			column = 1   
+				width = medium
+			)
+			BAU_SP
+			(
+				displayname = "BAU Selling Price"
+				type = INR
+				format = commadotindian
+				decimalplace = 0
+    			description
+    			[
+    				type = help_text
+    			 	message = "This is the BAU Seling price without Waivers."
+    			]
+	 			row = 1
+	 			column = 1   
+				width = medium
+			)
+			Usual_Deal_Price
+			(
+				displayname = "Usual Deal Price"
+				type = INR
+				format = commadotindian
+				decimalplace = 0
+    			description
+    			[
+    				type = help_text
+    			 	message = "This is the Selling price with Waivers."
+    			]
+	 			row = 1
+	 			column = 1   
+				width = medium
+			)
+			Deal_Price
+			(
+				displayname = "Deal Price"
+				type = INR
+				format = commadotindian
+				decimalplace = 0
+    			description
+    			[
+    				type = help_text
+    			 	message = "This is the Event Price i.e. Diwali, Prime, Major Arts ( Independence Day sales, Republic day Sale, Summer Sale etc.)."
+    			]
+	 			row = 1
+	 			column = 1   
+				width = medium
+			)
+			Commission_ARF
+			(
+    			type = percentage
+				displayname = "Commission ARF"
+				initial value = 0%
+				decimalplace = 1
+    			description
+    			[
+    				type = help_text
+    			 	message = "This is the commission charges charged by E commerce platforms."
+    			]
+	 			row = 1
+	 			column = 1   
+				width = medium
+			)
+	
+			actions
+			{
+				on add
+				{
+					submit
+					(
+   						type = submit
+   						displayname = "Submit"
+					)
+				}
+				on edit
+				{
+					update
+					(
+   						type = submit
+   						displayname = "Update"
+					)
+					cancel
+					(
+   						type = cancel
+   						displayname = "Cancel"
+					)
+				}
+			}
+		}
+	}
+	reports
+	{
+		default list All_Mtp_Masters
+		{
+			displayName = "All Mtp Masters"
+			show all rows from MTP_Master    
+			(
+				Comm_MTP_SKU as "Parent MTP Code"
+				TMS_Level as "TMS Level"
+				Comm_BOM_Cost as "BOM Cost"
+				BAU_SP as "BAU Selling Price"
+				Usual_Deal_Price as "Usual Deal Price"
+				Deal_Price as "Deal Price"
+				Commission_ARF as "Commission ARF"
+			)
+		}
+	}
+
+
+	share_settings
+	{
+			"Read"
+			{
+				name = "Read"
+				type = Users_Permissions
+				permissions = {Chat:true, Predefined:true, ApiAccess:true, PIIAccess:true, ePHIAccess:true}
+				description = "This profile will have read permission for all components\n"
+			}
+			"Write"
+			{
+				name = "Write"
+				type = Users_Permissions
+				permissions = {Chat:true, Predefined:true, ApiAccess:true, PIIAccess:true, ePHIAccess:true}
+				description = "This profile will have write permission for all components\n"
+			}
+			"Developer"
+			{
+				name = "Developer"
+				type = Developer
+				permissions = {Chat:false, Predefined:true, ApiAccess:true, PIIAccess:true, ePHIAccess:true}
+				description = "Developer Profile\n"
+			}
+			"Administrator"
+			{
+				name = "Administrator"
+				type = Users_Permissions
+				permissions = {Chat:true, Predefined:true, ApiAccess:true, PIIAccess:true, ePHIAccess:true}
+				description = "This profile will have all the permissions.\n"
+			}
+			"Customer"
+			{
+				name = "Customer"
+				type = Customer_Portal
+				permissions = {Chat:true, Predefined:true, ApiAccess:true, PIIAccess:true, ePHIAccess:true}
+				description = "This is the default profile having only add and view permission.\n"
+			}
+			roles
+			{
+				"CEO"
+				{
+					description = "User belonging to this role can access data of all other users."
+				}
+			}
+	}
+
+
+	web
+	{
+		forms
+		{
+			form MTP_Master
+			{
+				label placement = left
+			}
+		}
+		reports
+		{
+			report All_Mtp_Masters
+			{
+				quickview
+				(
+					layout
+					(
+		 				type = -1
+						datablock1
+						(
+							layout type = -1
+							fields
+							(
+								Comm_MTP_SKU as "Parent MTP Code"
+								TMS_Level as "TMS Level"
+								Comm_BOM_Cost as "BOM Cost"
+								BAU_SP as "BAU Selling Price"
+								Usual_Deal_Price as "Usual Deal Price"
+								Deal_Price as "Deal Price"
+								Commission_ARF as "Commission ARF"
+							)
+						)
+					)
+					menu
+    				(
+    	 				header
+    	 				(
+    		 				Edit 
+    		 				Duplicate 
+    		 				Delete 
+    	 				)
+						record
+						(
+							Edit   	   
+							Duplicate   	   
+							Delete   	   
+    					)
+    				)
+    				action
+    				(
+						on click
+						(
+							View Record   	   
+    					)
+						on right click
+						(
+							Edit   	   
+							Delete   	   
+							Duplicate   	   
+							View Record   	   
+    					)
+     				)
+				)
+
+				detailview
+				(
+					layout
+					(
+		 				type = 1
+						datablock1
+						(
+							layout type = -2
+							fields
+							(
+								Comm_MTP_SKU as "Parent MTP Code"
+								TMS_Level as "TMS Level"
+								Comm_BOM_Cost as "BOM Cost"
+								BAU_SP as "BAU Selling Price"
+								Usual_Deal_Price as "Usual Deal Price"
+								Deal_Price as "Deal Price"
+								Commission_ARF as "Commission ARF"
+							)
+						)
+					)
+					menu
+    				(
+    	 				header
+    	 				(
+    		 				Edit 
+    		 				Duplicate 
+    		 				Delete 
+    	 				)
+    				)
+				)
+			}
+		}
+		menu
+		{
+			space Space
+			{
+				displayname = "Space"
+				icon = "objects-spaceship"
+
+				section Mtp_Masters
+				{
+					displayname = "Mtp Masters"
+					icon = "tech-desktop"
+					form  MTP_Master
+					{
+						icon = "sport-crown"
+					}
+					report All_Mtp_Masters
+					{
+						icon = "tech-desktop"
+					}
+				}
+				section App_Preferences
+				{
+					displayname = "App Preferences"
+					icon = "design-app"
+					systemcomponent
+					{
+						type = localization
+						displayname = "Language Selection"
+						icon = "education-language"
+					}
+					systemcomponent
+					{
+						type = connection
+						displayname = "Integrations"
+						icon = "tech-2-connection"
+					}
+				}
+				section Approvals
+				{
+					displayname = "Approvals"
+					icon = "ui-2-hourglass"
+					systemcomponent
+					{
+						type = approval
+						approval status = pending
+						displayname = "Pending Tasks"
+						icon = "ui-2-hourglass"
+					}
+					systemcomponent
+					{
+						type = approval
+						approval status = completed
+						displayname = "Completed Tasks"
+						icon = "design-todo"
+					}
+				}
+				section SharedAnalytics_Section
+				{
+					type = shared_user_report_section
+					displayname = "Reports"
+					icon = "business-chart-bar-33"
+				}
+			}
+			preference
+			{
+				icon
+				{
+					style = outline
+				}
+			}
+		}
+		customize
+		{
+			new theme = 11
+			font = "lato"
+			color options
+			{
+				color = "1"
+			}
+			logo
+			{
+				preference = "company_logo"
+				placement = "left"
+			}
+		}
+	}
+	phone
+	{
+		forms
+		{
+			form MTP_Master
+			{
+				label placement = auto
+			}
+		}
+		customize
+		{
+			layout = slidingpane
+			font = "default"
+			style = "3"
+			color options
+			{
+				color = green
+			}
+			logo
+			{
+				preference = "company_logo"
+			}
+		}
+	}
+	tablet
+	{
+		forms
+		{
+			form MTP_Master
+			{
+				label placement = auto
+			}
+		}
+		customize
+		{
+			layout = slidingpane
+			font = "default"
+			style = "3"
+			color options
+			{
+				color = green
+			}
+			logo
+			{
+				preference = "company_logo"
+			}
+		}
+	}
+	translation
+{
+{"Language_Settings":{"LANGAGUE_WITH_LOGIN":"browser"}}
+}
+}
