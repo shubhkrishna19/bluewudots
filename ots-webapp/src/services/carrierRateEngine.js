@@ -30,7 +30,7 @@ const ORIGIN_ZONE = 'SOUTH';
 const ORIGIN_STATE = 'Karnataka';
 
 // Carrier rate cards (per kg, base rate + additional per 0.5kg)
-const CARRIER_RATES = {
+export const CARRIER_RATES = {
     delhivery: {
         name: 'Delhivery',
         logo: '🚚',

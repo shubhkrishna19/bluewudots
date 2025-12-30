@@ -13,7 +13,7 @@ const GST_RATES = {
     exempt: 0
 };
 
-const STATE_CODES = {
+export const STATE_CODES = {
     'Andhra Pradesh': '37',
     'Arunachal Pradesh': '12',
     'Assam': '18',
