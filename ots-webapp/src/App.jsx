@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import './App.css'
 import CarrierSelection from './components/Logistics/CarrierSelection'
+import AmazonMapper from './components/Automation/AmazonMapper'
 
 function App() {
   const [activeTab, setActiveTab] = useState('dashboard')
@@ -115,7 +116,9 @@ function App() {
 
           {activeTab === 'logistics' && <CarrierSelection />}
 
-          {['orders', 'inventory'].includes(activeTab) && (
+          {activeTab === 'orders' && <AmazonMapper />}
+
+          {['inventory'].includes(activeTab) && (
             <div className="placeholder-view glass animate-fade">
               <h2>Module Under Development</h2>
               <p>The {activeTab} orchestration logic is being deployed.</p>
