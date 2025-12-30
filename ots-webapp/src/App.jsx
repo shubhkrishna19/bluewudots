@@ -5,16 +5,11 @@ import UniversalImporter from './components/Automation/UniversalImporter'
 import SKUMaster from './components/Commercial/SKUMaster'
 import BarcodeDispatcher from './components/Orders/BarcodeDispatcher'
 import AnalyticsDashboard from './components/Dashboard/AnalyticsDashboard'
+import DealerLookup from './components/Dealers/DealerLookup'
+import SettingsPanel from './components/Settings/SettingsPanel'
 
 function App() {
   const [activeTab, setActiveTab] = useState('dashboard')
-
-  const stats = [
-    { label: 'Pending Orders', value: '124', trend: '+12%', color: 'var(--primary)' },
-    { label: 'In Transit', value: '45', trend: 'Global', color: 'var(--accent)' },
-    { label: 'Delivered', value: '890', trend: 'Today', color: 'var(--success)' },
-    { label: 'Alerts', value: '3', trend: 'High', color: 'var(--danger)' }
-  ]
 
   return (
     <div className="app-container animate-fade">
@@ -27,11 +22,13 @@ function App() {
 
         <div className="nav-items">
           <ul className="nav-links">
-            <li className={activeTab === 'dashboard' ? 'active' : ''} onClick={() => setActiveTab('dashboard')}>Analytics</li>
-            <li className={activeTab === 'orders' ? 'active' : ''} onClick={() => setActiveTab('orders')}>OMS Import</li>
-            <li className={activeTab === 'logistics' ? 'active' : ''} onClick={() => setActiveTab('logistics')}>Logistics</li>
-            <li className={activeTab === 'dispatcher' ? 'active' : ''} onClick={() => setActiveTab('dispatcher')}>Dispatch</li>
-            <li className={activeTab === 'inventory' ? 'active' : ''} onClick={() => setActiveTab('inventory')}>SKU Master</li>
+            <li className={activeTab === 'dashboard' ? 'active' : ''} onClick={() => setActiveTab('dashboard')}>📊 Analytics</li>
+            <li className={activeTab === 'orders' ? 'active' : ''} onClick={() => setActiveTab('orders')}>📦 OMS Import</li>
+            <li className={activeTab === 'logistics' ? 'active' : ''} onClick={() => setActiveTab('logistics')}>🚚 Logistics</li>
+            <li className={activeTab === 'dispatcher' ? 'active' : ''} onClick={() => setActiveTab('dispatcher')}>📷 Dispatch</li>
+            <li className={activeTab === 'inventory' ? 'active' : ''} onClick={() => setActiveTab('inventory')}>🏷️ SKU Master</li>
+            <li className={activeTab === 'dealers' ? 'active' : ''} onClick={() => setActiveTab('dealers')}>🤝 Dealers</li>
+            <li className={activeTab === 'settings' ? 'active' : ''} onClick={() => setActiveTab('settings')}>⚙️ Settings</li>
           </ul>
         </div>
 
@@ -60,21 +57,12 @@ function App() {
 
         <section className="view-container">
           {activeTab === 'dashboard' && <AnalyticsDashboard />}
-
           {activeTab === 'logistics' && <CarrierSelection />}
-
           {activeTab === 'orders' && <UniversalImporter />}
-
           {activeTab === 'inventory' && <SKUMaster />}
-
           {activeTab === 'dispatcher' && <BarcodeDispatcher />}
-
-          {['settings'].includes(activeTab) && (
-            <div className="placeholder-view glass animate-fade">
-              <h2>Module Under Development</h2>
-              <p>The {activeTab} orchestration logic is being deployed.</p>
-            </div>
-          )}
+          {activeTab === 'dealers' && <DealerLookup />}
+          {activeTab === 'settings' && <SettingsPanel />}
         </section>
       </main>
     </div>
