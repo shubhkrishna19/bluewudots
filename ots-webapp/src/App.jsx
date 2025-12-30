@@ -14,6 +14,10 @@ import NotificationCenter from './components/Notifications/NotificationCenter'
 import ActivityLog from './components/Activity/ActivityLog'
 import BulkActions from './components/Orders/BulkActions'
 import ZoneMap from './components/Logistics/ZoneMap'
+import HelpCenter from './components/Help/HelpCenter'
+import CustomerLookup from './components/Customers/CustomerLookup'
+import PerformanceMetrics from './components/Dashboard/PerformanceMetrics'
+import RoadmapPage from './components/Roadmap/RoadmapPage'
 
 function App() {
   const [activeTab, setActiveTab] = useState('dashboard')
@@ -32,6 +36,7 @@ function App() {
         <div className="nav-items">
           <ul className="nav-links">
             <li className={activeTab === 'dashboard' ? 'active' : ''} onClick={() => setActiveTab('dashboard')}>📊 Analytics</li>
+            <li className={activeTab === 'metrics' ? 'active' : ''} onClick={() => setActiveTab('metrics')}>📈 KPIs</li>
             <li className={activeTab === 'orderlist' ? 'active' : ''} onClick={() => setActiveTab('orderlist')}>📋 Orders</li>
             <li className={activeTab === 'bulk' ? 'active' : ''} onClick={() => setActiveTab('bulk')}>⚡ Bulk Actions</li>
             <li className={activeTab === 'orders' ? 'active' : ''} onClick={() => setActiveTab('orders')}>📦 Import</li>
@@ -40,8 +45,11 @@ function App() {
             <li className={activeTab === 'dispatcher' ? 'active' : ''} onClick={() => setActiveTab('dispatcher')}>📷 Dispatch</li>
             <li className={activeTab === 'inventory' ? 'active' : ''} onClick={() => setActiveTab('inventory')}>🏷️ SKU Master</li>
             <li className={activeTab === 'dealers' ? 'active' : ''} onClick={() => setActiveTab('dealers')}>🤝 Dealers</li>
+            <li className={activeTab === 'customers' ? 'active' : ''} onClick={() => setActiveTab('customers')}>👥 Customers</li>
             <li className={activeTab === 'activity' ? 'active' : ''} onClick={() => setActiveTab('activity')}>📜 Activity</li>
             <li className={activeTab === 'reports' ? 'active' : ''} onClick={() => setActiveTab('reports')}>📄 Reports</li>
+            <li className={activeTab === 'roadmap' ? 'active' : ''} onClick={() => setActiveTab('roadmap')}>🛣️ Roadmap</li>
+            <li className={activeTab === 'help' ? 'active' : ''} onClick={() => setActiveTab('help')}>❓ Help</li>
             <li className={activeTab === 'settings' ? 'active' : ''} onClick={() => setActiveTab('settings')}>⚙️ Settings</li>
           </ul>
         </div>
@@ -74,6 +82,7 @@ function App() {
 
         <section className="view-container">
           {activeTab === 'dashboard' && <AnalyticsDashboard />}
+          {activeTab === 'metrics' && <PerformanceMetrics />}
           {activeTab === 'orderlist' && <OrderList />}
           {activeTab === 'bulk' && <BulkActions />}
           {activeTab === 'logistics' && <CarrierSelection />}
@@ -82,8 +91,11 @@ function App() {
           {activeTab === 'inventory' && <SKUMaster />}
           {activeTab === 'dispatcher' && <BarcodeDispatcher />}
           {activeTab === 'dealers' && <DealerLookup />}
+          {activeTab === 'customers' && <CustomerLookup />}
           {activeTab === 'activity' && <ActivityLog />}
           {activeTab === 'reports' && <ExportTools />}
+          {activeTab === 'roadmap' && <RoadmapPage />}
+          {activeTab === 'help' && <HelpCenter />}
           {activeTab === 'settings' && <SettingsPanel />}
         </section>
       </main>
