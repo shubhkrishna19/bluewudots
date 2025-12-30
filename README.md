@@ -1,44 +1,120 @@
-# Bluewud OTS - Unified Hub
+# Bluewud OTS - Order Tracking System
 
-Industrial-grade logistics and order tracking system for Bluewud India. Built with React (Vite) and Zoho Catalyst.
+**Industrial-Grade Logistics & Order Management for Pan-India Operations**
 
-## 🛠️ Global Setup Guide
-This project is designed to be portable and secure. Follow these steps to recreate or continue development from any machine.
+[![GitHub](https://img.shields.io/badge/GitHub-bluewudots-blue)](https://github.com/shubhkrishna19/bluewudots)
 
-### 1. Prerequisites
-- **Node.js** (v18+)
-- **Git**
-- **Zoho Catalyst CLI**: `npm install -g zcatalyst-cli`
+---
 
-### 2. Fork & Clone
+## 🚀 Quick Start
+
 ```bash
+# Clone the repository
 git clone https://github.com/shubhkrishna19/bluewudots.git
 cd bluewudots/ots-webapp
+
+# Install dependencies
 npm install
-```
 
-### 3. Security & Credentials
-This project uses environment variables to protect sensitive Zoho Catalyst credentials. **Never commit your `.env` file.**
-
-1. Copy the example file:
-   ```bash
-   cp .env.example .env
-   ```
-2. Fill in your credentials from the Zoho Catalyst console:
-   - `VITE_CATALYST_PROJECT_ID`
-   - `VITE_CATALYST_CLIENT_ID`
-
-### 4. Running Locally
-```bash
+# Start development server
 npm run dev
 ```
 
-## 🧠 Command Center
-All architectural decisions and logic modules are documented in the [Command Center](.gemini/antigravity/brain/07ac5797-ef5d-46d8-9e26-2bf615bd6963/implementation_plan.md). Refer to this file for multi-agent coordination.
-
-## 🇮🇳 Pan-India Logistics
-- Supported Carriers: BlueDart, Delhivery, Ecom Express, XpressBees.
-- Compliance: Full GST orchestration (IGST/CGST/SGST).
+Open `http://localhost:5173` in your browser.
 
 ---
-© 2025 Bluewud India. Confidential and Proprietary.
+
+## 📦 Features
+
+| Module | Status | Description |
+|:-------|:------:|:------------|
+| **Analytics Dashboard** | ✅ | Real-time charts with Recharts |
+| **Multi-Channel OMS** | ✅ | Import from 8 sales channels |
+| **India Logistics Engine** | ✅ | Zone mapping for 28 States + 8 UTs |
+| **Barcode Dispatcher** | ✅ | Camera-based scanning for dispatch |
+| **SKU/MTP Master** | ✅ | Profitability analysis with GST |
+| **Dealer Network** | ✅ | CRM-linked dealer management |
+| **Settings Panel** | ✅ | App configuration & API status |
+
+---
+
+## 🛒 Supported Sales Channels
+
+- Amazon IN (SP-API ready)
+- Flipkart
+- Shopify
+- Urban Ladder
+- Pepperfry
+- IndiaMART
+- Local Shop
+- Dealer Orders
+
+---
+
+## 🏗️ Tech Stack
+
+- **Frontend**: React 19 + Vite 7
+- **Styling**: Vanilla CSS (Glassmorphism design)
+- **Charts**: Recharts
+- **CSV Parsing**: PapaParse
+- **PDF Generation**: jsPDF
+- **Barcode Scanning**: html5-qrcode
+- **Backend (Planned)**: Zoho Catalyst
+
+---
+
+## 📁 Project Structure
+
+```
+ots-webapp/
+├── src/
+│   ├── components/
+│   │   ├── Automation/      # Channel importers
+│   │   ├── Commercial/      # SKU/MTP logic
+│   │   ├── Dashboard/       # Analytics
+│   │   ├── Dealers/         # Dealer management
+│   │   ├── Logistics/       # Carrier selection
+│   │   ├── Orders/          # Dispatch & Journey
+│   │   └── Settings/        # Configuration
+│   ├── context/             # DataContext (state)
+│   ├── utils/               # Business logic
+│   └── catalyst/            # Zoho SDK setup
+├── .env.example             # Environment template
+└── package.json
+```
+
+---
+
+## 🔐 Environment Variables
+
+Copy `.env.example` to `.env` and configure:
+
+```env
+VITE_CATALYST_PROJECT_ID=your_project_id
+VITE_CATALYST_CLIENT_ID=your_client_id
+VITE_CATALYST_ENVIRONMENT=development
+```
+
+---
+
+## 🤝 Multi-Agent Development
+
+This project supports collaborative development with AI agents:
+- **Command Center**: See `.gemini/` folder for implementation plans
+- **Task Tracking**: `task.md` contains the development checklist
+- **Code Style**: Glassmorphism CSS, React functional components
+
+---
+
+## 📋 Roadmap
+
+- [ ] Zoho CRM API integration (READ-ONLY)
+- [ ] Amazon SP-API OAuth flow
+- [ ] Delhivery/BlueDart AWB generation
+- [ ] Real-time carrier tracking webhooks
+
+---
+
+## 📄 License
+
+Proprietary - Bluewud Industries
