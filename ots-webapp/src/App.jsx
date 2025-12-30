@@ -18,6 +18,9 @@ import HelpCenter from './components/Help/HelpCenter'
 import CustomerLookup from './components/Customers/CustomerLookup'
 import PerformanceMetrics from './components/Dashboard/PerformanceMetrics'
 import RoadmapPage from './components/Roadmap/RoadmapPage'
+import RTOManager from './components/Orders/RTOManager'
+import CarrierPerformance from './components/Logistics/CarrierPerformance'
+import ShipmentTracker from './components/Tracking/ShipmentTracker'
 
 function App() {
   const [activeTab, setActiveTab] = useState('dashboard')
@@ -38,16 +41,19 @@ function App() {
             <li className={activeTab === 'dashboard' ? 'active' : ''} onClick={() => setActiveTab('dashboard')}>📊 Analytics</li>
             <li className={activeTab === 'metrics' ? 'active' : ''} onClick={() => setActiveTab('metrics')}>📈 KPIs</li>
             <li className={activeTab === 'orderlist' ? 'active' : ''} onClick={() => setActiveTab('orderlist')}>📋 Orders</li>
-            <li className={activeTab === 'bulk' ? 'active' : ''} onClick={() => setActiveTab('bulk')}>⚡ Bulk Actions</li>
+            <li className={activeTab === 'bulk' ? 'active' : ''} onClick={() => setActiveTab('bulk')}>⚡ Bulk</li>
+            <li className={activeTab === 'rto' ? 'active' : ''} onClick={() => setActiveTab('rto')}>↩️ RTO</li>
             <li className={activeTab === 'orders' ? 'active' : ''} onClick={() => setActiveTab('orders')}>📦 Import</li>
+            <li className={activeTab === 'tracking' ? 'active' : ''} onClick={() => setActiveTab('tracking')}>📡 Tracking</li>
             <li className={activeTab === 'logistics' ? 'active' : ''} onClick={() => setActiveTab('logistics')}>🚚 Carriers</li>
+            <li className={activeTab === 'carrierperf' ? 'active' : ''} onClick={() => setActiveTab('carrierperf')}>🏆 Performance</li>
             <li className={activeTab === 'zones' ? 'active' : ''} onClick={() => setActiveTab('zones')}>🗺️ Zones</li>
             <li className={activeTab === 'dispatcher' ? 'active' : ''} onClick={() => setActiveTab('dispatcher')}>📷 Dispatch</li>
-            <li className={activeTab === 'inventory' ? 'active' : ''} onClick={() => setActiveTab('inventory')}>🏷️ SKU Master</li>
+            <li className={activeTab === 'inventory' ? 'active' : ''} onClick={() => setActiveTab('inventory')}>🏷️ SKU</li>
             <li className={activeTab === 'dealers' ? 'active' : ''} onClick={() => setActiveTab('dealers')}>🤝 Dealers</li>
             <li className={activeTab === 'customers' ? 'active' : ''} onClick={() => setActiveTab('customers')}>👥 Customers</li>
-            <li className={activeTab === 'activity' ? 'active' : ''} onClick={() => setActiveTab('activity')}>📜 Activity</li>
-            <li className={activeTab === 'reports' ? 'active' : ''} onClick={() => setActiveTab('reports')}>📄 Reports</li>
+            <li className={activeTab === 'activity' ? 'active' : ''} onClick={() => setActiveTab('activity')}>📜 Log</li>
+            <li className={activeTab === 'reports' ? 'active' : ''} onClick={() => setActiveTab('reports')}>📄 Export</li>
             <li className={activeTab === 'roadmap' ? 'active' : ''} onClick={() => setActiveTab('roadmap')}>🛣️ Roadmap</li>
             <li className={activeTab === 'help' ? 'active' : ''} onClick={() => setActiveTab('help')}>❓ Help</li>
             <li className={activeTab === 'settings' ? 'active' : ''} onClick={() => setActiveTab('settings')}>⚙️ Settings</li>
@@ -85,8 +91,11 @@ function App() {
           {activeTab === 'metrics' && <PerformanceMetrics />}
           {activeTab === 'orderlist' && <OrderList />}
           {activeTab === 'bulk' && <BulkActions />}
+          {activeTab === 'rto' && <RTOManager />}
           {activeTab === 'logistics' && <CarrierSelection />}
+          {activeTab === 'carrierperf' && <CarrierPerformance />}
           {activeTab === 'zones' && <ZoneMap />}
+          {activeTab === 'tracking' && <ShipmentTracker />}
           {activeTab === 'orders' && <UniversalImporter />}
           {activeTab === 'inventory' && <SKUMaster />}
           {activeTab === 'dispatcher' && <BarcodeDispatcher />}
