@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import './App.css'
 import CarrierSelection from './components/Logistics/CarrierSelection'
-import AmazonMapper from './components/Automation/AmazonMapper'
+import UniversalImporter from './components/Automation/UniversalImporter'
 import SKUMaster from './components/Commercial/SKUMaster'
 import BarcodeDispatcher from './components/Orders/BarcodeDispatcher'
 import AnalyticsDashboard from './components/Dashboard/AnalyticsDashboard'
@@ -63,7 +63,7 @@ function App() {
 
           {activeTab === 'logistics' && <CarrierSelection />}
 
-          {activeTab === 'orders' && <AmazonMapper />}
+          {activeTab === 'orders' && <UniversalImporter />}
 
           {activeTab === 'inventory' && <SKUMaster />}
 
