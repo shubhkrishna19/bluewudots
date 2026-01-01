@@ -34,6 +34,7 @@ import CommercialHub from './components/Commercial/CommercialHub'
 import MarketingCenter from './components/Marketing/MarketingCenter'
 import CustomerAnalytics from './components/Customers/CustomerAnalytics'
 import ProductionTracker from './components/SupplyChain/ProductionTracker'
+import QualityGate from './components/SupplyChain/QualityGate'
 
 
 function App() {
@@ -146,6 +147,7 @@ function App() {
               <label>SUPPLY CHAIN</label>
               <ul className="nav-links">
                 <li className={activeTab === 'production' ? 'active' : ''} onClick={() => { setActiveTab('production'); setIsMobileMenuOpen(false); }}>🏭 Production</li>
+                <li className={activeTab === 'qa' ? 'active' : ''} onClick={() => { setActiveTab('qa'); setIsMobileMenuOpen(false); }}>💎 Quality Gate</li>
               </ul>
             </div>
           )}
@@ -216,6 +218,7 @@ function App() {
           {activeTab === 'custintel' && <CustomerAnalytics />}
           {activeTab === 'marketing' && <MarketingCenter />}
           {activeTab === 'production' && <ProductionTracker />}
+          {activeTab === 'qa' && <QualityGate />}
           {activeTab === 'activity' && (user?.role === 'admin' ? <ActivityLog /> : <div className="glass" style={{ padding: '40px', textAlign: 'center' }}>🚫 Access Restricted</div>)}
           {activeTab === 'reports' && <ExportTools />}
           {activeTab === 'roadmap' && <RoadmapPage />}

@@ -45,7 +45,42 @@ export const allocateFIFO = (batches, quantity) => {
  */
 export const getVendors = () => VENDORS;
 
+/**
+ * Predict shortages based on inventory levels, forecast demand and lead times
+ * @param {Array} inventory - Consolidated inventory list
+ * @param {Array} orders - Historical orders for forecasting
+ * @returns {Array} List of shortage alerts
+ */
+export const getShortagePredictions = (inventory, orders) => {
+    const alerts = [];
+
+    inventory.forEach(item => {
+        // Calculate 30-day demand forecast
+        const skuOrders = orders.filter(o => o.sku === item.sku);
+        const totalQty = skuOrders.reduce((sum, o) => sum + (parseInt(o.quantity) || 1), 0);
+        const monthlyDemand = Math.ceil((totalQty / 30) * 30 * 1.2); // 20% buffer
+
+        const currentStock = item.inStock || 0;
+        const available = item.inStock - (item.reserved || 0);
+
+        if (available < monthlyDemand) {
+            alerts.push({
+                sku: item.sku,
+                name: item.name,
+                currentStock: available,
+                monthlyDemand,
+                deficit: monthlyDemand - available,
+                urgency: available <= (monthlyDemand * 0.2) ? 'CRITICAL' : 'WARNING',
+                reorderQty: Math.max(monthlyDemand * 2, item.reorderLevel || 50)
+            });
+        }
+    });
+
+    return alerts.sort((a, b) => (a.urgency === 'CRITICAL' ? -1 : 1));
+};
+
 export default {
     allocateFIFO,
-    getVendors
+    getVendors,
+    getShortagePredictions
 };

@@ -9,6 +9,7 @@ export const ORDER_STATUSES = {
     MTP_APPLIED: 'MTP-Applied',
     CARRIER_ASSIGNED: 'Carrier-Assigned',
     LABEL_GENERATED: 'Label-Generated',
+    QA_PASSED: 'QA-Passed',
     PICKED_UP: 'Picked-Up',
     IN_TRANSIT: 'In-Transit',
     OUT_FOR_DELIVERY: 'Out-for-Delivery',
@@ -24,14 +25,20 @@ export const ORDER_STATUSES = {
 const VALID_TRANSITIONS = {
     [ORDER_STATUSES.PENDING]: [
         ORDER_STATUSES.MTP_APPLIED,
+        ORDER_STATUSES.QA_PASSED,
         ORDER_STATUSES.CARRIER_ASSIGNED,
         ORDER_STATUSES.CANCELLED,
         ORDER_STATUSES.ON_HOLD
     ],
     [ORDER_STATUSES.MTP_APPLIED]: [
+        ORDER_STATUSES.QA_PASSED,
         ORDER_STATUSES.CARRIER_ASSIGNED,
         ORDER_STATUSES.CANCELLED,
         ORDER_STATUSES.ON_HOLD
+    ],
+    [ORDER_STATUSES.QA_PASSED]: [
+        ORDER_STATUSES.CARRIER_ASSIGNED,
+        ORDER_STATUSES.CANCELLED
     ],
     [ORDER_STATUSES.CARRIER_ASSIGNED]: [
         ORDER_STATUSES.LABEL_GENERATED,
@@ -78,6 +85,7 @@ export const STATUS_META = {
     [ORDER_STATUSES.MTP_APPLIED]: { color: '#8B5CF6', icon: '📋', category: 'pending' },
     [ORDER_STATUSES.CARRIER_ASSIGNED]: { color: '#6366F1', icon: '🚚', category: 'processing' },
     [ORDER_STATUSES.LABEL_GENERATED]: { color: '#3B82F6', icon: '🏷️', category: 'processing' },
+    [ORDER_STATUSES.QA_PASSED]: { color: '#10B981', icon: '💎', category: 'processing' },
     [ORDER_STATUSES.PICKED_UP]: { color: '#0EA5E9', icon: '📦', category: 'transit' },
     [ORDER_STATUSES.IN_TRANSIT]: { color: '#14B8A6', icon: '🛣️', category: 'transit' },
     [ORDER_STATUSES.OUT_FOR_DELIVERY]: { color: '#22C55E', icon: '🏃', category: 'transit' },

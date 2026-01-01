@@ -28,7 +28,10 @@ const RoadmapPage = () => {
         { name: 'Multi-Channel Echo', desc: 'Live Amazon/Flipkart sync stubs', status: 'live', module: 'Logistics' },
         { name: 'Customer Intelligence', desc: 'Deep analytics for LTV and customer spend cohorts', status: 'live', module: 'CRM' },
         { name: 'RBAC Enforcement', desc: 'Role-based access control for administrative and commercial modules', status: 'live', module: 'Security' },
-        { name: 'Smart Routing Node', desc: 'Multi-warehouse assignment logic based on destination pincode', status: 'live', module: 'Logistics' }
+        { name: 'Smart Routing Node', desc: 'Multi-warehouse assignment logic based on destination pincode', status: 'live', module: 'Logistics' },
+        { name: 'Production Hub', desc: 'Real-time GRN and vendor batch tracking with FIFO logic', status: 'live', module: 'Supply Chain' },
+        { name: 'QA Mobile Gate', desc: '4-point mobile checklist for final quality control before dispatch', status: 'live', module: 'Supply Chain' },
+        { name: 'Shortage Analytics', desc: 'Predictive demand-aware material shortage warnings', status: 'live', module: 'Intelligence' }
     ];
 
 
@@ -56,7 +59,9 @@ const RoadmapPage = () => {
         { phase: 'Phase 8', title: 'Intelligence', status: 'Complete', desc: 'Predictive AI and Automated Carrier Selection' },
         { phase: 'Phase 9: Comm. Intelligence', status: 'Complete', desc: 'Lineage tracking and Margin Fidelity' },
         { phase: 'Phase 10: Real-time APIs', status: 'Complete', desc: 'Amazon SP-API & Flipkart API Integration' },
-        { phase: 'Phase 11: Enterprise Control', status: 'Complete', desc: 'Advanced security, RBAC, and Customer LTV' }
+        { phase: 'Phase 11: Enterprise Control', status: 'Complete', desc: 'Advanced security, RBAC, and Customer LTV' },
+        { phase: 'Phase 12: Supply Chain', status: 'Complete', desc: 'FIFO Batches, QA Gate, and Shortage Alerts' },
+        { phase: 'Phase 13: Finance AI', status: 'In Progress', desc: 'Dynamic Pricing and Fraud Detection' }
     ];
 
     const techStack = [

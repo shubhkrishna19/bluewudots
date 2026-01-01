@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { useData } from '../../context/DataContext';
 import { getVendors } from '../../services/supplyChainService';
+import ShortageAlerts from './ShortageAlerts';
 
 const ProductionTracker = () => {
     const { skuMaster, batches, receiveStock } = useData();
@@ -113,6 +114,8 @@ const ProductionTracker = () => {
                     </div>
                 </div>
             </div>
+
+            <ShortageAlerts />
         </div>
     );
 };
