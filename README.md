@@ -115,6 +115,33 @@ This project supports collaborative development with AI agents:
 
 ---
 
+## 🚀 Recent Developments (Phase 12+)
+
+### Offline Caching & PWA Support
+- **File**: `src/services/offlineCacheService.js`
+- **Features**:
+  - IndexedDB-based offline caching for orders, SKU master, and analytics
+  - TTL (time-to-live) support for automatic cache expiration
+  - Namespace-based cache organization for multi-tenant data isolation
+  - Zero external dependencies, production-ready
+- **Usage**: Import and use `cacheData()`, `retrieveCachedData()`, `clearNamespace()`, etc.
+
+### Enhanced Data Processing
+- **Deduplication Engine** (`src/utils/dataUtils.js`)
+  - Optimized for 10k+ order batches with sliding-window duplicate detection
+  - Partial duplicate detection (same customer/SKU within 15-min window)
+  - Merges status history from duplicate orders
+
+### Label & Logistics Utilities
+- **Thermal Label Printing** (`src/utils/labelGenerator.js`)
+  - 4x6 thermal label generation with jsPDF
+  - Barcode integration for direct warehouse printing
+  - Warehouse-standard formatting
+
+- **Logistics Status Normalizer** (`src/utils/logisticsUtils.js`)
+  - Unified carrier status mapping (Delhivery, XpressBees, etc.)
+  - Normalization to internal state: `IN_TRANSIT`, `OUT_FOR_DELIVERY`, `DELIVERED`, `RTO_INITIATED`
+
 ## 📄 License
 
 Proprietary - Bluewud Industries
