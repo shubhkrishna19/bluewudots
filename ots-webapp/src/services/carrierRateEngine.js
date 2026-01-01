@@ -46,8 +46,10 @@ export const CARRIER_RATES = {
         codCharges: 25,
         codPercentage: 2,
         fuelSurcharge: 15,
-        gst: 18
+        gst: 18,
+        reliabilityScore: 85 // % Delivery Success (Avg)
     },
+
     bluedart: {
         name: 'BlueDart',
         logo: '📦',
@@ -63,8 +65,10 @@ export const CARRIER_RATES = {
         codCharges: 35,
         codPercentage: 2.5,
         fuelSurcharge: 20,
-        gst: 18
+        gst: 18,
+        reliabilityScore: 98 // % Delivery Success (Premium)
     },
+
     xpressbees: {
         name: 'XpressBees',
         logo: '🐝',
@@ -80,8 +84,10 @@ export const CARRIER_RATES = {
         codCharges: 20,
         codPercentage: 1.5,
         fuelSurcharge: 10,
-        gst: 18
+        gst: 18,
+        reliabilityScore: 82 // % Delivery Success (Budget)
     },
+
     ecomexpress: {
         name: 'Ecom Express',
         logo: '📮',
@@ -97,9 +103,23 @@ export const CARRIER_RATES = {
         codCharges: 22,
         codPercentage: 1.8,
         fuelSurcharge: 12,
-        gst: 18
+        gst: 18,
+        reliabilityScore: 88 // % Delivery Success (Steady)
     }
 };
+
+/**
+ * Preferred Carrier Matrix (Legacy Logic)
+ * Defines the 'Default' preferred carrier for specific zones or states
+ */
+export const PREFERRED_CARRIER_MATRIX = {
+    'METRO': 'bluedart',
+    'LOCAL': 'delhivery',
+    'NE': 'ecomexpress',
+    'INTRA_ZONE': 'delhivery',
+    'Maharashtra': 'xpressbees' // Special preferred carrier for MH
+};
+
 
 // Metro cities for special rates
 const METRO_CITIES = ['Mumbai', 'Delhi', 'Bangalore', 'Chennai', 'Kolkata', 'Hyderabad', 'Pune', 'Ahmedabad'];
@@ -230,50 +250,85 @@ export const getAllRates = (shipment) => {
         .sort((a, b) => a.total - b.total);
 };
 
-/**
- * Get recommended carrier based on criteria
- * @param {object} shipment 
- * @param {string} priority - 'cost', 'speed', 'reliability'
- * @returns {object}
- */
-export const getRecommendation = (shipment, priority = 'cost') => {
+export const getRecommendation = (shipment, priority = 'smart') => {
     const rates = getAllRates(shipment);
 
     if (rates.length === 0) {
         return { error: 'No carriers available' };
     }
 
+    // Assign scores to each carrier option (Lower is better for cost/speed, Higher is better for reliability)
+    const options = rates.map(rate => {
+        const carrier = CARRIER_RATES[rate.carrierId];
+
+        // Normalize Cost (0 to 100, where 0 is cheapest)
+        const minCost = Math.min(...rates.map(r => r.total));
+        const maxCost = Math.max(...rates.map(r => r.total));
+        const costScore = maxCost === minCost ? 0 : ((rate.total - minCost) / (maxCost - minCost)) * 100;
+
+        // Normalize Speed (0 to 100, where 0 is fastest)
+        const minDays = Math.min(...rates.map(r => r.estimatedDelivery[0]));
+        const maxDays = Math.max(...rates.map(r => r.estimatedDelivery[0]));
+        const speedScore = maxDays === minDays ? 0 : ((rate.estimatedDelivery[0] - minDays) / (maxDays - minDays)) * 100;
+
+        // Reliability (100 - score, where 0 is most reliable)
+        const reliabilityPenalty = 100 - carrier.reliabilityScore;
+
+        return {
+            ...rate,
+            scores: { cost: costScore, speed: speedScore, reliability: reliabilityPenalty }
+        };
+    });
+
+    // Strategy Execution
+    let winner;
     switch (priority) {
         case 'speed':
-            // Sort by fastest delivery
-            rates.sort((a, b) => a.estimatedDelivery[0] - b.estimatedDelivery[0]);
-            return {
-                ...rates[0],
-                recommendation: 'Fastest delivery',
-                reason: `Delivers in ${rates[0].estimatedDelivery[0]}-${rates[0].estimatedDelivery[1]} days`
-            };
+            winner = options.sort((a, b) => a.scores.speed - b.scores.speed)[0];
+            winner.recommendation = 'Fastest Delivery';
+            winner.reason = `Rapid transit with ${winner.carrierName}`;
+            break;
 
         case 'reliability':
-            // Prefer BlueDart for reliability (hardcoded for demo)
-            const bluedart = rates.find(r => r.carrierId === 'bluedart');
-            if (bluedart) {
-                return {
-                    ...bluedart,
-                    recommendation: 'Most reliable',
-                    reason: 'Best delivery success rate'
-                };
-            }
-            return rates[0];
+            winner = options.sort((a, b) => a.scores.reliability - b.scores.reliability)[0];
+            winner.recommendation = 'Safest Choice';
+            winner.reason = `Highest delivery success rate (${CARRIER_RATES[winner.carrierId].reliabilityScore}%)`;
+            break;
 
         case 'cost':
+            winner = options.sort((a, b) => a.scores.cost - b.scores.cost)[0];
+            winner.recommendation = 'Highest Savings';
+            winner.reason = 'Lowest freight cost in this zone';
+            break;
+
+        case 'smart':
         default:
-            return {
-                ...rates[0],
-                recommendation: 'Best value',
-                reason: `Saves ₹${rates.length > 1 ? rates[1].total - rates[0].total : 0} vs next option`
-            };
+            // Weighted average: 40% Cost, 30% Speed, 30% Reliability
+            options.sort((a, b) => {
+                const scoreA = (a.scores.cost * 0.4) + (a.scores.speed * 0.3) + (a.scores.reliability * 0.3);
+                const scoreB = (b.scores.cost * 0.4) + (b.scores.speed * 0.3) + (b.scores.reliability * 0.3);
+                return scoreA - scoreB;
+            });
+            winner = options[0];
+
+            // Check if there's a legacy override in the Matrix
+            const matrixOverrideId = PREFERRED_CARRIER_MATRIX[shipment.state] || PREFERRED_CARRIER_MATRIX[winner.zone];
+            const matrixCarrier = options.find(o => o.carrierId === matrixOverrideId);
+
+            if (matrixCarrier && matrixCarrier.total <= winner.total * 1.1) { // Apply override if within 10% cost
+                winner = matrixCarrier;
+                winner.recommendation = 'Business Rule Match';
+                winner.reason = `Preferred partner for ${shipment.state || winner.zone}`;
+            } else {
+                winner.recommendation = 'AI Optimized';
+                winner.reason = 'Best balance of cost, speed, and reliability';
+            }
+            break;
     }
+
+    return winner;
 };
+
 
 /**
  * Check if pincode is serviceable

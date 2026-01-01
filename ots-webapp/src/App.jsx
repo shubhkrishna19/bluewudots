@@ -1,5 +1,6 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import './App.css'
+import { useData } from './context/DataContext'
 import { useAuth } from './context/AuthContext'
 import LoginPage from './components/Auth/LoginPage'
 import UserProfile from './components/Auth/UserProfile'
@@ -26,7 +27,14 @@ import CarrierPerformance from './components/Logistics/CarrierPerformance'
 import ShipmentTracker from './components/Tracking/ShipmentTracker'
 import InvoiceGenerator from './components/Commercial/InvoiceGenerator'
 import CODReconciliation from './components/Commercial/CODReconciliation'
+import FinancialCenter from './components/Commercial/FinancialCenter'
 import WarehouseManager from './components/Warehouse/WarehouseManager'
+import MobileBottomNav from './components/Navigation/MobileBottomNav'
+import CommercialHub from './components/Commercial/CommercialHub'
+import MarketingCenter from './components/Marketing/MarketingCenter'
+import CustomerAnalytics from './components/Customers/CustomerAnalytics'
+import ProductionTracker from './components/SupplyChain/ProductionTracker'
+
 
 function App() {
   const { isAuthenticated, isLoading, user } = useAuth()
@@ -34,6 +42,16 @@ function App() {
   const [showQuickOrder, setShowQuickOrder] = useState(false)
   const [showNotifications, setShowNotifications] = useState(false)
   const [showProfile, setShowProfile] = useState(false)
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const { syncSKUMaster, syncStatus } = useData()
+
+  // Auto-sync SKU Master on mount
+  useEffect(() => {
+    if (isAuthenticated) {
+      syncSKUMaster();
+    }
+  }, [isAuthenticated, syncSKUMaster]);
+
 
   // Show loading spinner while checking auth
   if (isLoading) {
@@ -53,40 +71,98 @@ function App() {
   }
 
   return (
-    <div className="app-container animate-fade">
+    <div className={`app-container animate-fade ${isMobileMenuOpen ? 'mobile-menu-open' : ''}`}>
       {/* Sidebar Navigation */}
-      <nav className="sidebar glass">
+      <nav className={`sidebar glass ${isMobileMenuOpen ? 'open' : ''}`}>
         <div className="logo-section">
           <div className="logo-icon">B</div>
           <h2>Bluewud<span>OTS</span></h2>
+          <button className="mobile-close" onClick={() => setIsMobileMenuOpen(false)}>✕</button>
         </div>
 
+
         <div className="nav-items">
-          <ul className="nav-links">
-            <li className={activeTab === 'dashboard' ? 'active' : ''} onClick={() => setActiveTab('dashboard')}>📊 Analytics</li>
-            <li className={activeTab === 'metrics' ? 'active' : ''} onClick={() => setActiveTab('metrics')}>📈 KPIs</li>
-            <li className={activeTab === 'orderlist' ? 'active' : ''} onClick={() => setActiveTab('orderlist')}>📋 Orders</li>
-            <li className={activeTab === 'bulk' ? 'active' : ''} onClick={() => setActiveTab('bulk')}>⚡ Bulk</li>
-            <li className={activeTab === 'rto' ? 'active' : ''} onClick={() => setActiveTab('rto')}>↩️ RTO</li>
-            <li className={activeTab === 'orders' ? 'active' : ''} onClick={() => setActiveTab('orders')}>📦 Import</li>
-            <li className={activeTab === 'tracking' ? 'active' : ''} onClick={() => setActiveTab('tracking')}>📡 Tracking</li>
-            <li className={activeTab === 'logistics' ? 'active' : ''} onClick={() => setActiveTab('logistics')}>🚚 Carriers</li>
-            <li className={activeTab === 'carrierperf' ? 'active' : ''} onClick={() => setActiveTab('carrierperf')}>🏆 Performance</li>
-            <li className={activeTab === 'zones' ? 'active' : ''} onClick={() => setActiveTab('zones')}>🗺️ Zones</li>
-            <li className={activeTab === 'dispatcher' ? 'active' : ''} onClick={() => setActiveTab('dispatcher')}>📷 Dispatch</li>
-            <li className={activeTab === 'warehouse' ? 'active' : ''} onClick={() => setActiveTab('warehouse')}>🏭 Warehouse</li>
-            <li className={activeTab === 'inventory' ? 'active' : ''} onClick={() => setActiveTab('inventory')}>🏷️ SKU</li>
-            <li className={activeTab === 'invoice' ? 'active' : ''} onClick={() => setActiveTab('invoice')}>🧾 Invoice</li>
-            <li className={activeTab === 'cod' ? 'active' : ''} onClick={() => setActiveTab('cod')}>💰 COD</li>
-            <li className={activeTab === 'dealers' ? 'active' : ''} onClick={() => setActiveTab('dealers')}>🤝 Dealers</li>
-            <li className={activeTab === 'customers' ? 'active' : ''} onClick={() => setActiveTab('customers')}>👥 Customers</li>
-            <li className={activeTab === 'activity' ? 'active' : ''} onClick={() => setActiveTab('activity')}>📜 Log</li>
-            <li className={activeTab === 'reports' ? 'active' : ''} onClick={() => setActiveTab('reports')}>📄 Export</li>
-            <li className={activeTab === 'roadmap' ? 'active' : ''} onClick={() => setActiveTab('roadmap')}>🛣️ Roadmap</li>
-            <li className={activeTab === 'help' ? 'active' : ''} onClick={() => setActiveTab('help')}>❓ Help</li>
-            <li className={activeTab === 'settings' ? 'active' : ''} onClick={() => setActiveTab('settings')}>⚙️ Settings</li>
-          </ul>
+          <div className="nav-group">
+            <label>OPERATIONS</label>
+            <ul className="nav-links">
+              <li className={activeTab === 'dashboard' ? 'active' : ''} onClick={() => { setActiveTab('dashboard'); setIsMobileMenuOpen(false); }}>📊 Analytics</li>
+              {user?.role !== 'viewer' && <li className={activeTab === 'metrics' ? 'active' : ''} onClick={() => { setActiveTab('metrics'); setIsMobileMenuOpen(false); }}>📈 KPIs</li>}
+              {user?.role !== 'viewer' && <li className={activeTab === 'orderlist' ? 'active' : ''} onClick={() => { setActiveTab('orderlist'); setIsMobileMenuOpen(false); }}>📋 Orders</li>}
+              {['admin', 'manager'].includes(user?.role) && <li className={activeTab === 'bulk' ? 'active' : ''} onClick={() => { setActiveTab('bulk'); setIsMobileMenuOpen(false); }}>⚡ Bulk</li>}
+              <li className={activeTab === 'tracking' ? 'active' : ''} onClick={() => { setActiveTab('tracking'); setIsMobileMenuOpen(false); }}>📡 Tracking</li>
+              {user?.role !== 'viewer' && <li className={activeTab === 'rto' ? 'active' : ''} onClick={() => { setActiveTab('rto'); setIsMobileMenuOpen(false); }}>↩️ RTO</li>}
+            </ul>
+          </div>
+
+          {user?.role !== 'viewer' && (
+            <div className="nav-group">
+              <label>INVENTORY & IMPORT</label>
+              <ul className="nav-links">
+                <li className={activeTab === 'inventory' ? 'active' : ''} onClick={() => { setActiveTab('inventory'); setIsMobileMenuOpen(false); }}>🏷️ SKU Master</li>
+                <li className={activeTab === 'warehouse' ? 'active' : ''} onClick={() => { setActiveTab('warehouse'); setIsMobileMenuOpen(false); }}>🏭 Warehouse</li>
+                <li className={activeTab === 'dispatcher' ? 'active' : ''} onClick={() => { setActiveTab('dispatcher'); setIsMobileMenuOpen(false); }}>📷 Dispatch</li>
+                <li className={activeTab === 'orders' ? 'active' : ''} onClick={() => { setActiveTab('orders'); setIsMobileMenuOpen(false); }}>📤 Universal Import</li>
+              </ul>
+            </div>
+          )}
+
+          {user?.role !== 'operator' && user?.role !== 'viewer' && (
+            <div className="nav-group">
+              <label>LOGISTICS</label>
+              <ul className="nav-links">
+                <li className={activeTab === 'logistics' ? 'active' : ''} onClick={() => { setActiveTab('logistics'); setIsMobileMenuOpen(false); }}>🚚 Carriers</li>
+                <li className={activeTab === 'carrierperf' ? 'active' : ''} onClick={() => { setActiveTab('carrierperf'); setIsMobileMenuOpen(false); }}>🏆 Performance</li>
+                <li className={activeTab === 'zones' ? 'active' : ''} onClick={() => { setActiveTab('zones'); setIsMobileMenuOpen(false); }}>🗺️ Zones</li>
+              </ul>
+            </div>
+          )}
+
+          {['admin', 'manager'].includes(user?.role) && (
+            <div className="nav-group">
+              <label>FINANCE</label>
+              <ul className="nav-links">
+                <li className={activeTab === 'finance' ? 'active' : ''} onClick={() => { setActiveTab('finance'); setIsMobileMenuOpen(false); }}>💹 Financials</li>
+                <li className={activeTab === 'commhub' ? 'active' : ''} onClick={() => { setActiveTab('commhub'); setIsMobileMenuOpen(false); }}>💎 Comm. Hub</li>
+                <li className={activeTab === 'invoice' ? 'active' : ''} onClick={() => { setActiveTab('invoice'); setIsMobileMenuOpen(false); }}>🧾 Invoicing</li>
+                <li className={activeTab === 'cod' ? 'active' : ''} onClick={() => { setActiveTab('cod'); setIsMobileMenuOpen(false); }}>💰 COD Recon</li>
+              </ul>
+            </div>
+          )}
+
+          {['admin', 'manager'].includes(user?.role) && (
+            <div className="nav-group">
+              <label>CRM & MARKETING</label>
+              <ul className="nav-links">
+                <li className={activeTab === 'customers' ? 'active' : ''} onClick={() => { setActiveTab('customers'); setIsMobileMenuOpen(false); }}>👥 Customers</li>
+                <li className={activeTab === 'custintel' ? 'active' : ''} onClick={() => { setActiveTab('custintel'); setIsMobileMenuOpen(false); }}>💎 Customer Intel</li>
+                <li className={activeTab === 'marketing' ? 'active' : ''} onClick={() => { setActiveTab('marketing'); setIsMobileMenuOpen(false); }}>🎯 Marketing</li>
+                <li className={activeTab === 'dealers' ? 'active' : ''} onClick={() => { setActiveTab('dealers'); setIsMobileMenuOpen(false); }}>🤝 Dealers</li>
+              </ul>
+            </div>
+          )}
+
+          {['admin', 'manager'].includes(user?.role) && (
+            <div className="nav-group">
+              <label>SUPPLY CHAIN</label>
+              <ul className="nav-links">
+                <li className={activeTab === 'production' ? 'active' : ''} onClick={() => { setActiveTab('production'); setIsMobileMenuOpen(false); }}>🏭 Production</li>
+              </ul>
+            </div>
+          )}
+
+          <div className="nav-group">
+            <label>ADMIN & SUPPORT</label>
+            <ul className="nav-links">
+              {user?.role === 'admin' && <li className={activeTab === 'activity' ? 'active' : ''} onClick={() => { setActiveTab('activity'); setIsMobileMenuOpen(false); }}>📜 Activity Log</li>}
+              <li className={activeTab === 'reports' ? 'active' : ''} onClick={() => { setActiveTab('reports'); setIsMobileMenuOpen(false); }}>📄 Export</li>
+              <li className={activeTab === 'roadmap' ? 'active' : ''} onClick={() => { setActiveTab('roadmap'); setIsMobileMenuOpen(false); }}>🛣️ Roadmap</li>
+              <li className={activeTab === 'help' ? 'active' : ''} onClick={() => { setActiveTab('help'); setIsMobileMenuOpen(false); }}>❓ Help</li>
+              {user?.role === 'admin' && <li className={activeTab === 'settings' ? 'active' : ''} onClick={() => { setActiveTab('settings'); setIsMobileMenuOpen(false); }}>⚙️ Settings</li>}
+            </ul>
+          </div>
         </div>
+
+
 
         <div className="nav-footer glass">
           <div className="user-profile" style={{ cursor: 'pointer' }} onClick={() => setShowProfile(true)}>
@@ -102,7 +178,9 @@ function App() {
       {/* Main Content Area */}
       <main className="main-content">
         <header className="top-bar">
+          <button className="hamburger" onClick={() => setIsMobileMenuOpen(true)}>☰</button>
           <div className="search-bar glass">
+
             <input type="text" placeholder="Search orders, tracking IDs, or customers..." />
           </div>
           <div className="actions">
@@ -128,11 +206,17 @@ function App() {
           {activeTab === 'warehouse' && <WarehouseManager />}
           {activeTab === 'inventory' && <SKUMaster />}
           {activeTab === 'invoice' && <InvoiceGenerator />}
+          {activeTab === 'finance' && <FinancialCenter />}
+          {activeTab === 'commhub' && <CommercialHub />}
           {activeTab === 'cod' && <CODReconciliation />}
+
           {activeTab === 'dispatcher' && <BarcodeDispatcher />}
           {activeTab === 'dealers' && <DealerLookup />}
           {activeTab === 'customers' && <CustomerLookup />}
-          {activeTab === 'activity' && <ActivityLog />}
+          {activeTab === 'custintel' && <CustomerAnalytics />}
+          {activeTab === 'marketing' && <MarketingCenter />}
+          {activeTab === 'production' && <ProductionTracker />}
+          {activeTab === 'activity' && (user?.role === 'admin' ? <ActivityLog /> : <div className="glass" style={{ padding: '40px', textAlign: 'center' }}>🚫 Access Restricted</div>)}
           {activeTab === 'reports' && <ExportTools />}
           {activeTab === 'roadmap' && <RoadmapPage />}
           {activeTab === 'help' && <HelpCenter />}
@@ -157,6 +241,9 @@ function App() {
 
       {/* User Profile Panel */}
       {showProfile && <UserProfile onClose={() => setShowProfile(false)} />}
+
+      {/* Mobile Bottom Navigation Bar */}
+      <MobileBottomNav activeTab={activeTab} onTabChange={setActiveTab} />
     </div>
   )
 }

@@ -134,12 +134,26 @@ export const validateOrder = (order) => {
 };
 
 /**
+ * Resolve SKU Alias to Parent MTP Code
+ * @param {string} sku - Incoming SKU
+ * @param {array} aliases - Alias master list
+ * @returns {string} - Parent MTP Code or original SKU
+ */
+export const resolveSkuAlias = (sku, aliases = []) => {
+    if (!sku) return '';
+    const found = aliases.find(a => a.alias.toLowerCase() === sku.toLowerCase());
+    return found ? found.parentCode : sku;
+};
+
+/**
  * Normalize order data from different sources
  * @param {object} rawOrder - Raw order from Amazon/Flipkart/etc
  * @param {string} source - Source platform
+ * @param {array} aliases - Optional alias master list for resolution
  * @returns {object} - Normalized order
  */
-export const normalizeOrder = (rawOrder, source) => {
+export const normalizeOrder = (rawOrder, source, aliases = []) => {
+
     const base = {
         id: generateOrderId(),
         source: source,
@@ -159,7 +173,8 @@ export const normalizeOrder = (rawOrder, source) => {
                 city: rawOrder.ShippingAddress?.City || rawOrder['ship-city'] || '',
                 state: rawOrder.ShippingAddress?.StateOrRegion || rawOrder['ship-state'] || '',
                 pincode: rawOrder.ShippingAddress?.PostalCode || rawOrder['ship-postal-code'] || '',
-                sku: rawOrder.SellerSKU || rawOrder['sku'] || '',
+                sku: resolveSkuAlias(rawOrder.SellerSKU || rawOrder['sku'] || '', aliases),
+
                 quantity: parseInt(rawOrder.QuantityOrdered || rawOrder['quantity-purchased'] || 1),
                 amount: parseFloat(rawOrder.ItemPrice?.Amount || rawOrder['item-price'] || 0),
                 weight: parseFloat(rawOrder.Weight || 0.5)
@@ -175,7 +190,8 @@ export const normalizeOrder = (rawOrder, source) => {
                 city: rawOrder.ship_city || '',
                 state: rawOrder.ship_state || '',
                 pincode: rawOrder.ship_pincode || '',
-                sku: rawOrder.sku || rawOrder.seller_sku || '',
+                sku: resolveSkuAlias(rawOrder.sku || rawOrder.seller_sku || '', aliases),
+
                 quantity: parseInt(rawOrder.quantity || 1),
                 amount: parseFloat(rawOrder.selling_price || 0),
                 weight: parseFloat(rawOrder.weight || 0.5)
@@ -191,7 +207,8 @@ export const normalizeOrder = (rawOrder, source) => {
                 city: rawOrder.shipping_address?.city || '',
                 state: rawOrder.shipping_address?.province || '',
                 pincode: rawOrder.shipping_address?.zip || '',
-                sku: rawOrder.line_items?.[0]?.sku || '',
+                sku: resolveSkuAlias(rawOrder.line_items?.[0]?.sku || '', aliases),
+
                 quantity: rawOrder.line_items?.reduce((sum, item) => sum + item.quantity, 0) || 1,
                 amount: parseFloat(rawOrder.total_price || 0),
                 weight: parseFloat(rawOrder.total_weight || 500) / 1000 // Shopify uses grams
@@ -325,6 +342,80 @@ export const getRelativeTime = (date) => {
     return formatDateIN(date);
 };
 
+// ============================================
+// DEDUPLICATION ENGINE
+// ============================================
+
+/**
+ * Deduplicate orders based on Source and External ID
+ * @param {object[]} existingOrders 
+ * @param {object[]} newOrders 
+ * @returns {object[]} - Merged and deduplicated list
+ */
+export const deduplicateOrders = (existingOrders = [], newOrders = []) => {
+    // Key is source + externalId
+    const orderMap = new Map();
+
+    // Add existing orders to map
+    existingOrders.forEach(o => {
+        const key = `${o.source}:${o.externalId || o.id}`;
+        orderMap.set(key, o);
+    });
+
+    // Add new orders, merging attributes if conflict
+    newOrders.forEach(no => {
+        const key = `${no.source}:${no.externalId || no.id}`;
+        if (orderMap.has(key)) {
+            // Merge logic: preserve status history, update details if provided
+            const existing = orderMap.get(key);
+            orderMap.set(key, {
+                ...existing,
+                ...no, // New data takes precedence on fields
+                statusHistory: [...(existing.statusHistory || []), ...(no.statusHistory || [])]
+                    .filter((v, i, a) => a.findIndex(t => t.timestamp === v.timestamp) === i) // Unique by timestamp
+            });
+        } else {
+            orderMap.set(key, no);
+        }
+    });
+
+    return Array.from(orderMap.values());
+};
+
+/**
+ * Deduplicate customers based on Phone or Email
+ * @param {object[]} customers 
+ * @returns {object[]} - Cleaned list
+ */
+export const deduplicateCustomers = (customers = []) => {
+    const phoneMap = new Map();
+    const emailMap = new Map();
+    const unique = [];
+
+    customers.forEach(c => {
+        const phone = c.phone?.replace(/\D/g, '').slice(-10);
+        const email = c.email?.toLowerCase().trim();
+
+        const existingByPhone = phone && phoneMap.get(phone);
+        const existingByEmail = email && emailMap.get(email);
+
+        if (existingByPhone) {
+            // Merge into existing
+            Object.assign(existingByPhone, c);
+        } else if (existingByEmail) {
+            // Merge into existing
+            Object.assign(existingByEmail, c);
+        } else {
+            // New unique customer
+            unique.push(c);
+            if (phone) phoneMap.set(phone, c);
+            if (email) emailMap.set(email, c);
+        }
+    });
+
+    return unique;
+};
+
 export default {
     calculateGST,
     getGSTType,
@@ -332,6 +423,9 @@ export default {
     generateOrderId,
     validateOrder,
     normalizeOrder,
+    resolveSkuAlias,
+    deduplicateOrders,
+    deduplicateCustomers,
     toCSV,
     downloadFile,
     exportOrdersCSV,
@@ -341,3 +435,4 @@ export default {
     getRelativeTime,
     STATE_CODES
 };
+

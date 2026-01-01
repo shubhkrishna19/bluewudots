@@ -1,38 +1,46 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useData } from '../../context/DataContext';
+import { routeOrderToWarehouse, getWarehouses } from '../../services/warehouseService';
 
 const WarehouseManager = () => {
-    const { skuMaster } = useData();
+    const { skuMaster = [], inventoryLevels = [], adjustStock, setStockLocation } = useData();
     const [searchTerm, setSearchTerm] = useState('');
+    const [selectedCategory, setSelectedCategory] = useState('All');
+    const [selectedWh, setSelectedWh] = useState(null);
+    const [routingPincode, setRoutingPincode] = useState('');
+    const [routedWarehouse, setRoutedWarehouse] = useState(null);
 
-    // Mock warehouse inventory
-    const inventory = [
-        { sku: 'BL-DESK-01', name: 'Executive Office Desk', category: 'Desks', inStock: 45, reserved: 12, available: 33, reorderLevel: 15, location: 'A-01' },
-        { sku: 'BL-DESK-02', name: 'Modern Workstation', category: 'Desks', inStock: 28, reserved: 8, available: 20, reorderLevel: 10, location: 'A-02' },
-        { sku: 'BL-CAB-05', name: 'Storage Cabinet', category: 'Cabinets', inStock: 62, reserved: 15, available: 47, reorderLevel: 20, location: 'B-01' },
-        { sku: 'BL-SHELF-02', name: 'Wall Shelf Unit', category: 'Shelves', inStock: 85, reserved: 22, available: 63, reorderLevel: 25, location: 'C-01' },
-        { sku: 'BL-TABLE-03', name: 'Dining Table Set', category: 'Tables', inStock: 18, reserved: 6, available: 12, reorderLevel: 10, location: 'D-01' },
-        { sku: 'BL-CHAIR-01', name: 'Ergonomic Chair', category: 'Chairs', inStock: 120, reserved: 35, available: 85, reorderLevel: 40, location: 'E-01' },
-        { sku: 'BL-RACK-01', name: 'Display Rack', category: 'Racks', inStock: 52, reserved: 10, available: 42, reorderLevel: 15, location: 'F-01' },
-        { sku: 'BL-STOOL-01', name: 'Bar Stool', category: 'Stools', inStock: 35, reserved: 5, available: 30, reorderLevel: 12, location: 'G-01' }
-    ];
+    const warehouses = getWarehouses();
 
-    const filteredInventory = inventory.filter(item =>
-        item.sku.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.category.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    // Link real-time inventory levels with SKU Master data
+    const inventory = useMemo(() => {
+        return (skuMaster || [])
+            .filter(sku => !sku.isParent)
+            .map(sku => ({
+                ...sku,
+                ...(inventoryLevels[sku.sku] || { inStock: 0, reserved: 0, location: 'UNKNOWN' }),
+                available: (inventoryLevels[sku.sku]?.inStock || 0) - (inventoryLevels[sku.sku]?.reserved || 0)
+            }));
+    }, [skuMaster, inventoryLevels]);
 
-    const totalItems = inventory.reduce((sum, i) => sum + i.inStock, 0);
-    const lowStockItems = inventory.filter(i => i.available <= i.reorderLevel);
-    const categories = [...new Set(inventory.map(i => i.category))];
+    const categories = useMemo(() => ['All', ...new Set(inventory.map(i => i.category))], [inventory]);
+
+    const filteredInventory = inventory.filter(item => {
+        const matchesSearch = item.sku.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            item.name.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesCategory = selectedCategory === 'All' || item.category === selectedCategory;
+        return matchesSearch && matchesCategory;
+    });
+
+    const totalUnits = inventory.reduce((sum, i) => sum + i.inStock, 0);
+    const lowStockItems = inventory.filter(i => i.available <= (i.reorderLevel || 15));
 
     return (
         <div className="warehouse-manager animate-fade">
             <div className="section-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                 <div>
-                    <h2>Warehouse Inventory</h2>
-                    <p className="text-muted">Real-time stock levels and locations</p>
+                    <h2>Warehouse Fidelity</h2>
+                    <p className="text-muted">Linked to SSOT SKU Master • Real-time Sync</p>
                 </div>
                 <div style={{ display: 'flex', gap: '12px' }}>
                     {lowStockItems.length > 0 && (
@@ -41,107 +49,131 @@ const WarehouseManager = () => {
                         </span>
                     )}
                     <button className="btn-primary glass-hover" style={{ padding: '10px 20px' }}>
-                        + Add Stock
+                        + Add Incoming SKU
                     </button>
                 </div>
             </div>
 
-            {/* Summary Cards */}
-            <div className="warehouse-stats" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginTop: '24px' }}>
-                <div className="glass" style={{ padding: '24px', textAlign: 'center' }}>
-                    <p style={{ fontSize: '2.5rem', fontWeight: '800', color: 'var(--primary)' }}>{totalItems}</p>
-                    <span className="text-muted">Total Units</span>
+            {/* Routing Demo Section */}
+            <div className="glass" style={{ padding: '24px', marginBottom: '24px', background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.1))' }}>
+                <h3 style={{ marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>🚀 Smart Multi-Node Routing</h3>
+                <div style={{ display: 'flex', gap: '12px' }}>
+                    <input
+                        type="text"
+                        placeholder="Enter Delivery Pincode (e.g., 560102)"
+                        className="glass"
+                        style={{ padding: '10px 16px', flex: 1, border: '1px solid rgba(255,255,255,0.1)' }}
+                        value={routingPincode}
+                        onChange={(e) => setRoutingPincode(e.target.value)}
+                    />
+                    <button
+                        className="btn-primary"
+                        onClick={() => setRoutedWarehouse(routeOrderToWarehouse(routingPincode))}
+                    >
+                        Route Order
+                    </button>
                 </div>
-                <div className="glass" style={{ padding: '24px', textAlign: 'center' }}>
-                    <p style={{ fontSize: '2.5rem', fontWeight: '800', color: 'var(--accent)' }}>{inventory.length}</p>
-                    <span className="text-muted">SKUs</span>
+                {routedWarehouse && (
+                    <div className="animate-fade" style={{ marginTop: '16px', padding: '12px', background: 'rgba(255,255,255,0.05)', borderRadius: '8px', borderLeft: '4px solid #6366F1' }}>
+                        <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>Assigned Fulfillment Node:</p>
+                        <p style={{ fontWeight: '600' }}>{routedWarehouse.name} ({routedWarehouse.city})</p>
+                    </div>
+                )}
+            </div>
+
+            {/* Global Stats */}
+            <div className="analytics-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginTop: '24px' }}>
+                <div className="stat-card glass" style={{ padding: '20px', textAlign: 'center' }}>
+                    <h2 style={{ color: 'var(--primary)' }}>{totalUnits}</h2>
+                    <span className="text-muted" style={{ fontSize: '0.75rem' }}>TOTAL UNITS</span>
                 </div>
-                <div className="glass" style={{ padding: '24px', textAlign: 'center' }}>
-                    <p style={{ fontSize: '2.5rem', fontWeight: '800', color: 'var(--info)' }}>{categories.length}</p>
-                    <span className="text-muted">Categories</span>
+                <div className="stat-card glass" style={{ padding: '20px', textAlign: 'center' }}>
+                    <h2 style={{ color: 'var(--accent)' }}>{inventory.length}</h2>
+                    <span className="text-muted" style={{ fontSize: '0.75rem' }}>ACTIVE SKUS</span>
                 </div>
-                <div className="glass" style={{ padding: '24px', textAlign: 'center', borderTop: lowStockItems.length > 0 ? '4px solid var(--danger)' : 'none' }}>
-                    <p style={{ fontSize: '2.5rem', fontWeight: '800', color: lowStockItems.length > 0 ? 'var(--danger)' : 'var(--success)' }}>
-                        {lowStockItems.length}
-                    </p>
-                    <span className="text-muted">Low Stock Alerts</span>
+                <div className="stat-card glass" style={{ padding: '20px', textAlign: 'center' }}>
+                    <h2 style={{ color: 'var(--info)' }}>{categories.length - 1}</h2>
+                    <span className="text-muted" style={{ fontSize: '0.75rem' }}>CATEGORIES</span>
+                </div>
+                <div className="stat-card glass" style={{ padding: '20px', textAlign: 'center' }}>
+                    <h2 style={{ color: lowStockItems.length > 0 ? 'var(--danger)' : 'var(--success)' }}>{lowStockItems.length}</h2>
+                    <span className="text-muted" style={{ fontSize: '0.75rem' }}>LOW STOCK</span>
                 </div>
             </div>
 
-            {/* Search */}
-            <div className="search-section glass" style={{ padding: '16px 20px', marginTop: '24px' }}>
+            {/* Filters */}
+            <div className="filter-bar glass" style={{ marginTop: '24px', padding: '16px', display: 'flex', gap: '16px', alignItems: 'center' }}>
                 <input
                     type="text"
-                    placeholder="🔍 Search by SKU, name, or category..."
+                    placeholder="🔍 Search SKU or Name..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    style={{ width: '100%', padding: '14px 20px', background: 'var(--bg-accent)', border: '1px solid var(--glass-border)', borderRadius: '10px', color: '#fff', fontSize: '1rem' }}
+                    style={{ flex: 2, padding: '12px 20px', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--glass-border)', borderRadius: '8px', color: '#fff' }}
                 />
+                <select
+                    value={selectedCategory}
+                    onChange={(e) => setSelectedCategory(e.target.value)}
+                    style={{ flex: 1, padding: '12px', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--glass-border)', borderRadius: '8px', color: '#fff' }}
+                >
+                    {categories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
+                </select>
             </div>
 
-            {/* Inventory Grid */}
-            <div className="inventory-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '20px', marginTop: '24px' }}>
-                {filteredInventory.map(item => (
-                    <div
-                        key={item.sku}
-                        className="inventory-card glass glass-hover"
-                        style={{
-                            padding: '24px',
-                            borderLeft: item.available <= item.reorderLevel ? '4px solid var(--danger)' : '4px solid var(--success)'
-                        }}
-                    >
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                            <div>
-                                <span className="badge" style={{ background: 'var(--bg-accent)', fontSize: '0.7rem' }}>{item.category}</span>
-                                <h4 style={{ marginTop: '8px' }}>{item.name}</h4>
-                                <p className="text-muted" style={{ fontSize: '0.85rem' }}>{item.sku}</p>
-                            </div>
-                            <span style={{
-                                padding: '6px 12px',
-                                background: 'var(--glass-border)',
-                                borderRadius: '6px',
-                                fontSize: '0.8rem',
-                                fontWeight: '700'
-                            }}>📍 {item.location}</span>
-                        </div>
-
-                        <div className="stock-bars" style={{ marginTop: '20px' }}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
-                                <span className="text-muted" style={{ fontSize: '0.8rem' }}>Stock Level</span>
-                                <span style={{ fontWeight: '700' }}>{item.available} / {item.inStock}</span>
-                            </div>
-                            <div style={{ height: '8px', background: 'var(--bg-accent)', borderRadius: '4px', overflow: 'hidden' }}>
-                                <div style={{
-                                    width: `${(item.available / item.inStock) * 100}%`,
-                                    height: '100%',
-                                    background: item.available <= item.reorderLevel ? 'var(--danger)' : 'var(--success)',
-                                    borderRadius: '4px'
-                                }}></div>
-                            </div>
-                        </div>
-
-                        <div style={{ marginTop: '16px', display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px', textAlign: 'center' }}>
-                            <div>
-                                <p style={{ fontWeight: '700', color: 'var(--primary)' }}>{item.inStock}</p>
-                                <span className="text-muted" style={{ fontSize: '0.7rem' }}>In Stock</span>
-                            </div>
-                            <div>
-                                <p style={{ fontWeight: '700', color: 'var(--warning)' }}>{item.reserved}</p>
-                                <span className="text-muted" style={{ fontSize: '0.7rem' }}>Reserved</span>
-                            </div>
-                            <div>
-                                <p style={{ fontWeight: '700', color: 'var(--success)' }}>{item.available}</p>
-                                <span className="text-muted" style={{ fontSize: '0.7rem' }}>Available</span>
-                            </div>
-                        </div>
-
-                        {item.available <= item.reorderLevel && (
-                            <button className="btn-primary glass-hover" style={{ width: '100%', marginTop: '16px', padding: '10px' }}>
-                                ⚠️ Reorder Now
-                            </button>
-                        )}
-                    </div>
-                ))}
+            {/* Inventory Table */}
+            <div className="inventory-table-container glass" style={{ marginTop: '24px', padding: '20px', overflowX: 'auto' }}>
+                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                    <thead>
+                        <tr style={{ textAlign: 'left', borderBottom: '1px solid var(--glass-border)', opacity: 0.6, fontSize: '0.8rem' }}>
+                            <th style={{ padding: '12px' }}>SKU IDENTITY</th>
+                            <th style={{ padding: '12px' }}>BIN LOCATION</th>
+                            <th style={{ padding: '12px' }}>IN STOCK</th>
+                            <th style={{ padding: '12px' }}>RESERVED</th>
+                            <th style={{ padding: '12px' }}>AVAILABLE</th>
+                            <th style={{ padding: '12px' }}>ACTIONS</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {filteredInventory.map(item => (
+                            <tr key={item.sku} style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', fontSize: '0.85rem' }}>
+                                <td style={{ padding: '12px' }}>
+                                    <span style={{ fontWeight: '700', color: 'var(--primary)' }}>{item.sku}</span><br />
+                                    <span className="text-muted" style={{ fontSize: '0.7rem' }}>{item.name}</span>
+                                </td>
+                                <td style={{ padding: '12px' }}>
+                                    <span className="badge" style={{ background: 'var(--bg-accent)' }}>📍 {item.location}</span>
+                                </td>
+                                <td style={{ padding: '12px' }}>{item.inStock}</td>
+                                <td style={{ padding: '12px' }}>{item.reserved}</td>
+                                <td style={{ padding: '12px' }}>
+                                    <span style={{
+                                        fontWeight: '700',
+                                        color: item.available <= (item.reorderLevel || 15) ? 'var(--danger)' : 'var(--success)'
+                                    }}>
+                                        {item.available}
+                                    </span>
+                                </td>
+                                <td style={{ padding: '12px' }}>
+                                    <div style={{ display: 'flex', gap: '8px' }}>
+                                        <button
+                                            className="btn-pill"
+                                            onClick={() => adjustStock(item.sku, 1)}
+                                            style={{ padding: '4px 10px', background: 'var(--success)', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+                                        >
+                                            +
+                                        </button>
+                                        <button
+                                            className="btn-pill"
+                                            onClick={() => adjustStock(item.sku, -1)}
+                                            style={{ padding: '4px 10px', background: 'var(--danger)', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+                                        >
+                                            -
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
             </div>
         </div>
     );

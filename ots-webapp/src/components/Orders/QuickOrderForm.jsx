@@ -3,7 +3,7 @@ import { useData } from '../../context/DataContext';
 import { STATE_CODES } from '../../utils/dataUtils';
 
 const QuickOrderForm = ({ onClose }) => {
-    const { addOrder, skuMaster, getCarrierRates } = useData();
+    const { addOrder, skuMaster, getCarrierRates, getCarrierRecommendation, syncOrderToZoho } = useData();
     const [formData, setFormData] = useState({
         customerName: '',
         phone: '',
@@ -17,11 +17,16 @@ const QuickOrderForm = ({ onClose }) => {
         amount: '',
         source: 'Local Shop',
         isCOD: false,
-        codAmount: ''
+        codAmount: '',
+        carrierId: '',
+        carrierName: ''
     });
+    const [recommendedCarrier, setRecommendedCarrier] = useState(null);
     const [errors, setErrors] = useState([]);
     const [success, setSuccess] = useState(null);
     const [shippingRates, setShippingRates] = useState(null);
+    const [zohoSyncing, setZohoSyncing] = useState(false);
+    const [zohoStatus, setZohoStatus] = useState(null);
 
     const STATES = Object.keys(STATE_CODES);
 
@@ -39,9 +44,17 @@ const QuickOrderForm = ({ onClose }) => {
 
         if (result.success) {
             setSuccess(result.order.id);
+
+            // Sync to Zoho CRM
+            setZohoSyncing(true);
+            syncOrderToZoho(result.order).then(res => {
+                setZohoSyncing(false);
+                setZohoStatus(res.success ? 'synced' : 'error');
+            });
+
             setTimeout(() => {
                 onClose?.();
-            }, 1500);
+            }, 3000); // Wait a bit longer to show sync status
         } else {
             setErrors(result.errors);
         }
@@ -68,7 +81,6 @@ const QuickOrderForm = ({ onClose }) => {
         }
     };
 
-    // Calculate shipping rates when location changes
     const calculateRates = () => {
         if (formData.state && formData.weight) {
             const rates = getCarrierRates({
@@ -79,6 +91,24 @@ const QuickOrderForm = ({ onClose }) => {
                 codAmount: parseFloat(formData.codAmount || formData.amount || 0)
             });
             setShippingRates(rates.slice(0, 3)); // Top 3 carriers
+
+            // Get recommendation
+            const recommendation = getCarrierRecommendation({
+                state: formData.state,
+                city: formData.city,
+                weight: parseFloat(formData.weight),
+                isCOD: formData.isCOD,
+                codAmount: parseFloat(formData.codAmount || formData.amount || 0)
+            }, 'smart');
+
+            setRecommendedCarrier(recommendation);
+            if (recommendation && !formData.carrierId) {
+                setFormData(prev => ({
+                    ...prev,
+                    carrierId: recommendation.carrierId,
+                    carrierName: recommendation.carrierName
+                }));
+            }
         }
     };
 
@@ -94,19 +124,25 @@ const QuickOrderForm = ({ onClose }) => {
                 )}
             </div>
 
-            {/* Success Message */}
-            {success && (
-                <div className="success-banner animate-fade" style={{
-                    padding: '16px',
-                    background: 'rgba(16, 185, 129, 0.2)',
-                    border: '1px solid var(--success)',
-                    borderRadius: '8px',
-                    marginBottom: '20px',
-                    textAlign: 'center'
-                }}>
-                    ✅ Order <strong>{success}</strong> created successfully!
+            <div className="success-banner animate-fade" style={{
+                padding: '16px',
+                background: 'rgba(16, 185, 129, 0.2)',
+                border: '1px solid var(--success)',
+                borderRadius: '8px',
+                marginBottom: '20px',
+                textAlign: 'center'
+            }}>
+                <p>✅ Order <strong>{success}</strong> created successfully!</p>
+                <div style={{ marginTop: '8px', fontSize: '0.8rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                    {zohoSyncing ? (
+                        <span className="text-muted">🔄 Syncing to Zoho CRM...</span>
+                    ) : zohoStatus === 'synced' ? (
+                        <span style={{ color: 'var(--success)' }}>☁️ Synced to Zoho CRM</span>
+                    ) : zohoStatus === 'error' ? (
+                        <span style={{ color: 'var(--danger)' }}>⚠️ Zoho CRM sync failed (cached locally)</span>
+                    ) : null}
                 </div>
-            )}
+            </div>
 
             {/* Error Messages */}
             {errors.length > 0 && (
@@ -325,15 +361,37 @@ const QuickOrderForm = ({ onClose }) => {
                 </div>
 
                 {/* Shipping Rates Preview */}
-                {shippingRates && shippingRates.length > 0 && (
+                {(shippingRates || recommendedCarrier) && (
                     <div className="glass" style={{ padding: '16px', marginBottom: '24px' }}>
-                        <p className="text-muted" style={{ fontSize: '0.75rem', marginBottom: '12px' }}>📊 ESTIMATED SHIPPING</p>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                            <p className="text-muted" style={{ fontSize: '0.75rem' }}>📊 SHIPPING OPTIONS</p>
+                            {recommendedCarrier && (
+                                <span className="badge" style={{ background: 'var(--primary)', color: '#fff', fontSize: '0.65rem', padding: '2px 8px', borderRadius: '4px' }}>
+                                    ✨ {recommendedCarrier.recommendation}
+                                </span>
+                            )}
+                        </div>
                         <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
-                            {shippingRates.map((rate, i) => (
-                                <div key={i} style={{ padding: '12px', background: 'var(--bg-accent)', borderRadius: '8px', minWidth: '140px' }}>
+                            {shippingRates?.map((rate, i) => (
+                                <div
+                                    key={i}
+                                    onClick={() => setFormData(prev => ({ ...prev, carrierId: rate.carrierId, carrierName: rate.carrierName }))}
+                                    style={{
+                                        padding: '12px',
+                                        background: formData.carrierId === rate.carrierId ? 'rgba(99, 102, 241, 0.2)' : 'var(--bg-accent)',
+                                        border: formData.carrierId === rate.carrierId ? '1px solid var(--primary)' : '1px solid transparent',
+                                        borderRadius: '8px',
+                                        minWidth: '140px',
+                                        cursor: 'pointer',
+                                        transition: 'all 0.2s'
+                                    }}
+                                >
                                     <p style={{ fontWeight: '700' }}>{rate.carrierLogo} {rate.carrierName}</p>
                                     <p style={{ fontSize: '1.1rem', color: 'var(--success)' }}>₹{rate.total}</p>
                                     <p className="text-muted" style={{ fontSize: '0.75rem' }}>{rate.estimatedDelivery[0]}-{rate.estimatedDelivery[1]} days</p>
+                                    {recommendedCarrier?.carrierId === rate.carrierId && (
+                                        <p style={{ fontSize: '0.6rem', color: 'var(--primary)', marginTop: '4px' }}>{recommendedCarrier.reason}</p>
+                                    )}
                                 </div>
                             ))}
                         </div>

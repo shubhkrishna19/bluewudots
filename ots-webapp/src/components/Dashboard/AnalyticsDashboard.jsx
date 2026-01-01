@@ -4,11 +4,13 @@ import {
     AreaChart, Area, BarChart, Bar, PieChart, Pie, Cell,
     XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend
 } from 'recharts';
+import DemandForecast from './DemandForecast';
+import PredictiveAnalytics from './PredictiveAnalytics';
 
 const COLORS = ['var(--primary)', 'var(--accent)', 'var(--success)', 'var(--warning)', 'var(--info)'];
 
 const AnalyticsDashboard = () => {
-    const { orders, logistics, skuMaster } = useData();
+    const { orders = [], logistics = [], skuMaster = [], syncAllMarketplaces, syncStatus = 'offline' } = useData();
 
     // Velocity Data (Simulated for MVP)
     const velocityData = [
@@ -23,27 +25,38 @@ const AnalyticsDashboard = () => {
 
     // Status Distribution
     const statusData = [
-        { name: 'Imported', value: orders.filter(o => o.status === 'Imported').length || 3 },
-        { name: 'Processing', value: orders.filter(o => o.status === 'Processing' || o.status === 'MTP-Applied').length || 2 },
-        { name: 'In-Transit', value: orders.filter(o => o.status === 'In-Transit').length || 5 },
-        { name: 'Delivered', value: orders.filter(o => o.status === 'Delivered').length || 8 }
+        { name: 'Imported', value: orders.filter(o => o?.status === 'Imported').length || 3 },
+        { name: 'Processing', value: orders.filter(o => o?.status === 'Processing' || o?.status === 'MTP-Applied').length || 2 },
+        { name: 'In-Transit', value: orders.filter(o => o?.status === 'In-Transit').length || 5 },
+        { name: 'Delivered', value: orders.filter(o => o?.status === 'Delivered').length || 8 }
     ];
 
     // Carrier Performance
-    const carrierData = logistics.map(c => ({
-        name: c.carrier,
-        rate: c.baseRate,
+    const carrierData = (logistics || []).map(c => ({
+        name: c?.carrier || 'Unknown',
+        rate: c?.baseRate || 0,
         volume: Math.floor(Math.random() * 100) + 20
     }));
 
     return (
         <div className="analytics-dashboard animate-fade">
-            <div className="section-header">
-                <h2>Global Analytics Hub</h2>
-                <p className="text-muted">Real-time Operational Intelligence</p>
+            <div className="section-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                <div>
+                    <h2>Global Analytics Hub</h2>
+                    <p className="text-muted">Real-time Operational Intelligence</p>
+                </div>
+                <button
+                    className={`btn-primary glass-hover ${syncStatus === 'syncing' ? 'loading' : ''}`}
+                    onClick={syncAllMarketplaces}
+                    disabled={syncStatus === 'syncing'}
+                    style={{ padding: '10px 24px', display: 'flex', alignItems: 'center', gap: '8px' }}
+                >
+                    {syncStatus === 'syncing' ? '⌛ Syncing Echo...' : '📡 Synchronize Marketplaces'}
+                </button>
             </div>
 
-            <div className="analytics-grid" style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '24px', marginTop: '32px' }}>
+            <div className="analytics-grid responsive-grid-2-1" style={{ marginTop: '32px' }}>
+
                 {/* Velocity Chart */}
                 <div className="chart-card glass" style={{ padding: '24px' }}>
                     <h3>Shipment Velocity (Weekly)</h3>
@@ -114,9 +127,25 @@ const AnalyticsDashboard = () => {
                     </BarChart>
                 </ResponsiveContainer>
             </div>
+            {/* Predictive Intelligence Section */}
+            <div className="analytics-grid responsive-grid-2-1" style={{ marginTop: '32px' }}>
+                <div className="chart-card glass" style={{ padding: '24px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                        <h3>AI Demand Forecasting</h3>
+                        <span className="badge" style={{ background: 'var(--accent)', color: '#fff', fontSize: '0.7rem', padding: '4px 12px', borderRadius: '20px' }}>PREDICTIVE</span>
+                    </div>
+                    <DemandForecast />
+                </div>
+
+                <div className="chart-card glass" style={{ padding: '24px' }}>
+                    <h3>Predictive Insights</h3>
+                    <PredictiveAnalytics />
+                </div>
+            </div>
 
             {/* Quick Stats Row */}
-            <div className="quick-stats" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginTop: '24px' }}>
+            <div className="quick-stats responsive-grid-4" style={{ marginTop: '24px' }}>
+
                 <div className="mini-stat glass glass-hover" style={{ padding: '20px', textAlign: 'center' }}>
                     <p className="text-muted" style={{ fontSize: '0.75rem' }}>TOTAL ORDERS</p>
                     <h2 style={{ color: 'var(--primary)' }}>{orders.length || 124}</h2>

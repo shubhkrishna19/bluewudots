@@ -4,52 +4,59 @@ const RoadmapPage = () => {
     const [selectedPhase, setSelectedPhase] = useState(null);
 
     const completedFeatures = [
-        { name: 'User Authentication', desc: 'Secure login with role-based access control (Admin, Manager, Operator)', status: 'live', module: 'Security' },
-        { name: 'Analytics Dashboard', desc: 'Real-time business metrics with interactive Recharts visualizations', status: 'live', module: 'Dashboard' },
-        { name: 'Performance KPIs', desc: 'Key performance indicators with delivery rates and pipeline view', status: 'live', module: 'Dashboard' },
-        { name: 'Multi-Channel Order Import', desc: 'Import orders from 8 platforms: Amazon, Flipkart, Shopify, and more', status: 'live', module: 'Automation' },
-        { name: 'Order Management', desc: 'Search, filter, and track all orders with detailed modal view', status: 'live', module: 'Orders' },
-        { name: 'Bulk Operations', desc: 'Mass update order statuses - save hours of manual work', status: 'live', module: 'Orders' },
-        { name: 'RTO Management', desc: 'Track failed deliveries with reason codes and recovery actions', status: 'live', module: 'Orders' },
-        { name: 'Quick Order Form', desc: 'Manual order entry in seconds with state dropdown', status: 'live', module: 'Orders' },
-        { name: 'Live Shipment Tracker', desc: 'Real-time tracking with route visualization and timeline', status: 'live', module: 'Logistics' },
-        { name: 'Carrier Selection', desc: 'Compare rates from Delhivery, BlueDart, XpressBees, Ecom Express', status: 'live', module: 'Logistics' },
-        { name: 'Carrier Performance', desc: 'Analytics on delivery rates, RTO rates, and smart recommendations', status: 'live', module: 'Logistics' },
-        { name: 'Pan-India Zone Mapping', desc: 'Order distribution across North, South, East, West zones', status: 'live', module: 'Logistics' },
-        { name: 'Barcode Dispatch Scanner', desc: 'Scan products with your camera to mark as shipped', status: 'live', module: 'Dispatch' },
-        { name: 'Warehouse Inventory', desc: 'Track stock levels, locations, and low-stock alerts', status: 'live', module: 'Warehouse' },
-        { name: 'SKU/Product Master', desc: 'Profitability analysis with GST (18%) calculations', status: 'live', module: 'Commercial' },
-        { name: 'Invoice Generator', desc: 'GST-compliant invoices with PDF preview and download', status: 'live', module: 'Commercial' },
-        { name: 'COD Reconciliation', desc: 'Track cash on delivery remittances from carriers', status: 'live', module: 'Commercial' },
-        { name: 'Dealer Network', desc: 'View dealers and their order history from CRM', status: 'live', module: 'Dealers' },
-        { name: 'Customer Lookup', desc: 'Customer directory with order history aggregation', status: 'live', module: 'Customers' },
-        { name: 'Activity Audit Log', desc: 'Complete timeline of all system activities', status: 'live', module: 'Activity' },
-        { name: 'Export Reports', desc: 'Download orders, SKU, and carrier data as CSV/JSON', status: 'live', module: 'Reports' },
-        { name: 'Notification Center', desc: 'Slide-out panel with filtered alerts', status: 'live', module: 'System' },
-        { name: 'Help Center', desc: 'Documentation, keyboard shortcuts, and FAQ', status: 'live', module: 'System' },
-        { name: 'Settings Panel', desc: 'Company info, logistics config, API connections', status: 'live', module: 'System' },
-        { name: 'Mobile Responsive', desc: 'Full functionality on tablets and mobile devices', status: 'live', module: 'System' },
-        { name: 'This Roadmap Page', desc: 'Investor-friendly feature overview with tech stack', status: 'live', module: 'System' }
+        { name: 'Data Migration Ready', desc: 'Core logic for mapping 10+ legacy Excel masters (SKU, Sales, Customers) is active', status: 'live', module: 'System' },
+        { name: 'MTP Commercial Engine', desc: 'Tiered pricing logic (BAU/Usual/Event) with 18% GST and marketplace commissions', status: 'live', module: 'Commercial' },
+        { name: 'Analytics Hub', desc: 'Financial and logistical KPIs modeled after historical Zoho data', status: 'live', module: 'Dashboard' },
+        { name: 'Universal Importer v2', desc: 'Multi-source mapping (Amazon/Flipkart) with Alias Resolution support', status: 'live', module: 'Automation' },
+        { name: 'Logistics Matrix', desc: 'Zone-based rate calculations for 4 major carriers (Delhivery, BlueDart, etc.)', status: 'live', module: 'Logistics' },
+        { name: 'Inventory & WMS', desc: 'Parent-Child SKU tracking with low-stock alerts and profitability mapping', status: 'live', module: 'Warehouse' },
+        { name: 'SKU Inheritance', desc: 'Parent->Child attribute inheritance (Dimensions, Weight, Costing) is fully functional', status: 'live', module: 'Warehouse' },
+        { name: 'Revenue Fidelity', desc: 'High-precision P&L with inclusive GST, Shipping, and Platform Fees', status: 'live', module: 'Commercial' },
+        { name: 'Data Unification', desc: 'Global deduplication engine for Orders and Customers (Phone/Email mapping)', status: 'live', module: 'Core' },
+        { name: 'Elite UI Refactor', desc: 'Grouped navigation and invisible sliding scrollbars for premium experience', status: 'live', module: 'UX' },
+        { name: 'PWA Ready', desc: 'Installable app with offline caching and service worker for reliability', status: 'live', module: 'Mobile' },
+        { name: 'WhatsApp Updates', desc: 'Template-based order notifications via WhatsApp Business API integration', status: 'live', module: 'Notifications' },
+        { name: 'Predictive Analytics', desc: 'AI-driven demand forecasting and carrier selection', status: 'live', module: 'Intelligence' },
+        { name: 'Auto Carrier Selection', desc: 'Smart routing based on cost, speed and reliability', status: 'live', module: 'Intelligence' },
+        { name: 'Demand Forecasting', desc: 'Inventory planning using historical sales trends', status: 'live', module: 'Intelligence' },
+        { name: 'Zoho CRM Sync', desc: 'Live bi-directional bridge for Orders and SKU Master via Zoho Catalyst', status: 'live', module: 'Automation' },
+        { name: 'Responsive Layout', desc: 'Adaptive UI for phones and tablets with touch‑optimized controls', status: 'live', module: 'UX' },
+        { name: 'Push Notifications', desc: 'Real‑time alerts via web push for order status changes', status: 'live', module: 'Notifications' },
+        { name: 'Comm. Intelligence Hub', desc: 'MTP lineage & margin visualization', status: 'live', module: 'Finance' },
+        { name: 'Pricing Simulator', desc: 'What-if analysis for SKU pricing', status: 'live', module: 'Finance' },
+        { name: 'Warehouse Fidelity', desc: 'Real-time stock SSOT linking', status: 'live', module: 'Warehouse' },
+        { name: 'Multi-Channel Echo', desc: 'Live Amazon/Flipkart sync stubs', status: 'live', module: 'Logistics' },
+        { name: 'Customer Intelligence', desc: 'Deep analytics for LTV and customer spend cohorts', status: 'live', module: 'CRM' },
+        { name: 'RBAC Enforcement', desc: 'Role-based access control for administrative and commercial modules', status: 'live', module: 'Security' },
+        { name: 'Smart Routing Node', desc: 'Multi-warehouse assignment logic based on destination pincode', status: 'live', module: 'Logistics' }
     ];
 
+
+
+
     const upcomingFeatures = [
-        { name: 'Amazon SP-API Integration', desc: 'Automatic order sync from Amazon Seller Central', phase: 'Phase 6', priority: 'High' },
-        { name: 'Flipkart API Integration', desc: 'Real-time order import from Flipkart Seller Hub', phase: 'Phase 6', priority: 'High' },
-        { name: 'Delhivery AWB Generation', desc: 'Generate shipping labels via Delhivery API', phase: 'Phase 6', priority: 'High' },
-        { name: 'BlueDart Label API', desc: 'Shipping labels via BlueDart integration', phase: 'Phase 6', priority: 'High' },
-        { name: 'Zoho CRM Live Sync', desc: 'Real-time dealer data via Catalyst bridge', phase: 'Phase 6', priority: 'Medium' },
-        { name: 'WhatsApp Notifications', desc: 'Send order updates via WhatsApp Business API', phase: 'Phase 7', priority: 'Medium' },
-        { name: 'Customer Self-Service Portal', desc: 'Let customers track their orders online', phase: 'Phase 8', priority: 'Low' },
-        { name: 'AI Demand Forecasting', desc: 'Predictive insights using order history', phase: 'Phase 8', priority: 'Low' }
+        { name: 'Financial Recon', desc: 'Automatic matching of marketplace remittances against bank statements', phase: 'Phase 7', priority: 'Medium' },
+        { name: 'Mobile Bottom Nav', desc: 'Tabbed navigation for quick access to key modules on mobile devices', phase: 'Phase 7', priority: 'High' },
+        { name: 'Marketplace SP-API', desc: 'Live bi-directional sync with Amazon Seller Central and Flipkart', phase: 'Phase 10', priority: 'High' }
+    ];
+
+
+    // Future planned enhancements for admin overview
+    const futureFeatures = [
+        { name: 'Marketplace API', desc: 'Live sync with Amazon SP-API and Flipkart Seller API', phase: 'Phase 9', priority: 'High' },
+        { name: 'Advanced Security', desc: '2FA, IP whitelisting and session hardening', phase: 'Phase 8', priority: 'Low' }
     ];
 
     const developmentPhases = [
         { phase: 'Phase 1-4', title: 'Foundation', status: 'Complete', desc: 'Architecture, design system, core modules' },
         { phase: 'Phase 5', title: 'MVP Complete', status: 'Complete', desc: '26 modules with full functionality' },
-        { phase: 'Phase 5.5', title: 'Auth & Mobile', status: 'Complete', desc: 'User login, roles, responsive design' },
-        { phase: 'Phase 6', title: 'API Integrations', status: 'In Progress', desc: 'Amazon, Flipkart, carrier APIs' },
-        { phase: 'Phase 7', title: 'Notifications', status: 'Planned', desc: 'WhatsApp, Email, Push alerts' },
-        { phase: 'Phase 8', title: 'Intelligence', status: 'Future', desc: 'AI insights and automation' }
+        { phase: 'Phase 5.5', title: 'Data Strategy', status: 'Complete', desc: 'Zero-sample initialization, schema mapping' },
+        { phase: 'Phase 6', title: 'Revenue Fidelity', status: 'Complete', desc: 'SKU Inheritance, High-Fidelity Commercials' },
+        { phase: 'Phase 7', title: 'Integrations', status: 'Complete', desc: 'Zoho Bridge, Data Unification, Deduplication' },
+        { phase: 'Phase 8', title: 'Intelligence', status: 'Complete', desc: 'Predictive AI and Automated Carrier Selection' },
+        { phase: 'Phase 9: Comm. Intelligence', status: 'Complete', desc: 'Lineage tracking and Margin Fidelity' },
+        { phase: 'Phase 10: Real-time APIs', status: 'Complete', desc: 'Amazon SP-API & Flipkart API Integration' },
+        { phase: 'Phase 11: Enterprise Control', status: 'Complete', desc: 'Advanced security, RBAC, and Customer LTV' }
     ];
 
     const techStack = [
@@ -115,25 +122,30 @@ const RoadmapPage = () => {
                 <h2>✅ What's Already Built</h2>
                 <p className="text-muted" style={{ marginBottom: '24px' }}>These features are live and ready to use today</p>
 
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '16px' }}>
-                    {completedFeatures.map((f, idx) => (
-                        <div key={idx} className="feature-card glass" style={{ padding: '20px' }}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                                <h4>{f.name}</h4>
-                                <span className="badge" style={{ background: 'var(--success)', fontSize: '0.6rem' }}>LIVE</span>
+                <div className="feature-scroll-container glass no-scrollbar" style={{ maxHeight: '400px', overflowY: 'auto', padding: '20px', borderRadius: '16px' }}>
+
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '16px' }}>
+
+                        {completedFeatures.map((f, idx) => (
+                            <div key={idx} className="feature-card glass" style={{ padding: '20px', background: 'rgba(255,255,255,0.03)' }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                                    <h4>{f.name}</h4>
+                                    <span className="badge" style={{ background: 'var(--success)', fontSize: '0.6rem' }}>LIVE</span>
+                                </div>
+                                <p className="text-muted" style={{ marginTop: '8px', fontSize: '0.9rem' }}>{f.desc}</p>
+                                <span style={{
+                                    marginTop: '12px',
+                                    display: 'inline-block',
+                                    padding: '4px 10px',
+                                    background: 'var(--bg-accent)',
+                                    borderRadius: '12px',
+                                    fontSize: '0.7rem'
+                                }}>{f.module}</span>
                             </div>
-                            <p className="text-muted" style={{ marginTop: '8px', fontSize: '0.9rem' }}>{f.desc}</p>
-                            <span style={{
-                                marginTop: '12px',
-                                display: 'inline-block',
-                                padding: '4px 10px',
-                                background: 'var(--bg-accent)',
-                                borderRadius: '12px',
-                                fontSize: '0.7rem'
-                            }}>{f.module}</span>
-                        </div>
-                    ))}
+                        ))}
+                    </div>
                 </div>
+
             </div>
 
             {/* Upcoming Features */}
@@ -141,29 +153,34 @@ const RoadmapPage = () => {
                 <h2>🚀 What's Coming Next</h2>
                 <p className="text-muted" style={{ marginBottom: '24px' }}>Features in our development pipeline</p>
 
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '16px' }}>
-                    {upcomingFeatures.map((f, idx) => (
-                        <div key={idx} className="feature-card glass glass-hover" style={{ padding: '20px' }}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                                <h4>{f.name}</h4>
-                                <span className="badge" style={{
-                                    background: f.priority === 'High' ? 'var(--danger)' :
-                                        f.priority === 'Medium' ? 'var(--warning)' : 'var(--glass-border)',
-                                    fontSize: '0.6rem'
-                                }}>{f.priority}</span>
+                <div className="feature-scroll-container glass no-scrollbar" style={{ maxHeight: '400px', overflowY: 'auto', padding: '20px', borderRadius: '16px' }}>
+
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '16px' }}>
+
+                        {upcomingFeatures.map((f, idx) => (
+                            <div key={idx} className="feature-card glass glass-hover" style={{ padding: '20px', background: 'rgba(255,255,255,0.03)' }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                                    <h4>{f.name}</h4>
+                                    <span className="badge" style={{
+                                        background: f.priority === 'High' ? 'var(--danger)' :
+                                            f.priority === 'Medium' ? 'var(--warning)' : 'var(--glass-border)',
+                                        fontSize: '0.6rem'
+                                    }}>{f.priority}</span>
+                                </div>
+                                <p className="text-muted" style={{ marginTop: '8px', fontSize: '0.9rem' }}>{f.desc}</p>
+                                <span style={{
+                                    marginTop: '12px',
+                                    display: 'inline-block',
+                                    padding: '4px 10px',
+                                    background: 'var(--primary)',
+                                    borderRadius: '12px',
+                                    fontSize: '0.7rem'
+                                }}>{f.phase}</span>
                             </div>
-                            <p className="text-muted" style={{ marginTop: '8px', fontSize: '0.9rem' }}>{f.desc}</p>
-                            <span style={{
-                                marginTop: '12px',
-                                display: 'inline-block',
-                                padding: '4px 10px',
-                                background: 'var(--primary)',
-                                borderRadius: '12px',
-                                fontSize: '0.7rem'
-                            }}>{f.phase}</span>
-                        </div>
-                    ))}
+                        ))}
+                    </div>
                 </div>
+
             </div>
 
             {/* Tech Stack */}

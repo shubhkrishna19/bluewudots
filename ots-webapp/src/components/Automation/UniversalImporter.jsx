@@ -3,6 +3,8 @@ import Papa from 'papaparse';
 import { useData } from '../../context/DataContext';
 import OrderJourney from '../Orders/OrderJourney';
 import ChannelSelector from './ChannelSelector';
+import { resolveSkuAlias } from '../../utils/dataUtils';
+
 
 const CHANNEL_CONFIGS = {
     amazon: { name: 'Amazon IN', idField: 'order-id', customerField: 'buyer-name', cityField: 'ship-city', stateField: 'ship-state', skuField: 'sku' },
@@ -16,7 +18,8 @@ const CHANNEL_CONFIGS = {
 };
 
 const UniversalImporter = () => {
-    const { orders, setOrders } = useData();
+    const { orders, setOrders, skuAliases } = useData();
+
     const [selectedChannel, setSelectedChannel] = useState(null);
     const [isUploading, setIsUploading] = useState(false);
     const [stats, setStats] = useState(null);
@@ -39,8 +42,9 @@ const UniversalImporter = () => {
                     customer: row[config.customerField] || 'Customer',
                     city: row[config.cityField] || 'Unknown',
                     state: row[config.stateField] || 'Unknown',
-                    sku: row[config.skuField] || 'SKU-UNKNOWN',
+                    sku: resolveSkuAlias(row[config.skuField] || 'SKU-UNKNOWN', skuAliases),
                     weight: parseFloat(row['weight']) || 2.0,
+
                     status: 'Imported',
                     source: config.name
                 }));

@@ -8,7 +8,8 @@ const SettingsPanel = () => {
         warehouse: 'Bangalore',
         autoAssignCarrier: true,
         emailNotifications: true,
-        smsAlerts: false
+        smsAlerts: false,
+        pushNotifications: false
     });
 
     const handleToggle = (key) => {
@@ -176,6 +177,38 @@ const SettingsPanel = () => {
                                 transition: 'left 0.3s'
                             }}></div>
                         </div>
+                    </div>
+                </div>
+
+                {/* Push Notification Toggle */}
+                <div className="setting-toggle" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 0', borderBottom: '1px solid var(--glass-border)' }}>
+                    <div>
+                        <p style={{ fontWeight: '600' }}>Push Notifications</p>
+                        <span className="text-muted" style={{ fontSize: '0.75rem' }}>Real‑time web push alerts</span>
+                    </div>
+                    <div
+                        className="toggle"
+                        style={{
+                            width: '50px',
+                            height: '26px',
+                            background: settings.pushNotifications ? 'var(--primary)' : 'var(--glass-border)',
+                            borderRadius: '13px',
+                            cursor: 'pointer',
+                            position: 'relative',
+                            transition: 'background 0.3s'
+                        }}
+                        onClick={() => handleToggle('pushNotifications')}
+                    >
+                        <div style={{
+                            width: '22px',
+                            height: '22px',
+                            background: '#fff',
+                            borderRadius: '50%',
+                            position: 'absolute',
+                            top: '2px',
+                            left: settings.pushNotifications ? '26px' : '2px',
+                            transition: 'left 0.3s'
+                        }}></div>
                     </div>
                 </div>
 

@@ -3,18 +3,32 @@ import { transitionOrder, bulkTransition, ORDER_STATUSES, getValidNextStatuses }
 import { getAllRates, getRecommendation } from '../services/carrierRateEngine';
 import { logOrderCreate, logOrderStatusChange, logBulkUpdate, logCarrierAssign, logImportComplete } from '../services/activityLogger';
 import { notifyOrderCreated, notifyOrderShipped, notifyBulkImport, notifyLowStock } from '../services/notificationService';
-import { validateOrder, normalizeOrder, generateOrderId, exportOrdersCSV, exportJSON } from '../utils/dataUtils';
+import { validateOrder, normalizeOrder, generateOrderId, deduplicateOrders, deduplicateCustomers, exportOrdersCSV, exportJSON } from '../utils/dataUtils';
+import { calculateSMAForecast, predictSKUDemand } from '../services/forecastService';
+import { getOrderTrend, projectRevenue, calculateSKUProfitability } from '../services/analyticsService';
+import { fetchSKUMaster, pushOrderToZoho } from '../services/zohoBridgeService';
+import marketplaceService from '../services/marketplaceService';
+
+import { SKU_MASTER, SKU_ALIASES } from '../data/skuMasterData';
+
 
 const DataContext = createContext();
 
 export const DataProvider = ({ children }) => {
     const [orders, setOrders] = useState([]);
     const [logistics, setLogistics] = useState([]);
-    const [skuMaster, setSkuMaster] = useState([]);
+    const [skuMaster, setSkuMaster] = useState(SKU_MASTER);
+    const [skuAliases, setSkuAliases] = useState(SKU_ALIASES);
     const [inventory, setInventory] = useState([]);
+    const [customerMaster, setCustomerMaster] = useState([]);
+    const [inventoryLevels, setInventoryLevels] = useState({}); // { skuId: { inStock, reserved, location } }
+    const [batches, setBatches] = useState([]); // Array of { id, sku, vendor, quantity, allocated, receivedAt }
+
+
     const [activityLog, setActivityLog] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [syncStatus, setSyncStatus] = useState('offline');
+    const [syncStatus, setSyncStatus] = useState('offline'); // offline | online | syncing | error
+    const [lastSyncTime, setLastSyncTime] = useState(null);
 
     // ============================================
     // INITIAL DATA LOAD
@@ -25,42 +39,82 @@ export const DataProvider = ({ children }) => {
                 console.log('🔄 Synchronizing with Bluewud India Nodes...');
                 setSyncStatus('syncing');
 
-                // Comprehensive sample orders with full data
-                setOrders([
-                    { id: 'BW-9901', externalId: 'AMZ-123456', source: 'Amazon', customerName: 'Rajesh Kumar', phone: '9876543210', address: '123 MG Road', city: 'Mumbai', state: 'Maharashtra', pincode: '400001', sku: 'BL-DESK-01', quantity: 1, weight: 12.5, amount: 14500, status: 'Delivered', carrier: 'Delhivery', awb: 'DEL123456789', statusHistory: [], createdAt: '2024-12-25T10:00:00Z' },
-                    { id: 'BW-9902', externalId: 'FLK-789012', source: 'Flipkart', customerName: 'Priya Sharma', phone: '9988776655', address: '45 Janpath', city: 'Delhi', state: 'Delhi', pincode: '110001', sku: 'BL-CAB-05', quantity: 1, weight: 8.0, amount: 8900, status: 'In-Transit', carrier: 'BlueDart', awb: 'BD987654321', statusHistory: [], createdAt: '2024-12-27T14:30:00Z' },
-                    { id: 'BW-9903', externalId: null, source: 'Local Shop', customerName: 'Amit Patel', phone: '9123456789', address: '78 Brigade Road', city: 'Bangalore', state: 'Karnataka', pincode: '560001', sku: 'BL-SHELF-02', quantity: 2, weight: 15.0, amount: 12000, status: 'Carrier-Assigned', carrier: 'XpressBees', awb: null, statusHistory: [], createdAt: '2024-12-28T09:15:00Z' },
-                    { id: 'BW-9904', externalId: 'SHP-345678', source: 'Shopify', customerName: 'Sneha Reddy', phone: '9234567890', address: '12 Banjara Hills', city: 'Hyderabad', state: 'Telangana', pincode: '500034', sku: 'BL-TABLE-03', quantity: 1, weight: 20.0, amount: 25000, status: 'MTP-Applied', carrier: null, awb: null, statusHistory: [], createdAt: '2024-12-29T11:00:00Z' },
-                    { id: 'BW-9905', externalId: null, source: 'Dealer', customerName: 'Vikram Singh', phone: '9345678901', address: '56 MI Road', city: 'Jaipur', state: 'Rajasthan', pincode: '302001', sku: 'BL-CHAIR-01', quantity: 10, weight: 50.0, amount: 45000, status: 'Pending', carrier: null, awb: null, statusHistory: [], createdAt: '2024-12-30T08:00:00Z' },
-                    { id: 'BW-9906', externalId: 'AMZ-654321', source: 'Amazon', customerName: 'Meera Iyer', phone: '9456789012', address: '89 Anna Salai', city: 'Chennai', state: 'Tamil Nadu', pincode: '600002', sku: 'BL-DESK-02', quantity: 1, weight: 14.0, amount: 18000, status: 'Delivered', carrier: 'Delhivery', awb: 'DEL111222333', statusHistory: [], createdAt: '2024-12-24T16:45:00Z' },
-                    { id: 'BW-9907', externalId: null, source: 'Pepperfry', customerName: 'Arjun Nair', phone: '9567890123', address: '34 MG Road', city: 'Kochi', state: 'Kerala', pincode: '682016', sku: 'BL-RACK-01', quantity: 1, weight: 18.0, amount: 9500, status: 'In-Transit', carrier: 'Ecom Express', awb: 'ECM444555666', statusHistory: [], createdAt: '2024-12-28T13:20:00Z' },
-                    { id: 'BW-9908', externalId: null, source: 'Dealer', customerName: 'Furniture World', phone: '9678901234', address: '100 Industrial Area', city: 'Bangalore', state: 'Karnataka', pincode: '560058', sku: 'BL-BULK-SET', quantity: 5, weight: 45.0, amount: 85000, status: 'Pending', carrier: null, awb: null, statusHistory: [], createdAt: '2024-12-30T10:30:00Z' },
-                    { id: 'BW-9909', externalId: null, source: 'Local Shop', customerName: 'Local Customer', phone: '9789012345', address: '22 FC Road', city: 'Pune', state: 'Maharashtra', pincode: '411004', sku: 'BL-STOOL-01', quantity: 2, weight: 3.5, amount: 3200, status: 'Carrier-Assigned', carrier: 'Delhivery', awb: 'DEL777888999', statusHistory: [], createdAt: '2024-12-29T15:00:00Z' },
-                    { id: 'BW-9910', externalId: null, source: 'Dealer', customerName: 'Home Decor Hub', phone: '9890123456', address: '67 CG Road', city: 'Ahmedabad', state: 'Gujarat', pincode: '380009', sku: 'BL-COMBO-01', quantity: 3, weight: 25.0, amount: 35000, status: 'Delivered', carrier: 'BlueDart', awb: 'BD222333444', statusHistory: [], createdAt: '2024-12-23T12:00:00Z' }
-                ]);
+                console.log('🔄 Bluewud India Nodes: Operational');
+                setSyncStatus('online');
 
-                // SKU Master with comprehensive data
-                setSkuMaster([
-                    { code: 'BL-DESK-01', name: 'Executive Office Desk', category: 'Desks', cost: 8500, mrp: 14500, weight: 12.5, dimensions: '150x75x75', hsnCode: '9403', gstRate: 18, inStock: 45 },
-                    { code: 'BL-DESK-02', name: 'Modern Workstation', category: 'Desks', cost: 11000, mrp: 18000, weight: 14.0, dimensions: '160x80x75', hsnCode: '9403', gstRate: 18, inStock: 28 },
-                    { code: 'BL-CAB-05', name: 'Elite Storage Cabinet', category: 'Cabinets', cost: 5500, mrp: 8900, weight: 8.0, dimensions: '80x45x180', hsnCode: '9403', gstRate: 18, inStock: 62 },
-                    { code: 'BL-SHELF-02', name: 'Wall Shelf Unit', category: 'Shelves', cost: 3500, mrp: 6000, weight: 7.5, dimensions: '120x30x20', hsnCode: '9403', gstRate: 18, inStock: 85 },
-                    { code: 'BL-TABLE-03', name: 'Dining Table 6-Seater', category: 'Tables', cost: 15000, mrp: 25000, weight: 20.0, dimensions: '180x90x75', hsnCode: '9403', gstRate: 18, inStock: 18 },
-                    { code: 'BL-CHAIR-01', name: 'Ergonomic Office Chair', category: 'Chairs', cost: 2800, mrp: 4500, weight: 5.0, dimensions: '60x60x110', hsnCode: '9401', gstRate: 18, inStock: 120 },
-                    { code: 'BL-RACK-01', name: 'Industrial Display Rack', category: 'Racks', cost: 5800, mrp: 9500, weight: 18.0, dimensions: '100x40x200', hsnCode: '9403', gstRate: 18, inStock: 52 },
-                    { code: 'BL-STOOL-01', name: 'Bar Stool Premium', category: 'Stools', cost: 1000, mrp: 1600, weight: 3.5, dimensions: '40x40x75', hsnCode: '9401', gstRate: 18, inStock: 35 },
-                    { code: 'BL-BULK-SET', name: 'Office Furniture Set', category: 'Combos', cost: 12000, mrp: 17000, weight: 45.0, dimensions: 'Various', hsnCode: '9403', gstRate: 18, inStock: 10 },
-                    { code: 'BL-COMBO-01', name: 'Home Office Combo', category: 'Combos', cost: 8500, mrp: 12000, weight: 25.0, dimensions: 'Various', hsnCode: '9403', gstRate: 18, inStock: 22 }
-                ]);
+                // Initial states are empty, waiting for import/sync
+                setOrders([]);
+                setInventory([]);
+                setLogistics([]);
 
-                // Warehouse inventory
-                setInventory([
-                    { sku: 'BL-DESK-01', warehouse: 'Bangalore', inStock: 45, reserved: 12, available: 33, reorderLevel: 15, location: 'A-01' },
-                    { sku: 'BL-DESK-02', warehouse: 'Bangalore', inStock: 28, reserved: 8, available: 20, reorderLevel: 10, location: 'A-02' },
-                    { sku: 'BL-CAB-05', warehouse: 'Bangalore', inStock: 62, reserved: 15, available: 47, reorderLevel: 20, location: 'B-01' },
-                    { sku: 'BL-SHELF-02', warehouse: 'Bangalore', inStock: 85, reserved: 22, available: 63, reorderLevel: 25, location: 'C-01' },
-                    { sku: 'BL-TABLE-03', warehouse: 'Bangalore', inStock: 18, reserved: 6, available: 12, reorderLevel: 10, location: 'D-01' }
-                ]);
+
+                // SKU Master already initialized from seed data
+
+                // Initialize Warehouse Inventory Levels from Child SKUs
+                const initialInventory = {};
+                SKU_MASTER.filter(s => !s.isParent).forEach(child => {
+                    initialInventory[child.sku] = {
+                        inStock: child.initialStock || Math.floor(Math.random() * 50) + 10, // Default for seed
+                        reserved: 0,
+                        location: child.defaultLocation || `WH-A${Math.floor(Math.random() * 9) + 1}`
+                    };
+                });
+                // Seed Mock Customers & Orders for CRM/LTV Demo
+                const mockCustomers = [
+                    { name: 'Sameer Malhotra', phone: '9876543210', email: 'sameer@example.com', city: 'Delhi', state: 'Delhi', address: 'GK-II', pincode: '110048' },
+                    { name: 'Anjali Sharma', phone: '9123456789', email: 'anjali@example.com', city: 'Mumbai', state: 'Maharashtra', address: 'Andheri West', pincode: '400053' },
+                    { name: 'Karthik Rao', phone: '8877665544', email: 'karthik@example.com', city: 'Bangalore', state: 'Karnataka', address: 'HSR Layout', pincode: '560102' },
+                    { name: 'Priya Verma', phone: '7766554433', email: 'priya@example.com', city: 'Chandigarh', state: 'Punjab', address: 'Sector 17', pincode: '160017' }
+                ];
+                setCustomerMaster(mockCustomers);
+
+                const mockOrders = [
+                    // Sameer: VIP (5+ orders)
+                    ...Array(6).fill(0).map((_, i) => ({
+                        id: `BWD-${1000 + i}`,
+                        customerName: 'Sameer Malhotra',
+                        phone: '9876543210',
+                        amount: 15000 + (i * 1000),
+                        status: 'Delivered',
+                        sku: 'SR-CLM-TM',
+                        createdAt: new Date(Date.now() - (i * 2) * 24 * 60 * 60 * 1000).toISOString()
+                    })),
+                    // Anjali: Regular (2 orders)
+                    { id: 'BWD-2001', customerName: 'Anjali Sharma', phone: '9123456789', amount: 8500, status: 'In-Transit', sku: 'SR-CLM-TM', createdAt: new Date().toISOString() },
+                    { id: 'BWD-2002', customerName: 'Anjali Sharma', phone: '9123456789', amount: 3200, status: 'Delivered', sku: 'SR-CLM-TM', createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString() },
+                    // Priya: At Risk (Last order > 90 days ago)
+                    { id: 'BWD-3001', customerName: 'Priya Verma', phone: '7766554433', amount: 12000, status: 'Delivered', sku: 'SR-CLM-TM', createdAt: new Date(Date.now() - 100 * 24 * 60 * 60 * 1000).toISOString() }
+                ];
+                setOrders(mockOrders);
+
+                setInventoryLevels(initialInventory);
+
+                // Initialize Mock Batches for FIFO
+                const mockBatches = [];
+                SKU_MASTER.filter(s => !s.isParent).forEach(sku => {
+                    mockBatches.push({
+                        id: `BATCH-${sku.sku}-001`,
+                        sku: sku.sku,
+                        vendor: 'Elite Woods',
+                        quantity: 20,
+                        allocated: 0,
+                        receivedAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString()
+                    });
+                    mockBatches.push({
+                        id: `BATCH-${sku.sku}-002`,
+                        sku: sku.sku,
+                        vendor: 'Eco-Fab Panels',
+                        quantity: 30,
+                        allocated: 0,
+                        receivedAt: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString()
+                    });
+                });
+                setBatches(mockBatches);
+
+
+                // Warehouse inventory initialized as empty
+                setInventory([]);
+
 
                 // Check for low stock and notify
                 inventory.forEach(item => {
@@ -107,12 +161,39 @@ export const DataProvider = ({ children }) => {
             createdAt: new Date().toISOString()
         };
 
-        setOrders(prev => [newOrder, ...prev]);
+        setOrders(prev => deduplicateOrders(prev, [newOrder]));
+
+        // --- GLOBAL SYNC: Inventory Reservation ---
+        if (newOrder.sku) {
+            setInventoryLevels(prev => ({
+                ...prev,
+                [newOrder.sku]: {
+                    ...prev[newOrder.sku],
+                    reserved: (prev[newOrder.sku]?.reserved || 0) + 1
+                }
+            }));
+        }
+
+        // --- GLOBAL SYNC: Customer Unification ---
+        const customer = {
+            name: newOrder.customerName,
+            phone: newOrder.phone,
+            email: newOrder.email || '',
+            address: newOrder.address,
+            city: newOrder.city,
+            state: newOrder.state,
+            pincode: newOrder.pincode,
+            lastSeen: newOrder.createdAt
+        };
+        setCustomerMaster(prev => deduplicateCustomers([...prev, customer]));
+
         logOrderCreate(newOrder);
         notifyOrderCreated(newOrder);
 
         return { success: true, order: newOrder };
     }, []);
+
+
 
     /**
      * Update order status with state machine validation
@@ -122,11 +203,35 @@ export const DataProvider = ({ children }) => {
 
         setOrders(prev => prev.map(order => {
             if (order.id === orderId) {
+                const oldStatus = order.status;
                 const transitionResult = transitionOrder(order, newStatus, metadata);
                 result = transitionResult;
 
                 if (transitionResult.success) {
-                    logOrderStatusChange(order, order.status, newStatus, metadata.reason);
+                    logOrderStatusChange(order, oldStatus, newStatus, metadata.reason);
+
+                    // --- GLOBAL SYNC: Inventory Deduction / Restock ---
+                    if (newStatus === 'Delivered' || newStatus === 'In-Transit') {
+                        // Deduct from Stock when Shipped/Delivered (for demo, we deduct 1 from inStock and 1 from reserved)
+                        setInventoryLevels(p => ({
+                            ...p,
+                            [order.sku]: {
+                                ...p[order.sku],
+                                inStock: Math.max(0, (p[order.sku]?.inStock || 0) - 1),
+                                reserved: Math.max(0, (p[order.sku]?.reserved || 0) - 1)
+                            }
+                        }));
+                    } else if (newStatus === 'Cancelled' || newStatus === 'RTO-Delivered') {
+                        // Return to stock if cancelled before delivery
+                        setInventoryLevels(p => ({
+                            ...p,
+                            [order.sku]: {
+                                ...p[order.sku],
+                                reserved: Math.max(0, (p[order.sku]?.reserved || 0) - 1)
+                                // Note: In a real system, RTO-Delivered would involve a QA step before adding back to inStock
+                            }
+                        }));
+                    }
 
                     // Trigger notifications for key statuses
                     if (newStatus === ORDER_STATUSES.IN_TRANSIT || newStatus === ORDER_STATUSES.PICKED_UP) {
@@ -203,12 +308,111 @@ export const DataProvider = ({ children }) => {
             };
         });
 
-        setOrders(prev => [...imported, ...prev]);
+        setOrders(prev => deduplicateOrders(prev, imported));
+
+        // Unify customers from imported orders
+        const newCustomers = imported.map(o => ({
+            name: o.customerName,
+            phone: o.phone,
+            email: o.email || '',
+            address: o.address,
+            city: o.city,
+            state: o.state,
+            pincode: o.pincode,
+            lastSeen: o.importedAt
+        }));
+        setCustomerMaster(prev => deduplicateCustomers([...prev, ...newCustomers]));
+
         logImportComplete(source, imported.length);
         notifyBulkImport(imported.length, source);
 
         return { success: true, count: imported.length };
     }, []);
+
+    /**
+     * Sync SKU Master from Zoho CRM
+     */
+    const syncSKUMaster = useCallback(async () => {
+        try {
+            setSyncStatus('syncing');
+            const freshSkus = await fetchSKUMaster();
+            setSkuMaster(freshSkus);
+            setLastSyncTime(new Date().toISOString());
+            setSyncStatus('online');
+            return { success: true };
+        } catch (error) {
+            setSyncStatus('error');
+            return { success: false, error: error.message };
+        }
+    }, []);
+
+    /**
+     * Sync Order to Zoho CRM
+     */
+    const syncOrderToZoho = useCallback(async (order) => {
+        try {
+            const result = await pushOrderToZoho(order);
+            // Update order with Zoho ID if needed
+            setOrders(prev => prev.map(o => o.id === order.id ? { ...o, zoho_id: result.zoho_id } : o));
+            return { success: true, result };
+        } catch (error) {
+            console.error('Zoho Order Sync failed:', error);
+            return { success: false, error: error.message };
+        }
+    }, []);
+
+    /**
+     * Warehouse: Adjust stock levels
+     */
+    const adjustStock = useCallback((skuId, adjustment) => {
+        setInventoryLevels(prev => ({
+            ...prev,
+            [skuId]: {
+                ...prev[skuId],
+                inStock: Math.max(0, (prev[skuId]?.inStock || 0) + adjustment)
+            }
+        }));
+    }, []);
+
+    /**
+     * Warehouse: Set location
+     */
+    const setStockLocation = useCallback((skuId, location) => {
+        setInventoryLevels(prev => ({
+            ...prev,
+            [skuId]: {
+                ...prev[skuId],
+                location
+            }
+        }));
+    }, []);
+
+    /**
+     * Supply Chain: Receive new stock batch
+     */
+    const receiveStock = useCallback((skuId, vendor, quantity) => {
+        const newBatch = {
+            id: `BATCH-${skuId}-${Date.now()}`,
+            sku: skuId,
+            vendor,
+            quantity,
+            allocated: 0,
+            receivedAt: new Date().toISOString()
+        };
+
+        setBatches(prev => [...prev, newBatch]);
+        setInventoryLevels(prev => ({
+            ...prev,
+            [skuId]: {
+                ...prev[skuId],
+                inStock: (prev[skuId]?.inStock || 0) + quantity
+            }
+        }));
+
+        return { success: true, batchId: newBatch.id };
+    }, []);
+
+
 
     // ============================================
     // CARRIER & RATE FUNCTIONS
@@ -233,9 +437,30 @@ export const DataProvider = ({ children }) => {
      */
     const getOrderNextStatuses = useCallback((orderId) => {
         const order = orders.find(o => o.id === orderId);
-        if (!order) return [];
-        return getValidNextStatuses(order.status);
+        return getValidNextStatuses(order?.status);
     }, [orders]);
+
+    /**
+     * Multi-Channel: Sync all marketplaces
+     */
+    const syncAllMarketplaces = useCallback(async () => {
+        try {
+            setSyncStatus('syncing');
+            await marketplaceService.fetchAmazonOrders();
+            await marketplaceService.fetchFlipkartOrders();
+            await marketplaceService.syncInventoryToMarketplaces(inventoryLevels);
+            setSyncStatus('online');
+            setLastSyncTime(new Date().toISOString());
+
+            // Notify completion
+            notifyBulkImport(0, 'Multi-Channel Sync');
+
+            return { success: true };
+        } catch (error) {
+            setSyncStatus('error');
+            return { success: false, error: error.message };
+        }
+    }, [inventoryLevels]);
 
     // ============================================
     // EXPORT FUNCTIONS
@@ -281,6 +506,42 @@ export const DataProvider = ({ children }) => {
         };
     }, [orders]);
 
+    /**
+     * Customer Intelligence: Get LTV and Stats
+     */
+    const getCustomerMetrics = useCallback((phone) => {
+        const cleanPhone = phone?.replace(/\D/g, '').slice(-10);
+        const customerOrders = orders.filter(o =>
+            o.phone?.replace(/\D/g, '').slice(-10) === cleanPhone ||
+            (o.customerPhone && o.customerPhone.replace(/\D/g, '').slice(-10) === cleanPhone)
+        );
+
+        const totalSpend = customerOrders.reduce((sum, o) => sum + (parseFloat(o.amount) || 0), 0);
+        const avgOrderValue = customerOrders.length > 0 ? totalSpend / customerOrders.length : 0;
+
+        let segment = 'New';
+        if (customerOrders.length >= 5) segment = 'VIP';
+        else if (customerOrders.length >= 2) segment = 'Regular';
+
+        // At Risk logic: If last order was > 90 days ago
+        const lastOrderDate = customerOrders.length > 0
+            ? new Date(Math.max(...customerOrders.map(o => new Date(o.createdAt || Date.now()))))
+            : null;
+
+        if (lastOrderDate && (new Date() - lastOrderDate) > 90 * 24 * 60 * 60 * 1000) {
+            segment = 'At Risk';
+        }
+
+        return {
+            totalSpend,
+            orderCount: customerOrders.length,
+            avgOrderValue,
+            segment,
+            lastOrder: lastOrderDate,
+            orders: customerOrders
+        };
+    }, [orders]);
+
     // ============================================
     // CONTEXT VALUE
     // ============================================
@@ -290,7 +551,11 @@ export const DataProvider = ({ children }) => {
         orders,
         logistics,
         skuMaster,
+        skuAliases,
         inventory,
+        customerMaster,
+
+
         loading,
         syncStatus,
 
@@ -312,6 +577,32 @@ export const DataProvider = ({ children }) => {
 
         // Analytics
         getOrderStats,
+        getCustomerMetrics,
+
+        // Intelligence & Forecasting
+        getDemandForecast: (days, forecastDays) => calculateSMAForecast(orders, days, forecastDays),
+        getSKUPrediction: (sku, days) => predictSKUDemand(orders, sku, days),
+        getTrend: (days) => getOrderTrend(orders, days),
+        getRevenueProjection: (nextDays) => projectRevenue(orders, nextDays),
+        getSKUProfitability: (skuId, price) => {
+            const sku = skuMaster.find(s => s.sku === skuId);
+            return calculateSKUProfitability(sku, price);
+        },
+
+        // Warehouse
+        inventoryLevels,
+        adjustStock,
+        setStockLocation,
+        syncAllMarketplaces,
+
+        // Supply Chain
+        batches,
+        receiveStock,
+
+        // Zoho Sync
+        syncSKUMaster,
+        syncOrderToZoho,
+        lastSyncTime,
 
         // Legacy compatibility
         setLogistics,

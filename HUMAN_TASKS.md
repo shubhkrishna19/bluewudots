@@ -66,9 +66,18 @@
 ## 🟢 MEDIUM PRIORITY (Week 2-3)
 
 ### 8. Zoho CRM Integration
-- [ ] Verify CRM Accounts module has dealer data
-- [ ] Map CRM fields to OTS fields
-- [ ] Test dealer sync in OTS
+- [ ] **Add Catalyst Environment Variables:** Go to Catalyst Console -> Logic -> Environment Variables and add:
+  - `ZOHO_CLIENT_ID`
+  - `ZOHO_CLIENT_SECRET`
+  - `ZOHO_REFRESH_TOKEN` (Generated from [api-console.zoho.com](https://api-console.zoho.com))
+- [ ] **OAuth Scopes:** Ensure your OAuth client has these scopes:
+  - `ZohoCRM.modules.all`
+  - `ZohoCRM.settings.all`
+  - `ZohoCatalyst.functions.all`
+- [ ] **Module Field Mapping:** verify if your CRM uses standard field names for:
+  - **SKU Master:** (Products module) -> `Product_Code`, `Product_Name`, `Unit_Price`, `Weight`.
+  - **Orders:** (Sales_Orders or Deals module) -> `Subject`, `Account_Name`, `Grand_Total`.
+- [ ] Map CRM Accounts module to Dealer data in OTS.
 
 ### 9. Real User Accounts
 - [ ] Create production user accounts
