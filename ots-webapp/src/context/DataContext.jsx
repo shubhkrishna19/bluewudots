@@ -8,6 +8,8 @@ import { calculateSMAForecast, predictSKUDemand } from '../services/forecastServ
 import { getOrderTrend, projectRevenue, calculateSKUProfitability } from '../services/analyticsService';
 import { fetchSKUMaster, pushOrderToZoho } from '../services/zohoBridgeService';
 import marketplaceService from '../services/marketplaceService';
+import { cacheData, retrieveCachedData, removeCachedData } from './services/offlineCacheService';
+import { registerPushSubscription, processQueuedNotifications, isPushEnabled } from './services/pushNotificationService';
 
 import { SKU_MASTER, SKU_ALIASES } from '../data/skuMasterData';
 
@@ -29,6 +31,8 @@ export const DataProvider = ({ children }) => {
     const [loading, setLoading] = useState(true);
     const [syncStatus, setSyncStatus] = useState('offline'); // offline | online | syncing | error
     const [lastSyncTime, setLastSyncTime] = useState(null);
+     const [pushEnabled, setPushEnabled] = useState(false);
+ const [offlineQueue, setOfflineQueue] = useState([]);
 
     // ============================================
     // INITIAL DATA LOAD
@@ -608,7 +612,81 @@ export const DataProvider = ({ children }) => {
         setLogistics,
         setSkuMaster,
         getRecommendations: (state, city, weight) => getAllRates({ state, city, weight })
+            
+    // Push Notifications & Offline Support
+    pushEnabled,
+    enablePushNotifications,
+    queueOrderOffline,
+    syncOfflineOrders
     };
+
+  // ============================================
+  // PUSH NOTIFICATIONS & OFFLINE SUPPORT
+  // ============================================
+  /**
+   * Initialize push notifications on app load
+   */
+  const initializePushNotifications = useCallback(async () => {
+    try {
+      const enabled = await isPushEnabled();
+      setPushEnabled(enabled);
+      if (enabled) {
+        // Process any queued notifications
+        await processQueuedNotifications();
+        console.log('[Push] Notifications enabled and initialized');
+      }
+    } catch (err) {
+      console.error('[Push] Initialization failed:', err);
+    }
+  }, []);
+
+  /**
+   * Register for push notifications
+   */
+  const enablePushNotifications = useCallback(async () => {
+    try {
+      const subscription = await registerPushSubscription();
+      if (subscription) {
+        setPushEnabled(true);
+        return { success: true, subscription };
+      }
+      return { success: false, error: 'Push registration returned null' };
+    } catch (err) {
+      return { success: false, error: err.message };
+    }
+  }, []);
+
+  /**
+   * Add order to offline queue
+   */
+  const queueOrderOffline = useCallback((order) => {
+    setOfflineQueue(prev => [...prev, { ...order, queuedAt: new Date().toISOString() }]);
+    cacheData('orders:offline-queue', offlineQueue);
+  }, [offlineQueue]);
+
+  /**
+   * Sync offline orders when coming online
+   */
+  const syncOfflineOrders = useCallback(async () => {
+    if (offlineQueue.length === 0) return { success: true, synced: 0 };
+    try {
+      const results = await Promise.all(
+        offlineQueue.map(order => importOrders([order], 'offline-sync'))
+      );
+      const synced = results.reduce((sum, r) => sum + (r.count || 0), 0);
+      setOfflineQueue([]);
+      await removeCachedData('orders:offline-queue');
+      return { success: true, synced };
+    } catch (err) {
+      return { success: false, error: err.message };
+    }
+  }, [offlineQueue, importOrders]);
+
+  // Initialize push notifications on mount
+  useEffect(() => {
+    initializePushNotifications();
+  }, [initializePushNotifications]);
+
 
     return (
         <DataContext.Provider value={value}>
