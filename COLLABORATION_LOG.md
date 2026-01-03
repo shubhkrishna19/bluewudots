@@ -3,13 +3,18 @@
 > **IMPORTANT:** All AI agents and human developers MUST update this file before starting AND after completing work.
 > This prevents duplicate effort and ensures everyone knows what's in progress.
 
+> [!IMPORTANT]
+> **ENVIRONMENT UPDATE (2026-01-04):** The local environment issue preventing `node`/`npm` execution has been resolved (NVM restored).
+> **ACTION REQUIRED:** All agents should now run automated tests (`npm test`) as part of their verification cycle.
+
 ---
 
 ## 🔴 CURRENTLY IN PROGRESS (LOCKED TASKS)
 
 | Task | Assignee | Started | Branch/Session | Notes |
 |------|----------|---------|----------------|-------|
-| Phase 16: WhatsApp API Integration | Antigravity | 2026-01-04 | session-current | P16.1 Implementation |
+| _None currently_ | - | - | - | - |
+| Phase 28: RTO & Reverse Logistics (Refinement) | Antigravity | 2026-01-04 | session-current | Implementing `RTOManager`, `reverseLogisticsService` |
 
 ---
 
@@ -17,6 +22,7 @@
 
 | Task | Completed By | Date | Commit/PR |
 |------|--------------|------|-----------|
+| P16.1: WhatsApp API Integration | Antigravity | 2026-01-04 | Session-124 |
 | Phase 16: Vision AI | Antigravity AI | 2026-01-04 | session-c18f8671 |
 | Phase 28: RTO & Reverse Logistics | Antigravity AI | 2026-01-04 | `main` |
 | 28.1 RTO & Reverse Logistics | Antigravity AI | 2026-01-04 | `main` |
@@ -26,6 +32,7 @@
 | Phase 13: Financial Intelligence | Antigravity AI | 2026-01-04 | `main` |
 | Phase 12: Supply Chain Excellence | Antigravity AI | 2026-01-03 | `main` |
 | Phase 11: Enterprise Control | Antigravity AI | 2026-01-02 | `main` |
+| Phase 27: RBAC & Security | Antigravity | 2026-01-04 | `main` |
 
 ---
 
