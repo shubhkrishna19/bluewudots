@@ -27,7 +27,7 @@ export const NotificationProvider = ({ children }) => {
         // Subscribe to live updates
         const unsubscribe = notificationService.subscribe((newNotif) => {
             setNotifications(prev => [newNotif, ...prev.slice(0, 49)]);
-            setUnreadCount(notificationService.getUnreadCount());
+            setUnreadCount(prev => prev + 1);
 
             // Auto-show a toast for high-priority items
             if (newNotif.priority === 'high' || newNotif.priority === 'critical') {

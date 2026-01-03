@@ -14,6 +14,8 @@
  * - Error handling & retry logic
  */
 
+import { sanitizeInput } from './dataUtils';
+
 const CARRIER_CONFIGS = {
   delhivery: {
     apiUrl: 'https://track.delhivery.com/api/shipments',
@@ -46,7 +48,7 @@ export const generateLabel = async (order, carrier = 'delhivery') => {
     }
 
     const labelData = await callCarrierAPI(order, carrier, config);
-    
+
     return {
       success: true,
       carrier,
@@ -75,7 +77,7 @@ export const generateLabel = async (order, carrier = 'delhivery') => {
  */
 const callCarrierAPI = async (order, carrier, config) => {
   const payload = buildCarrierPayload(order, carrier);
-  
+
   const response = await fetch(config.apiUrl, {
     method: 'POST',
     headers: {
@@ -233,9 +235,9 @@ const createLabelHTML = (labelData) => {
     <div style="padding: 20px; font-family: Arial, sans-serif;">
       <h2 style="text-align: center;">SHIPPING LABEL</h2>
       <div style="margin: 20px 0;">
-        <p><strong>Recipient:</strong> ${labelData.recipientName}</p>
-        <p><strong>Address:</strong> ${labelData.recipientAddress}</p>
-        <p><strong>Phone:</strong> ${labelData.recipientPhone}</p>
+        <p><strong>Recipient:</strong> ${sanitizeInput(labelData.recipientName)}</p>
+        <p><strong>Address:</strong> ${sanitizeInput(labelData.recipientAddress)}</p>
+        <p><strong>Phone:</strong> ${sanitizeInput(labelData.recipientPhone)}</p>
       </div>
       <div style="margin: 20px 0;">
         <p><strong>Tracking ID:</strong> ${labelData.trackingId}</p>
@@ -294,7 +296,7 @@ export const generateLabelWithRetry = async (order, carrier, maxRetries = 3) => 
     try {
       const result = await generateLabel(order, carrier);
       if (result.success) return result;
-      
+
       if (attempt < maxRetries) {
         await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
       }
