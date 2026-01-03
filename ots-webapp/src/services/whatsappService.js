@@ -1,331 +1,183 @@
-// WhatsApp Business API Service
-// Complete integration for sending order status updates via WhatsApp,
-// message templating, batch delivery, and retry logic.
+/**
+ * WhatsApp Business API Service
+ * Complete integration for sending order status updates via WhatsApp,
+ * message templating, batch delivery, and retry logic.
+ */
 
 import { cacheData, retrieveCachedData } from './offlineCacheService';
-import { queueNotification } from './pushNotificationService';
 
-const WHATSAPP_API_BASE = process.env.VITE_WHATSAPP_API_URL || 'https://graph.instagram.com/v18.0';
-const PHONE_NUMBER_ID = process.env.VITE_WHATSAPP_PHONE_ID;
-const ACCESS_TOKEN = process.env.VITE_WHATSAPP_ACCESS_TOKEN;
-const BATCH_SIZE = 50; // Max messages per batch
+const WHATSAPP_API_BASE = import.meta.env.VITE_WHATSAPP_API_URL || 'https://graph.facebook.com/v18.0';
+const PHONE_NUMBER_ID = import.meta.env.VITE_WHATSAPP_PHONE_ID;
+const ACCESS_TOKEN = import.meta.env.VITE_WHATSAPP_ACCESS_TOKEN;
+const BATCH_SIZE = 50;
 const RETRY_ATTEMPTS = 3;
-const RETRY_DELAY_MS = 5000;
 
 /**
- * Message templates approved by Meta for WhatsApp Business
+ * Approved Message Templates
  */
-const MESSAGE_TEMPLATES = {
+export const MESSAGE_TEMPLATES = {
   ORDER_CONFIRMED: {
-    name: 'order_confirmed_v1',
+    id: 'order_confirmed_v1',
     body: '✅ Order Confirmed\nYour order #{orderId} has been confirmed!\nTotal: ₹{amount}\nEstimated Delivery: {deliveryDate}'
   },
   ORDER_SHIPPED: {
-    name: 'order_shipped_v1',
+    id: 'order_shipped_v1',
     body: '📦 Order Shipped!\nYour order #{orderId} is on its way.\nTracking: {awb}\nCarrier: {carrier}'
   },
   ORDER_DELIVERED: {
-    name: 'order_delivered_v1',
+    id: 'order_delivered_v1',
     body: '✅ Order Delivered!\nYour order #{orderId} has been delivered.\nThank you for shopping with Bluewud!'
   },
   ORDER_OUT_FOR_DELIVERY: {
-    name: 'order_out_for_delivery_v1',
+    id: 'order_out_for_delivery_v1',
     body: '🚚 Out for Delivery!\nYour order #{orderId} is out for delivery today.\nExpected by: {deliveryTime}'
   },
-  RTO_INITIATED: {
-    name: 'rto_initiated_v1',
+  RTO_ALERT: {
+    id: 'rto_alert_v1',
     body: '⚠️ Delivery Issue\nWe had an issue delivering order #{orderId}.\nWe will attempt re-delivery. Contact us if needed.'
   }
 };
 
 /**
- * Send WhatsApp message to a customer
- * @param {String} phoneNumber - Customer phone number with country code (e.g., "919876543210")
- * @param {String} templateKey - Template key from MESSAGE_TEMPLATES
- * @param {Object} variables - Variables to interpolate in message
- * @returns {Promise<Object>} - API response
+ * Format phone number to E.164 without '+'
  */
-<<<<<<< HEAD
 const formatPhoneNumber = (phone) => {
-    if (!phone) return null;
-    // Remove all non-digits
-    let cleaned = phone.replace(/\D/g, '');
-    // Ensure 10-digit Indian number has country code
-    if (cleaned.length === 10) {
-        cleaned = '91' + cleaned;
-    }
-    return cleaned;
+  if (!phone) return null;
+  let cleaned = phone.replace(/\D/g, '');
+  if (cleaned.length === 10) cleaned = '91' + cleaned;
+  return cleaned;
 };
 
 /**
- * Replace template placeholders with actual values
- * @param {string} template - Template body with {{placeholders}}
- * @param {object} data - Key-value pairs for replacement
- * @returns {string} - Filled message
+ * Interpolate variables into template string
  */
-const fillTemplate = (template, data) => {
-    let message = template;
-    Object.entries(data).forEach(([key, value]) => {
-        message = message.replace(new RegExp(`{{${key}}}`, 'g'), value || '');
-    });
-    return message;
+const interpolateTemplate = (template, variables) => {
+  if (!template) return '';
+  let message = template;
+  Object.entries(variables).forEach(([key, value]) => {
+    message = message.replace(new RegExp(`{${key}}`, 'g'), value || '');
+  });
+  return message;
 };
 
-const API_ENDPOINT = '/server/notifications/whatsapp';
-const API_KEY = import.meta.env.VITE_WHATSAPP_API_KEY || ''; // To be configured in Catalyst
-
 /**
- * Send WhatsApp message via API
+ * Send WhatsApp message
  */
-const sendWhatsAppMessage = async (phone, templateId, data) => {
-    const formattedPhone = formatPhoneNumber(phone);
-    if (!formattedPhone) {
-        return { success: false, error: 'Invalid phone number' };
-    }
+export const sendWhatsAppMessage = async (phone, templateKey, variables = {}) => {
+  const formattedPhone = formatPhoneNumber(phone);
+  const template = MESSAGE_TEMPLATES[templateKey];
 
-    const template = MESSAGE_TEMPLATES[templateId];
-=======
-export const sendWhatsAppMessage = async (phoneNumber, templateKey, variables = {}) => {
-  try {
-    const template = MESSAGE_TEMPLATES[templateKey];
->>>>>>> 4be53487f72a2bfacf3cde5d60b2e7a7e0ec3174
-    if (!template) {
-      throw new Error(`Unknown template: ${templateKey}`);
-    }
+  if (!formattedPhone) return { success: false, error: 'Invalid phone number' };
+  if (!template) return { success: false, error: `Unknown template: ${templateKey}` };
 
-<<<<<<< HEAD
-    const messageBody = {
-        to: formattedPhone,
-        template: template.id,
-        params: data,
-        apiKey: API_KEY
+  const message = interpolateTemplate(template.body, variables);
+
+  // If API credentials are missing, run in MOCK mode
+  if (!PHONE_NUMBER_ID || !ACCESS_TOKEN) {
+    console.log(`[WhatsApp MOCK] To: ${formattedPhone} | Msg: ${message}`);
+    return {
+      success: true,
+      messageId: `mock_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`,
+      status: 'sent_mock'
     };
+  }
 
-    try {
-        // MOCK: In production, this would be a real API call to Catalyst or Meta
-        // const response = await fetch(API_ENDPOINT, {
-        //     method: 'POST',
-        //     headers: { 'Content-Type': 'application/json' },
-        //     body: JSON.stringify(messageBody)
-        // });
-        // const result = await response.json();
-
-        // Simulation for development
-        console.log(`[WhatsApp API] Request to ${formattedPhone}:`, messageBody);
-
-        return {
-            success: true,
-            messageId: `wa_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-            status: 'queued',
-            timestamp: new Date().toISOString()
-        };
-    } catch (error) {
-        console.error('[WhatsApp Service Error]:', error);
-        return { success: false, error: 'Failed to transmit message' };
-    }
-=======
-    const message = interpolateTemplate(template.body, variables);
-    
-    const response = await fetch(
-      `${WHATSAPP_API_BASE}/${PHONE_NUMBER_ID}/messages`,
-      {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${ACCESS_TOKEN}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          messaging_product: 'whatsapp',
-          recipient_type: 'individual',
-          to: phoneNumber,
-          type: 'text',
-          text: { body: message }
-        })
-      }
-    );
-
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(`WhatsApp API Error: ${error.error?.message || response.statusText}`);
-    }
+  try {
+    const response = await fetch(`${WHATSAPP_API_BASE}/${PHONE_NUMBER_ID}/messages`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${ACCESS_TOKEN}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        messaging_product: 'whatsapp',
+        recipient_type: 'individual',
+        to: formattedPhone,
+        type: 'text',
+        text: { body: message }
+      })
+    });
 
     const result = await response.json();
-    console.log(`[WhatsApp] Message sent to ${phoneNumber}:`, result.messages[0].id);
-    
-    // Log delivery
-    await logWhatsAppDelivery(phoneNumber, templateKey, result.messages[0].id);
-    
-    return { success: true, messageId: result.messages[0].id, phoneNumber };
+
+    if (!response.ok) {
+      throw new Error(result.error?.message || 'WhatsApp API Error');
+    }
+
+    const msgId = result.messages[0].id;
+    await logWhatsAppDelivery(formattedPhone, templateKey, msgId);
+
+    return { success: true, messageId: msgId, phone: formattedPhone };
   } catch (err) {
-    console.error('[WhatsApp] Send failed:', err);
-    // Queue for retry
-    await queueWhatsAppMessage(phoneNumber, templateKey, variables);
-    return { success: false, error: err.message, phoneNumber };
+    console.error('[WhatsApp Error]:', err.message);
+    await queueWhatsAppMessage(formattedPhone, templateKey, variables);
+    return { success: false, error: err.message, phone: formattedPhone };
   }
->>>>>>> 4be53487f72a2bfacf3cde5d60b2e7a7e0ec3174
 };
 
 /**
- * Send WhatsApp message to multiple customers (batch operation)
- * @param {Array<Object>} orders - Array of {phoneNumber, templateKey, variables}
- * @returns {Promise<Object>} - Batch results {successful, failed}
+ * Batch processing
  */
-export const sendBatchWhatsAppMessages = async (orders) => {
-  const results = {
-    successful: [],
-    failed: [],
-    queued: 0
-  };
+export const sendBatchWhatsAppMessages = async (requests) => {
+  const results = { successful: [], failed: [] };
 
-  // Process in batches to respect API rate limits
-  for (let i = 0; i < orders.length; i += BATCH_SIZE) {
-    const batch = orders.slice(i, i + BATCH_SIZE);
-    
+  for (let i = 0; i < requests.length; i += BATCH_SIZE) {
+    const batch = requests.slice(i, i + BATCH_SIZE);
     const batchResults = await Promise.all(
-      batch.map(order => 
-        sendWhatsAppMessage(order.phoneNumber, order.templateKey, order.variables)
-      )
+      batch.map(r => sendWhatsAppMessage(r.phone || r.phoneNumber, r.templateKey, r.variables))
     );
 
-    batchResults.forEach((result, idx) => {
-      if (result.success) {
-        results.successful.push(result);
-      } else {
-        results.failed.push({ ...result, orderIndex: i + idx });
-      }
+    batchResults.forEach(res => {
+      if (res.success) results.successful.push(res);
+      else results.failed.push(res);
     });
 
-    // Rate limiting
-    if (i + BATCH_SIZE < orders.length) {
-      await new Promise(resolve => setTimeout(resolve, 1000));
-    }
+    if (i + BATCH_SIZE < requests.length) await new Promise(r => setTimeout(r, 1000));
   }
-
-  console.log('[WhatsApp] Batch complete:', results);
   return results;
 };
 
 /**
- * Queue a WhatsApp message for retry (offline support)
- * @param {String} phoneNumber - Customer phone number
- * @param {String} templateKey - Template key
- * @param {Object} variables - Template variables
+ * Offline Sync & Queueing
  */
-export const queueWhatsAppMessage = async (phoneNumber, templateKey, variables = {}) => {
+export const queueWhatsAppMessage = async (phone, templateKey, variables = {}) => {
   const queue = (await retrieveCachedData('whatsapp:queue')) || [];
   queue.push({
-    phoneNumber,
+    phone,
     templateKey,
     variables,
     timestamp: Date.now(),
     retryCount: 0,
-    id: `msg_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+    id: `qwa_${Date.now()}`
   });
   await cacheData('whatsapp:queue', queue);
-  console.log(`[WhatsApp] Message queued for ${phoneNumber}`);
 };
 
-/**
- * Process queued WhatsApp messages (call when coming online)
- */
 export const processQueuedWhatsAppMessages = async () => {
   const queue = (await retrieveCachedData('whatsapp:queue')) || [];
-  let processed = 0;
+  if (queue.length === 0) return;
 
+  const remaining = [];
   for (const msg of queue) {
-    if (msg.retryCount >= RETRY_ATTEMPTS) {
-      console.warn(`[WhatsApp] Max retries exceeded for ${msg.phoneNumber}`);
-      continue;
-    }
-
-    try {
-      const result = await sendWhatsAppMessage(msg.phoneNumber, msg.templateKey, msg.variables);
-      if (result.success) {
-        processed++;
-        // Remove from queue
-        const updated = queue.filter(m => m.id !== msg.id);
-        await cacheData('whatsapp:queue', updated);
-      } else {
+    if (msg.retryCount < RETRY_ATTEMPTS) {
+      const result = await sendWhatsAppMessage(msg.phone, msg.templateKey, msg.variables);
+      if (!result.success) {
         msg.retryCount++;
-        msg.lastRetry = Date.now();
+        remaining.push(msg);
       }
-    } catch (err) {
-      console.error(`[WhatsApp] Retry failed for ${msg.phoneNumber}:`, err);
     }
-
-    await new Promise(resolve => setTimeout(resolve, 200));
   }
-
-  console.log(`[WhatsApp] Processed ${processed} queued messages`);
+  await cacheData('whatsapp:queue', remaining);
 };
 
-/**
- * Get WhatsApp message delivery status
- * @param {String} messageId - WhatsApp message ID
- * @returns {Promise<Object>} - Delivery status
- */
-export const getMessageStatus = async (messageId) => {
-  try {
-    const deliveryLog = await retrieveCachedData(`whatsapp:delivery:${messageId}`);
-    return deliveryLog || { messageId, status: 'unknown' };
-  } catch (err) {
-    console.error('[WhatsApp] Status check failed:', err);
-    return null;
-  }
+const logWhatsAppDelivery = async (phone, templateKey, messageId) => {
+  const log = { phone, templateKey, messageId, timestamp: new Date().toISOString(), status: 'sent' };
+  await cacheData(`wa_delivery_${messageId}`, log);
 };
-
-/**
- * Check WhatsApp service health and configuration
- */
-export const validateWhatsAppConfig = () => {
-  const config = {
-    hasPhoneId: !!PHONE_NUMBER_ID,
-    hasAccessToken: !!ACCESS_TOKEN,
-    hasApiUrl: !!WHATSAPP_API_BASE,
-    templatesCount: Object.keys(MESSAGE_TEMPLATES).length
-  };
-
-  const isValid = config.hasPhoneId && config.hasAccessToken;
-  console.log('[WhatsApp] Config validation:', { ...config, isValid });
-  return isValid;
-};
-
-// ===== Private Helpers =====
-
-/**
- * Interpolate variables into template string
- * @param {String} template - Template with {variableName} placeholders
- * @param {Object} variables - Variable values
- * @returns {String} - Interpolated message
- */
-function interpolateTemplate(template, variables) {
-  let message = template;
-  Object.entries(variables).forEach(([key, value]) => {
-    message = message.replace(new RegExp(`{${key}}`, 'g'), value);
-  });
-  return message;
-}
-
-/**
- * Log WhatsApp message delivery
- */
-async function logWhatsAppDelivery(phoneNumber, templateKey, messageId) {
-  const deliveryLog = {
-    phoneNumber,
-    templateKey,
-    messageId,
-    timestamp: new Date().toISOString(),
-    status: 'sent'
-  };
-  await cacheData(`whatsapp:delivery:${messageId}`, deliveryLog, 7 * 24 * 60 * 60 * 1000); // 7 days
-}
 
 export default {
   sendWhatsAppMessage,
   sendBatchWhatsAppMessages,
-  queueWhatsAppMessage,
   processQueuedWhatsAppMessages,
-  getMessageStatus,
-  validateWhatsAppConfig,
   MESSAGE_TEMPLATES
 };
