@@ -10,7 +10,7 @@ import { fetchSKUMaster, pushOrderToZoho } from '../services/zohoBridgeService';
 import marketplaceService from '../services/marketplaceService';
 import searchService from '../services/searchService';
 import marginProtectionService from '../services/marginProtectionService';
-import { getWhatsAppService } from '../services/whatsappServiceEnhanced';
+import { getWhatsAppService } from '../services/whatsappService';
 import webhookService from '../services/zohoWebhookService';
 import { syncDeltaOrders } from '../services/zohoBridgeService';
 import cacheService, { initOfflineCacheService } from '../services/offlineCacheService';

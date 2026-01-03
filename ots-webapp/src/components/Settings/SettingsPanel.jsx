@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import TwoFactorAuth from './TwoFactorAuth';
 import IPWhitelistManager from './IPWhitelistManager';
+import SecurityFortress from './SecurityFortress';
 
 const SettingsPanel = () => {
     const [settings, setSettings] = useState({
@@ -216,16 +217,8 @@ const SettingsPanel = () => {
                 </div>
 
                 {/* Security Settings (Enterprise Integration) */}
-                <div className="settings-card glass" style={{ padding: '24px', gridColumn: 'span 2' }}>
-                    <h3 style={{ marginBottom: '20px' }}>🔐 Enterprise Security Suite</h3>
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
-                        <TwoFactorAuth
-                            userId="ADMIN-001"
-                            onVerificationSuccess={() => console.log('2FA Enabled')}
-                            onCancel={() => console.log('2FA Setup Cancelled')}
-                        />
-                        <IPWhitelistManager onIpListUpdate={(list) => console.log('IP Whitelist Updated', list)} />
-                    </div>
+                <div className="settings-card glass" style={{ padding: '0', gridColumn: 'span 2', overflow: 'hidden' }}>
+                    <SecurityFortress />
                 </div>
 
                 {/* Push Notification Toggle */}
