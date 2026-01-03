@@ -1,5 +1,5 @@
-import { useState, useCallback, useEffect } from 'react';
-import { localStorageUtils, sessionStorageUtils } from '../../src/utils/storageUtils';
+import { useState, useCallback, useEffect } from 'react'
+import { localStorageUtils, sessionStorageUtils } from '../../src/utils/storageUtils'
 
 /**
  * Custom hook for managing localStorage with React state
@@ -11,28 +11,28 @@ import { localStorageUtils, sessionStorageUtils } from '../../src/utils/storageU
 export const useLocalStorage = (key, initialValue, expiryMs = null) => {
   const [storedValue, setStoredValue] = useState(() => {
     try {
-      return localStorageUtils.get(key, initialValue);
+      return localStorageUtils.get(key, initialValue)
     } catch (error) {
-      console.error(`Error reading localStorage key "${key}":`, error);
-      return initialValue;
+      console.error(`Error reading localStorage key "${key}":`, error)
+      return initialValue
     }
-  });
+  })
 
   const setValue = useCallback(
     (value) => {
       try {
-        const valueToStore = value instanceof Function ? value(storedValue) : value;
-        setStoredValue(valueToStore);
-        localStorageUtils.set(key, valueToStore, expiryMs);
+        const valueToStore = value instanceof Function ? value(storedValue) : value
+        setStoredValue(valueToStore)
+        localStorageUtils.set(key, valueToStore, expiryMs)
       } catch (error) {
-        console.error(`Error setting localStorage key "${key}":`, error);
+        console.error(`Error setting localStorage key "${key}":`, error)
       }
     },
     [key, storedValue, expiryMs]
-  );
+  )
 
-  return [storedValue, setValue];
-};
+  return [storedValue, setValue]
+}
 
 /**
  * Custom hook for managing sessionStorage with React state
@@ -43,28 +43,28 @@ export const useLocalStorage = (key, initialValue, expiryMs = null) => {
 export const useSessionStorage = (key, initialValue) => {
   const [storedValue, setStoredValue] = useState(() => {
     try {
-      return sessionStorageUtils.get(key, initialValue);
+      return sessionStorageUtils.get(key, initialValue)
     } catch (error) {
-      console.error(`Error reading sessionStorage key "${key}":`, error);
-      return initialValue;
+      console.error(`Error reading sessionStorage key "${key}":`, error)
+      return initialValue
     }
-  });
+  })
 
   const setValue = useCallback(
     (value) => {
       try {
-        const valueToStore = value instanceof Function ? value(storedValue) : value;
-        setStoredValue(valueToStore);
-        sessionStorageUtils.set(key, valueToStore);
+        const valueToStore = value instanceof Function ? value(storedValue) : value
+        setStoredValue(valueToStore)
+        sessionStorageUtils.set(key, valueToStore)
       } catch (error) {
-        console.error(`Error setting sessionStorage key "${key}":`, error);
+        console.error(`Error setting sessionStorage key "${key}":`, error)
       }
     },
     [key, storedValue]
-  );
+  )
 
-  return [storedValue, setValue];
-};
+  return [storedValue, setValue]
+}
 
 /**
  * Custom hook for managing multiple localStorage values
@@ -74,23 +74,23 @@ export const useSessionStorage = (key, initialValue) => {
  */
 export const useLocalStorageState = (namespace, initialState) => {
   const [state, setState] = useState(() => {
-    const stored = localStorageUtils.get(namespace, null);
-    return stored || initialState;
-  });
+    const stored = localStorageUtils.get(namespace, null)
+    return stored || initialState
+  })
 
   const updateState = useCallback(
     (updates) => {
       setState((prevState) => {
-        const newState = { ...prevState, ...updates };
-        localStorageUtils.set(namespace, newState);
-        return newState;
-      });
+        const newState = { ...prevState, ...updates }
+        localStorageUtils.set(namespace, newState)
+        return newState
+      })
     },
     [namespace]
-  );
+  )
 
-  return [state, updateState];
-};
+  return [state, updateState]
+}
 
 /**
  * Custom hook for managing preferences with localStorage
@@ -99,8 +99,8 @@ export const useLocalStorageState = (namespace, initialState) => {
  * @returns {[*, function]} - [preference, setPreference]
  */
 export const usePreference = (key, defaultValue) => {
-  return useLocalStorage(`pref_${key}`, defaultValue, 30 * 24 * 60 * 60 * 1000); // 30 days
-};
+  return useLocalStorage(`pref_${key}`, defaultValue, 30 * 24 * 60 * 60 * 1000) // 30 days
+}
 
 /**
  * Custom hook for managing user settings with localStorage
@@ -108,21 +108,21 @@ export const usePreference = (key, defaultValue) => {
  * @returns {[Object, function, function]} - [settings, updateSetting, reset]
  */
 export const useUserSettings = (initialSettings) => {
-  const [settings, setSettings] = useLocalStorageState('user_settings', initialSettings);
+  const [settings, setSettings] = useLocalStorageState('user_settings', initialSettings)
 
   const updateSetting = useCallback(
     (key, value) => {
-      setSettings({ [key]: value });
+      setSettings({ [key]: value })
     },
     [setSettings]
-  );
+  )
 
   const resetSettings = useCallback(() => {
-    setSettings(initialSettings);
-  }, [initialSettings, setSettings]);
+    setSettings(initialSettings)
+  }, [initialSettings, setSettings])
 
-  return [settings, updateSetting, resetSettings];
-};
+  return [settings, updateSetting, resetSettings]
+}
 
 /**
  * Custom hook for managing temporary session data
@@ -131,8 +131,8 @@ export const useUserSettings = (initialSettings) => {
  * @returns {[*, function]} - [value, setValue]
  */
 export const useSessionValue = (key, initialValue) => {
-  return useSessionStorage(key, initialValue);
-};
+  return useSessionStorage(key, initialValue)
+}
 
 export default {
   useLocalStorage,
@@ -141,4 +141,4 @@ export default {
   usePreference,
   useUserSettings,
   useSessionValue,
-};
+}

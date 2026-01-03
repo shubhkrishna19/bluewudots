@@ -13,6 +13,7 @@ The `utils` directory contains production-grade utility modules that provide reu
 Provides abstractions for browser storage with automatic serialization and expiry handling.
 
 **Key Features:**
+
 - localStorage wrapper with expiry support
 - sessionStorage management
 - IndexedDB abstraction layer
@@ -20,6 +21,7 @@ Provides abstractions for browser storage with automatic serialization and expir
 - Error handling and fallbacks
 
 **Usage:**
+
 ```javascript
 import { localStorageUtils, sessionStorageUtils, indexedDBUtils } from './storageUtils';
 
@@ -41,6 +43,7 @@ await indexedDBUtils.put('orders', { id: 1, data: {...} });
 Handles API requests with retry logic, offline support, and response normalization.
 
 **Key Features:**
+
 - Automatic retry with exponential backoff
 - Offline response caching
 - Request/response normalization
@@ -49,24 +52,25 @@ Handles API requests with retry logic, offline support, and response normalizati
 - Customizable timeout and retry policies
 
 **Usage:**
+
 ```javascript
-import { get, post, batch, queueForRetry, processQueue } from './apiUtils';
+import { get, post, batch, queueForRetry, processQueue } from './apiUtils'
 
 // Simple GET request
-const response = await get('/api/orders');
+const response = await get('/api/orders')
 
 // POST with automatic offline caching
-const result = await post('/api/orders', orderData, { cacheOffline: true });
+const result = await post('/api/orders', orderData, { cacheOffline: true })
 
 // Batch requests
 const results = await batch([
   ['/api/orders', { method: 'GET' }],
-  ['/api/users', { method: 'GET' }]
-]);
+  ['/api/users', { method: 'GET' }],
+])
 
 // Queue requests made offline
-queueForRetry('/api/sync', { method: 'POST', body: data });
-await processQueue(); // Process when back online
+queueForRetry('/api/sync', { method: 'POST', body: data })
+await processQueue() // Process when back online
 ```
 
 ### Format Utilities (`formatUtils.js`)
@@ -74,6 +78,7 @@ await processQueue(); // Process when back online
 Provides data formatting functions for display and output.
 
 **Key Features:**
+
 - Date/datetime formatting (human-readable, ISO, etc.)
 - Currency formatting (INR optimized)
 - Phone number formatting (international & Indian)
@@ -83,15 +88,20 @@ Provides data formatting functions for display and output.
 - Duration formatting (ms to human-readable)
 
 **Usage:**
+
 ```javascript
 import {
-  formatDate, formatCurrency, formatPhone, formatAddress, formatDuration
-} from './formatUtils';
+  formatDate,
+  formatCurrency,
+  formatPhone,
+  formatAddress,
+  formatDuration,
+} from './formatUtils'
 
-formatDate(new Date()); // "Jan 15, 2024"
-formatCurrency(1500.50); // "₹1,500.50"
-formatPhone('9876543210'); // "+91-9876-543210"
-formatDuration(3665000); // "1h 1m 5s"
+formatDate(new Date()) // "Jan 15, 2024"
+formatCurrency(1500.5) // "₹1,500.50"
+formatPhone('9876543210') // "+91-9876-543210"
+formatDuration(3665000) // "1h 1m 5s"
 ```
 
 ### Validation Utilities (`validationUtils.js`)
@@ -99,6 +109,7 @@ formatDuration(3665000); // "1h 1m 5s"
 Comprehensive validation functions for business logic and data integrity.
 
 **Key Features:**
+
 - Email & phone validation
 - Pincode validation (Indian postal codes)
 - Order validation (status, payment, dates)
@@ -108,14 +119,13 @@ Comprehensive validation functions for business logic and data integrity.
 - Data sanitization
 
 **Usage:**
-```javascript
-import {
-  validateEmail, validatePhone, validateOrder, sanitizeInput
-} from './validationUtils';
 
-if (!validateEmail(email)) throw new Error('Invalid email');
-if (!validatePhone(phone)) throw new Error('Invalid phone');
-const sanitized = sanitizeInput(userInput);
+```javascript
+import { validateEmail, validatePhone, validateOrder, sanitizeInput } from './validationUtils'
+
+if (!validateEmail(email)) throw new Error('Invalid email')
+if (!validatePhone(phone)) throw new Error('Invalid phone')
+const sanitized = sanitizeInput(userInput)
 ```
 
 ### Date/Time Utilities (`dateTimeUtils.js`)
@@ -123,6 +133,7 @@ const sanitized = sanitizeInput(userInput);
 Advanced date and time operations including scheduling, calendar, and timezone handling.
 
 **Key Features:**
+
 - Date arithmetic (add days/hours/minutes)
 - Date comparisons (past, future, today, etc.)
 - Calendar operations (start/end of day/week/month)
@@ -133,31 +144,40 @@ Advanced date and time operations including scheduling, calendar, and timezone h
 - Timezone conversion
 
 **Usage:**
+
 ```javascript
 import {
-  addDays, daysBetween, startOfMonth, getBusinessDaysBetween,
-  scheduleAt, getRelativeTime
-} from './dateTimeUtils';
+  addDays,
+  daysBetween,
+  startOfMonth,
+  getBusinessDaysBetween,
+  scheduleAt,
+  getRelativeTime,
+} from './dateTimeUtils'
 
-const nextWeek = addDays(new Date(), 7);
-const days = daysBetween(startDate, endDate);
-const bizDays = getBusinessDaysBetween(date1, date2);
-scheduleAt(targetTime, callback); // Execute at specific time
-getRelativeTime(pastDate); // "2 days ago"
+const nextWeek = addDays(new Date(), 7)
+const days = daysBetween(startDate, endDate)
+const bizDays = getBusinessDaysBetween(date1, date2)
+scheduleAt(targetTime, callback) // Execute at specific time
+getRelativeTime(pastDate) // "2 days ago"
 ```
 
 ### Existing Utilities
 
 #### commercialUtils.js
+
 Commercial data formatting and calculations (pricing, margins, etc.)
 
 #### dataUtils.js
+
 Data transformation, deduplication, and aggregation utilities.
 
 #### labelGenerator.js
+
 Shipping label and document generation utilities.
 
 #### logisticsUtils.js
+
 Logistics calculations and recommendations (carrier selection, route optimization).
 
 ## Integration Patterns
@@ -168,25 +188,25 @@ Utilities integrate seamlessly with service layer:
 
 ```javascript
 // In a service
-import apiUtils from './utils/apiUtils';
-import { formatCurrency } from './utils/formatUtils';
-import { validateOrder } from './utils/validationUtils';
+import apiUtils from './utils/apiUtils'
+import { formatCurrency } from './utils/formatUtils'
+import { validateOrder } from './utils/validationUtils'
 
 const OrderService = {
   async createOrder(orderData) {
     // Validate
-    if (!validateOrder(orderData)) throw new Error('Invalid order');
-    
+    if (!validateOrder(orderData)) throw new Error('Invalid order')
+
     // Send with offline support
-    const response = await apiUtils.post('/orders', orderData);
-    
+    const response = await apiUtils.post('/orders', orderData)
+
     // Format for display
     return {
       ...response.data,
-      totalDisplay: formatCurrency(response.data.total)
-    };
-  }
-};
+      totalDisplay: formatCurrency(response.data.total),
+    }
+  },
+}
 ```
 
 ### Component Integration
@@ -195,8 +215,8 @@ Utilities simplify component logic:
 
 ```javascript
 // In a React component
-import { formatDate, getRelativeTime } from '../utils/dateTimeUtils';
-import { formatCurrency } from '../utils/formatUtils';
+import { formatDate, getRelativeTime } from '../utils/dateTimeUtils'
+import { formatCurrency } from '../utils/formatUtils'
 
 function OrderCard({ order }) {
   return (
@@ -205,7 +225,7 @@ function OrderCard({ order }) {
       <p>Total: {formatCurrency(order.total)}</p>
       <p>Created: {getRelativeTime(order.createdAt)}</p>
     </div>
-  );
+  )
 }
 ```
 
@@ -238,6 +258,7 @@ When creating new utility modules:
 ## Contributing
 
 When contributing utilities:
+
 - Follow existing code style and patterns
 - Add comprehensive JSDoc comments
 - Include error handling

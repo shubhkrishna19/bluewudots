@@ -1,7 +1,7 @@
 /**
  * Push Notification Service
  * Manages web push notifications for real-time alerts
- * 
+ *
  * Features:
  * - Service Worker integration
  * - Subscription management
@@ -12,15 +12,15 @@
 
 class PushNotificationService {
   constructor(vapidPublicKey) {
-    this.vapidPublicKey = vapidPublicKey;
-    this.swRegistration = null;
-    this.subscriptions = new Map();
+    this.vapidPublicKey = vapidPublicKey
+    this.swRegistration = null
+    this.subscriptions = new Map()
     this.notificationSettings = {
       badge: '/badge-icon.png',
       icon: '/notification-icon.png',
       vibrate: [100, 50, 100],
-      tag: 'bluewud-notification'
-    };
+      tag: 'bluewud-notification',
+    }
   }
 
   /**
@@ -31,45 +31,42 @@ class PushNotificationService {
     try {
       // Check browser support
       if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
-        console.warn('Push Notifications not supported in this browser');
-        return;
+        console.warn('Push Notifications not supported in this browser')
+        return
       }
 
       // Register Service Worker
-      this.swRegistration = await navigator.serviceWorker.register(
-        '/sw.js',
-        { scope: '/' }
-      );
-      console.log('Service Worker registered for Push Notifications');
+      this.swRegistration = await navigator.serviceWorker.register('/sw.js', { scope: '/' })
+      console.log('Service Worker registered for Push Notifications')
 
       // Check for existing subscription
-      const existingSubscription = await this.swRegistration.pushManager.getSubscription();
+      const existingSubscription = await this.swRegistration.pushManager.getSubscription()
       if (existingSubscription) {
-        this.subscriptions.set('default', existingSubscription);
+        this.subscriptions.set('default', existingSubscription)
       }
 
       // Listen for push messages
       navigator.serviceWorker.addEventListener('message', (event) => {
         if (event.data.type === 'PUSH_NOTIFICATION') {
-          this.handleNotificationClick(event.data);
+          this.handleNotificationClick(event.data)
         }
-      });
+      })
     } catch (error) {
-      console.error('Failed to initialize Push Notifications:', error);
+      console.error('Failed to initialize Push Notifications:', error)
     }
   }
 
   // Alias for App.jsx compatibility
   async registerServiceWorker() {
-    return this.initialize();
+    return this.initialize()
   }
 
   async subscribeUser() {
     // Compatibility with HEAD version usage if any
     // Assuming user ID is not available here, we might need to handle this.
     // For now, reuse registerPushSubscription with a placeholder or throw.
-    console.warn("subscribeUser called without userId, using default");
-    return this.registerPushSubscription('default-user');
+    console.warn('subscribeUser called without userId, using default')
+    return this.registerPushSubscription('default-user')
   }
 
   /**
@@ -84,47 +81,47 @@ class PushNotificationService {
         return {
           success: false,
           error: 'Notification permission denied',
-          userId
-        };
+          userId,
+        }
       }
 
       // Request permission if needed
       if (Notification.permission !== 'granted') {
-        const permission = await Notification.requestPermission();
+        const permission = await Notification.requestPermission()
         if (permission !== 'granted') {
           return {
             success: false,
             error: 'User denied notification permission',
-            userId
-          };
+            userId,
+          }
         }
       }
 
       // Subscribe to push
       const subscription = await this.swRegistration.pushManager.subscribe({
         userVisibleOnly: true,
-        applicationServerKey: this.urlBase64ToUint8Array(this.vapidPublicKey || 'BIN2Jc5VkkmiY...') // Fallback key if env missing
-      });
+        applicationServerKey: this.urlBase64ToUint8Array(this.vapidPublicKey || 'BIN2Jc5VkkmiY...'), // Fallback key if env missing
+      })
 
       // Store subscription
-      this.subscriptions.set(userId, subscription);
+      this.subscriptions.set(userId, subscription)
 
       // Persist to backend
-      await this.persistSubscription(userId, subscription);
+      await this.persistSubscription(userId, subscription)
 
       return {
         success: true,
         subscription: subscription.toJSON(),
         userId,
-        timestamp: new Date().toISOString()
-      };
+        timestamp: new Date().toISOString(),
+      }
     } catch (error) {
-      console.error('Failed to register push subscription:', error);
+      console.error('Failed to register push subscription:', error)
       return {
         success: false,
         error: error.message,
-        userId
-      };
+        userId,
+      }
     }
   }
 
@@ -135,17 +132,17 @@ class PushNotificationService {
    */
   async unregisterPushSubscription(userId) {
     try {
-      const subscription = this.subscriptions.get(userId);
+      const subscription = this.subscriptions.get(userId)
       if (subscription) {
-        await subscription.unsubscribe();
-        this.subscriptions.delete(userId);
-        await this.removeSubscription(userId);
-        return true;
+        await subscription.unsubscribe()
+        this.subscriptions.delete(userId)
+        await this.removeSubscription(userId)
+        return true
       }
-      return false;
+      return false
     } catch (error) {
-      console.error('Failed to unregister push subscription:', error);
-      return false;
+      console.error('Failed to unregister push subscription:', error)
+      return false
     }
   }
 
@@ -159,23 +156,23 @@ class PushNotificationService {
     try {
       if (!this.swRegistration) {
         // Try to get registration if missing
-        this.swRegistration = await navigator.serviceWorker.ready;
+        this.swRegistration = await navigator.serviceWorker.ready
       }
 
       if (!this.swRegistration) {
-        throw new Error('Service Worker not registered');
+        throw new Error('Service Worker not registered')
       }
 
       const notificationOptions = {
         ...this.notificationSettings,
         ...options,
         tag: options.tag || this.notificationSettings.tag,
-        requireInteraction: options.requireInteraction || false
-      };
+        requireInteraction: options.requireInteraction || false,
+      }
 
-      await this.swRegistration.showNotification(title, notificationOptions);
+      await this.swRegistration.showNotification(title, notificationOptions)
     } catch (error) {
-      console.error('Failed to send notification:', error);
+      console.error('Failed to send notification:', error)
     }
   }
 
@@ -185,7 +182,7 @@ class PushNotificationService {
    * @returns {Promise<void>}
    */
   async sendOrderStatusNotification(order) {
-    const title = `Order ${order.id} - ${order.status}`;
+    const title = `Order ${order.id} - ${order.status}`
     const options = {
       body: order.message || `Your order status: ${order.status}`,
       icon: '/order-icon.png',
@@ -195,23 +192,23 @@ class PushNotificationService {
         orderId: order.id,
         status: order.status,
         timestamp: Date.now(),
-        url: `/orders/${order.id}`
+        url: `/orders/${order.id}`,
       },
       actions: [
         {
           action: 'open',
           title: 'View Order',
-          icon: '/icons/view.png'
+          icon: '/icons/view.png',
         },
         {
           action: 'close',
           title: 'Dismiss',
-          icon: '/icons/close.png'
-        }
-      ]
-    };
+          icon: '/icons/close.png',
+        },
+      ],
+    }
 
-    await this.sendNotification(title, options);
+    await this.sendNotification(title, options)
   }
 
   /**
@@ -220,7 +217,7 @@ class PushNotificationService {
    */
   handleNotificationClick(data) {
     if (data.action === 'open' && data.url) {
-      window.location.href = data.url;
+      window.location.href = data.url
     }
   }
 
@@ -230,13 +227,13 @@ class PushNotificationService {
    * @returns {object} Subscription status
    */
   getSubscriptionStatus(userId) {
-    const subscription = this.subscriptions.get(userId);
+    const subscription = this.subscriptions.get(userId)
     return {
       userId,
       isSubscribed: !!subscription,
       subscription: subscription ? subscription.toJSON() : null,
-      permissionStatus: Notification.permission
-    };
+      permissionStatus: Notification.permission,
+    }
   }
 
   /**
@@ -254,14 +251,14 @@ class PushNotificationService {
         },
         body: JSON.stringify({
           userId,
-          subscription: subscription.toJSON()
-        })
-      });
+          subscription: subscription.toJSON(),
+        }),
+      })
 
-      return response.ok;
+      return response.ok
     } catch (error) {
-      console.error('Failed to persist subscription:', error);
-      return false;
+      console.error('Failed to persist subscription:', error)
+      return false
     }
   }
 
@@ -273,12 +270,12 @@ class PushNotificationService {
   async removeSubscription(userId) {
     try {
       const response = await fetch(`/api/push-subscriptions/${userId}`, {
-        method: 'DELETE'
-      });
-      return response.ok;
+        method: 'DELETE',
+      })
+      return response.ok
     } catch (error) {
-      console.error('Failed to remove subscription:', error);
-      return false;
+      console.error('Failed to remove subscription:', error)
+      return false
     }
   }
 
@@ -288,33 +285,31 @@ class PushNotificationService {
    * @returns {Uint8Array}
    */
   urlBase64ToUint8Array(base64String) {
-    const padding = '='.repeat((4 - base64String.length % 4) % 4);
-    const base64 = (base64String + padding)
-      .replace(/\-/g, '+')
-      .replace(/_/g, '/');
+    const padding = '='.repeat((4 - (base64String.length % 4)) % 4)
+    const base64 = (base64String + padding).replace(/\-/g, '+').replace(/_/g, '/')
 
-    const rawData = window.atob(base64);
-    const outputArray = new Uint8Array(rawData.length);
+    const rawData = window.atob(base64)
+    const outputArray = new Uint8Array(rawData.length)
 
     for (let i = 0; i < rawData.length; ++i) {
-      outputArray[i] = rawData.charCodeAt(i);
+      outputArray[i] = rawData.charCodeAt(i)
     }
 
-    return outputArray;
+    return outputArray
   }
 }
 
 // Export as singleton instance
 // This ensures 'import pushNotificationService from ...' works as expected in App.jsx
-const vapidKey = import.meta.env.VITE_VAPID_PUBLIC_KEY || '';
-const pushNotificationInstance = new PushNotificationService(vapidKey);
+const vapidKey = import.meta.env.VITE_VAPID_PUBLIC_KEY || ''
+const pushNotificationInstance = new PushNotificationService(vapidKey)
 
 export const initPushNotificationService = (key) => {
   // Re-initialize if needed with specific key, though typically env var is enough
-  pushNotificationInstance.vapidPublicKey = key;
-  return pushNotificationInstance;
-};
+  pushNotificationInstance.vapidPublicKey = key
+  return pushNotificationInstance
+}
 
-export const getPushNotificationService = () => pushNotificationInstance;
+export const getPushNotificationService = () => pushNotificationInstance
 
-export default pushNotificationInstance;
+export default pushNotificationInstance

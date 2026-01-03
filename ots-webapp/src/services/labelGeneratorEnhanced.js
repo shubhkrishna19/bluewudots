@@ -10,9 +10,9 @@ class LabelGeneratorEnhanced {
       delhivery: { baseUrl: 'https://track.delhivery.com', apiKey: '' },
       bluedart: { baseUrl: 'https://www.bluedartexpress.com', apiKey: '' },
       xpressbees: { baseUrl: 'https://www.xpressbees.com', apiKey: '' },
-      gati: { baseUrl: 'https://www.gatikyc.com', apiKey: '' }
-    };
-    this.cache = new Map();
+      gati: { baseUrl: 'https://www.gatikyc.com', apiKey: '' },
+    }
+    this.cache = new Map()
   }
 
   /**
@@ -20,20 +20,20 @@ class LabelGeneratorEnhanced {
    */
   async generateLabel(order, carrierName) {
     try {
-      const carrier = this.carriers[carrierName.toLowerCase()];
+      const carrier = this.carriers[carrierName.toLowerCase()]
       if (!carrier) {
-        throw new Error(`Unsupported carrier: ${carrierName}`);
+        throw new Error(`Unsupported carrier: ${carrierName}`)
       }
 
       // Validate order
-      this.validateOrderForLabel(order);
+      this.validateOrderForLabel(order)
 
       // Generate carrier-specific label
-      const labelData = this._generateCarrierLabel(order, carrierName);
-      return labelData;
+      const labelData = this._generateCarrierLabel(order, carrierName)
+      return labelData
     } catch (error) {
-      console.error('Label generation failed:', error);
-      throw error;
+      console.error('Label generation failed:', error)
+      throw error
     }
   }
 
@@ -41,15 +41,15 @@ class LabelGeneratorEnhanced {
    * Validate order has required fields for label generation
    */
   validateOrderForLabel(order) {
-    const required = ['orderId', 'customerName', 'phone', 'shippingAddress', 'items'];
-    required.forEach(field => {
+    const required = ['orderId', 'customerName', 'phone', 'shippingAddress', 'items']
+    required.forEach((field) => {
       if (!order[field]) {
-        throw new Error(`Missing required field for label: ${field}`);
+        throw new Error(`Missing required field for label: ${field}`)
       }
-    });
+    })
 
     if (!order.shippingAddress.address || !order.shippingAddress.pincode) {
-      throw new Error('Incomplete shipping address');
+      throw new Error('Incomplete shipping address')
     }
   }
 
@@ -57,9 +57,9 @@ class LabelGeneratorEnhanced {
    * Generate Delhivery label format
    */
   _generateDelhiveryLabel(order) {
-    const items = order.items || [];
-    const weight = this._calculateWeight(items);
-    const dimensions = this._calculateDimensions(items);
+    const items = order.items || []
+    const weight = this._calculateWeight(items)
+    const dimensions = this._calculateDimensions(items)
 
     return {
       shipmentId: `DHV-${order.orderId}-${Date.now()}`,
@@ -71,7 +71,7 @@ class LabelGeneratorEnhanced {
           address: 'Bluewud Warehouse',
           pincode: '110001',
           phone: '+91-11-XXXX-XXXX',
-          email: 'shipping@bluewud.com'
+          email: 'shipping@bluewud.com',
         },
         consignee: {
           name: order.customerName,
@@ -80,7 +80,7 @@ class LabelGeneratorEnhanced {
           state: order.shippingAddress.state,
           pincode: order.shippingAddress.pincode,
           phone: order.phone,
-          email: order.email
+          email: order.email,
         },
         shipment: {
           orderId: order.orderId,
@@ -89,18 +89,18 @@ class LabelGeneratorEnhanced {
           pieces: items.length,
           serviceType: 'surface',
           amount: order.amount,
-          contents: items.map(item => `${item.quantity}x ${item.name}`).join('; ')
-        }
-      }
-    };
+          contents: items.map((item) => `${item.quantity}x ${item.name}`).join('; '),
+        },
+      },
+    }
   }
 
   /**
    * Generate BlueDart label format
    */
   _generateBluedartLabel(order) {
-    const items = order.items || [];
-    const weight = this._calculateWeight(items);
+    const items = order.items || []
+    const weight = this._calculateWeight(items)
 
     return {
       shipmentId: `BD-${order.orderId}-${Date.now()}`,
@@ -110,31 +110,31 @@ class LabelGeneratorEnhanced {
         shipper: {
           name: 'Bluewud',
           address: 'Bluewud Warehouse',
-          pincode: '110001'
+          pincode: '110001',
         },
         receiver: {
           name: order.customerName,
           address: order.shippingAddress.address,
           pincode: order.shippingAddress.pincode,
-          phone: order.phone
+          phone: order.phone,
         },
         shipmentDetails: {
           refNo: order.orderId,
           weight,
           serviceType: 'parcel',
           cod: order.amount,
-          product: items.map(i => i.name).join(', ')
-        }
-      }
-    };
+          product: items.map((i) => i.name).join(', '),
+        },
+      },
+    }
   }
 
   /**
    * Generate XpressBees label format
    */
   _generateXpressbeesLabel(order) {
-    const items = order.items || [];
-    const weight = this._calculateWeight(items);
+    const items = order.items || []
+    const weight = this._calculateWeight(items)
 
     return {
       shipmentId: `XB-${order.orderId}-${Date.now()}`,
@@ -145,14 +145,14 @@ class LabelGeneratorEnhanced {
           name: 'Bluewud Warehouse',
           address: 'Warehouse Address',
           pincode: '110001',
-          state_code: 'DL'
+          state_code: 'DL',
         },
         delivery: {
           name: order.customerName,
           address: order.shippingAddress.address,
           pincode: order.shippingAddress.pincode,
           state_code: this._getStateCode(order.shippingAddress.state),
-          phone: order.phone
+          phone: order.phone,
         },
         shipment: {
           awb: `XB${order.orderId}`,
@@ -162,10 +162,10 @@ class LabelGeneratorEnhanced {
           breadth: 20,
           height: 10,
           cod: order.amount,
-          description: items.map(i => i.name).join(', ')
-        }
-      }
-    };
+          description: items.map((i) => i.name).join(', '),
+        },
+      },
+    }
   }
 
   /**
@@ -174,13 +174,13 @@ class LabelGeneratorEnhanced {
   _generateCarrierLabel(order, carrierName) {
     switch (carrierName.toLowerCase()) {
       case 'delhivery':
-        return this._generateDelhiveryLabel(order);
+        return this._generateDelhiveryLabel(order)
       case 'bluedart':
-        return this._generateBluedartLabel(order);
+        return this._generateBluedartLabel(order)
       case 'xpressbees':
-        return this._generateXpressbeesLabel(order);
+        return this._generateXpressbeesLabel(order)
       default:
-        throw new Error(`Unsupported carrier: ${carrierName}`);
+        throw new Error(`Unsupported carrier: ${carrierName}`)
     }
   }
 
@@ -188,7 +188,7 @@ class LabelGeneratorEnhanced {
    * Calculate total weight from items
    */
   _calculateWeight(items) {
-    return items.reduce((total, item) => total + (item.weight || 0.5), 0);
+    return items.reduce((total, item) => total + (item.weight || 0.5), 0)
   }
 
   /**
@@ -199,8 +199,8 @@ class LabelGeneratorEnhanced {
       length: 30,
       width: 20,
       height: 10,
-      unit: 'cm'
-    };
+      unit: 'cm',
+    }
   }
 
   /**
@@ -208,35 +208,35 @@ class LabelGeneratorEnhanced {
    */
   _getStateCode(stateName) {
     const stateMap = {
-      'Delhi': 'DL',
-      'Maharashtra': 'MH',
-      'Karnataka': 'KA',
+      Delhi: 'DL',
+      Maharashtra: 'MH',
+      Karnataka: 'KA',
       'Tamil Nadu': 'TN',
       'Uttar Pradesh': 'UP',
       'West Bengal': 'WB',
-      'Rajasthan': 'RJ',
-      'Gujarat': 'GJ'
-    };
-    return stateMap[stateName] || 'XX';
+      Rajasthan: 'RJ',
+      Gujarat: 'GJ',
+    }
+    return stateMap[stateName] || 'XX'
   }
 
   /**
    * Generate batch labels for multiple orders
    */
   async generateBatchLabels(orders, carrierName) {
-    const labels = [];
+    const labels = []
     for (const order of orders) {
       try {
-        const label = await this.generateLabel(order, carrierName);
-        labels.push(label);
+        const label = await this.generateLabel(order, carrierName)
+        labels.push(label)
       } catch (error) {
         labels.push({
           orderId: order.orderId,
-          error: error.message
-        });
+          error: error.message,
+        })
       }
     }
-    return labels;
+    return labels
   }
 
   /**
@@ -247,17 +247,17 @@ class LabelGeneratorEnhanced {
     return {
       success: true,
       fileName: `${labelData.shipmentId}.pdf`,
-      base64: 'PDF data would be here'
-    };
+      base64: 'PDF data would be here',
+    }
   }
 
   /**
    * Generate ZPL String for Thermal Printers
    */
   generateZPL(labelData) {
-    const { shipper, consignee, shipment, shipmentDetails, delivery } = labelData.data;
-    const dest = consignee || receiver || delivery;
-    const ship = shipment || shipmentDetails;
+    const { shipper, consignee, shipment, shipmentDetails, delivery } = labelData.data
+    const dest = consignee || receiver || delivery
+    const ship = shipment || shipmentDetails
 
     // Industrial Standard 4x6 Thermal Label ZPL Template
     return `
@@ -285,16 +285,16 @@ class LabelGeneratorEnhanced {
 ^FO50,580^FDItems: ${labelData.data.shipment?.contents || 'Package Content'}^FS
 ^FO450,540^FDWeight: ${labelData.data.shipment?.weight || '0.5'} KG^FS
 ^XZ
-    `.trim();
+    `.trim()
   }
 
   /**
    * Track shipment
    */
   async trackShipment(shipmentId, carrierName) {
-    const carrier = this.carriers[carrierName.toLowerCase()];
+    const carrier = this.carriers[carrierName.toLowerCase()]
     if (!carrier) {
-      throw new Error(`Unsupported carrier: ${carrierName}`);
+      throw new Error(`Unsupported carrier: ${carrierName}`)
     }
 
     // This would call the actual carrier API
@@ -303,22 +303,22 @@ class LabelGeneratorEnhanced {
       carrier: carrierName,
       status: 'in_transit',
       lastUpdate: new Date().toISOString(),
-      events: []
-    };
+      events: [],
+    }
   }
 
   /**
    * Validate carrier API credentials
    */
   setCarrierCredentials(carrierName, apiKey) {
-    const carrier = this.carriers[carrierName.toLowerCase()];
+    const carrier = this.carriers[carrierName.toLowerCase()]
     if (!carrier) {
-      throw new Error(`Unsupported carrier: ${carrierName}`);
+      throw new Error(`Unsupported carrier: ${carrierName}`)
     }
-    carrier.apiKey = apiKey;
+    carrier.apiKey = apiKey
   }
 }
 
 // Export singleton instance
-const labelGenerator = new LabelGeneratorEnhanced();
-export default labelGenerator;
+const labelGenerator = new LabelGeneratorEnhanced()
+export default labelGenerator

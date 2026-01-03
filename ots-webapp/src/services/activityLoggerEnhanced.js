@@ -4,13 +4,13 @@
  * Persists logs to Zoho Catalyst backend
  */
 
-const ACTIVITY_LOG_KEY = 'activity-logs';
-const LOG_BATCH_SIZE = 50;
-const SYNC_INTERVAL = 60000; // 1 minute
-const LOG_RETENTION_DAYS = 90;
+const ACTIVITY_LOG_KEY = 'activity-logs'
+const LOG_BATCH_SIZE = 50
+const SYNC_INTERVAL = 60000 // 1 minute
+const LOG_RETENTION_DAYS = 90
 
-let syncTimer = null;
-let logQueue = [];
+let syncTimer = null
+let logQueue = []
 
 /**
  * Log an activity to the local queue and Catalyst
@@ -33,7 +33,7 @@ export const logActivity = async (activity = {}) => {
     userEmail = 'system@bluewud.com',
     ipAddress = 'unknown',
     duration = 0,
-  } = activity;
+  } = activity
 
   const log = {
     id: generateLogId(),
@@ -46,19 +46,19 @@ export const logActivity = async (activity = {}) => {
     duration,
     data,
     status: 'pending',
-  };
+  }
 
   // Add to local queue
-  logQueue.push(log);
-  await saveLogLocally(log);
+  logQueue.push(log)
+  await saveLogLocally(log)
 
   // Sync if batch size reached
   if (logQueue.length >= LOG_BATCH_SIZE) {
-    await syncLogsToBackend();
+    await syncLogsToBackend()
   }
 
-  return log;
-};
+  return log
+}
 
 /**
  * Log an order-related activity
@@ -79,8 +79,8 @@ export const logOrderActivity = async (order, action, userId) => {
       summary: `Order ${order.id} - ${action}`,
     },
     userId,
-  });
-};
+  })
+}
 
 /**
  * Log an inventory-related activity
@@ -104,8 +104,8 @@ export const logInventoryActivity = async (inventory, action, quantityChange, us
       summary: `Inventory ${action}: ${inventory.skuName}`,
     },
     userId,
-  });
-};
+  })
+}
 
 /**
  * Log a user authentication activity
@@ -129,8 +129,8 @@ export const logAuthActivity = async (action, userId, userEmail, success, reason
     },
     userId,
     userEmail,
-  });
-};
+  })
+}
 
 /**
  * Log a report or data export activity
@@ -151,8 +151,8 @@ export const logReportActivity = async (reportName, filters, recordCount, userId
       summary: `Report exported: ${reportName} (${recordCount} records)`,
     },
     userId,
-  });
-};
+  })
+}
 
 /**
  * Save activity log locally to IndexedDB or localStorage
@@ -161,28 +161,28 @@ export const logReportActivity = async (reportName, filters, recordCount, userId
  */
 const saveLogLocally = async (log) => {
   try {
-    const logs = JSON.parse(localStorage.getItem(ACTIVITY_LOG_KEY) || '[]');
-    logs.push(log);
-    
+    const logs = JSON.parse(localStorage.getItem(ACTIVITY_LOG_KEY) || '[]')
+    logs.push(log)
+
     // Keep only last 1000 logs locally
     if (logs.length > 1000) {
-      logs.shift();
+      logs.shift()
     }
-    
-    localStorage.setItem(ACTIVITY_LOG_KEY, JSON.stringify(logs));
+
+    localStorage.setItem(ACTIVITY_LOG_KEY, JSON.stringify(logs))
   } catch (error) {
-    console.warn('Failed to save log locally:', error);
+    console.warn('Failed to save log locally:', error)
   }
-};
+}
 
 /**
  * Sync pending logs to Catalyst backend
  * @returns {Promise<void>}
  */
 export const syncLogsToBackend = async () => {
-  const pendingLogs = logQueue.filter((log) => log.status === 'pending');
+  const pendingLogs = logQueue.filter((log) => log.status === 'pending')
 
-  if (pendingLogs.length === 0) return;
+  if (pendingLogs.length === 0) return
 
   try {
     // This should call your Catalyst cloud function
@@ -191,7 +191,7 @@ export const syncLogsToBackend = async () => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('auth-token')}`,
+        Authorization: `Bearer ${localStorage.getItem('auth-token')}`,
       },
       body: JSON.stringify({
         logs: pendingLogs.map((log) => ({
@@ -199,23 +199,21 @@ export const syncLogsToBackend = async () => {
           status: 'synced',
         })),
       }),
-    });
+    })
 
     if (response.ok) {
       // Mark logs as synced
       logQueue = logQueue.map((log) =>
-        pendingLogs.some((p) => p.id === log.id)
-          ? { ...log, status: 'synced' }
-          : log
-      );
-      console.log(`Synced ${pendingLogs.length} activity logs to backend`);
+        pendingLogs.some((p) => p.id === log.id) ? { ...log, status: 'synced' } : log
+      )
+      console.log(`Synced ${pendingLogs.length} activity logs to backend`)
     } else {
-      console.warn('Failed to sync activity logs:', response.statusText);
+      console.warn('Failed to sync activity logs:', response.statusText)
     }
   } catch (error) {
-    console.error('Error syncing activity logs:', error);
+    console.error('Error syncing activity logs:', error)
   }
-};
+}
 
 /**
  * Get activity logs with optional filters
@@ -227,36 +225,31 @@ export const syncLogsToBackend = async () => {
  * @returns {Array} Filtered activity logs
  */
 export const getActivityLogs = (filters = {}) => {
-  const {
-    module = null,
-    action = null,
-    userId = null,
-    limit = 100,
-  } = filters;
+  const { module = null, action = null, userId = null, limit = 100 } = filters
 
   try {
-    let logs = JSON.parse(localStorage.getItem(ACTIVITY_LOG_KEY) || '[]');
+    let logs = JSON.parse(localStorage.getItem(ACTIVITY_LOG_KEY) || '[]')
 
     // Apply filters
-    if (module) logs = logs.filter((log) => log.module === module);
-    if (action) logs = logs.filter((log) => log.action === action);
-    if (userId) logs = logs.filter((log) => log.userId === userId);
+    if (module) logs = logs.filter((log) => log.module === module)
+    if (action) logs = logs.filter((log) => log.action === action)
+    if (userId) logs = logs.filter((log) => log.userId === userId)
 
     // Return most recent first
-    return logs.reverse().slice(0, limit);
+    return logs.reverse().slice(0, limit)
   } catch (error) {
-    console.warn('Failed to get activity logs:', error);
-    return [];
+    console.warn('Failed to get activity logs:', error)
+    return []
   }
-};
+}
 
 /**
  * Get activity summary statistics
  * @returns {Object} Summary statistics
  */
 export const getActivitySummary = () => {
-  const logs = JSON.parse(localStorage.getItem(ACTIVITY_LOG_KEY) || '[]');
-  
+  const logs = JSON.parse(localStorage.getItem(ACTIVITY_LOG_KEY) || '[]')
+
   const summary = {
     totalLogs: logs.length,
     byModule: {},
@@ -264,31 +257,31 @@ export const getActivitySummary = () => {
     byUser: {},
     today: 0,
     thisWeek: 0,
-  };
+  }
 
-  const now = new Date();
-  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const weekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
+  const now = new Date()
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+  const weekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000)
 
   logs.forEach((log) => {
-    const logTime = new Date(log.timestamp);
+    const logTime = new Date(log.timestamp)
 
     // Count by module
-    summary.byModule[log.module] = (summary.byModule[log.module] || 0) + 1;
+    summary.byModule[log.module] = (summary.byModule[log.module] || 0) + 1
 
     // Count by action
-    summary.byAction[log.action] = (summary.byAction[log.action] || 0) + 1;
+    summary.byAction[log.action] = (summary.byAction[log.action] || 0) + 1
 
     // Count by user
-    summary.byUser[log.userId] = (summary.byUser[log.userId] || 0) + 1;
+    summary.byUser[log.userId] = (summary.byUser[log.userId] || 0) + 1
 
     // Count today and this week
-    if (logTime >= today) summary.today += 1;
-    if (logTime >= weekAgo) summary.thisWeek += 1;
-  });
+    if (logTime >= today) summary.today += 1
+    if (logTime >= weekAgo) summary.thisWeek += 1
+  })
 
-  return summary;
-};
+  return summary
+}
 
 /**
  * Clean up old logs older than retention period
@@ -296,22 +289,18 @@ export const getActivitySummary = () => {
  */
 export const cleanupOldLogs = async () => {
   try {
-    const logs = JSON.parse(localStorage.getItem(ACTIVITY_LOG_KEY) || '[]');
-    const cutoffDate = new Date();
-    cutoffDate.setDate(cutoffDate.getDate() - LOG_RETENTION_DAYS);
+    const logs = JSON.parse(localStorage.getItem(ACTIVITY_LOG_KEY) || '[]')
+    const cutoffDate = new Date()
+    cutoffDate.setDate(cutoffDate.getDate() - LOG_RETENTION_DAYS)
 
-    const filteredLogs = logs.filter(
-      (log) => new Date(log.timestamp) >= cutoffDate
-    );
+    const filteredLogs = logs.filter((log) => new Date(log.timestamp) >= cutoffDate)
 
-    localStorage.setItem(ACTIVITY_LOG_KEY, JSON.stringify(filteredLogs));
-    console.log(
-      `Cleaned up ${logs.length - filteredLogs.length} old activity logs`
-    );
+    localStorage.setItem(ACTIVITY_LOG_KEY, JSON.stringify(filteredLogs))
+    console.log(`Cleaned up ${logs.length - filteredLogs.length} old activity logs`)
   } catch (error) {
-    console.warn('Failed to cleanup old logs:', error);
+    console.warn('Failed to cleanup old logs:', error)
   }
-};
+}
 
 /**
  * Start automatic sync timer
@@ -319,15 +308,15 @@ export const cleanupOldLogs = async () => {
  * @returns {void}
  */
 export const startAutoSync = (interval = SYNC_INTERVAL) => {
-  if (syncTimer) clearInterval(syncTimer);
+  if (syncTimer) clearInterval(syncTimer)
 
   syncTimer = setInterval(() => {
-    syncLogsToBackend();
-    cleanupOldLogs();
-  }, interval);
+    syncLogsToBackend()
+    cleanupOldLogs()
+  }, interval)
 
-  console.log(`Activity logger auto-sync started (interval: ${interval}ms)`);
-};
+  console.log(`Activity logger auto-sync started (interval: ${interval}ms)`)
+}
 
 /**
  * Stop automatic sync timer
@@ -335,19 +324,19 @@ export const startAutoSync = (interval = SYNC_INTERVAL) => {
  */
 export const stopAutoSync = () => {
   if (syncTimer) {
-    clearInterval(syncTimer);
-    syncTimer = null;
-    console.log('Activity logger auto-sync stopped');
+    clearInterval(syncTimer)
+    syncTimer = null
+    console.log('Activity logger auto-sync stopped')
   }
-};
+}
 
 /**
  * Generate unique log ID
  * @returns {string} Unique log ID
  */
 const generateLogId = () => {
-  return `LOG-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-};
+  return `LOG-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+}
 
 /**
  * Clear all activity logs (use with caution)
@@ -355,13 +344,13 @@ const generateLogId = () => {
  */
 export const clearAllLogs = async () => {
   try {
-    localStorage.removeItem(ACTIVITY_LOG_KEY);
-    logQueue = [];
-    console.warn('All activity logs cleared');
+    localStorage.removeItem(ACTIVITY_LOG_KEY)
+    logQueue = []
+    console.warn('All activity logs cleared')
   } catch (error) {
-    console.error('Failed to clear activity logs:', error);
+    console.error('Failed to clear activity logs:', error)
   }
-};
+}
 
 /**
  * Usage Example:
@@ -398,4 +387,4 @@ export default {
   startAutoSync,
   stopAutoSync,
   clearAllLogs,
-};
+}

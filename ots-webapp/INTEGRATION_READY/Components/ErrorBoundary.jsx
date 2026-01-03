@@ -1,6 +1,6 @@
-import React from 'react';
-import { AlertTriangle, RefreshCw } from 'lucide-react';
-import { errorHandlerService } from '../../src/services/errorHandlerService';
+import React from 'react'
+import { AlertTriangle, RefreshCw } from 'lucide-react'
+import { errorHandlerService } from '../../src/services/errorHandlerService'
 
 /**
  * ErrorBoundary Component
@@ -9,31 +9,31 @@ import { errorHandlerService } from '../../src/services/errorHandlerService';
  */
 class ErrorBoundary extends React.Component {
   constructor(props) {
-    super(props);
+    super(props)
     this.state = {
       hasError: false,
       error: null,
       errorInfo: null,
-      recoveryHints: []
-    };
+      recoveryHints: [],
+    }
   }
 
   static getDerivedStateFromError(error) {
-    return { hasError: true };
+    return { hasError: true }
   }
 
   componentDidCatch(error, errorInfo) {
     // Log error using errorHandlerService
     const processedError = errorHandlerService.logError(error, {
       componentStack: errorInfo.componentStack,
-      context: 'React Component Error'
-    });
+      context: 'React Component Error',
+    })
 
     this.setState({
       error,
       errorInfo,
-      recoveryHints: errorHandlerService.getRecoveryHints(processedError)
-    });
+      recoveryHints: errorHandlerService.getRecoveryHints(processedError),
+    })
   }
 
   handleReset = () => {
@@ -41,9 +41,9 @@ class ErrorBoundary extends React.Component {
       hasError: false,
       error: null,
       errorInfo: null,
-      recoveryHints: []
-    });
-  };
+      recoveryHints: [],
+    })
+  }
 
   render() {
     if (this.state.hasError) {
@@ -58,9 +58,7 @@ class ErrorBoundary extends React.Component {
             </div>
 
             {/* Error Message */}
-            <h1 className="text-2xl font-bold text-white text-center mb-3">
-              Something went wrong
-            </h1>
+            <h1 className="text-2xl font-bold text-white text-center mb-3">Something went wrong</h1>
             <p className="text-slate-300 text-center text-sm mb-6">
               {this.state.error && this.state.error.toString()}
             </p>
@@ -102,11 +100,11 @@ class ErrorBoundary extends React.Component {
             </button>
           </div>
         </div>
-      );
+      )
     }
 
-    return this.props.children;
+    return this.props.children
   }
 }
 
-export default ErrorBoundary;
+export default ErrorBoundary

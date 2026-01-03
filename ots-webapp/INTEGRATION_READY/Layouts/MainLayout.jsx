@@ -1,7 +1,7 @@
-import React from 'react';
-import { Outlet } from 'react-router-dom';
-import KeyboardShortcutsHud from '../Components/KeyboardShortcutsHud';
-import OrderNotificationCenter from '../Components/OrderNotificationCenter';
+import React from 'react'
+import { Outlet } from 'react-router-dom'
+import KeyboardShortcutsHud from '../Components/KeyboardShortcutsHud'
+import OrderNotificationCenter from '../Components/OrderNotificationCenter'
 
 /**
  * MainLayout Component
@@ -36,7 +36,7 @@ const MainLayout = () => {
         </div>
       </footer>
     </div>
-  );
-};
+  )
+}
 
-export default MainLayout;
+export default MainLayout

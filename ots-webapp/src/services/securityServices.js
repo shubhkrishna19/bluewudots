@@ -21,7 +21,7 @@ class SecurityServices {
   /**
    * Generate and send 2FA code via email/SMS
    */
-  async initiateTwo FA(userId, method = 'email') {
+  async initiateTwoFA(userId, method = 'email') {
     try {
       const code = this._generateOTP();
       const timestamp = Date.now();
@@ -122,7 +122,7 @@ class SecurityServices {
   checkRateLimit(userId, ip) {
     const key = `${userId}-${ip}`;
     const now = Date.now();
-    
+
     if (!this.rateLimits.has(key)) {
       this.rateLimits.set(key, { count: 1, windowStart: now });
       return { allowed: true, remaining: this.rateLimitMax - 1 };
@@ -154,7 +154,7 @@ class SecurityServices {
   recordFailedAttempt(userId, ip) {
     const key = userId;
     const now = Date.now();
-    
+
     if (!this.failedAttempts.has(key)) {
       this.failedAttempts.set(key, { count: 1, firstAttempt: now, lockedUntil: null });
     } else {
@@ -174,7 +174,7 @@ class SecurityServices {
   isAccountLocked(userId) {
     const attempts = this.failedAttempts.get(userId);
     if (!attempts || !attempts.lockedUntil) return false;
-    
+
     const now = Date.now();
     if (now > attempts.lockedUntil) {
       // Unlock account

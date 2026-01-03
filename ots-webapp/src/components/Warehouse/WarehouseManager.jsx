@@ -1,294 +1,551 @@
-import React, { useState, useMemo } from 'react';
-import { useData } from '../../context/DataContext';
-import { routeOrderToWarehouse, getWarehouses } from '../../services/warehouseService';
+import React, { useState, useMemo } from 'react'
+import { useData } from '../../context/DataContext'
+import { routeOrderToWarehouse, getWarehouses } from '../../services/warehouseService'
+import pickingService from '../../services/pickingService'
 
-import PackingStation from './PackingStation';
+import PackingStation from './PackingStation'
+import StockAudit from './StockAudit'
 
 const WarehouseManager = () => {
-    const { skuMaster = [], inventoryLevels = [], batches = [], adjustStock, setStockLocation } = useData();
-    const [activeTab, setActiveTab] = useState('INVENTORY'); // 'INVENTORY' | 'VISION_PACKING'
-    const [searchTerm, setSearchTerm] = useState('');
-    const [selectedCategory, setSelectedCategory] = useState('All');
-    const [selectedWh, setSelectedWh] = useState(null);
-    const [routingPincode, setRoutingPincode] = useState('');
-    const [routedWarehouse, setRoutedWarehouse] = useState(null);
+  const {
+    skuMaster = [],
+    inventoryLevels = [],
+    batches = [],
+    orders = [],
+    adjustStock,
+    setStockLocation,
+  } = useData()
+  const [activeTab, setActiveTab] = useState('INVENTORY') // 'INVENTORY' | 'PICKING' | 'AUDIT' | 'VISION_PACKING'
+  const [searchTerm, setSearchTerm] = useState('')
+  const [selectedCategory, setSelectedCategory] = useState('All')
+  const [routingPincode, setRoutingPincode] = useState('')
+  const [routedWarehouse, setRoutedWarehouse] = useState(null)
 
-    const warehouses = getWarehouses();
+  const warehouses = getWarehouses()
 
-    // Link real-time inventory levels with SKU Master data
-    const inventory = useMemo(() => {
-        return (skuMaster || [])
-            .filter(sku => !sku.isParent)
-            .map(sku => ({
-                ...sku,
-                ...(inventoryLevels[sku.sku] || { inStock: 0, reserved: 0, location: 'UNKNOWN' }),
-                available: (inventoryLevels[sku.sku]?.inStock || 0) - (inventoryLevels[sku.sku]?.reserved || 0)
-            }));
-    }, [skuMaster, inventoryLevels]);
+  // Link real-time inventory levels with SKU Master data
+  const inventory = useMemo(() => {
+    return (skuMaster || [])
+      .filter((sku) => !sku.isParent)
+      .map((sku) => ({
+        ...sku,
+        ...(inventoryLevels[sku.sku] || { inStock: 0, reserved: 0, location: 'UNKNOWN' }),
+        available:
+          (inventoryLevels[sku.sku]?.inStock || 0) - (inventoryLevels[sku.sku]?.reserved || 0),
+      }))
+  }, [skuMaster, inventoryLevels])
 
-    const categories = useMemo(() => ['All', ...new Set(inventory.map(i => i.category))], [inventory]);
+  // Pick List Generation for Pending Orders
+  const pickList = useMemo(() => {
+    if (activeTab !== 'PICKING') return []
+    const pendingOrders = orders.filter((o) => o.status === 'Pending' || o.status === 'Processing')
+    return pickingService.generatePickList(pendingOrders, inventory)
+  }, [activeTab, orders, inventory])
 
-    const filteredInventory = inventory.filter(item => {
-        const matchesSearch = item.sku.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            item.name.toLowerCase().includes(searchTerm.toLowerCase());
-        const matchesCategory = selectedCategory === 'All' || item.category === selectedCategory;
-        return matchesSearch && matchesCategory;
-    });
+  const categories = useMemo(
+    () => ['All', ...new Set(inventory.map((i) => i.category))],
+    [inventory]
+  )
 
-    const totalUnits = inventory.reduce((sum, i) => sum + i.inStock, 0);
-    const lowStockItems = inventory.filter(i => i.available <= (i.reorderLevel || 15));
+  const filteredInventory = inventory.filter((item) => {
+    const matchesSearch =
+      item.sku.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.name.toLowerCase().includes(searchTerm.toLowerCase())
+    const matchesCategory = selectedCategory === 'All' || item.category === selectedCategory
+    return matchesSearch && matchesCategory
+  })
 
-    const [transferModal, setTransferModal] = useState({ show: false, sku: null });
-    const { transferStock } = useData();
+  const totalUnits = inventory.reduce((sum, i) => sum + i.inStock, 0)
+  const lowStockItems = inventory.filter((i) => i.available <= (i.reorderLevel || 15))
 
-    const handleTransfer = (skuId) => {
-        setTransferModal({ show: true, sku: skuId });
-    };
+  const [transferModal, setTransferModal] = useState({ show: false, sku: null })
+  const { transferStock } = useData()
 
-    const confirmTransfer = (from, to, qty) => {
-        transferStock(transferModal.sku, from, to, qty);
-        setTransferModal({ show: false, sku: null });
-    };
+  const handleTransfer = (skuId) => {
+    setTransferModal({ show: true, sku: skuId })
+  }
 
-    return (
-        <div className="warehouse-manager animate-fade">
-            <div className="section-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                <div>
-                    <h2>Warehouse Fidelity</h2>
-                    <p className="text-muted">Linked to SSOT SKU Master • Real-time Sync</p>
-                </div>
-                <div style={{ display: 'flex', gap: '12px' }}>
-                    <div className="flex bg-white/5 rounded-lg p-1 mr-4">
-                        <button
-                            onClick={() => setActiveTab('INVENTORY')}
-                            className={`px-4 py-2 rounded-md text-sm font-bold transition-all ${activeTab === 'INVENTORY' ? 'bg-primary text-white shadow-lg' : 'text-slate-400 hover:text-white'}`}
-                        >
-                            📦 Inventory
-                        </button>
-                        <button
-                            onClick={() => setActiveTab('VISION_PACKING')}
-                            className={`px-4 py-2 rounded-md text-sm font-bold transition-all ${activeTab === 'VISION_PACKING' ? 'bg-indigo-600 text-white shadow-lg' : 'text-slate-400 hover:text-white'}`}
-                        >
-                            👁️ Vision Station
-                        </button>
-                    </div>
+  const confirmTransfer = (from, to, qty) => {
+    transferStock(transferModal.sku, from, to, qty)
+    setTransferModal({ show: false, sku: null })
+  }
 
-                    {activeTab === 'INVENTORY' && lowStockItems.length > 0 && (
-                        <span className="badge" style={{ background: 'var(--danger)', padding: '8px 16px' }}>
-                            ⚠️ {lowStockItems.length} Low Stock
-                        </span>
-                    )}
-                    {activeTab === 'INVENTORY' && (
-                        <button className="btn-primary glass-hover" style={{ padding: '10px 20px' }}>
-                            + Add Incoming SKU
-                        </button>
-                    )}
-                </div>
-            </div>
-
-            {activeTab === 'VISION_PACKING' ? (
-                <PackingStation />
-            ) : (
-                <>
-
-                    {/* Routing Demo Section */}
-                    <div className="glass" style={{ padding: '24px', marginBottom: '24px', background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.1))' }}>
-                        <h3 style={{ marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>🚀 Smart Multi-Node Routing</h3>
-                        <div style={{ display: 'flex', gap: '12px' }}>
-                            <input
-                                type="text"
-                                placeholder="Enter Delivery Pincode (e.g., 560102)"
-                                className="glass"
-                                style={{ padding: '10px 16px', flex: 1, border: '1px solid rgba(255,255,255,0.1)' }}
-                                value={routingPincode}
-                                onChange={(e) => setRoutingPincode(e.target.value)}
-                            />
-                            <button
-                                className="btn-primary"
-                                onClick={() => setRoutedWarehouse(routeOrderToWarehouse(routingPincode))}
-                            >
-                                Route Order
-                            </button>
-                        </div>
-                        {routedWarehouse && (
-                            <div className="animate-fade" style={{ marginTop: '16px', padding: '12px', background: 'rgba(255,255,255,0.05)', borderRadius: '8px', borderLeft: '4px solid #6366F1' }}>
-                                <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>Assigned Fulfillment Node:</p>
-                                <p style={{ fontWeight: '600' }}>{routedWarehouse.name} ({routedWarehouse.city})</p>
-                            </div>
-                        )}
-                    </div>
-
-                    {/* Global Stats */}
-                    <div className="analytics-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginTop: '24px' }}>
-                        <div className="stat-card glass" style={{ padding: '20px', textAlign: 'center' }}>
-                            <h2 style={{ color: 'var(--primary)' }}>{totalUnits}</h2>
-                            <span className="text-muted" style={{ fontSize: '0.75rem' }}>TOTAL UNITS</span>
-                        </div>
-                        <div className="stat-card glass" style={{ padding: '20px', textAlign: 'center' }}>
-                            <h2 style={{ color: 'var(--accent)' }}>{inventory.length}</h2>
-                            <span className="text-muted" style={{ fontSize: '0.75rem' }}>ACTIVE SKUS</span>
-                        </div>
-                        <div className="stat-card glass" style={{ padding: '20px', textAlign: 'center' }}>
-                            <h2 style={{ color: 'var(--info)' }}>{categories.length - 1}</h2>
-                            <span className="text-muted" style={{ fontSize: '0.75rem' }}>CATEGORIES</span>
-                        </div>
-                        <div className="stat-card glass" style={{ padding: '20px', textAlign: 'center' }}>
-                            <h2 style={{ color: lowStockItems.length > 0 ? 'var(--danger)' : 'var(--success)' }}>{lowStockItems.length}</h2>
-                            <span className="text-muted" style={{ fontSize: '0.75rem' }}>LOW STOCK</span>
-                        </div>
-                    </div>
-
-                    {/* Filters */}
-                    <div className="filter-bar glass" style={{ marginTop: '24px', padding: '16px', display: 'flex', gap: '16px', alignItems: 'center' }}>
-                        <input
-                            type="text"
-                            placeholder="🔍 Search SKU or Name..."
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                            style={{ flex: 2, padding: '12px 20px', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--glass-border)', borderRadius: '8px', color: '#fff' }}
-                        />
-                        <select
-                            value={selectedCategory}
-                            onChange={(e) => setSelectedCategory(e.target.value)}
-                            style={{ flex: 1, padding: '12px', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--glass-border)', borderRadius: '8px', color: '#fff' }}
-                        >
-                            {categories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
-                        </select>
-                    </div>
-
-                    {/* Inventory Table */}
-                    <div className="inventory-table-container glass" style={{ marginTop: '24px', padding: '20px', overflowX: 'auto' }}>
-                        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                            <thead>
-                                <tr style={{ textAlign: 'left', borderBottom: '1px solid var(--glass-border)', opacity: 0.6, fontSize: '0.8rem' }}>
-                                    <th style={{ padding: '12px' }}>SKU IDENTITY</th>
-                                    <th style={{ padding: '12px' }}>BIN LOCATION</th>
-                                    <th style={{ padding: '12px' }}>IN STOCK</th>
-                                    <th style={{ padding: '12px' }}>RESERVED</th>
-                                    <th style={{ padding: '12px' }}>AVAILABLE</th>
-                                    <th style={{ padding: '12px' }}>ACTIONS</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {filteredInventory.map(item => (
-                                    <tr key={item.sku} style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', fontSize: '0.85rem' }}>
-                                        <td style={{ padding: '12px' }}>
-                                            <span style={{ fontWeight: '700', color: 'var(--primary)' }}>{item.sku}</span><br />
-                                            <span className="text-muted" style={{ fontSize: '0.7rem' }}>{item.name}</span>
-                                        </td>
-                                        <td style={{ padding: '12px' }}>
-                                            <span className="badge" style={{ background: 'var(--bg-accent)' }}>📍 {item.location}</span>
-                                        </td>
-                                        <td style={{ padding: '12px' }}>{item.inStock}</td>
-                                        <td style={{ padding: '12px' }}>{item.reserved}</td>
-                                        <td style={{ padding: '12px' }}>
-                                            <span style={{
-                                                fontWeight: '700',
-                                                color: item.available <= (item.reorderLevel || 15) ? 'var(--danger)' : 'var(--success)'
-                                            }}>
-                                                {item.available}
-                                            </span>
-                                        </td>
-                                        <td style={{ padding: '12px' }}>
-                                            <div style={{ display: 'flex', gap: '8px' }}>
-                                                <button
-                                                    className="btn-pill"
-                                                    style={{ padding: '4px 8px', background: 'var(--primary)', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '0.7rem' }}
-                                                    onClick={() => handleTransfer(item.sku)}
-                                                >
-                                                    📦 Transfer
-                                                </button>
-                                                <button
-                                                    className="btn-pill"
-                                                    onClick={() => adjustStock(item.sku, 1)}
-                                                    style={{ padding: '4px 10px', background: 'var(--success)', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
-                                                >
-                                                    +
-                                                </button>
-                                                <button
-                                                    className="btn-pill"
-                                                    onClick={() => adjustStock(item.sku, -1)}
-                                                    style={{ padding: '4px 10px', background: 'var(--danger)', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
-                                                >
-                                                    -
-                                                </button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
-                    {/* FIFO Batch List */}
-                    <div className="batch-inventory-section glass" style={{ marginTop: '32px', padding: '24px' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-                            <h3>🕒 FIFO Batch Inventory</h3>
-                            <span className="badge" style={{ background: 'var(--accent)' }}>{batches.length} Batches Active</span>
-                        </div>
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '16px' }}>
-                            {batches.slice(-6).reverse().map(batch => (
-                                <div key={batch.id} className="glass glass-hover" style={{ padding: '16px', borderLeft: '4px solid var(--primary)' }}>
-                                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                        <span style={{ fontWeight: '800', color: 'var(--primary)' }}>{batch.sku}</span>
-                                        <span className="badge" style={{ background: 'rgba(255,255,255,0.05)', fontSize: '0.65rem' }}>#{batch.id.slice(-6)}</span>
-                                    </div>
-                                    <p style={{ fontSize: '0.85rem', marginTop: '8px' }}>Vendor: {batch.vendor}</p>
-                                    <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '12px', alignItems: 'center' }}>
-                                        <span style={{ fontSize: '1.2rem', fontWeight: '800' }}>{batch.quantity}</span>
-                                        <span className="text-muted" style={{ fontSize: '0.7rem' }}>Received: {new Date(batch.receivedAt).toLocaleDateString()}</span>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-
-                    {/* Transfer Modal */}
-                    {transferModal.show && (
-                        <div className="modal-overlay glass" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
-                            <div className="modal-content glass" style={{ padding: '32px', width: '400px', border: '1px solid var(--glass-border)' }}>
-                                <h3>Stock Transfer: {transferModal.sku}</h3>
-                                <p className="text-muted" style={{ fontSize: '0.8rem', marginBottom: '20px' }}>Select destination hub and quantity.</p>
-
-                                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                                    <div>
-                                        <label style={{ fontSize: '0.75rem', display: 'block', marginBottom: '4px' }}>Destination Hub</label>
-                                        <select id="dest-hub" className="glass" style={{ width: '100%', padding: '10px' }}>
-                                            {warehouses.map(w => <option key={w.id} value={w.id}>{w.name}</option>)}
-                                        </select>
-                                    </div>
-                                    <div>
-                                        <label style={{ fontSize: '0.75rem', display: 'block', marginBottom: '4px' }}>Quantity</label>
-                                        <input id="transfer-qty" type="number" defaultValue="1" className="glass" style={{ width: '100%', padding: '10px' }} />
-                                    </div>
-
-                                    <div style={{ display: 'flex', gap: '12px', marginTop: '12px' }}>
-                                        <button
-                                            className="btn-primary"
-                                            style={{ flex: 1 }}
-                                            onClick={() => confirmTransfer(
-                                                'SOURCE',
-                                                document.getElementById('dest-hub').value,
-                                                document.getElementById('transfer-qty').value
-                                            )}
-                                        >
-                                            Confirm Transfer
-                                        </button>
-                                        <button
-                                            className="btn-secondary"
-                                            style={{ flex: 1 }}
-                                            onClick={() => setTransferModal({ show: false, sku: null })}
-                                        >
-                                            Cancel
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    )}
-                </>
-            )}
+  return (
+    <div className="warehouse-manager animate-fade">
+      <div
+        className="section-header"
+        style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}
+      >
+        <div>
+          <h2>Warehouse Fidelity</h2>
+          <p className="text-muted">SSOT WMS • Bin-Level Tracking • Snake Path Picking</p>
         </div>
-    );
-};
+        <div style={{ display: 'flex', gap: '12px' }}>
+          <div className="flex bg-white/5 rounded-lg p-1 mr-4">
+            <button
+              onClick={() => setActiveTab('INVENTORY')}
+              className={`px-4 py-2 rounded-md text-sm font-bold transition-all ${activeTab === 'INVENTORY' ? 'bg-primary text-white shadow-lg' : 'text-slate-400 hover:text-white'}`}
+            >
+              📦 Inventory
+            </button>
+            <button
+              onClick={() => setActiveTab('PICKING')}
+              className={`px-4 py-2 rounded-md text-sm font-bold transition-all ${activeTab === 'PICKING' ? 'bg-teal-600 text-white shadow-lg' : 'text-slate-400 hover:text-white'}`}
+            >
+              🧺 Picking
+            </button>
+            <button
+              onClick={() => setActiveTab('AUDIT')}
+              className={`px-4 py-2 rounded-md text-sm font-bold transition-all ${activeTab === 'AUDIT' ? 'bg-orange-600 text-white shadow-lg' : 'text-slate-400 hover:text-white'}`}
+            >
+              🛡️ Audit
+            </button>
+            <button
+              onClick={() => setActiveTab('VISION_PACKING')}
+              className={`px-4 py-2 rounded-md text-sm font-bold transition-all ${activeTab === 'VISION_PACKING' ? 'bg-indigo-600 text-white shadow-lg' : 'text-slate-400 hover:text-white'}`}
+            >
+              👁️ Vision
+            </button>
+          </div>
 
-export default WarehouseManager;
+          {activeTab === 'INVENTORY' && lowStockItems.length > 0 && (
+            <span className="badge" style={{ background: 'var(--danger)', padding: '8px 16px' }}>
+              ⚠️ {lowStockItems.length} Low Stock
+            </span>
+          )}
+        </div>
+      </div>
+
+      {activeTab === 'VISION_PACKING' && <PackingStation />}
+      {activeTab === 'AUDIT' && <StockAudit />}
+
+      {activeTab === 'PICKING' && (
+        <div className="picking-view glass p-6">
+          <div className="flex justify-between items-center mb-6">
+            <h3>⚡ Optimized Pick List (Snake Path)</h3>
+            <span className="badge bg-teal-500/20 text-teal-300">
+              {pickList.length} Items to Pick
+            </span>
+          </div>
+          <div className="grid grid-cols-1 gap-4">
+            {pickList.map((item, idx) => (
+              <div
+                key={item.sku}
+                className="glass p-4 flex justify-between items-center border-l-4 border-teal-500"
+              >
+                <div className="flex items-center gap-4">
+                  <div className="bg-white/10 rounded-full w-8 h-8 flex items-center justify-center font-bold">
+                    {idx + 1}
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-lg">{item.location}</h4>
+                    <p className="text-muted text-sm">Zone {item.zone}</p>
+                  </div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold">{item.qty}</div>
+                  <p className="text-xs uppercase text-muted">Pick Qty</p>
+                </div>
+                <div className="text-right">
+                  <div className="font-mono text-lg text-primary">{item.sku}</div>
+                  <button className="btn-success btn-sm mt-1">Confirm Pick</button>
+                </div>
+              </div>
+            ))}
+            {pickList.length === 0 && (
+              <div className="text-center p-12 text-muted">
+                <p>No pending orders to pick!</p>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {activeTab === 'INVENTORY' && (
+        <>
+          {/* Routing Demo Section */}
+          <div
+            className="glass"
+            style={{
+              padding: '24px',
+              marginBottom: '24px',
+              background:
+                'linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.1))',
+            }}
+          >
+            <h3 style={{ marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              🚀 Smart Multi-Node Routing
+            </h3>
+            <div style={{ display: 'flex', gap: '12px' }}>
+              <input
+                type="text"
+                placeholder="Enter Delivery Pincode (e.g., 560102)"
+                className="glass"
+                style={{ padding: '10px 16px', flex: 1, border: '1px solid rgba(255,255,255,0.1)' }}
+                value={routingPincode}
+                onChange={(e) => setRoutingPincode(e.target.value)}
+              />
+              <button
+                className="btn-primary"
+                onClick={() => setRoutedWarehouse(routeOrderToWarehouse(routingPincode))}
+              >
+                Route Order
+              </button>
+            </div>
+            {routedWarehouse && (
+              <div
+                className="animate-fade"
+                style={{
+                  marginTop: '16px',
+                  padding: '12px',
+                  background: 'rgba(255,255,255,0.05)',
+                  borderRadius: '8px',
+                  borderLeft: '4px solid #6366F1',
+                }}
+              >
+                <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>
+                  Assigned Fulfillment Node:
+                </p>
+                <p style={{ fontWeight: '600' }}>
+                  {routedWarehouse.name} ({routedWarehouse.city})
+                </p>
+              </div>
+            )}
+          </div>
+
+          {/* Global Stats */}
+          <div
+            className="analytics-grid"
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(4, 1fr)',
+              gap: '16px',
+              marginTop: '24px',
+            }}
+          >
+            <div className="stat-card glass" style={{ padding: '20px', textAlign: 'center' }}>
+              <h2 style={{ color: 'var(--primary)' }}>{totalUnits}</h2>
+              <span className="text-muted" style={{ fontSize: '0.75rem' }}>
+                TOTAL UNITS
+              </span>
+            </div>
+            <div className="stat-card glass" style={{ padding: '20px', textAlign: 'center' }}>
+              <h2 style={{ color: 'var(--accent)' }}>{inventory.length}</h2>
+              <span className="text-muted" style={{ fontSize: '0.75rem' }}>
+                ACTIVE SKUS
+              </span>
+            </div>
+            <div className="stat-card glass" style={{ padding: '20px', textAlign: 'center' }}>
+              <h2 style={{ color: 'var(--info)' }}>{categories.length - 1}</h2>
+              <span className="text-muted" style={{ fontSize: '0.75rem' }}>
+                CATEGORIES
+              </span>
+            </div>
+            <div className="stat-card glass" style={{ padding: '20px', textAlign: 'center' }}>
+              <h2 style={{ color: lowStockItems.length > 0 ? 'var(--danger)' : 'var(--success)' }}>
+                {lowStockItems.length}
+              </h2>
+              <span className="text-muted" style={{ fontSize: '0.75rem' }}>
+                LOW STOCK
+              </span>
+            </div>
+          </div>
+
+          {/* Filters */}
+          <div
+            className="filter-bar glass"
+            style={{
+              marginTop: '24px',
+              padding: '16px',
+              display: 'flex',
+              gap: '16px',
+              alignItems: 'center',
+            }}
+          >
+            <input
+              type="text"
+              placeholder="🔍 Search SKU or Name..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              style={{
+                flex: 2,
+                padding: '12px 20px',
+                background: 'rgba(255,255,255,0.05)',
+                border: '1px solid var(--glass-border)',
+                borderRadius: '8px',
+                color: '#fff',
+              }}
+            />
+            <select
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+              style={{
+                flex: 1,
+                padding: '12px',
+                background: 'rgba(255,255,255,0.05)',
+                border: '1px solid var(--glass-border)',
+                borderRadius: '8px',
+                color: '#fff',
+              }}
+            >
+              {categories.map((cat) => (
+                <option key={cat} value={cat}>
+                  {cat}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Inventory Table */}
+          <div
+            className="inventory-table-container glass"
+            style={{ marginTop: '24px', padding: '20px', overflowX: 'auto' }}
+          >
+            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+              <thead>
+                <tr
+                  style={{
+                    textAlign: 'left',
+                    borderBottom: '1px solid var(--glass-border)',
+                    opacity: 0.6,
+                    fontSize: '0.8rem',
+                  }}
+                >
+                  <th style={{ padding: '12px' }}>SKU IDENTITY</th>
+                  <th style={{ padding: '12px' }}>BIN LOCATION</th>
+                  <th style={{ padding: '12px' }}>IN STOCK</th>
+                  <th style={{ padding: '12px' }}>RESERVED</th>
+                  <th style={{ padding: '12px' }}>AVAILABLE</th>
+                  <th style={{ padding: '12px' }}>ACTIONS</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredInventory.map((item) => (
+                  <tr
+                    key={item.sku}
+                    style={{
+                      borderBottom: '1px solid rgba(255,255,255,0.05)',
+                      fontSize: '0.85rem',
+                    }}
+                  >
+                    <td style={{ padding: '12px' }}>
+                      <span style={{ fontWeight: '700', color: 'var(--primary)' }}>{item.sku}</span>
+                      <br />
+                      <span className="text-muted" style={{ fontSize: '0.7rem' }}>
+                        {item.name}
+                      </span>
+                    </td>
+                    <td style={{ padding: '12px' }}>
+                      <span className="badge" style={{ background: 'var(--bg-accent)' }}>
+                        📍 {item.location}
+                      </span>
+                    </td>
+                    <td style={{ padding: '12px' }}>{item.inStock}</td>
+                    <td style={{ padding: '12px' }}>{item.reserved}</td>
+                    <td style={{ padding: '12px' }}>
+                      <span
+                        style={{
+                          fontWeight: '700',
+                          color:
+                            item.available <= (item.reorderLevel || 15)
+                              ? 'var(--danger)'
+                              : 'var(--success)',
+                        }}
+                      >
+                        {item.available}
+                      </span>
+                    </td>
+                    <td style={{ padding: '12px' }}>
+                      <div style={{ display: 'flex', gap: '8px' }}>
+                        <button
+                          className="btn-pill"
+                          style={{
+                            padding: '4px 8px',
+                            background: 'var(--primary)',
+                            color: '#fff',
+                            border: 'none',
+                            borderRadius: '4px',
+                            cursor: 'pointer',
+                            fontSize: '0.7rem',
+                          }}
+                          onClick={() => handleTransfer(item.sku)}
+                        >
+                          📦 Transfer
+                        </button>
+                        <button
+                          className="btn-pill"
+                          onClick={() => adjustStock(item.sku, 1)}
+                          style={{
+                            padding: '4px 10px',
+                            background: 'var(--success)',
+                            color: '#fff',
+                            border: 'none',
+                            borderRadius: '4px',
+                            cursor: 'pointer',
+                          }}
+                        >
+                          +
+                        </button>
+                        <button
+                          className="btn-pill"
+                          onClick={() => adjustStock(item.sku, -1)}
+                          style={{
+                            padding: '4px 10px',
+                            background: 'var(--danger)',
+                            color: '#fff',
+                            border: 'none',
+                            borderRadius: '4px',
+                            cursor: 'pointer',
+                          }}
+                        >
+                          -
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          {/* FIFO Batch List */}
+          <div
+            className="batch-inventory-section glass"
+            style={{ marginTop: '32px', padding: '24px' }}
+          >
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                marginBottom: '20px',
+              }}
+            >
+              <h3>🕒 FIFO Batch Inventory</h3>
+              <span className="badge" style={{ background: 'var(--accent)' }}>
+                {batches.length} Batches Active
+              </span>
+            </div>
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
+                gap: '16px',
+              }}
+            >
+              {batches
+                .slice(-6)
+                .reverse()
+                .map((batch) => (
+                  <div
+                    key={batch.id}
+                    className="glass glass-hover"
+                    style={{ padding: '16px', borderLeft: '4px solid var(--primary)' }}
+                  >
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                      <span style={{ fontWeight: '800', color: 'var(--primary)' }}>
+                        {batch.sku}
+                      </span>
+                      <span
+                        className="badge"
+                        style={{ background: 'rgba(255,255,255,0.05)', fontSize: '0.65rem' }}
+                      >
+                        #{batch.id.slice(-6)}
+                      </span>
+                    </div>
+                    <p style={{ fontSize: '0.85rem', marginTop: '8px' }}>Vendor: {batch.vendor}</p>
+                    <div
+                      style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        marginTop: '12px',
+                        alignItems: 'center',
+                      }}
+                    >
+                      <span style={{ fontSize: '1.2rem', fontWeight: '800' }}>
+                        {batch.quantity}
+                      </span>
+                      <span className="text-muted" style={{ fontSize: '0.7rem' }}>
+                        Received: {new Date(batch.receivedAt).toLocaleDateString()}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+            </div>
+          </div>
+
+          {/* Transfer Modal */}
+          {transferModal.show && (
+            <div
+              className="modal-overlay glass"
+              style={{
+                position: 'fixed',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                background: 'rgba(0,0,0,0.8)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                zIndex: 1000,
+              }}
+            >
+              <div
+                className="modal-content glass"
+                style={{ padding: '32px', width: '400px', border: '1px solid var(--glass-border)' }}
+              >
+                <h3 className="mb-2">Stock Transfer: {transferModal.sku}</h3>
+                <p className="text-muted mb-4 md:text-sm">Select destination hub and quantity.</p>
+
+                <div className="flex flex-col gap-4">
+                  <div>
+                    <label className="text-xs block mb-1">Destination Hub</label>
+                    <select id="dest-hub" className="glass w-full p-2">
+                      {warehouses.map((w) => (
+                        <option key={w.id} value={w.id}>
+                          {w.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="text-xs block mb-1">Quantity</label>
+                    <input
+                      id="transfer-qty"
+                      type="number"
+                      defaultValue="1"
+                      className="glass w-full p-2"
+                    />
+                  </div>
+
+                  <div className="flex gap-4 mt-4">
+                    <button
+                      className="btn-primary flex-1"
+                      onClick={() =>
+                        confirmTransfer(
+                          'SOURCE',
+                          document.getElementById('dest-hub').value,
+                          document.getElementById('transfer-qty').value
+                        )
+                      }
+                    >
+                      Confirm Transfer
+                    </button>
+                    <button
+                      className="btn-secondary flex-1"
+                      onClick={() => setTransferModal({ show: false, sku: null })}
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </>
+      )}
+    </div>
+  )
+}
+
+export default WarehouseManager

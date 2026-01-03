@@ -5,52 +5,52 @@
  * Uses Bluewud Dark Elite glassmorphism theme
  */
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback } from 'react'
 
-const ResponsiveLayout = ({ 
-  children, 
+const ResponsiveLayout = ({
+  children,
   sidebar = null,
   header = null,
   footer = null,
-  theme = 'dark'
+  theme = 'dark',
 }) => {
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(true)
   const [viewportSize, setViewportSize] = useState({
     width: typeof window !== 'undefined' ? window.innerWidth : 1024,
     height: typeof window !== 'undefined' ? window.innerHeight : 768,
-    type: 'desktop'
-  });
+    type: 'desktop',
+  })
 
   // Determine viewport type
   const getViewportType = (width) => {
-    if (width < 640) return 'mobile';
-    if (width < 1024) return 'tablet';
-    return 'desktop';
-  };
+    if (width < 640) return 'mobile'
+    if (width < 1024) return 'tablet'
+    return 'desktop'
+  }
 
   // Handle window resize
   const handleResize = useCallback(() => {
     if (typeof window !== 'undefined') {
-      const width = window.innerWidth;
-      const height = window.innerHeight;
+      const width = window.innerWidth
+      const height = window.innerHeight
       setViewportSize({
         width,
         height,
-        type: getViewportType(width)
-      });
+        type: getViewportType(width),
+      })
       // Auto-collapse sidebar on mobile
-      if (width < 1024) setSidebarOpen(false);
+      if (width < 1024) setSidebarOpen(false)
     }
-  }, []);
+  }, [])
 
   React.useEffect(() => {
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, [handleResize]);
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [handleResize])
 
-  const isMobile = viewportSize.type === 'mobile';
-  const isTablet = viewportSize.type === 'tablet';
-  const isDesktop = viewportSize.type === 'desktop';
+  const isMobile = viewportSize.type === 'mobile'
+  const isTablet = viewportSize.type === 'tablet'
+  const isDesktop = viewportSize.type === 'desktop'
 
   return (
     <div className={`responsive-layout theme-${theme}`}>
@@ -58,7 +58,7 @@ const ResponsiveLayout = ({
       {header && (
         <header className="layout-header glass">
           {!isDesktop && sidebar && (
-            <button 
+            <button
               className="sidebar-toggle glass-hover"
               onClick={() => setSidebarOpen(!sidebarOpen)}
               aria-label="Toggle sidebar"
@@ -74,10 +74,8 @@ const ResponsiveLayout = ({
       <div className="layout-main">
         {/* Sidebar */}
         {sidebar && (
-          <aside 
-            className={`layout-sidebar glass ${
-              sidebarOpen ? 'open' : 'closed'
-            }`}
+          <aside
+            className={`layout-sidebar glass ${sidebarOpen ? 'open' : 'closed'}`}
             role="complementary"
           >
             {sidebar}
@@ -85,17 +83,11 @@ const ResponsiveLayout = ({
         )}
 
         {/* Content */}
-        <main className="layout-content">
-          {children}
-        </main>
+        <main className="layout-content">{children}</main>
       </div>
 
       {/* Footer */}
-      {footer && (
-        <footer className="layout-footer glass">
-          {footer}
-        </footer>
-      )}
+      {footer && <footer className="layout-footer glass">{footer}</footer>}
 
       <style>{`
         .responsive-layout {
@@ -210,7 +202,7 @@ const ResponsiveLayout = ({
         }
       `}</style>
     </div>
-  );
-};
+  )
+}
 
-export default ResponsiveLayout;
+export default ResponsiveLayout

@@ -6,28 +6,52 @@
 // Zone mapping for India
 const ZONE_MAPPING = {
     // North Zone
-    'Delhi': 'NORTH', 'Haryana': 'NORTH', 'Punjab': 'NORTH', 'Uttar Pradesh': 'NORTH',
-    'Uttarakhand': 'NORTH', 'Himachal Pradesh': 'NORTH', 'Rajasthan': 'NORTH',
-    'Jammu and Kashmir': 'NORTH', 'Ladakh': 'NORTH', 'Chandigarh': 'NORTH',
+    Delhi: 'NORTH',
+    Haryana: 'NORTH',
+    Punjab: 'NORTH',
+    'Uttar Pradesh': 'NORTH',
+    Uttarakhand: 'NORTH',
+    'Himachal Pradesh': 'NORTH',
+    Rajasthan: 'NORTH',
+    'Jammu and Kashmir': 'NORTH',
+    Ladakh: 'NORTH',
+    Chandigarh: 'NORTH',
 
     // South Zone
-    'Karnataka': 'SOUTH', 'Tamil Nadu': 'SOUTH', 'Kerala': 'SOUTH', 'Andhra Pradesh': 'SOUTH',
-    'Telangana': 'SOUTH', 'Puducherry': 'SOUTH',
+    Karnataka: 'SOUTH',
+    'Tamil Nadu': 'SOUTH',
+    Kerala: 'SOUTH',
+    'Andhra Pradesh': 'SOUTH',
+    Telangana: 'SOUTH',
+    Puducherry: 'SOUTH',
 
     // East Zone
-    'West Bengal': 'EAST', 'Odisha': 'EAST', 'Bihar': 'EAST', 'Jharkhand': 'EAST',
+    'West Bengal': 'EAST',
+    Odisha: 'EAST',
+    Bihar: 'EAST',
+    Jharkhand: 'EAST',
 
     // West Zone
-    'Maharashtra': 'WEST', 'Gujarat': 'WEST', 'Madhya Pradesh': 'WEST', 'Chhattisgarh': 'WEST', 'Goa': 'WEST',
+    Maharashtra: 'WEST',
+    Gujarat: 'WEST',
+    'Madhya Pradesh': 'WEST',
+    Chhattisgarh: 'WEST',
+    Goa: 'WEST',
 
     // Northeast Zone (premium rates)
-    'Assam': 'NE', 'Meghalaya': 'NE', 'Tripura': 'NE', 'Mizoram': 'NE',
-    'Manipur': 'NE', 'Nagaland': 'NE', 'Arunachal Pradesh': 'NE', 'Sikkim': 'NE'
-};
+    Assam: 'NE',
+    Meghalaya: 'NE',
+    Tripura: 'NE',
+    Mizoram: 'NE',
+    Manipur: 'NE',
+    Nagaland: 'NE',
+    'Arunachal Pradesh': 'NE',
+    Sikkim: 'NE',
+}
 
 // Origin zone (Bluewud warehouse in Karnataka)
-const ORIGIN_ZONE = 'SOUTH';
-const ORIGIN_STATE = 'Karnataka';
+const ORIGIN_ZONE = 'SOUTH'
+const ORIGIN_STATE = 'Karnataka'
 
 // Carrier rate cards (per kg, base rate + additional per 0.5kg)
 export const CARRIER_RATES = {
@@ -41,13 +65,13 @@ export const CARRIER_RATES = {
             ADJACENT: { base: 55, additional: 25, minWeight: 0.5, deliveryDays: [3, 4] },
             METRO: { base: 50, additional: 22, minWeight: 0.5, deliveryDays: [2, 4] },
             ROI: { base: 65, additional: 30, minWeight: 0.5, deliveryDays: [4, 6] },
-            NE: { base: 95, additional: 45, minWeight: 0.5, deliveryDays: [6, 8] }
+            NE: { base: 95, additional: 45, minWeight: 0.5, deliveryDays: [6, 8] },
         },
         codCharges: 25,
         codPercentage: 2,
         fuelSurcharge: 15,
         gst: 18,
-        reliabilityScore: 85 // % Delivery Success (Avg)
+        reliabilityScore: 85, // % Delivery Success (Avg)
     },
 
     bluedart: {
@@ -60,13 +84,13 @@ export const CARRIER_RATES = {
             ADJACENT: { base: 75, additional: 35, minWeight: 0.5, deliveryDays: [2, 3] },
             METRO: { base: 65, additional: 30, minWeight: 0.5, deliveryDays: [1, 2] },
             ROI: { base: 85, additional: 40, minWeight: 0.5, deliveryDays: [2, 4] },
-            NE: { base: 120, additional: 55, minWeight: 0.5, deliveryDays: [4, 6] }
+            NE: { base: 120, additional: 55, minWeight: 0.5, deliveryDays: [4, 6] },
         },
         codCharges: 35,
         codPercentage: 2.5,
         fuelSurcharge: 20,
         gst: 18,
-        reliabilityScore: 98 // % Delivery Success (Premium)
+        reliabilityScore: 98, // % Delivery Success (Premium)
     },
 
     xpressbees: {
@@ -79,13 +103,13 @@ export const CARRIER_RATES = {
             ADJACENT: { base: 50, additional: 22, minWeight: 0.5, deliveryDays: [4, 5] },
             METRO: { base: 45, additional: 20, minWeight: 0.5, deliveryDays: [3, 4] },
             ROI: { base: 60, additional: 28, minWeight: 0.5, deliveryDays: [5, 7] },
-            NE: { base: 90, additional: 42, minWeight: 0.5, deliveryDays: [7, 10] }
+            NE: { base: 90, additional: 42, minWeight: 0.5, deliveryDays: [7, 10] },
         },
         codCharges: 20,
         codPercentage: 1.5,
         fuelSurcharge: 10,
         gst: 18,
-        reliabilityScore: 82 // % Delivery Success (Budget)
+        reliabilityScore: 82, // % Delivery Success (Budget)
     },
 
     ecomexpress: {
@@ -98,121 +122,129 @@ export const CARRIER_RATES = {
             ADJACENT: { base: 52, additional: 24, minWeight: 0.5, deliveryDays: [4, 5] },
             METRO: { base: 48, additional: 21, minWeight: 0.5, deliveryDays: [2, 4] },
             ROI: { base: 62, additional: 29, minWeight: 0.5, deliveryDays: [5, 7] },
-            NE: { base: 88, additional: 40, minWeight: 0.5, deliveryDays: [6, 9] }
+            NE: { base: 88, additional: 40, minWeight: 0.5, deliveryDays: [6, 9] },
         },
         codCharges: 22,
         codPercentage: 1.8,
         fuelSurcharge: 12,
         gst: 18,
-        reliabilityScore: 88 // % Delivery Success (Steady)
-    }
-};
+        reliabilityScore: 88, // % Delivery Success (Steady)
+    },
+}
 
 /**
  * Preferred Carrier Matrix (Legacy Logic)
  * Defines the 'Default' preferred carrier for specific zones or states
  */
 export const PREFERRED_CARRIER_MATRIX = {
-    'METRO': 'bluedart',
-    'LOCAL': 'delhivery',
-    'NE': 'ecomexpress',
-    'INTRA_ZONE': 'delhivery',
-    'Maharashtra': 'xpressbees' // Special preferred carrier for MH
-};
-
+    METRO: 'bluedart',
+    LOCAL: 'delhivery',
+    NE: 'ecomexpress',
+    INTRA_ZONE: 'delhivery',
+    Maharashtra: 'xpressbees', // Special preferred carrier for MH
+}
 
 // Metro cities for special rates
-const METRO_CITIES = ['Mumbai', 'Delhi', 'Bangalore', 'Chennai', 'Kolkata', 'Hyderabad', 'Pune', 'Ahmedabad'];
+const METRO_CITIES = [
+    'Mumbai',
+    'Delhi',
+    'Bangalore',
+    'Chennai',
+    'Kolkata',
+    'Hyderabad',
+    'Pune',
+    'Ahmedabad',
+]
 
 /**
  * Get zone for a destination
- * @param {string} state 
- * @param {string} city 
+ * @param {string} state
+ * @param {string} city
  * @returns {string}
  */
 export const getZone = (state, city = '') => {
-    const destZone = ZONE_MAPPING[state] || 'ROI';
+    const destZone = ZONE_MAPPING[state] || 'ROI'
 
     // Check if same zone as origin
     if (destZone === ORIGIN_ZONE) {
         if (state === ORIGIN_STATE) {
-            return 'LOCAL';
+            return 'LOCAL'
         }
-        return 'INTRA_ZONE';
+        return 'INTRA_ZONE'
     }
 
     // Check if metro city
     if (METRO_CITIES.includes(city)) {
-        return 'METRO';
+        return 'METRO'
     }
 
     // Check if adjacent zone
     const adjacentZones = {
-        'SOUTH': ['WEST'],
-        'WEST': ['SOUTH', 'NORTH'],
-        'NORTH': ['WEST', 'EAST'],
-        'EAST': ['NORTH', 'NE']
-    };
+        SOUTH: ['WEST'],
+        WEST: ['SOUTH', 'NORTH'],
+        NORTH: ['WEST', 'EAST'],
+        EAST: ['NORTH', 'NE'],
+    }
 
     if (adjacentZones[ORIGIN_ZONE]?.includes(destZone)) {
-        return 'ADJACENT';
+        return 'ADJACENT'
     }
 
     // Northeast special zone
     if (destZone === 'NE') {
-        return 'NE';
+        return 'NE'
     }
 
-    return 'ROI';
-};
+    return 'ROI'
+}
 
 /**
  * Calculate shipping rate for a carrier
- * @param {string} carrierId 
+ * @param {string} carrierId
  * @param {object} shipment - { weight, state, city, isCOD, codAmount }
  * @returns {object}
  */
 export const calculateRate = (carrierId, shipment) => {
-    const carrier = CARRIER_RATES[carrierId];
+    const carrier = CARRIER_RATES[carrierId]
     if (!carrier || !carrier.serviceable) {
-        return { error: 'Carrier not available' };
+        return { error: 'Carrier not available' }
     }
 
-    const zone = getZone(shipment.state, shipment.city);
-    const zoneRates = carrier.zones[zone];
+    const zone = getZone(shipment.state, shipment.city)
+    const zoneRates = carrier.zones[zone]
 
     if (!zoneRates) {
-        return { error: 'Zone not serviceable' };
+        return { error: 'Zone not serviceable' }
     }
 
     // Weight calculation (round up to nearest 0.5kg)
-    const weight = Math.max(shipment.weight || 0.5, zoneRates.minWeight);
-    const billedWeight = Math.ceil(weight * 2) / 2;
+    const weight = Math.max(shipment.weight || 0.5, zoneRates.minWeight)
+    const billedWeight = Math.ceil(weight * 2) / 2
 
     // Base freight
-    let freight = zoneRates.base;
+    let freight = zoneRates.base
     if (billedWeight > 0.5) {
-        const additionalSlabs = (billedWeight - 0.5) / 0.5;
-        freight += additionalSlabs * zoneRates.additional;
+        const additionalSlabs = (billedWeight - 0.5) / 0.5
+        freight += additionalSlabs * zoneRates.additional
     }
 
     // Fuel surcharge
-    const fuelCharge = (freight * carrier.fuelSurcharge) / 100;
+    const fuelCharge = (freight * carrier.fuelSurcharge) / 100
 
     // COD charges
-    let codCharge = 0;
+    let codCharge = 0
     if (shipment.isCOD && shipment.codAmount) {
-        codCharge = carrier.codCharges + (shipment.codAmount * carrier.codPercentage / 100);
+        codCharge = carrier.codCharges + (shipment.codAmount * carrier.codPercentage) / 100
     }
 
     // Subtotal before GST
-    const subtotal = freight + fuelCharge + codCharge;
+    const subtotal = freight + fuelCharge + codCharge
 
     // GST
-    const gst = (subtotal * carrier.gst) / 100;
+    const gst = (subtotal * carrier.gst) / 100
 
     // Total
-    const total = Math.round(subtotal + gst);
+    const total = Math.round(subtotal + gst)
 
     return {
         carrierId,
@@ -225,211 +257,198 @@ export const calculateRate = (carrierId, shipment) => {
             fuelSurcharge: Math.round(fuelCharge),
             codCharge: Math.round(codCharge),
             subtotal: Math.round(subtotal),
-            gst: Math.round(gst)
+            gst: Math.round(gst),
         },
         total,
         estimatedDelivery: zoneRates.deliveryDays,
-        isCOD: shipment.isCOD || false
-    };
-};
+        isCOD: shipment.isCOD || false,
+    }
+}
 
 /**
  * Get rates from all carriers (Hybrid: Live API + Static Fallback)
- * @param {object} shipment 
+ * @param {object} shipment
  * @returns {Promise<object[]>}
  */
 export const getAllRates = async (shipment) => {
     // Check for Live API credentials
-    const delhiveryToken = import.meta.env.VITE_DELHIVERY_TOKEN;
-    const bluedartKey = import.meta.env.VITE_BLUEDART_LICENSE_KEY;
+    const delhiveryToken =
+        import.meta.env.VITE_DELHIVERY_TOKEN ||
+        (typeof process !== 'undefined' ? process.env.VITE_DELHIVERY_TOKEN : undefined)
+    const bluedartKey =
+        import.meta.env.VITE_BLUEDART_LICENSE_KEY ||
+        (typeof process !== 'undefined' ? process.env.VITE_BLUEDART_LICENSE_KEY : undefined)
 
-    let liveRates = [];
+    let liveRates = []
 
     // 1. Try Live APIs if credentials exist
     if (delhiveryToken || bluedartKey) {
         try {
-            liveRates = await fetchLiveRates(shipment, { delhiveryToken, bluedartKey });
+            liveRates = await fetchLiveRates(shipment, { delhiveryToken, bluedartKey })
         } catch (error) {
-            console.warn('Live Rate Fetch Failed:', error);
+            console.warn('Live Rate Fetch Failed:', error)
         }
     }
 
     // 2. Calculate Static Rates (Always run as fallback/baseline)
-    const staticRates = Object.keys(CARRIER_RATES).map(carrierId => {
-        const rate = calculateRate(carrierId, shipment);
-        return { ...rate, carrierId, type: 'STATIC' };
-    });
+    const staticRates = Object.keys(CARRIER_RATES).map((carrierId) => {
+        const rate = calculateRate(carrierId, shipment)
+        return { ...rate, carrierId, type: 'STATIC' }
+    })
 
     // 3. Merge: Prefer Live over Static for same carrier
-    const mergedRates = staticRates.map(staticRate => {
-        const liveMatch = liveRates.find(l => l.carrierId === staticRate.carrierId);
-        return liveMatch ? { ...liveMatch, type: 'LIVE' } : staticRate;
-    });
+    const mergedRates = staticRates.map((staticRate) => {
+        const liveMatch = liveRates.find((l) => l.carrierId === staticRate.carrierId)
+        // Merge liveMatch ON TOP of staticRate to preserve fields like 'zone' if API doesn't return them
+        return liveMatch ? { ...staticRate, ...liveMatch, type: 'LIVE' } : staticRate
+    })
 
     // Sort by total (cheapest first)
-    return mergedRates
-        .filter(r => !r.error)
-        .sort((a, b) => a.total - b.total);
-};
+    return mergedRates.filter((r) => !r.error).sort((a, b) => a.total - b.total)
+}
 
 /**
  * Fetch live rates from Carrier APIs
  */
+import carrierFactory from './carriers/CarrierFactory'
+
+/**
+ * Fetch live rates from Carrier APIs via Factory
+ */
 const fetchLiveRates = async (shipment, creds) => {
-    const rates = [];
+    const rates = []
+    const carriers = carrierFactory.getAllCarriers()
 
-    // Delhivery API (Surface)
-    if (creds.delhiveryToken) {
+    const ratePromises = carriers.map(async (carrier) => {
         try {
-            // Mocking the real API Payload structure
-            const response = await fetch('https://track.delhivery.com/api/kkg/service/rate-calculator', {
-                method: 'GET', // Usually GET or POST depending on their version
-                headers: {
-                    'Authorization': `Token ${creds.delhiveryToken}`,
-                    'Content-Type': 'application/json'
-                },
-                // params would be appended for GET
-            });
-
-            // For now, we wrap this in a silent try-catch because the URL might 404/401 without real keys
-            // In a real implementation, we would parse response.json()
-            if (response.ok) {
-                // const data = await response.json(); 
-                // Transform data to our format
-            }
-            throw new Error('API Simulation'); // Force catch to fallback to simulated "Live" data
-        } catch (e) {
-            // Simulate "Live" response derived from static calculation
-            const staticRate = calculateRate('delhivery', shipment);
-            if (!staticRate.error) {
-                rates.push({
-                    ...staticRate,
-                    total: Math.round(staticRate.total * 0.95), // Live rates often cheaper 
-                    breakdown: { ...staticRate.breakdown, subtotal: Math.round(staticRate.breakdown.subtotal * 0.95) },
-                    carrierName: 'Delhivery (Live)',
-                    isLive: true
-                });
-            }
+            // Rate limiting / Throttling could be handled here if needed
+            const rate = await carrier.getRates(shipment)
+            if (rate) rates.push(rate)
+        } catch (error) {
+            console.warn(`[${carrier.name}] Rate Fetch Error:`, error.message)
         }
-    }
+    })
 
-    // BlueDart API
-    if (creds.bluedartKey) {
-        // Similar logic for BlueDart
-        const staticRate = calculateRate('bluedart', shipment);
+    await Promise.all(ratePromises)
+
+    // Legacy Support: If BlueDart isn't in Factory yet but keys exist, use old simulation
+    if (creds.bluedartKey && !carriers.find((c) => c.name === 'BlueDart')) {
+        const staticRate = calculateRate('bluedart', shipment)
         if (!staticRate.error) {
             rates.push({
                 ...staticRate,
                 total: Math.round(staticRate.total * 0.98),
                 carrierName: 'BlueDart (Live / API)',
-                isLive: true
-            });
+                isLive: true,
+            })
         }
     }
 
-    return rates;
-};
+    return rates
+}
 
 export const getRecommendation = async (shipment, priority = 'smart') => {
-    const rates = await getAllRates(shipment);
+    const rates = await getAllRates(shipment)
 
     if (rates.length === 0) {
-        return { error: 'No carriers available' };
+        return { error: 'No carriers available' }
     }
 
     // Assign scores to each carrier option (Lower is better for cost/speed, Higher is better for reliability)
-    const options = rates.map(rate => {
-        const carrier = CARRIER_RATES[rate.carrierId];
+    const options = rates.map((rate) => {
+        const carrier = CARRIER_RATES[rate.carrierId]
 
         // Normalize Cost (0 to 100, where 0 is cheapest)
-        const minCost = Math.min(...rates.map(r => r.total));
-        const maxCost = Math.max(...rates.map(r => r.total));
-        const costScore = maxCost === minCost ? 0 : ((rate.total - minCost) / (maxCost - minCost)) * 100;
+        const minCost = Math.min(...rates.map((r) => r.total))
+        const maxCost = Math.max(...rates.map((r) => r.total))
+        const costScore = maxCost === minCost ? 0 : ((rate.total - minCost) / (maxCost - minCost)) * 100
 
         // Normalize Speed (0 to 100, where 0 is fastest)
-        const minDays = Math.min(...rates.map(r => r.estimatedDelivery[0]));
-        const maxDays = Math.max(...rates.map(r => r.estimatedDelivery[0]));
-        const speedScore = maxDays === minDays ? 0 : ((rate.estimatedDelivery[0] - minDays) / (maxDays - minDays)) * 100;
+        const minDays = Math.min(...rates.map((r) => r.estimatedDelivery[0]))
+        const maxDays = Math.max(...rates.map((r) => r.estimatedDelivery[0]))
+        const speedScore =
+            maxDays === minDays ? 0 : ((rate.estimatedDelivery[0] - minDays) / (maxDays - minDays)) * 100
 
         // Reliability (100 - score, where 0 is most reliable)
-        const reliabilityPenalty = 100 - carrier.reliabilityScore;
+        const reliabilityPenalty = 100 - carrier.reliabilityScore
 
         return {
             ...rate,
-            scores: { cost: costScore, speed: speedScore, reliability: reliabilityPenalty }
-        };
-    });
+            scores: { cost: costScore, speed: speedScore, reliability: reliabilityPenalty },
+        }
+    })
 
     // Strategy Execution
-    let winner;
+    let winner
     switch (priority) {
         case 'speed':
-            winner = options.sort((a, b) => a.scores.speed - b.scores.speed)[0];
-            winner.recommendation = 'Fastest Delivery';
-            winner.reason = `Rapid transit with ${winner.carrierName}`;
-            break;
+            winner = options.sort((a, b) => a.scores.speed - b.scores.speed)[0]
+            winner.recommendation = 'Fastest Delivery'
+            winner.reason = `Rapid transit with ${winner.carrierName}`
+            break
 
         case 'reliability':
-            winner = options.sort((a, b) => a.scores.reliability - b.scores.reliability)[0];
-            winner.recommendation = 'Safest Choice';
-            winner.reason = `Highest delivery success rate (${CARRIER_RATES[winner.carrierId].reliabilityScore}%)`;
-            break;
+            winner = options.sort((a, b) => a.scores.reliability - b.scores.reliability)[0]
+            winner.recommendation = 'Safest Choice'
+            winner.reason = `Highest delivery success rate (${CARRIER_RATES[winner.carrierId].reliabilityScore}%)`
+            break
 
         case 'cost':
-            winner = options.sort((a, b) => a.scores.cost - b.scores.cost)[0];
-            winner.recommendation = 'Highest Savings';
-            winner.reason = 'Lowest freight cost in this zone';
-            break;
+            winner = options.sort((a, b) => a.scores.cost - b.scores.cost)[0]
+            winner.recommendation = 'Highest Savings'
+            winner.reason = 'Lowest freight cost in this zone'
+            break
 
         case 'smart':
         default:
             // Weighted average: 40% Cost, 30% Speed, 30% Reliability
             options.sort((a, b) => {
-                const scoreA = (a.scores.cost * 0.4) + (a.scores.speed * 0.3) + (a.scores.reliability * 0.3);
-                const scoreB = (b.scores.cost * 0.4) + (b.scores.speed * 0.3) + (b.scores.reliability * 0.3);
-                return scoreA - scoreB;
-            });
-            winner = options[0];
+                const scoreA = a.scores.cost * 0.4 + a.scores.speed * 0.3 + a.scores.reliability * 0.3
+                const scoreB = b.scores.cost * 0.4 + b.scores.speed * 0.3 + b.scores.reliability * 0.3
+                return scoreA - scoreB
+            })
+            winner = options[0]
 
             // Check if there's a legacy override in the Matrix
-            const matrixOverrideId = PREFERRED_CARRIER_MATRIX[shipment.state] || PREFERRED_CARRIER_MATRIX[winner.zone];
-            const matrixCarrier = options.find(o => o.carrierId === matrixOverrideId);
+            const matrixOverrideId =
+                PREFERRED_CARRIER_MATRIX[shipment.state] || PREFERRED_CARRIER_MATRIX[winner.zone]
+            const matrixCarrier = options.find((o) => o.carrierId === matrixOverrideId)
 
-            if (matrixCarrier && matrixCarrier.total <= winner.total * 1.1) { // Apply override if within 10% cost
-                winner = matrixCarrier;
-                winner.recommendation = 'Business Rule Match';
-                winner.reason = `Preferred partner for ${shipment.state || winner.zone}`;
+            if (matrixCarrier && matrixCarrier.total <= winner.total * 1.1) {
+                // Apply override if within 10% cost
+                winner = matrixCarrier
+                winner.recommendation = 'Business Rule Match'
+                winner.reason = `Preferred partner for ${shipment.state || winner.zone}`
             } else {
-                winner.recommendation = 'AI Optimized';
-                winner.reason = 'Best balance of cost, speed, and reliability';
+                winner.recommendation = 'AI Optimized'
+                winner.reason = 'Best balance of cost, speed, and reliability'
             }
-            break;
+            break
     }
 
-    return winner;
-};
-
+    return winner
+}
 
 /**
  * Check if pincode is serviceable
- * @param {string} pincode 
- * @param {string} carrierId 
+ * @param {string} pincode
+ * @param {string} carrierId
  * @returns {boolean}
  */
 export const isPincodeServiceable = async (pincode, carrierId = null) => {
     // Placeholder - would call carrier API in production
     // For now, assume all 6-digit pincodes are serviceable
-    const isValid = /^\d{6}$/.test(pincode);
+    const isValid = /^\d{6}$/.test(pincode)
 
     // Northeast pincodes (start with 78-79) may have restrictions
-    const isNE = pincode.startsWith('78') || pincode.startsWith('79');
+    const isNE = pincode.startsWith('78') || pincode.startsWith('79')
 
     return {
         serviceable: isValid,
         zone: isNE ? 'NE' : 'ROI',
-        restrictions: isNE ? ['Limited carriers', 'Longer delivery time'] : []
-    };
-};
+        restrictions: isNE ? ['Limited carriers', 'Longer delivery time'] : [],
+    }
+}
 
 export default {
     ZONE_MAPPING,
@@ -438,5 +457,5 @@ export default {
     calculateRate,
     getAllRates,
     getRecommendation,
-    isPincodeServiceable
-};
+    isPincodeServiceable,
+}

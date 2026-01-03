@@ -7,43 +7,43 @@
 // ============================================
 
 const GST_RATES = {
-    standard: 18,
-    reduced: 12,
-    low: 5,
-    exempt: 0
-};
+  standard: 18,
+  reduced: 12,
+  low: 5,
+  exempt: 0,
+}
 
 export const STATE_CODES = {
-    'Andhra Pradesh': '37',
-    'Arunachal Pradesh': '12',
-    'Assam': '18',
-    'Bihar': '10',
-    'Chhattisgarh': '22',
-    'Goa': '30',
-    'Gujarat': '24',
-    'Haryana': '06',
-    'Himachal Pradesh': '02',
-    'Jharkhand': '20',
-    'Karnataka': '29',
-    'Kerala': '32',
-    'Madhya Pradesh': '23',
-    'Maharashtra': '27',
-    'Manipur': '14',
-    'Meghalaya': '17',
-    'Mizoram': '15',
-    'Nagaland': '13',
-    'Odisha': '21',
-    'Punjab': '03',
-    'Rajasthan': '08',
-    'Sikkim': '11',
-    'Tamil Nadu': '33',
-    'Telangana': '36',
-    'Tripura': '16',
-    'Uttar Pradesh': '09',
-    'Uttarakhand': '05',
-    'West Bengal': '19',
-    'Delhi': '07'
-};
+  'Andhra Pradesh': '37',
+  'Arunachal Pradesh': '12',
+  Assam: '18',
+  Bihar: '10',
+  Chhattisgarh: '22',
+  Goa: '30',
+  Gujarat: '24',
+  Haryana: '06',
+  'Himachal Pradesh': '02',
+  Jharkhand: '20',
+  Karnataka: '29',
+  Kerala: '32',
+  'Madhya Pradesh': '23',
+  Maharashtra: '27',
+  Manipur: '14',
+  Meghalaya: '17',
+  Mizoram: '15',
+  Nagaland: '13',
+  Odisha: '21',
+  Punjab: '03',
+  Rajasthan: '08',
+  Sikkim: '11',
+  'Tamil Nadu': '33',
+  Telangana: '36',
+  Tripura: '16',
+  'Uttar Pradesh': '09',
+  Uttarakhand: '05',
+  'West Bengal': '19',
+  Delhi: '07',
+}
 
 /**
  * Calculate GST for an amount
@@ -52,38 +52,38 @@ export const STATE_CODES = {
  * @returns {object} - Breakdown of GST
  */
 export const calculateGST = (amount, gstType = 'standard') => {
-    const rate = GST_RATES[gstType] || 18;
-    const gstAmount = (amount * rate) / 100;
-    const halfGst = gstAmount / 2;
+  const rate = GST_RATES[gstType] || 18
+  const gstAmount = (amount * rate) / 100
+  const halfGst = gstAmount / 2
 
-    return {
-        baseAmount: amount,
-        gstRate: rate,
-        cgst: halfGst,
-        sgst: halfGst,
-        igst: gstAmount,
-        totalWithGst: amount + gstAmount
-    };
-};
+  return {
+    baseAmount: amount,
+    gstRate: rate,
+    cgst: halfGst,
+    sgst: halfGst,
+    igst: gstAmount,
+    totalWithGst: amount + gstAmount,
+  }
+}
 
 /**
  * Determine if IGST or CGST+SGST applies
- * @param {string} sellerState 
- * @param {string} buyerState 
+ * @param {string} sellerState
+ * @param {string} buyerState
  * @returns {string} - 'IGST' or 'CGST+SGST'
  */
 export const getGSTType = (sellerState, buyerState) => {
-    return sellerState === buyerState ? 'CGST+SGST' : 'IGST';
-};
+  return sellerState === buyerState ? 'CGST+SGST' : 'IGST'
+}
 
 /**
  * Get state code for GST
- * @param {string} stateName 
+ * @param {string} stateName
  * @returns {string}
  */
 export const getStateCode = (stateName) => {
-    return STATE_CODES[stateName] || '00';
-};
+  return STATE_CODES[stateName] || '00'
+}
 
 // ============================================
 // ORDER DATA UTILITIES
@@ -91,47 +91,47 @@ export const getStateCode = (stateName) => {
 
 /**
  * Generate a unique order ID
- * @param {string} prefix 
+ * @param {string} prefix
  * @returns {string}
  */
 export const generateOrderId = (prefix = 'BW') => {
-    const timestamp = Date.now().toString(36).toUpperCase();
-    const random = Math.random().toString(36).substring(2, 6).toUpperCase();
-    return `${prefix}-${timestamp}${random}`;
-};
+  const timestamp = Date.now().toString(36).toUpperCase()
+  const random = Math.random().toString(36).substring(2, 6).toUpperCase()
+  return `${prefix}-${timestamp}${random}`
+}
 
 /**
  * Validate order data
- * @param {object} order 
+ * @param {object} order
  * @returns {object} - { valid: boolean, errors: string[] }
  */
 export const validateOrder = (order) => {
-    const errors = [];
+  const errors = []
 
-    if (!order.customerName || order.customerName.trim().length < 2) {
-        errors.push('Customer name is required (min 2 characters)');
-    }
-    if (!order.phone || !/^[6-9]\d{9}$/.test(order.phone)) {
-        errors.push('Valid 10-digit Indian phone number required');
-    }
-    if (!order.pincode || !/^\d{6}$/.test(order.pincode)) {
-        errors.push('Valid 6-digit pincode required');
-    }
-    if (!order.state || !STATE_CODES[order.state]) {
-        errors.push('Valid Indian state required');
-    }
-    if (!order.sku || order.sku.trim().length < 3) {
-        errors.push('SKU is required (min 3 characters)');
-    }
-    if (!order.weight || order.weight <= 0) {
-        errors.push('Weight must be greater than 0');
-    }
+  if (!order.customerName || order.customerName.trim().length < 2) {
+    errors.push('Customer name is required (min 2 characters)')
+  }
+  if (!order.phone || !/^[6-9]\d{9}$/.test(order.phone)) {
+    errors.push('Valid 10-digit Indian phone number required')
+  }
+  if (!order.pincode || !/^\d{6}$/.test(order.pincode)) {
+    errors.push('Valid 6-digit pincode required')
+  }
+  if (!order.state || !STATE_CODES[order.state]) {
+    errors.push('Valid Indian state required')
+  }
+  if (!order.sku || order.sku.trim().length < 3) {
+    errors.push('SKU is required (min 3 characters)')
+  }
+  if (!order.weight || order.weight <= 0) {
+    errors.push('Weight must be greater than 0')
+  }
 
-    return {
-        valid: errors.length === 0,
-        errors
-    };
-};
+  return {
+    valid: errors.length === 0,
+    errors,
+  }
+}
 
 /**
  * Resolve SKU Alias to Parent MTP Code
@@ -140,10 +140,10 @@ export const validateOrder = (order) => {
  * @returns {string} - Parent MTP Code or original SKU
  */
 export const resolveSkuAlias = (sku, aliases = []) => {
-    if (!sku) return '';
-    const found = aliases.find(a => a.alias.toLowerCase() === sku.toLowerCase());
-    return found ? found.parentCode : sku;
-};
+  if (!sku) return ''
+  const found = aliases.find((a) => a.alias.toLowerCase() === sku.toLowerCase())
+  return found ? found.parentCode : sku
+}
 
 /**
  * Normalize order data from different sources
@@ -153,74 +153,75 @@ export const resolveSkuAlias = (sku, aliases = []) => {
  * @returns {object} - Normalized order
  */
 export const normalizeOrder = (rawOrder, source, aliases = []) => {
+  const base = {
+    id: generateOrderId(),
+    source: source,
+    importedAt: new Date().toISOString(),
+    status: 'Pending',
+    statusHistory: [],
+  }
 
-    const base = {
-        id: generateOrderId(),
-        source: source,
-        importedAt: new Date().toISOString(),
-        status: 'Pending',
-        statusHistory: []
-    };
+  switch (source) {
+    case 'amazon':
+      return {
+        ...base,
+        externalId: rawOrder.AmazonOrderId || rawOrder['order-id'],
+        customerName: rawOrder.BuyerName || rawOrder['buyer-name'] || 'Amazon Customer',
+        phone: rawOrder.BuyerPhone || rawOrder['buyer-phone-number'] || '',
+        address: rawOrder.ShippingAddress?.AddressLine1 || rawOrder['ship-address-1'] || '',
+        city: rawOrder.ShippingAddress?.City || rawOrder['ship-city'] || '',
+        state: rawOrder.ShippingAddress?.StateOrRegion || rawOrder['ship-state'] || '',
+        pincode: rawOrder.ShippingAddress?.PostalCode || rawOrder['ship-postal-code'] || '',
+        sku: resolveSkuAlias(rawOrder.SellerSKU || rawOrder['sku'] || '', aliases),
 
-    switch (source) {
-        case 'amazon':
-            return {
-                ...base,
-                externalId: rawOrder.AmazonOrderId || rawOrder['order-id'],
-                customerName: rawOrder.BuyerName || rawOrder['buyer-name'] || 'Amazon Customer',
-                phone: rawOrder.BuyerPhone || rawOrder['buyer-phone-number'] || '',
-                address: rawOrder.ShippingAddress?.AddressLine1 || rawOrder['ship-address-1'] || '',
-                city: rawOrder.ShippingAddress?.City || rawOrder['ship-city'] || '',
-                state: rawOrder.ShippingAddress?.StateOrRegion || rawOrder['ship-state'] || '',
-                pincode: rawOrder.ShippingAddress?.PostalCode || rawOrder['ship-postal-code'] || '',
-                sku: resolveSkuAlias(rawOrder.SellerSKU || rawOrder['sku'] || '', aliases),
+        quantity: parseInt(rawOrder.QuantityOrdered || rawOrder['quantity-purchased'] || 1),
+        amount: parseFloat(rawOrder.ItemPrice?.Amount || rawOrder['item-price'] || 0),
+        weight: parseFloat(rawOrder.Weight || 0.5),
+      }
 
-                quantity: parseInt(rawOrder.QuantityOrdered || rawOrder['quantity-purchased'] || 1),
-                amount: parseFloat(rawOrder.ItemPrice?.Amount || rawOrder['item-price'] || 0),
-                weight: parseFloat(rawOrder.Weight || 0.5)
-            };
+    case 'flipkart':
+      return {
+        ...base,
+        externalId: rawOrder.order_item_id || rawOrder.orderId || rawOrder['Order ID'],
+        customerName: rawOrder.buyer_name || rawOrder['Customer Name'] || 'Flipkart Customer',
+        phone: rawOrder.buyer_phone || rawOrder['Mobile'] || '',
+        address: rawOrder.ship_address || rawOrder['Address'] || '',
+        city: rawOrder.ship_city || rawOrder['City'] || '',
+        state: rawOrder.ship_state || rawOrder['State'] || '',
+        pincode: rawOrder.ship_pincode || rawOrder['Pincode'] || '',
+        sku: resolveSkuAlias(rawOrder.sku || rawOrder.seller_sku || rawOrder['SKU'] || '', aliases),
 
-        case 'flipkart':
-            return {
-                ...base,
-                externalId: rawOrder.order_item_id || rawOrder.orderId || rawOrder['Order ID'],
-                customerName: rawOrder.buyer_name || rawOrder['Customer Name'] || 'Flipkart Customer',
-                phone: rawOrder.buyer_phone || rawOrder['Mobile'] || '',
-                address: rawOrder.ship_address || rawOrder['Address'] || '',
-                city: rawOrder.ship_city || rawOrder['City'] || '',
-                state: rawOrder.ship_state || rawOrder['State'] || '',
-                pincode: rawOrder.ship_pincode || rawOrder['Pincode'] || '',
-                sku: resolveSkuAlias(rawOrder.sku || rawOrder.seller_sku || rawOrder['SKU'] || '', aliases),
+        quantity: parseInt(rawOrder.quantity || rawOrder['Quantity'] || 1),
+        amount: parseFloat(rawOrder.selling_price || rawOrder['Estimated Item Price'] || 0),
+        weight: parseFloat(rawOrder.weight || 0.5),
+      }
 
-                quantity: parseInt(rawOrder.quantity || rawOrder['Quantity'] || 1),
-                amount: parseFloat(rawOrder.selling_price || rawOrder['Estimated Item Price'] || 0),
-                weight: parseFloat(rawOrder.weight || 0.5)
-            };
+    case 'shopify':
+      return {
+        ...base,
+        externalId: rawOrder.order_number || rawOrder.id,
+        customerName:
+          `${rawOrder.shipping_address?.first_name || ''} ${rawOrder.shipping_address?.last_name || ''}`.trim() ||
+          'Shopify Customer',
+        phone: rawOrder.shipping_address?.phone || '',
+        address: rawOrder.shipping_address?.address1 || '',
+        city: rawOrder.shipping_address?.city || '',
+        state: rawOrder.shipping_address?.province || '',
+        pincode: rawOrder.shipping_address?.zip || '',
+        sku: resolveSkuAlias(rawOrder.line_items?.[0]?.sku || '', aliases),
 
-        case 'shopify':
-            return {
-                ...base,
-                externalId: rawOrder.order_number || rawOrder.id,
-                customerName: `${rawOrder.shipping_address?.first_name || ''} ${rawOrder.shipping_address?.last_name || ''}`.trim() || 'Shopify Customer',
-                phone: rawOrder.shipping_address?.phone || '',
-                address: rawOrder.shipping_address?.address1 || '',
-                city: rawOrder.shipping_address?.city || '',
-                state: rawOrder.shipping_address?.province || '',
-                pincode: rawOrder.shipping_address?.zip || '',
-                sku: resolveSkuAlias(rawOrder.line_items?.[0]?.sku || '', aliases),
+        quantity: rawOrder.line_items?.reduce((sum, item) => sum + item.quantity, 0) || 1,
+        amount: parseFloat(rawOrder.total_price || 0),
+        weight: parseFloat(rawOrder.total_weight || 500) / 1000, // Shopify uses grams
+      }
 
-                quantity: rawOrder.line_items?.reduce((sum, item) => sum + item.quantity, 0) || 1,
-                amount: parseFloat(rawOrder.total_price || 0),
-                weight: parseFloat(rawOrder.total_weight || 500) / 1000 // Shopify uses grams
-            };
-
-        default:
-            return {
-                ...base,
-                ...rawOrder
-            };
-    }
-};
+    default:
+      return {
+        ...base,
+        ...rawOrder,
+      }
+  }
+}
 
 // ============================================
 // EXPORT UTILITIES
@@ -228,67 +229,88 @@ export const normalizeOrder = (rawOrder, source, aliases = []) => {
 
 /**
  * Convert array of objects to CSV string
- * @param {object[]} data 
+ * @param {object[]} data
  * @param {string[]} columns - Optional column order
  * @returns {string}
  */
 export const toCSV = (data, columns = null) => {
-    if (!data || data.length === 0) return '';
+  if (!data || data.length === 0) return ''
 
-    const cols = columns || Object.keys(data[0]);
-    const header = cols.join(',');
-    const rows = data.map(row =>
-        cols.map(col => {
-            const val = row[col];
-            if (val === null || val === undefined) return '';
-            if (typeof val === 'string' && (val.includes(',') || val.includes('"') || val.includes('\n'))) {
-                return `"${val.replace(/"/g, '""')}"`;
-            }
-            return val;
-        }).join(',')
-    );
+  const cols = columns || Object.keys(data[0])
+  const header = cols.join(',')
+  const rows = data.map((row) =>
+    cols
+      .map((col) => {
+        const val = row[col]
+        if (val === null || val === undefined) return ''
+        if (
+          typeof val === 'string' &&
+          (val.includes(',') || val.includes('"') || val.includes('\n'))
+        ) {
+          return `"${val.replace(/"/g, '""')}"`
+        }
+        return val
+      })
+      .join(',')
+  )
 
-    return [header, ...rows].join('\n');
-};
+  return [header, ...rows].join('\n')
+}
 
 /**
  * Download data as file
  * @param {string} content - File content
- * @param {string} filename 
- * @param {string} mimeType 
+ * @param {string} filename
+ * @param {string} mimeType
  */
 export const downloadFile = (content, filename, mimeType = 'text/csv') => {
-    const blob = new Blob([content], { type: mimeType });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = filename;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
-};
+  const blob = new Blob([content], { type: mimeType })
+  const url = URL.createObjectURL(blob)
+  const link = document.createElement('a')
+  link.href = url
+  link.download = filename
+  document.body.appendChild(link)
+  link.click()
+  document.body.removeChild(link)
+  URL.revokeObjectURL(url)
+}
 
 /**
  * Export orders to CSV
- * @param {object[]} orders 
- * @param {string} filename 
+ * @param {object[]} orders
+ * @param {string} filename
  */
 export const exportOrdersCSV = (orders, filename = 'orders_export.csv') => {
-    const columns = ['id', 'externalId', 'source', 'customerName', 'phone', 'city', 'state', 'pincode', 'sku', 'quantity', 'amount', 'weight', 'status', 'carrier', 'awb'];
-    const csv = toCSV(orders, columns);
-    downloadFile(csv, filename);
-};
+  const columns = [
+    'id',
+    'externalId',
+    'source',
+    'customerName',
+    'phone',
+    'city',
+    'state',
+    'pincode',
+    'sku',
+    'quantity',
+    'amount',
+    'weight',
+    'status',
+    'carrier',
+    'awb',
+  ]
+  const csv = toCSV(orders, columns)
+  downloadFile(csv, filename)
+}
 
 /**
  * Export data to JSON
- * @param {any} data 
- * @param {string} filename 
+ * @param {any} data
+ * @param {string} filename
  */
 export const exportJSON = (data, filename = 'export.json') => {
-    const json = JSON.stringify(data, null, 2);
-    downloadFile(json, filename, 'application/json');
-};
+  const json = JSON.stringify(data, null, 2)
+  downloadFile(json, filename, 'application/json')
+}
 
 // ============================================
 // DATE UTILITIES
@@ -296,51 +318,51 @@ export const exportJSON = (data, filename = 'export.json') => {
 
 /**
  * Format date to Indian format
- * @param {string|Date} date 
+ * @param {string|Date} date
  * @returns {string}
  */
 export const formatDateIN = (date) => {
-    const d = new Date(date);
-    const day = String(d.getDate()).padStart(2, '0');
-    const month = d.toLocaleString('en-IN', { month: 'short' });
-    const year = d.getFullYear();
-    return `${day}-${month}-${year}`;
-};
+  const d = new Date(date)
+  const day = String(d.getDate()).padStart(2, '0')
+  const month = d.toLocaleString('en-IN', { month: 'short' })
+  const year = d.getFullYear()
+  return `${day}-${month}-${year}`
+}
 
 /**
  * Format date with time
- * @param {string|Date} date 
+ * @param {string|Date} date
  * @returns {string}
  */
 export const formatDateTimeIN = (date) => {
-    return new Date(date).toLocaleString('en-IN', {
-        day: '2-digit',
-        month: 'short',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-    });
-};
+  return new Date(date).toLocaleString('en-IN', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  })
+}
 
 /**
  * Get relative time (e.g., "2 hours ago")
- * @param {string|Date} date 
+ * @param {string|Date} date
  * @returns {string}
  */
 export const getRelativeTime = (date) => {
-    const now = new Date();
-    const then = new Date(date);
-    const diffMs = now - then;
-    const diffMins = Math.floor(diffMs / 60000);
-    const diffHours = Math.floor(diffMs / 3600000);
-    const diffDays = Math.floor(diffMs / 86400000);
+  const now = new Date()
+  const then = new Date(date)
+  const diffMs = now - then
+  const diffMins = Math.floor(diffMs / 60000)
+  const diffHours = Math.floor(diffMs / 3600000)
+  const diffDays = Math.floor(diffMs / 86400000)
 
-    if (diffMins < 1) return 'just now';
-    if (diffMins < 60) return `${diffMins} min ago`;
-    if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
-    if (diffDays < 7) return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
-    return formatDateIN(date);
-};
+  if (diffMins < 1) return 'just now'
+  if (diffMins < 60) return `${diffMins} min ago`
+  if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`
+  if (diffDays < 7) return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`
+  return formatDateIN(date)
+}
 
 // ============================================
 // DEDUPLICATION ENGINE
@@ -348,107 +370,112 @@ export const getRelativeTime = (date) => {
 
 /**
  * Deduplicate orders based on Source and External ID
- * @param {object[]} existingOrders 
- * @param {object[]} newOrders 
+ * @param {object[]} existingOrders
+ * @param {object[]} newOrders
  * @returns {object[]} - Merged and deduplicated list
  */
 export const deduplicateOrders = (existingOrders = [], newOrders = []) => {
-    const start = performance.now();
-    const orderMap = new Map();
+  const start = performance.now()
+  const orderMap = new Map()
 
-    // Batch process existing
-    for (let i = 0; i < existingOrders.length; i++) {
-        const o = existingOrders[i];
-        const key = `${o.source}:${o.externalId || o.id}`;
-        orderMap.set(key, o);
+  // Batch process existing
+  for (let i = 0; i < existingOrders.length; i++) {
+    const o = existingOrders[i]
+    const key = `${o.source}:${o.externalId || o.id}`
+    orderMap.set(key, o)
+  }
+
+  // Batch process new
+  for (let i = 0; i < newOrders.length; i++) {
+    const no = newOrders[i]
+    const key = `${no.source}:${no.externalId || no.id}`
+
+    if (orderMap.has(key)) {
+      const existing = orderMap.get(key)
+      // Optimized merge: Keep earlier source of truth for IDs, update mutable state
+      orderMap.set(key, {
+        ...existing,
+        ...no,
+        statusHistory: Array.from(
+          new Set(
+            [...(existing.statusHistory || []), ...(no.statusHistory || [])].map((h) =>
+              JSON.stringify(h)
+            )
+          )
+        ).map((s) => JSON.parse(s)),
+      })
+    } else {
+      orderMap.set(key, no)
     }
+  }
 
-    // Batch process new
-    for (let i = 0; i < newOrders.length; i++) {
-        const no = newOrders[i];
-        const key = `${no.source}:${no.externalId || no.id}`;
-
-        if (orderMap.has(key)) {
-            const existing = orderMap.get(key);
-            // Optimized merge: Keep earlier source of truth for IDs, update mutable state
-            orderMap.set(key, {
-                ...existing,
-                ...no,
-                statusHistory: Array.from(new Set([...(existing.statusHistory || []), ...(no.statusHistory || [])].map(h => JSON.stringify(h)))).map(s => JSON.parse(s))
-            });
-        } else {
-            orderMap.set(key, no);
-        }
-    }
-
-    const result = Array.from(orderMap.values());
-    console.debug(`[Dedupe] Orders processed in ${(performance.now() - start).toFixed(2)}ms`);
-    return result;
-};
+  const result = Array.from(orderMap.values())
+  console.debug(`[Dedupe] Orders processed in ${(performance.now() - start).toFixed(2)}ms`)
+  return result
+}
 
 export const deduplicateCustomers = (customers = []) => {
-    const start = performance.now();
-    const phoneMap = new Map();
-    const emailMap = new Map();
-    const unique = [];
+  const start = performance.now()
+  const phoneMap = new Map()
+  const emailMap = new Map()
+  const unique = []
 
-    for (let i = 0; i < customers.length; i++) {
-        const c = customers[i];
-        const phone = c.phone?.replace(/\D/g, '').slice(-10);
-        const email = c.email?.toLowerCase().trim();
+  for (let i = 0; i < customers.length; i++) {
+    const c = customers[i]
+    const phone = c.phone?.replace(/\D/g, '').slice(-10)
+    const email = c.email?.toLowerCase().trim()
 
-        let existing = (phone && phoneMap.get(phone)) || (email && emailMap.get(email));
+    let existing = (phone && phoneMap.get(phone)) || (email && emailMap.get(email))
 
-        if (existing) {
-            // Merge into existing reference (efficient)
-            Object.assign(existing, c);
-        } else {
-            unique.push(c);
-            if (phone) phoneMap.set(phone, c);
-            if (email) emailMap.set(email, c);
-        }
+    if (existing) {
+      // Merge into existing reference (efficient)
+      Object.assign(existing, c)
+    } else {
+      unique.push(c)
+      if (phone) phoneMap.set(phone, c)
+      if (email) emailMap.set(email, c)
     }
+  }
 
-    console.debug(`[Dedupe] Customers processed in ${(performance.now() - start).toFixed(2)}ms`);
-    return unique;
-};
+  console.debug(`[Dedupe] Customers processed in ${(performance.now() - start).toFixed(2)}ms`)
+  return unique
+}
 
 /**
  * Sanitize user input to prevent XSS
- * @param {string} input 
+ * @param {string} input
  * @returns {string} Sanitized string
  */
 export const sanitizeInput = (input) => {
-    if (typeof input !== 'string') return input;
-    return input.replace(/[&<>"']/g, function (m) {
-        return {
-            '&': '&amp;',
-            '<': '&lt;',
-            '>': '&gt;',
-            '"': '&quot;',
-            "'": '&#039;'
-        }[m];
-    });
-};
+  if (typeof input !== 'string') return input
+  return input.replace(/[&<>"']/g, function (m) {
+    return {
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#039;',
+    }[m]
+  })
+}
 
 export default {
-    calculateGST,
-    getGSTType,
-    getStateCode,
-    generateOrderId,
-    validateOrder,
-    normalizeOrder,
-    resolveSkuAlias,
-    deduplicateOrders,
-    deduplicateCustomers,
-    toCSV,
-    downloadFile,
-    exportOrdersCSV,
-    exportJSON,
-    formatDateIN,
-    formatDateTimeIN,
-    getRelativeTime,
-    STATE_CODES,
-    sanitizeInput
-};
-
+  calculateGST,
+  getGSTType,
+  getStateCode,
+  generateOrderId,
+  validateOrder,
+  normalizeOrder,
+  resolveSkuAlias,
+  deduplicateOrders,
+  deduplicateCustomers,
+  toCSV,
+  downloadFile,
+  exportOrdersCSV,
+  exportJSON,
+  formatDateIN,
+  formatDateTimeIN,
+  getRelativeTime,
+  STATE_CODES,
+  sanitizeInput,
+}

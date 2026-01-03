@@ -25,6 +25,5 @@ ReactDOM.createRoot(document.getElementById('root')).render(
         </DataProvider>
       </AuthProvider>
     </ErrorBoundary>
-  </React.StrictMode>,
+  </React.StrictMode>
 )
-

@@ -4,57 +4,63 @@
  * Real-time metrics, trends, and business insights
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react'
 
 const AnalyticsEnhanced = ({ timeRange = '7days' }) => {
-  const [metrics, setMetrics] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [selectedRange, setSelectedRange] = useState(timeRange);
+  const [metrics, setMetrics] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [selectedRange, setSelectedRange] = useState(timeRange)
 
   useEffect(() => {
-    fetchMetrics();
-  }, [selectedRange]);
+    fetchMetrics()
+  }, [selectedRange])
 
   const fetchMetrics = async () => {
-    setLoading(true);
+    setLoading(true)
     try {
-      const response = await fetch(`/api/analytics/metrics?range=${selectedRange}`);
-      const data = await response.json();
-      setMetrics(data);
+      const response = await fetch(`/api/analytics/metrics?range=${selectedRange}`)
+      const data = await response.json()
+      setMetrics(data)
     } catch (err) {
-      console.error('Failed to fetch metrics:', err);
+      console.error('Failed to fetch metrics:', err)
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   if (loading) {
-    return <div className="analytics-loading">Loading analytics...</div>;
+    return <div className="analytics-loading">Loading analytics...</div>
   }
 
   const formatNumber = (num) => {
-    if (!num) return '0';
-    if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
-    if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
-    return num.toString();
-  };
+    if (!num) return '0'
+    if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M'
+    if (num >= 1000) return (num / 1000).toFixed(1) + 'K'
+    return num.toString()
+  }
 
   const formatCurrency = (num) => {
-    return '₹' + (num || 0).toLocaleString('en-IN');
-  };
+    return '₹' + (num || 0).toLocaleString('en-IN')
+  }
 
   return (
     <div className="analytics-dashboard glass">
       <div className="analytics-header">
         <h2>📊 Order Analytics</h2>
         <div className="range-selector">
-          {['7days', '30days', '90days', 'yearly'].map(range => (
+          {['7days', '30days', '90days', 'yearly'].map((range) => (
             <button
               key={range}
               className={`range-btn ${selectedRange === range ? 'active' : ''}`}
               onClick={() => setSelectedRange(range)}
             >
-              {range === '7days' ? '7D' : range === '30days' ? '30D' : range === '90days' ? '90D' : 'YTD'}
+              {range === '7days'
+                ? '7D'
+                : range === '30days'
+                  ? '30D'
+                  : range === '90days'
+                    ? '90D'
+                    : 'YTD'}
             </button>
           ))}
         </div>
@@ -130,7 +136,7 @@ const AnalyticsEnhanced = ({ timeRange = '7days' }) => {
             <div key={i} className="channel-item">
               <span className="channel-name">{channel.name}</span>
               <div className="channel-bar">
-                <div 
+                <div
                   className="channel-fill"
                   style={{ width: `${(channel.orders / metrics.totalOrders) * 100}%` }}
                 />
@@ -301,7 +307,7 @@ const AnalyticsEnhanced = ({ timeRange = '7days' }) => {
         }
       `}</style>
     </div>
-  );
-};
+  )
+}
 
-export default AnalyticsEnhanced;
+export default AnalyticsEnhanced

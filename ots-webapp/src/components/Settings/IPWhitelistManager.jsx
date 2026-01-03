@@ -4,98 +4,98 @@
  * Add, remove, and manage allowed IP addresses
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react'
 
 const IPWhitelistManager = ({ onIpListUpdate }) => {
-  const [ipList, setIpList] = useState([]);
-  const [newIp, setNewIp] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [message, setMessage] = useState('');
-  const [filter, setFilter] = useState('');
+  const [ipList, setIpList] = useState([])
+  const [newIp, setNewIp] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState('')
+  const [message, setMessage] = useState('')
+  const [filter, setFilter] = useState('')
 
   // Load whitelist
   useEffect(() => {
-    fetchWhitelist();
-  }, []);
+    fetchWhitelist()
+  }, [])
 
   const fetchWhitelist = async () => {
     try {
-      const response = await fetch('/api/security/whitelist');
-      const data = await response.json();
-      setIpList(data || []);
+      const response = await fetch('/api/security/whitelist')
+      const data = await response.json()
+      setIpList(data || [])
     } catch (err) {
-      setError('Failed to load whitelist');
+      setError('Failed to load whitelist')
     }
-  };
+  }
 
   // Validate IP
   const validateIp = (ip) => {
-    const ipv4Regex = /^(\d{1,3}\.){3}\d{1,3}$|^[a-f0-9:]+:[a-f0-9:]+$/i;
-    if (!ipv4Regex.test(ip)) return false;
-    const parts = ip.split('.');
-    return parts.every(p => parseInt(p) <= 255);
-  };
+    const ipv4Regex = /^(\d{1,3}\.){3}\d{1,3}$|^[a-f0-9:]+:[a-f0-9:]+$/i
+    if (!ipv4Regex.test(ip)) return false
+    const parts = ip.split('.')
+    return parts.every((p) => parseInt(p) <= 255)
+  }
 
   // Add IP
   const handleAddIp = async () => {
-    setError('');
+    setError('')
     if (!newIp.trim()) {
-      setError('Please enter an IP address');
-      return;
+      setError('Please enter an IP address')
+      return
     }
     if (!validateIp(newIp)) {
-      setError('Invalid IP address format');
-      return;
+      setError('Invalid IP address format')
+      return
     }
     if (ipList.includes(newIp)) {
-      setError('IP already in whitelist');
-      return;
+      setError('IP already in whitelist')
+      return
     }
 
-    setIsLoading(true);
+    setIsLoading(true)
     try {
       const response = await fetch('/api/security/whitelist', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ip: newIp })
-      });
+        body: JSON.stringify({ ip: newIp }),
+      })
       if (response.ok) {
-        setIpList([...ipList, newIp]);
-        setNewIp('');
-        setMessage('IP added successfully');
-        onIpListUpdate?.([...ipList, newIp]);
-        setTimeout(() => setMessage(''), 3000);
+        setIpList([...ipList, newIp])
+        setNewIp('')
+        setMessage('IP added successfully')
+        onIpListUpdate?.([...ipList, newIp])
+        setTimeout(() => setMessage(''), 3000)
       }
     } catch (err) {
-      setError('Failed to add IP');
+      setError('Failed to add IP')
     } finally {
-      setIsLoading(false);
+      setIsLoading(false)
     }
-  };
+  }
 
   // Remove IP
   const handleRemoveIp = async (ip) => {
-    setIsLoading(true);
+    setIsLoading(true)
     try {
       const response = await fetch(`/api/security/whitelist/${ip}`, {
-        method: 'DELETE'
-      });
+        method: 'DELETE',
+      })
       if (response.ok) {
-        const updated = ipList.filter(i => i !== ip);
-        setIpList(updated);
-        setMessage('IP removed');
-        onIpListUpdate?.(updated);
-        setTimeout(() => setMessage(''), 3000);
+        const updated = ipList.filter((i) => i !== ip)
+        setIpList(updated)
+        setMessage('IP removed')
+        onIpListUpdate?.(updated)
+        setTimeout(() => setMessage(''), 3000)
       }
     } catch (err) {
-      setError('Failed to remove IP');
+      setError('Failed to remove IP')
     } finally {
-      setIsLoading(false);
+      setIsLoading(false)
     }
-  };
+  }
 
-  const filteredIps = ipList.filter(ip => ip.includes(filter));
+  const filteredIps = ipList.filter((ip) => ip.includes(filter))
 
   return (
     <div className="ip-whitelist-manager glass">
@@ -133,7 +133,7 @@ const IPWhitelistManager = ({ onIpListUpdate }) => {
           {filteredIps.length === 0 ? (
             <p className="empty-msg">No IPs in whitelist</p>
           ) : (
-            filteredIps.map(ip => (
+            filteredIps.map((ip) => (
               <div key={ip} className="ip-item glass-hover">
                 <span className="ip-text">{ip}</span>
                 <button
@@ -282,7 +282,7 @@ const IPWhitelistManager = ({ onIpListUpdate }) => {
         }
       `}</style>
     </div>
-  );
-};
+  )
+}
 
-export default IPWhitelistManager;
+export default IPWhitelistManager

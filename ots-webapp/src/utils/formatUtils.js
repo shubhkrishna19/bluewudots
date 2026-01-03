@@ -9,12 +9,12 @@
  * @returns {string} - Formatted date
  */
 export const formatDate = (date) => {
-  const d = new Date(date);
-  const day = String(d.getDate()).padStart(2, '0');
-  const month = String(d.getMonth() + 1).padStart(2, '0');
-  const year = d.getFullYear();
-  return `${day}/${month}/${year}`;
-};
+  const d = new Date(date)
+  const day = String(d.getDate()).padStart(2, '0')
+  const month = String(d.getMonth() + 1).padStart(2, '0')
+  const year = d.getFullYear()
+  return `${day}/${month}/${year}`
+}
 
 /**
  * Formats date with time 'DD/MM/YYYY HH:mm'
@@ -22,12 +22,12 @@ export const formatDate = (date) => {
  * @returns {string} - Formatted datetime
  */
 export const formatDateTime = (date) => {
-  const d = new Date(date);
-  const dateStr = formatDate(d);
-  const hours = String(d.getHours()).padStart(2, '0');
-  const minutes = String(d.getMinutes()).padStart(2, '0');
-  return `${dateStr} ${hours}:${minutes}`;
-};
+  const d = new Date(date)
+  const dateStr = formatDate(d)
+  const hours = String(d.getHours()).padStart(2, '0')
+  const minutes = String(d.getMinutes()).padStart(2, '0')
+  return `${dateStr} ${hours}:${minutes}`
+}
 
 /**
  * Formats currency to Indian Rupees
@@ -38,9 +38,9 @@ export const formatDateTime = (date) => {
 export const formatCurrency = (amount, currency = 'INR') => {
   return new Intl.NumberFormat('en-IN', {
     style: 'currency',
-    currency: currency
-  }).format(amount);
-};
+    currency: currency,
+  }).format(amount)
+}
 
 /**
  * Formats phone number to (XXX) XXX-XXXX format
@@ -48,15 +48,15 @@ export const formatCurrency = (amount, currency = 'INR') => {
  * @returns {string} - Formatted phone number
  */
 export const formatPhone = (phone) => {
-  const cleaned = phone.replace(/\D/g, '');
-  if (cleaned.length < 10) return phone;
-  
+  const cleaned = phone.replace(/\D/g, '')
+  if (cleaned.length < 10) return phone
+
   if (cleaned.startsWith('91') && cleaned.length === 12) {
-    return `+91-${cleaned.slice(2, 5)}-${cleaned.slice(5, 8)}-${cleaned.slice(8)}`;
+    return `+91-${cleaned.slice(2, 5)}-${cleaned.slice(5, 8)}-${cleaned.slice(8)}`
   }
-  
-  return `(${cleaned.slice(0, 3)}) ${cleaned.slice(3, 6)}-${cleaned.slice(6)}`;
-};
+
+  return `(${cleaned.slice(0, 3)}) ${cleaned.slice(3, 6)}-${cleaned.slice(6)}`
+}
 
 /**
  * Formats pincode as XXXXXX
@@ -64,8 +64,8 @@ export const formatPhone = (phone) => {
  * @returns {string} - Formatted pincode
  */
 export const formatPincode = (pincode) => {
-  return pincode.replace(/[^0-9]/g, '').slice(0, 6);
-};
+  return pincode.replace(/[^0-9]/g, '').slice(0, 6)
+}
 
 /**
  * Formats percentage with specified decimal places
@@ -74,8 +74,8 @@ export const formatPincode = (pincode) => {
  * @returns {string} - Formatted percentage
  */
 export const formatPercentage = (value, decimals = 2) => {
-  return `${(value * 100).toFixed(decimals)}%`;
-};
+  return `${(value * 100).toFixed(decimals)}%`
+}
 
 /**
  * Formats bytes to human-readable size
@@ -83,14 +83,14 @@ export const formatPercentage = (value, decimals = 2) => {
  * @returns {string} - Formatted size
  */
 export const formatBytes = (bytes) => {
-  if (bytes === 0) return '0 Bytes';
-  
-  const k = 1024;
-  const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
-  
-  return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + ' ' + sizes[i];
-};
+  if (bytes === 0) return '0 Bytes'
+
+  const k = 1024
+  const sizes = ['Bytes', 'KB', 'MB', 'GB']
+  const i = Math.floor(Math.log(bytes) / Math.log(k))
+
+  return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + ' ' + sizes[i]
+}
 
 /**
  * Formats order ID with prefix and padding
@@ -98,8 +98,8 @@ export const formatBytes = (bytes) => {
  * @returns {string} - Formatted order ID
  */
 export const formatOrderId = (id) => {
-  return `ORD-${String(id).padStart(8, '0')}`;
-};
+  return `ORD-${String(id).padStart(8, '0')}`
+}
 
 /**
  * Capitalizes first letter of a string
@@ -107,9 +107,9 @@ export const formatOrderId = (id) => {
  * @returns {string} - Capitalized string
  */
 export const capitalize = (str) => {
-  if (!str) return '';
-  return str.charAt(0).toUpperCase() + str.slice(1);
-};
+  if (!str) return ''
+  return str.charAt(0).toUpperCase() + str.slice(1)
+}
 
 /**
  * Converts string to title case
@@ -117,8 +117,8 @@ export const capitalize = (str) => {
  * @returns {string} - Title case string
  */
 export const toTitleCase = (str) => {
-  return str.replace(/\w\S*/g, (txt) => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase());
-};
+  return str.replace(/\w\S*/g, (txt) => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase())
+}
 
 /**
  * Truncates text with ellipsis
@@ -128,9 +128,9 @@ export const toTitleCase = (str) => {
  * @returns {string} - Truncated text
  */
 export const truncate = (text, maxLength, suffix = '...') => {
-  if (text.length <= maxLength) return text;
-  return text.slice(0, maxLength - suffix.length) + suffix;
-};
+  if (text.length <= maxLength) return text
+  return text.slice(0, maxLength - suffix.length) + suffix
+}
 
 /**
  * Formats address as single line
@@ -143,11 +143,11 @@ export const formatAddress = (address) => {
     address.city,
     address.state,
     address.pincode,
-    address.country
-  ].filter(Boolean);
-  
-  return parts.join(', ');
-};
+    address.country,
+  ].filter(Boolean)
+
+  return parts.join(', ')
+}
 
 /**
  * Formats duration in milliseconds to readable format
@@ -155,19 +155,19 @@ export const formatAddress = (address) => {
  * @returns {string} - Formatted duration
  */
 export const formatDuration = (ms) => {
-  const seconds = Math.floor((ms / 1000) % 60);
-  const minutes = Math.floor((ms / (1000 * 60)) % 60);
-  const hours = Math.floor((ms / (1000 * 60 * 60)) % 24);
-  const days = Math.floor(ms / (1000 * 60 * 60 * 24));
-  
-  const parts = [];
-  if (days > 0) parts.push(`${days}d`);
-  if (hours > 0) parts.push(`${hours}h`);
-  if (minutes > 0) parts.push(`${minutes}m`);
-  if (seconds > 0) parts.push(`${seconds}s`);
-  
-  return parts.join(' ') || '0s';
-};
+  const seconds = Math.floor((ms / 1000) % 60)
+  const minutes = Math.floor((ms / (1000 * 60)) % 60)
+  const hours = Math.floor((ms / (1000 * 60 * 60)) % 24)
+  const days = Math.floor(ms / (1000 * 60 * 60 * 24))
+
+  const parts = []
+  if (days > 0) parts.push(`${days}d`)
+  if (hours > 0) parts.push(`${hours}h`)
+  if (minutes > 0) parts.push(`${minutes}m`)
+  if (seconds > 0) parts.push(`${seconds}s`)
+
+  return parts.join(' ') || '0s'
+}
 
 export default {
   formatDate,
@@ -182,5 +182,5 @@ export default {
   toTitleCase,
   truncate,
   formatAddress,
-  formatDuration
-};
+  formatDuration,
+}

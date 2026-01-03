@@ -18,9 +18,9 @@
 ---
 
 ## 🚨 CRITICAL HANDOVER NOTE (Latest)
-**Phase 29 (ML Forecasting)** is COMPLETE.
-**Current Status:** Prophet-style forecasting active with Recharts dashboard. `InventoryOptimizer` generates stock-out alerts.
-**Next Shift Focus:** Start **Phase 30 (Advanced WMS)**.
+**Phase 30 (Advanced WMS)** is COMPLETE.
+**Current Status:** Bin tracking, Snake Path picking, and Cycle Counts are active.
+**Next Shift Focus:** Start **Phase 31 (Omni-Channel Returns)**.
 
 ---
 
@@ -28,6 +28,9 @@
 
 | Task ID | Description | Assigned To | Status | Last Updated |
 |---------|-------------|-------------|--------|--------------|
+| **P30.1** | Bin Location Management (UI + Data) | Antigravity | ✅ Complete | 2026-01-04 |
+| **P30.2** | Batch Picking Logic (Route Optimization) | Antigravity | ✅ Complete | 2026-01-04 |
+| **P30.3** | Cycle Count / Stock Audit Feature | Antigravity | ✅ Complete | 2026-01-04 |
 | **P29.1** | Prophet Model Integration (JS Based) | Antigravity | ✅ Complete | 2026-01-04 |
 | **P29.2** | Forecast Visualization (Recharts) | Antigravity | ✅ Complete | 2026-01-04 |
 | **P29.3** | Inventory Reorder Alerts | Antigravity | ✅ Complete | 2026-01-04 |
@@ -87,14 +90,14 @@
 
 ## 📝 Multi-Agent Protocol
 1. **Claim the task** below by replacing `*AVAILABLE*` with your ID.
-2. **Commit IMMEDIATELY** with `[Claim: P29.x]` to avoid race conditions.
+2. **Commit IMMEDIATELY** with `[Claim: P31.x]` to avoid race conditions.
 3. **Link your changes** in the "Recently Completed" section once done.
 
 | Task ID | Description | Claimed By | Started | Status |
 |---------|-------------|------------|---------|--------|
-| P29.1 | Prophet Model Integration (Python Bridge) | Antigravity | 2026-01-04 03:56 | 🔵 In Progress |
-| P29.2 | Forecast Visualization (Recharts) | Antigravity | 2026-01-04 03:56 | 🟡 Queued |
-| P29.3 | Inventory Reorder Alerts | Antigravity | 2026-01-04 03:56 | 🟡 Queued |
+| P31.1 | Returns Aggregator Service (Shopify/Marketplace) | Antigravity | 2026-01-04 04:13 | 🔵 In Progress |
+| P31.2 | Returns Dashboard UI (Approvals/Refunds) | Antigravity | 2026-01-04 04:13 | 🟡 Queued |
+| P31.3 | Auto-Refund Logic Integration | Antigravity | 2026-01-04 04:13 | 🟡 Queued |
 
 ---
 

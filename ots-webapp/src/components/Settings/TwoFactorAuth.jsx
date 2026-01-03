@@ -4,112 +4,107 @@
  * Supports OTP via email/SMS, verification, and account recovery
  */
 
-import React, { useState } from 'react';
+import React, { useState } from 'react'
 
-const TwoFactorAuth = ({ 
-  userId,
-  onVerificationSuccess,
-  onCancel,
-  method = 'email'
-}) => {
-  const [step, setStep] = useState('method'); // 'method', 'sending', 'verifying', 'success'
-  const [selectedMethod, setSelectedMethod] = useState(method);
-  const [otp, setOtp] = useState('');
-  const [error, setError] = useState('');
-  const [successMessage, setSuccessMessage] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [timeRemaining, setTimeRemaining] = useState(300); // 5 minutes
-  const [attempts, setAttempts] = useState(3);
+const TwoFactorAuth = ({ userId, onVerificationSuccess, onCancel, method = 'email' }) => {
+  const [step, setStep] = useState('method') // 'method', 'sending', 'verifying', 'success'
+  const [selectedMethod, setSelectedMethod] = useState(method)
+  const [otp, setOtp] = useState('')
+  const [error, setError] = useState('')
+  const [successMessage, setSuccessMessage] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
+  const [timeRemaining, setTimeRemaining] = useState(300) // 5 minutes
+  const [attempts, setAttempts] = useState(3)
 
   // Format time remaining
   const formatTime = (seconds) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
-  };
+    const mins = Math.floor(seconds / 60)
+    const secs = seconds % 60
+    return `${mins}:${secs.toString().padStart(2, '0')}`
+  }
 
   // Start timer
   React.useEffect(() => {
     if (step === 'verifying' && timeRemaining > 0) {
-      const timer = setTimeout(() => setTimeRemaining(timeRemaining - 1), 1000);
-      return () => clearTimeout(timer);
+      const timer = setTimeout(() => setTimeRemaining(timeRemaining - 1), 1000)
+      return () => clearTimeout(timer)
     }
-  }, [timeRemaining, step]);
+  }, [timeRemaining, step])
 
   // Handle method selection
   const handleMethodSelect = async (chosenMethod) => {
-    setSelectedMethod(chosenMethod);
-    setIsLoading(true);
-    setError('');
+    setSelectedMethod(chosenMethod)
+    setIsLoading(true)
+    setError('')
 
     try {
       // Call backend API to initiate 2FA
       const response = await fetch('/api/security/2fa/initiate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId, method: chosenMethod })
-      });
+        body: JSON.stringify({ userId, method: chosenMethod }),
+      })
 
-      if (!response.ok) throw new Error('Failed to initiate 2FA');
+      if (!response.ok) throw new Error('Failed to initiate 2FA')
 
-      setStep('verifying');
-      setSuccessMessage(`OTP sent via ${chosenMethod}`);
-      setTimeout(() => setSuccessMessage(''), 3000);
+      setStep('verifying')
+      setSuccessMessage(`OTP sent via ${chosenMethod}`)
+      setTimeout(() => setSuccessMessage(''), 3000)
     } catch (err) {
-      setError(err.message || 'Error initiating 2FA');
+      setError(err.message || 'Error initiating 2FA')
     } finally {
-      setIsLoading(false);
+      setIsLoading(false)
     }
-  };
+  }
 
   // Handle OTP submission
   const handleVerifyOTP = async () => {
     if (!otp || otp.length !== 6) {
-      setError('OTP must be 6 digits');
-      return;
+      setError('OTP must be 6 digits')
+      return
     }
 
-    setIsLoading(true);
-    setError('');
+    setIsLoading(true)
+    setError('')
 
     try {
       const response = await fetch('/api/security/2fa/verify', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId, otp })
-      });
+        body: JSON.stringify({ userId, otp }),
+      })
 
       if (!response.ok) {
-        const remaining = attempts - 1;
-        setAttempts(remaining);
+        const remaining = attempts - 1
+        setAttempts(remaining)
         if (remaining <= 0) {
-          setError('Too many failed attempts. Please try again later.');
-          setStep('method');
+          setError('Too many failed attempts. Please try again later.')
+          setStep('method')
         } else {
-          setError(`Invalid OTP. ${remaining} attempts remaining.`);
+          setError(`Invalid OTP. ${remaining} attempts remaining.`)
         }
-        return;
+        return
       }
 
-      setStep('success');
-      setSuccessMessage('2FA verification successful!');
-      setTimeout(() => onVerificationSuccess?.(), 2000);
+      setStep('success')
+      setSuccessMessage('2FA verification successful!')
+      setTimeout(() => onVerificationSuccess?.(), 2000)
     } catch (err) {
-      setError(err.message || 'Verification failed');
+      setError(err.message || 'Verification failed')
     } finally {
-      setIsLoading(false);
+      setIsLoading(false)
     }
-  };
+  }
 
   // Handle OTP input with auto-submit
   const handleOtpChange = (e) => {
-    const value = e.target.value.replace(/\D/g, '').slice(0, 6);
-    setOtp(value);
+    const value = e.target.value.replace(/\D/g, '').slice(0, 6)
+    setOtp(value)
     if (value.length === 6) {
       // Auto-submit when 6 digits entered
-      setTimeout(handleVerifyOTP, 100);
+      setTimeout(handleVerifyOTP, 100)
     }
-  };
+  }
 
   return (
     <div className="two-factor-auth glass">
@@ -158,10 +153,7 @@ const TwoFactorAuth = ({
           </div>
           <p className="attempts-left">Attempts remaining: {attempts}</p>
           {!isLoading && (
-            <button
-              className="resend-btn"
-              onClick={() => handleMethodSelect(selectedMethod)}
-            >
+            <button className="resend-btn" onClick={() => handleMethodSelect(selectedMethod)}>
               Resend OTP
             </button>
           )}
@@ -183,11 +175,7 @@ const TwoFactorAuth = ({
       {/* Action Buttons */}
       {step !== 'success' && (
         <div className="auth-actions">
-          <button
-            className="cancel-btn"
-            onClick={onCancel}
-            disabled={isLoading}
-          >
+          <button className="cancel-btn" onClick={onCancel} disabled={isLoading}>
             Cancel
           </button>
         </div>
@@ -352,7 +340,7 @@ const TwoFactorAuth = ({
         }
       `}</style>
     </div>
-  );
-};
+  )
+}
 
-export default TwoFactorAuth;
+export default TwoFactorAuth

@@ -20,31 +20,37 @@ This guide provides step-by-step instructions to integrate all components, servi
 ## 📋 Step 1: Copy Component Files
 
 ### 1.1 Copy ErrorBoundary.jsx
+
 ```bash
 cp INTEGRATION_READY/Components/ErrorBoundary.jsx src/components/
 ```
 
 ### 1.2 Copy OrderNotificationCenter.jsx
+
 ```bash
 cp INTEGRATION_READY/Components/OrderNotificationCenter.jsx src/components/Notifications/
 ```
 
 ### 1.3 Copy CarrierSelector.jsx
+
 ```bash
 cp INTEGRATION_READY/Components/CarrierSelector.jsx src/components/Logistics/
 ```
 
 ### 1.4 Copy WhatsAppTemplateManager.jsx
+
 ```bash
 cp INTEGRATION_READY/Components/WhatsAppTemplateManager.jsx src/components/Commercial/
 ```
 
 ### 1.5 Copy KeyboardShortcutsHud.jsx
+
 ```bash
 cp INTEGRATION_READY/Components/KeyboardShortcutsHud.jsx src/components/Navigation/
 ```
 
 ### 1.6 Copy AnalyticsCharts.jsx
+
 ```bash
 cp INTEGRATION_READY/Components/AnalyticsCharts.jsx src/components/Dashboard/
 ```
@@ -58,6 +64,7 @@ cp INTEGRATION_READY/Hooks/*.js src/hooks/
 ```
 
 **Files to copy:**
+
 - useAnalytics.js - Hook for analytics data
 - useErrorHandler.js - Hook for error handling
 - useNotifications.js - Hook for notifications
@@ -67,6 +74,7 @@ cp INTEGRATION_READY/Hooks/*.js src/hooks/
 ## 🎨 Step 3: Integrate Context Providers
 
 ### 3.1 Copy ContextProviders.jsx
+
 ```bash
 cp INTEGRATION_READY/Layouts/ContextProviders.jsx src/context/
 ```
@@ -76,14 +84,10 @@ cp INTEGRATION_READY/Layouts/ContextProviders.jsx src/context/
 Wrap your application with context providers:
 
 ```jsx
-import ContextProviders from './context/ContextProviders';
+import ContextProviders from './context/ContextProviders'
 
 function App() {
-  return (
-    <ContextProviders>
-      {/* Your app routes and components */}
-    </ContextProviders>
-  );
+  return <ContextProviders>{/* Your app routes and components */}</ContextProviders>
 }
 ```
 
@@ -92,6 +96,7 @@ function App() {
 ## 🖼️ Step 4: Update Main Layout
 
 ### 4.1 Copy MainLayout.jsx
+
 ```bash
 cp INTEGRATION_READY/Layouts/MainLayout.jsx src/layouts/
 ```
@@ -99,14 +104,10 @@ cp INTEGRATION_READY/Layouts/MainLayout.jsx src/layouts/
 ### 4.2 Use in Your Pages
 
 ```jsx
-import MainLayout from '../layouts/MainLayout';
+import MainLayout from '../layouts/MainLayout'
 
 export function DashboardPage() {
-  return (
-    <MainLayout>
-      {/* Your dashboard content */}
-    </MainLayout>
-  );
+  return <MainLayout>{/* Your dashboard content */}</MainLayout>
 }
 ```
 
@@ -117,14 +118,14 @@ export function DashboardPage() {
 Wrap critical sections with the ErrorBoundary component:
 
 ```jsx
-import ErrorBoundary from '../components/ErrorBoundary';
+import ErrorBoundary from '../components/ErrorBoundary'
 
 export function Dashboard() {
   return (
     <ErrorBoundary fallback={<ErrorPage />}>
       <DashboardContent />
     </ErrorBoundary>
-  );
+  )
 }
 ```
 
@@ -133,14 +134,14 @@ export function Dashboard() {
 ## 📊 Step 6: Add Analytics Dashboard
 
 ```jsx
-import DashboardMetrics from '../components/Dashboard/DashboardMetrics';
+import DashboardMetrics from '../components/Dashboard/DashboardMetrics'
 
 export function DashboardPage({ orders }) {
   return (
     <ErrorBoundary>
       <DashboardMetrics orders={orders} />
     </ErrorBoundary>
-  );
+  )
 }
 ```
 
@@ -149,14 +150,14 @@ export function DashboardPage({ orders }) {
 ## 🚚 Step 7: Integrate Carrier Selector
 
 ```jsx
-import CarrierSelector from '../components/Logistics/CarrierSelector';
+import CarrierSelector from '../components/Logistics/CarrierSelector'
 
 export function OrderCreationForm() {
   return (
     <form>
       <CarrierSelector onSelect={(carrier) => console.log(carrier)} />
     </form>
-  );
+  )
 }
 ```
 
@@ -165,7 +166,7 @@ export function OrderCreationForm() {
 ## 💬 Step 8: Add Notification Center
 
 ```jsx
-import OrderNotificationCenter from '../components/Notifications/OrderNotificationCenter';
+import OrderNotificationCenter from '../components/Notifications/OrderNotificationCenter'
 
 export function HomePage() {
   return (
@@ -173,7 +174,7 @@ export function HomePage() {
       <OrderNotificationCenter />
       {/* Rest of your UI */}
     </>
-  );
+  )
 }
 ```
 
@@ -182,7 +183,7 @@ export function HomePage() {
 ## 📱 Step 9: Add Keyboard Shortcuts UI
 
 ```jsx
-import KeyboardShortcutsHud from '../components/Navigation/KeyboardShortcutsHud';
+import KeyboardShortcutsHud from '../components/Navigation/KeyboardShortcutsHud'
 
 export function AppLayout() {
   return (
@@ -190,7 +191,7 @@ export function AppLayout() {
       <KeyboardShortcutsHud />
       {/* Your main content */}
     </>
-  );
+  )
 }
 ```
 
@@ -199,7 +200,7 @@ export function AppLayout() {
 ## 🔐 Step 10: Enable WhatsApp Manager
 
 ```jsx
-import WhatsAppTemplateManager from '../components/Commercial/WhatsAppTemplateManager';
+import WhatsAppTemplateManager from '../components/Commercial/WhatsAppTemplateManager'
 
 export function SettingsPage() {
   return (
@@ -207,7 +208,7 @@ export function SettingsPage() {
       <h2>WhatsApp Templates</h2>
       <WhatsAppTemplateManager />
     </section>
-  );
+  )
 }
 ```
 

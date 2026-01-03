@@ -1,34 +1,34 @@
-import React, { useState, useEffect } from 'react';
-import { Keyboard, X } from 'lucide-react';
-import { keyboardShortcuts } from '../../src/services/keyboardShortcuts';
+import React, { useState, useEffect } from 'react'
+import { Keyboard, X } from 'lucide-react'
+import { keyboardShortcuts } from '../../src/services/keyboardShortcuts'
 
 /**
  * KeyboardShortcutsHud Component
  * Displays available keyboard shortcuts in a floating HUD
  */
 const KeyboardShortcutsHud = () => {
-  const [isVisible, setIsVisible] = useState(false);
-  const [shortcuts, setShortcuts] = useState([]);
+  const [isVisible, setIsVisible] = useState(false)
+  const [shortcuts, setShortcuts] = useState([])
 
   useEffect(() => {
     const getShortcuts = async () => {
-      const registeredShortcuts = keyboardShortcuts.getRegisteredShortcuts?.();
+      const registeredShortcuts = keyboardShortcuts.getRegisteredShortcuts?.()
       if (registeredShortcuts) {
-        setShortcuts(registeredShortcuts);
+        setShortcuts(registeredShortcuts)
       }
-    };
-    getShortcuts();
+    }
+    getShortcuts()
 
     // Listen for help shortcut (usually ?)
     const handleKeyPress = (e) => {
       if (e.key === '?' && !isVisible) {
-        setIsVisible(true);
+        setIsVisible(true)
       }
-    };
+    }
 
-    window.addEventListener('keydown', handleKeyPress);
-    return () => window.removeEventListener('keydown', handleKeyPress);
-  }, [isVisible]);
+    window.addEventListener('keydown', handleKeyPress)
+    return () => window.removeEventListener('keydown', handleKeyPress)
+  }, [isVisible])
 
   return (
     <>
@@ -71,7 +71,7 @@ const KeyboardShortcutsHud = () => {
         </div>
       )}
     </>
-  );
-};
+  )
+}
 
-export default KeyboardShortcutsHud;
+export default KeyboardShortcutsHud

@@ -1,7 +1,7 @@
 /**
  * WhatsApp Business API Service
  * unified service handling both Real API and Simulation modes.
- * 
+ *
  * Features:
  * - Token refresh and management
  * - Message templating
@@ -11,23 +11,23 @@
  * - Offline Queue Support
  */
 
-import { cacheData, retrieveCachedData } from './offlineCacheService';
+import { cacheData, retrieveCachedData } from './offlineCacheService'
 
 class WhatsAppService {
   constructor(apiToken, businessAccountId, phoneNumberId) {
-    this.apiToken = apiToken;
-    this.businessAccountId = businessAccountId;
-    this.phoneNumberId = phoneNumberId;
-    this.baseUrl = 'https://graph.facebook.com/v18.0'; // Changed from Instagram to Facebook Graph API
-    this.tokenExpiry = null;
-    this.rateLimitWindow = 60000; // 1 minute
-    this.messagesPerWindow = 100;
-    this.sentMessages = [];
+    this.apiToken = apiToken
+    this.businessAccountId = businessAccountId
+    this.phoneNumberId = phoneNumberId
+    this.baseUrl = 'https://graph.facebook.com/v18.0' // Changed from Instagram to Facebook Graph API
+    this.tokenExpiry = null
+    this.rateLimitWindow = 60000 // 1 minute
+    this.messagesPerWindow = 100
+    this.sentMessages = []
 
     // Check if configuration warrants simulation mode
-    this.isSimulationMode = !apiToken || !phoneNumberId;
+    this.isSimulationMode = !apiToken || !phoneNumberId
     if (this.isSimulationMode) {
-      console.warn('⚠️ WhatsApp Service running in SIMULATION MODE (Missing Credentials)');
+      console.warn('⚠️ WhatsApp Service running in SIMULATION MODE (Missing Credentials)')
     }
   }
 
@@ -43,45 +43,47 @@ class WhatsAppService {
     try {
       // 1. Rate Limit Check
       if (!this.canSendMessage()) {
-        throw new Error('Rate limit exceeded. Please try again later.');
+        throw new Error('Rate limit exceeded. Please try again later.')
       }
 
       // 2. Phone Validation
-      const validPhone = this.normalizePhoneNumber(phoneNumber);
+      const validPhone = this.normalizePhoneNumber(phoneNumber)
       if (!validPhone) {
-        throw new Error(`Invalid phone number format: ${phoneNumber}`);
+        throw new Error(`Invalid phone number format: ${phoneNumber}`)
       }
 
-      const timestamp = new Date().toISOString();
+      const timestamp = new Date().toISOString()
 
       // 3. SIMULATION MODE (Check this FIRST to allow fallback)
       if (this.isSimulationMode) {
-        console.log(`[SIMULATION] Sending WhatsApp to ${validPhone} (Template: ${templateId})`, parameters);
+        console.log(
+          `[SIMULATION] Sending WhatsApp to ${validPhone} (Template: ${templateId})`,
+          parameters
+        )
         this.trackMessage({
           orderId,
           messageId: `sim_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`,
           phoneNumber: validPhone,
           templateId,
           timestamp: Date.now(),
-          status: 'simulated'
-        });
+          status: 'simulated',
+        })
         return {
           success: true,
           messageId: `sim_${Date.now()}`,
           orderId,
           timestamp,
-          mode: 'simulation'
-        };
+          mode: 'simulation',
+        }
       }
 
       // 4. REAL API VALIDATION (Only strictly validate if NOT in simulation mode)
-      if (!this.apiToken) throw new Error('Missing API Token');
-      if (!this.businessAccountId) throw new Error('Missing Business Account ID');
-      if (!this.phoneNumberId) throw new Error('Missing Phone Number ID');
-
+      if (!this.apiToken) throw new Error('Missing API Token')
+      if (!this.businessAccountId) throw new Error('Missing Business Account ID')
+      if (!this.phoneNumberId) throw new Error('Missing Phone Number ID')
 
       // 5. REAL API SEND
-      const components = this.buildTemplateComponents(parameters);
+      const components = this.buildTemplateComponents(parameters)
 
       const payload = {
         messaging_product: 'whatsapp',
@@ -90,44 +92,43 @@ class WhatsAppService {
         template: {
           name: templateId,
           language: { code: 'en_US' },
-          components: components
-        }
-      };
-
-      console.log('[WhatsApp API] Payload:', JSON.stringify(payload, null, 2));
-
-      const response = await fetch(
-        `${this.baseUrl}/${this.phoneNumberId}/messages`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${this.apiToken}`
-          },
-          body: JSON.stringify(payload)
-        }
-      );
-
-      if (!response.ok) {
-        const error = await response.json();
-        const errorDetails = error.error || {};
-        const errorCode = errorDetails.code;
-        const errorMessage = errorDetails.message || response.statusText;
-
-        console.error(`WhatsApp API Error (${response.status}):`, errorMessage);
-
-        // Specific Error Handling
-        if (errorCode === 190) { // Invalid Token
-          throw new Error('Authentication Failed: Invalid or expired access token.');
-        } else if (errorCode === 131030) { // 24hr Window
-          console.warn('24-hour window closed. Fallback recommended.');
-          throw new Error('Message failed: 24-hour customer service window is closed.');
-        }
-
-        throw new Error(`WhatsApp API Error: ${errorMessage}`);
+          components: components,
+        },
       }
 
-      const result = await response.json();
+      console.log('[WhatsApp API] Payload:', JSON.stringify(payload, null, 2))
+
+      const response = await fetch(`${this.baseUrl}/${this.phoneNumberId}/messages`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${this.apiToken}`,
+        },
+        body: JSON.stringify(payload),
+      })
+
+      if (!response.ok) {
+        const error = await response.json()
+        const errorDetails = error.error || {}
+        const errorCode = errorDetails.code
+        const errorMessage = errorDetails.message || response.statusText
+
+        console.error(`WhatsApp API Error (${response.status}):`, errorMessage)
+
+        // Specific Error Handling
+        if (errorCode === 190) {
+          // Invalid Token
+          throw new Error('Authentication Failed: Invalid or expired access token.')
+        } else if (errorCode === 131030) {
+          // 24hr Window
+          console.warn('24-hour window closed. Fallback recommended.')
+          throw new Error('Message failed: 24-hour customer service window is closed.')
+        }
+
+        throw new Error(`WhatsApp API Error: ${errorMessage}`)
+      }
+
+      const result = await response.json()
 
       // 6. Track Success
       this.trackMessage({
@@ -136,25 +137,24 @@ class WhatsAppService {
         phoneNumber: validPhone,
         templateId,
         timestamp: Date.now(),
-        status: 'sent'
-      });
+        status: 'sent',
+      })
 
       return {
         success: true,
         messageId: result.messages?.[0]?.id,
         orderId,
         timestamp,
-        mode: 'real'
-      };
-
+        mode: 'real',
+      }
     } catch (error) {
-      console.error('WhatsApp send failed:', error);
+      console.error('WhatsApp send failed:', error)
       return {
         success: false,
         error: error.message,
         orderId,
-        timestamp: new Date().toISOString()
-      };
+        timestamp: new Date().toISOString(),
+      }
     }
   }
 
@@ -162,105 +162,107 @@ class WhatsAppService {
    * Sends multiple messages in batch
    */
   async sendBatchMessages(orders) {
-    const results = [];
+    const results = []
     for (const order of orders) {
       const result = await this.sendWhatsAppMessage(
         order.id,
         order.templateId,
         order.phoneNumber,
         order.parameters
-      );
-      results.push(result);
-      if (!this.isSimulationMode) await this.delay(100); // Throttling for real API
+      )
+      results.push(result)
+      if (!this.isSimulationMode) await this.delay(100) // Throttling for real API
     }
-    return results;
+    return results
   }
 
   buildTemplateComponents(parameters) {
-    if (!parameters || Object.keys(parameters).length === 0) return [];
+    if (!parameters || Object.keys(parameters).length === 0) return []
 
     // Improved implementation: Supports header variables if passed explicitly
     // Structure expected: { header: [], body: [], footer: [] } or just flat values
 
     // Legacy support (flat object map to BODY)
     if (!parameters.body && !parameters.header) {
-      const paramValues = Object.values(parameters).map(val => ({
+      const paramValues = Object.values(parameters).map((val) => ({
         type: 'text',
-        text: String(val)
-      }));
-      return [{ type: 'body', parameters: paramValues }];
+        text: String(val),
+      }))
+      return [{ type: 'body', parameters: paramValues }]
     }
 
-    const components = [];
+    const components = []
 
     if (parameters.header) {
       components.push({
         type: 'header',
-        parameters: parameters.header.map(val => ({ type: 'text', text: String(val) }))
-      });
+        parameters: parameters.header.map((val) => ({ type: 'text', text: String(val) })),
+      })
     }
 
     if (parameters.body) {
       components.push({
         type: 'body',
-        parameters: parameters.body.map(val => ({ type: 'text', text: String(val) }))
-      });
+        parameters: parameters.body.map((val) => ({ type: 'text', text: String(val) })),
+      })
     }
 
-    return components;
+    return components
   }
 
   canSendMessage() {
-    const now = Date.now();
-    this.sentMessages = this.sentMessages.filter(time => now - time < this.rateLimitWindow);
-    return this.sentMessages.length < this.messagesPerWindow;
+    const now = Date.now()
+    this.sentMessages = this.sentMessages.filter((time) => now - time < this.rateLimitWindow)
+    return this.sentMessages.length < this.messagesPerWindow
   }
 
   trackMessage(messageData) {
-    this.sentMessages.push(messageData.timestamp);
-    this.persistMessage(messageData);
+    this.sentMessages.push(messageData.timestamp)
+    this.persistMessage(messageData)
   }
 
   async persistMessage(messageData) {
     // Use existing offlineCacheService instead of raw IndexedDB for consistency
     // Append to daily log or specific store
-    const key = `whatsapp:log:${new Date().toISOString().split('T')[0]}`;
-    const log = await retrieveCachedData(key) || [];
-    log.push(messageData);
-    await cacheData(key, log);
+    const key = `whatsapp:log:${new Date().toISOString().split('T')[0]}`
+    const log = (await retrieveCachedData(key)) || []
+    log.push(messageData)
+    await cacheData(key, log)
   }
 
   normalizePhoneNumber(phone) {
-    if (!phone) return null;
-    const cleaned = phone.replace(/\D/g, '');
-    if (cleaned.length < 10 || cleaned.length > 15) return null;
-    if (cleaned.length === 10) return `91${cleaned}`; // Default to India
-    return cleaned;
+    if (!phone) return null
+    const cleaned = phone.replace(/\D/g, '')
+    if (cleaned.length < 10 || cleaned.length > 15) return null
+    if (cleaned.length === 10) return `91${cleaned}` // Default to India
+    return cleaned
   }
 
-  delay(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
+  delay(ms) {
+    return new Promise((resolve) => setTimeout(resolve, ms))
+  }
 }
 
 // Singleton Pattern
-let whatsappInstance = null;
+let whatsappInstance = null
 
 export const initWhatsAppService = (apiToken, businessAccountId, phoneNumberId) => {
-  whatsappInstance = new WhatsAppService(apiToken, businessAccountId, phoneNumberId);
-  return whatsappInstance;
-};
+  whatsappInstance = new WhatsAppService(apiToken, businessAccountId, phoneNumberId)
+  return whatsappInstance
+}
 
 export const getWhatsAppService = () => {
   if (!whatsappInstance) {
     // Auto-initialize with env vars if accessed before explicit init
     // This ensures components don't break if main.jsx didn't init it yet (lazy init)
-    console.log('Lazy initializing WhatsApp Service...');
+    console.log('Lazy initializing WhatsApp Service...')
     whatsappInstance = new WhatsAppService(
       import.meta.env.VITE_WHATSAPP_API_TOKEN,
       import.meta.env.VITE_WHATSAPP_BUSINESS_ID,
       import.meta.env.VITE_WHATSAPP_PHONE_ID
-    );
+    )
   }
-  return whatsappInstance;
-};
+  return whatsappInstance
+}
 
-export default WhatsAppService;
+export default WhatsAppService

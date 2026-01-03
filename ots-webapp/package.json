@@ -9,7 +9,15 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "vitest",
-    "test:ui": "vitest --ui"
+    "test:ui": "vitest --ui",
+    "prepare": "husky",
+    "format": "prettier --write .",
+    "analyze": "vite build --mode analyze"
+  },
+  "lint-staged": {
+    "*.{js,jsx,json,css,md}": [
+      "prettier --write"
+    ]
   },
   "dependencies": {
     "crypto-js": "^4.2.0",
@@ -34,7 +42,11 @@
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.4.24",
     "globals": "^16.5.0",
+    "husky": "^9.1.7",
     "jsdom": "^27.4.0",
+    "lint-staged": "^16.2.7",
+    "prettier": "^3.7.4",
+    "rollup-plugin-visualizer": "^6.0.5",
     "vite": "^7.2.4",
     "vitest": "^4.0.16"
   }

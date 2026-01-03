@@ -44,8 +44,8 @@ function App() {
     <ErrorBoundary>
       <ContextProviders>
         {/* Your app routes and pages here */}
-      </ContextProviders>
-    </ErrorBoundary>
+      </ContextProviders >
+    </ErrorBoundary >
   );
 }
 

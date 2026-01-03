@@ -1,35 +1,35 @@
-import React, { useState } from 'react';
-import { MessageSquare, Plus, Trash2, Edit2 } from 'lucide-react';
-import { whatsappService } from '../../src/services/whatsappService';
+import React, { useState } from 'react'
+import { MessageSquare, Plus, Trash2, Edit2 } from 'lucide-react'
+import { whatsappService } from '../../src/services/whatsappService'
 
 /**
  * WhatsAppTemplateManager Component
  * Manages WhatsApp message templates for bulk messaging
  */
 const WhatsAppTemplateManager = () => {
-  const [templates, setTemplates] = useState([]);
-  const [isEditing, setIsEditing] = useState(false);
-  const [currentTemplate, setCurrentTemplate] = useState({ name: '', body: '' });
+  const [templates, setTemplates] = useState([])
+  const [isEditing, setIsEditing] = useState(false)
+  const [currentTemplate, setCurrentTemplate] = useState({ name: '', body: '' })
 
   const handleSaveTemplate = async () => {
     if (currentTemplate.name && currentTemplate.body) {
       const updated = isEditing
-        ? templates.map(t => t.id === currentTemplate.id ? currentTemplate : t)
-        : [...templates, { ...currentTemplate, id: Date.now() }];
-      setTemplates(updated);
-      setCurrentTemplate({ name: '', body: '' });
-      setIsEditing(false);
+        ? templates.map((t) => (t.id === currentTemplate.id ? currentTemplate : t))
+        : [...templates, { ...currentTemplate, id: Date.now() }]
+      setTemplates(updated)
+      setCurrentTemplate({ name: '', body: '' })
+      setIsEditing(false)
     }
-  };
+  }
 
   const handleDeleteTemplate = (id) => {
-    setTemplates(templates.filter(t => t.id !== id));
-  };
+    setTemplates(templates.filter((t) => t.id !== id))
+  }
 
   const handleEditTemplate = (template) => {
-    setCurrentTemplate(template);
-    setIsEditing(true);
-  };
+    setCurrentTemplate(template)
+    setIsEditing(true)
+  }
 
   return (
     <div className="space-y-4">
@@ -61,7 +61,10 @@ const WhatsAppTemplateManager = () => {
           </button>
           {isEditing && (
             <button
-              onClick={() => { setCurrentTemplate({ name: '', body: '' }); setIsEditing(false); }}
+              onClick={() => {
+                setCurrentTemplate({ name: '', body: '' })
+                setIsEditing(false)
+              }}
               className="px-3 py-2 bg-slate-700 hover:bg-slate-600 text-white text-sm rounded transition-colors"
             >
               Cancel
@@ -75,8 +78,11 @@ const WhatsAppTemplateManager = () => {
         {templates.length === 0 ? (
           <p className="text-slate-400 text-sm text-center py-4">No templates created yet</p>
         ) : (
-          templates.map(template => (
-            <div key={template.id} className="bg-slate-800/30 border border-slate-600/50 rounded-lg p-3">
+          templates.map((template) => (
+            <div
+              key={template.id}
+              className="bg-slate-800/30 border border-slate-600/50 rounded-lg p-3"
+            >
               <div className="flex justify-between items-start">
                 <div className="flex-1 min-w-0">
                   <p className="font-medium text-white text-sm">{template.name}</p>
@@ -102,7 +108,7 @@ const WhatsAppTemplateManager = () => {
         )}
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default WhatsAppTemplateManager;
+export default WhatsAppTemplateManager

@@ -16,53 +16,57 @@
  *   console.log(`Progress: ${progress.percent}%`);
  * });
  */
-export const deduplicateOrdersOptimized = (existingOrders = [], newOrders = [], onProgress = null) => {
-  const orderMap = new Map();
-  const totalRecords = existingOrders.length + newOrders.length;
-  let processedCount = 0;
+export const deduplicateOrdersOptimized = (
+  existingOrders = [],
+  newOrders = [],
+  onProgress = null
+) => {
+  const orderMap = new Map()
+  const totalRecords = existingOrders.length + newOrders.length
+  let processedCount = 0
 
   // Batch size for progress reporting
-  const progressBatchSize = Math.max(1000, Math.floor(totalRecords / 100));
+  const progressBatchSize = Math.max(1000, Math.floor(totalRecords / 100))
 
   // Phase 1: Load existing orders (O(n))
   for (let i = 0; i < existingOrders.length; i++) {
-    const order = existingOrders[i];
-    const key = generateOrderKey(order);
-    orderMap.set(key, { ...order });
+    const order = existingOrders[i]
+    const key = generateOrderKey(order)
+    orderMap.set(key, { ...order })
 
-    processedCount++;
+    processedCount++
     if (onProgress && processedCount % progressBatchSize === 0) {
       onProgress({
         phase: 'loading',
         percent: Math.floor((processedCount / totalRecords) * 50),
         processed: processedCount,
         total: totalRecords,
-      });
+      })
     }
   }
 
   // Phase 2: Merge new orders (O(n))
   for (let i = 0; i < newOrders.length; i++) {
-    const newOrder = newOrders[i];
-    const key = generateOrderKey(newOrder);
+    const newOrder = newOrders[i]
+    const key = generateOrderKey(newOrder)
 
     if (orderMap.has(key)) {
       // Merge with existing
-      const existing = orderMap.get(key);
-      orderMap.set(key, mergeOrderRecords(existing, newOrder));
+      const existing = orderMap.get(key)
+      orderMap.set(key, mergeOrderRecords(existing, newOrder))
     } else {
       // Add new order
-      orderMap.set(key, { ...newOrder });
+      orderMap.set(key, { ...newOrder })
     }
 
-    processedCount++;
+    processedCount++
     if (onProgress && (i + existingOrders.length) % progressBatchSize === 0) {
       onProgress({
         phase: 'merging',
         percent: 50 + Math.floor(((i + 1) / newOrders.length) * 50),
         processed: processedCount,
         total: totalRecords,
-      });
+      })
     }
   }
 
@@ -72,11 +76,11 @@ export const deduplicateOrdersOptimized = (existingOrders = [], newOrders = [], 
       percent: 100,
       processed: processedCount,
       total: totalRecords,
-    });
+    })
   }
 
-  return Array.from(orderMap.values());
-};
+  return Array.from(orderMap.values())
+}
 
 /**
  * Stream-based deduplication for very large datasets
@@ -90,41 +94,41 @@ export const deduplicateOrdersOptimized = (existingOrders = [], newOrders = [], 
  * }
  */
 export async function* deduplicateOrdersStream(existingOrdersStream, newOrdersStream) {
-  const orderMap = new Map();
+  const orderMap = new Map()
 
   // Load existing orders into map
   for await (const order of existingOrdersStream) {
-    const key = generateOrderKey(order);
-    orderMap.set(key, { ...order });
+    const key = generateOrderKey(order)
+    orderMap.set(key, { ...order })
   }
 
   // Process new orders and yield results
   for await (const newOrder of newOrdersStream) {
-    const key = generateOrderKey(newOrder);
+    const key = generateOrderKey(newOrder)
 
     if (orderMap.has(key)) {
-      const existing = orderMap.get(key);
-      const merged = mergeOrderRecords(existing, newOrder);
-      orderMap.set(key, merged);
-      yield merged;
+      const existing = orderMap.get(key)
+      const merged = mergeOrderRecords(existing, newOrder)
+      orderMap.set(key, merged)
+      yield merged
     } else {
-      orderMap.set(key, { ...newOrder });
-      yield newOrder;
+      orderMap.set(key, { ...newOrder })
+      yield newOrder
     }
   }
 
   // Yield remaining orders that weren't updated
   for (const order of orderMap.values()) {
-    const key = generateOrderKey(order);
-    let found = false;
+    const key = generateOrderKey(order)
+    let found = false
     for await (const newOrder of newOrdersStream) {
       if (generateOrderKey(newOrder) === key) {
-        found = true;
-        break;
+        found = true
+        break
       }
     }
     if (!found) {
-      yield order;
+      yield order
     }
   }
 }
@@ -139,18 +143,18 @@ export async function* deduplicateOrdersStream(existingOrdersStream, newOrdersSt
  */
 export const deduplicateOrdersBatched = (existingOrders = [], newOrders = [], batchSize = 5000) => {
   if (newOrders.length <= batchSize) {
-    return deduplicateOrdersOptimized(existingOrders, newOrders);
+    return deduplicateOrdersOptimized(existingOrders, newOrders)
   }
 
-  let current = [...existingOrders];
+  let current = [...existingOrders]
 
   for (let i = 0; i < newOrders.length; i += batchSize) {
-    const batch = newOrders.slice(i, i + batchSize);
-    current = deduplicateOrdersOptimized(current, batch);
+    const batch = newOrders.slice(i, i + batchSize)
+    current = deduplicateOrdersOptimized(current, batch)
   }
 
-  return current;
-};
+  return current
+}
 
 /**
  * Incremental deduplication
@@ -160,18 +164,18 @@ export const deduplicateOrdersBatched = (existingOrders = [], newOrders = [], ba
  * @returns {Object} - {cache: Map, deduplicated: Object[]}
  */
 export const deduplicateOrdersIncremental = (cache = new Map(), newOrders = []) => {
-  const deduplicated = [];
+  const deduplicated = []
 
   for (const order of newOrders) {
-    const key = generateOrderKey(order);
+    const key = generateOrderKey(order)
 
     if (cache.has(key)) {
-      const existing = cache.get(key);
-      const merged = mergeOrderRecords(existing, order);
-      cache.set(key, merged);
+      const existing = cache.get(key)
+      const merged = mergeOrderRecords(existing, order)
+      cache.set(key, merged)
     } else {
-      cache.set(key, { ...order });
-      deduplicated.push(order);
+      cache.set(key, { ...order })
+      deduplicated.push(order)
     }
   }
 
@@ -179,8 +183,8 @@ export const deduplicateOrdersIncremental = (cache = new Map(), newOrders = []) 
     cache,
     deduplicated,
     totalUnique: cache.size,
-  };
-};
+  }
+}
 
 /**
  * Customer deduplication with fuzzy matching
@@ -193,40 +197,40 @@ export const deduplicateCustomersAdvanced = (
   customers = [],
   options = { strictPhoneMatch: false, strictEmailMatch: false, fuzzyThreshold: 0.8 }
 ) => {
-  const phoneMap = new Map();
-  const emailMap = new Map();
-  const unique = [];
+  const phoneMap = new Map()
+  const emailMap = new Map()
+  const unique = []
 
   for (const customer of customers) {
-    const normalizedPhone = normalizePhone(customer.phone);
-    const normalizedEmail = normalizeEmail(customer.email);
+    const normalizedPhone = normalizePhone(customer.phone)
+    const normalizedEmail = normalizeEmail(customer.email)
 
-    const existingByPhone = normalizedPhone ? phoneMap.get(normalizedPhone) : null;
-    const existingByEmail = normalizedEmail ? emailMap.get(normalizedEmail) : null;
+    const existingByPhone = normalizedPhone ? phoneMap.get(normalizedPhone) : null
+    const existingByEmail = normalizedEmail ? emailMap.get(normalizedEmail) : null
 
     if (existingByPhone) {
       // Merge into existing by phone
-      Object.assign(existingByPhone, customer);
+      Object.assign(existingByPhone, customer)
     } else if (existingByEmail) {
       // Merge into existing by email
-      Object.assign(existingByEmail, customer);
+      Object.assign(existingByEmail, customer)
     } else {
       // Add new unique customer
-      unique.push(customer);
-      if (normalizedPhone) phoneMap.set(normalizedPhone, customer);
-      if (normalizedEmail) emailMap.set(normalizedEmail, customer);
+      unique.push(customer)
+      if (normalizedPhone) phoneMap.set(normalizedPhone, customer)
+      if (normalizedEmail) emailMap.set(normalizedEmail, customer)
     }
   }
 
-  return unique;
-};
+  return unique
+}
 
 /**
  * Generate deduplication key from order
  * @private
  */
 function generateOrderKey(order) {
-  return `${order.source || 'unknown'}:${order.externalId || order.id}`;
+  return `${order.source || 'unknown'}:${order.externalId || order.id}`
 }
 
 /**
@@ -234,22 +238,19 @@ function generateOrderKey(order) {
  * @private
  */
 function mergeOrderRecords(existing, incoming) {
-  const merged = { ...existing, ...incoming };
+  const merged = { ...existing, ...incoming }
 
   // Preserve and merge status history
   if (existing.statusHistory || incoming.statusHistory) {
-    const histories = [
-      ...(existing.statusHistory || []),
-      ...(incoming.statusHistory || []),
-    ];
+    const histories = [...(existing.statusHistory || []), ...(incoming.statusHistory || [])]
 
     // Deduplicate by timestamp
     merged.statusHistory = Array.from(
-      new Map(histories.map(h => [h.timestamp, h])).values()
-    ).sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+      new Map(histories.map((h) => [h.timestamp, h])).values()
+    ).sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp))
   }
 
-  return merged;
+  return merged
 }
 
 /**
@@ -257,9 +258,9 @@ function mergeOrderRecords(existing, incoming) {
  * @private
  */
 function normalizePhone(phone) {
-  if (!phone) return null;
-  const digits = phone.replace(/\D/g, '');
-  return digits.slice(-10); // Return last 10 digits
+  if (!phone) return null
+  const digits = phone.replace(/\D/g, '')
+  return digits.slice(-10) // Return last 10 digits
 }
 
 /**
@@ -267,8 +268,8 @@ function normalizePhone(phone) {
  * @private
  */
 function normalizeEmail(email) {
-  if (!email) return null;
-  return email.toLowerCase().trim();
+  if (!email) return null
+  return email.toLowerCase().trim()
 }
 
 /**
@@ -284,8 +285,8 @@ export const getDeduplicationStats = (original, deduplicated) => {
     duplicatesRemoved: original.length - deduplicated.length,
     deduplicationRatio: ((1 - deduplicated.length / original.length) * 100).toFixed(2) + '%',
     compressionRatio: (deduplicated.length / original.length).toFixed(3),
-  };
-};
+  }
+}
 
 export default {
   deduplicateOrdersOptimized,
@@ -294,4 +295,4 @@ export default {
   deduplicateOrdersIncremental,
   deduplicateCustomersAdvanced,
   getDeduplicationStats,
-};
+}

@@ -5,61 +5,65 @@
  */
 
 class ThermalPrintService {
-    constructor() {
-        this.zebraAvailable = false;
-        this.selectedPrinter = null;
-        this.checkZebraAvailability();
-    }
+  constructor() {
+    this.zebraAvailable = false
+    this.selectedPrinter = null
+    this.checkZebraAvailability()
+  }
 
-    /**
-     * Check if Zebra Browser Print is installed and available
-     */
-    async checkZebraAvailability() {
-        try {
-            // Zebra Browser Print exposes BrowserPrint object globally
-            if (typeof BrowserPrint !== 'undefined') {
-                const printers = await this.getAvailablePrinters();
-                this.zebraAvailable = printers.length > 0;
-                if (this.zebraAvailable) {
-                    this.selectedPrinter = printers[0]; // Auto-select first printer
-                    console.log('✅ Zebra Thermal Printer Detected:', this.selectedPrinter.name);
-                }
-            }
-        } catch (err) {
-            console.warn('⚠️ Zebra Browser Print not available:', err);
-            this.zebraAvailable = false;
+  /**
+   * Check if Zebra Browser Print is installed and available
+   */
+  async checkZebraAvailability() {
+    try {
+      // Zebra Browser Print exposes BrowserPrint object globally
+      if (typeof BrowserPrint !== 'undefined') {
+        const printers = await this.getAvailablePrinters()
+        this.zebraAvailable = printers.length > 0
+        if (this.zebraAvailable) {
+          this.selectedPrinter = printers[0] // Auto-select first printer
+          console.log('✅ Zebra Thermal Printer Detected:', this.selectedPrinter.name)
         }
+      }
+    } catch (err) {
+      console.warn('⚠️ Zebra Browser Print not available:', err)
+      this.zebraAvailable = false
     }
+  }
 
-    /**
-     * Get list of available Zebra printers
-     */
-    async getAvailablePrinters() {
-        return new Promise((resolve, reject) => {
-            if (typeof BrowserPrint === 'undefined') {
-                reject(new Error('BrowserPrint not loaded'));
-                return;
-            }
+  /**
+   * Get list of available Zebra printers
+   */
+  async getAvailablePrinters() {
+    return new Promise((resolve, reject) => {
+      if (typeof BrowserPrint === 'undefined') {
+        reject(new Error('BrowserPrint not loaded'))
+        return
+      }
 
-            BrowserPrint.getDefaultDevice('printer', (device) => {
-                if (device) {
-                    resolve([device]);
-                } else {
-                    BrowserPrint.getLocalDevices((devices) => {
-                        resolve(devices || []);
-                    }, reject);
-                }
-            }, reject);
-        });
-    }
+      BrowserPrint.getDefaultDevice(
+        'printer',
+        (device) => {
+          if (device) {
+            resolve([device])
+          } else {
+            BrowserPrint.getLocalDevices((devices) => {
+              resolve(devices || [])
+            }, reject)
+          }
+        },
+        reject
+      )
+    })
+  }
 
-    /**
-     * Generate ZPL (Zebra Programming Language) for shipping label
-     * @param {object} order 
-     * @returns {string} ZPL code
-     */
-    generateZPL(order) {
-        const zpl = `
+  /**
+   * Generate ZPL (Zebra Programming Language) for shipping label
+   * @param {object} order
+   * @returns {string} ZPL code
+   */
+  generateZPL(order) {
+    const zpl = `
 ^XA
 ^FO50,50^A0N,40,40^FD${order.carrier || 'CARRIER'}^FS
 ^FO50,100^A0N,30,30^FD${order.isCOD ? 'COD' : 'PREPAID'}^FS
@@ -86,61 +90,62 @@ ${order.isCOD ? `^FO50,590^A0N,18,18^FDCOD Amount: Rs.${order.codAmount || order
 
 ^FO50,630^A0N,15,15^FDPowered by Bluewud OTS^FS
 ^XZ
-`;
-        return zpl;
+`
+    return zpl
+  }
+
+  /**
+   * Print label to thermal printer
+   * @param {object} order
+   * @returns {Promise<object>}
+   */
+  async printToThermal(order) {
+    if (!this.zebraAvailable || !this.selectedPrinter) {
+      return {
+        success: false,
+        error: 'Zebra printer not available',
+        fallback: true,
+      }
     }
 
-    /**
-     * Print label to thermal printer
-     * @param {object} order 
-     * @returns {Promise<object>}
-     */
-    async printToThermal(order) {
-        if (!this.zebraAvailable || !this.selectedPrinter) {
-            return {
-                success: false,
-                error: 'Zebra printer not available',
-                fallback: true
-            };
-        }
+    try {
+      const zpl = this.generateZPL(order)
 
-        try {
-            const zpl = this.generateZPL(order);
+      return new Promise((resolve, reject) => {
+        this.selectedPrinter.send(
+          zpl,
+          () => {
+            console.log('✅ Label sent to thermal printer')
+            resolve({ success: true, mode: 'thermal' })
+          },
+          (error) => {
+            console.error('❌ Thermal print failed:', error)
+            reject({ success: false, error: error.message, fallback: true })
+          }
+        )
+      })
+    } catch (err) {
+      console.error('Thermal print error:', err)
+      return { success: false, error: err.message, fallback: true }
+    }
+  }
 
-            return new Promise((resolve, reject) => {
-                this.selectedPrinter.send(zpl,
-                    () => {
-                        console.log('✅ Label sent to thermal printer');
-                        resolve({ success: true, mode: 'thermal' });
-                    },
-                    (error) => {
-                        console.error('❌ Thermal print failed:', error);
-                        reject({ success: false, error: error.message, fallback: true });
-                    }
-                );
-            });
-        } catch (err) {
-            console.error('Thermal print error:', err);
-            return { success: false, error: err.message, fallback: true };
-        }
+  /**
+   * Check printer status
+   */
+  async getPrinterStatus() {
+    if (!this.selectedPrinter) {
+      return { available: false, name: null }
     }
 
-    /**
-     * Check printer status
-     */
-    async getPrinterStatus() {
-        if (!this.selectedPrinter) {
-            return { available: false, name: null };
-        }
-
-        return {
-            available: this.zebraAvailable,
-            name: this.selectedPrinter.name,
-            connection: this.selectedPrinter.connection
-        };
+    return {
+      available: this.zebraAvailable,
+      name: this.selectedPrinter.name,
+      connection: this.selectedPrinter.connection,
     }
+  }
 }
 
 // Singleton Instance
-const thermalPrintService = new ThermalPrintService();
-export default thermalPrintService;
+const thermalPrintService = new ThermalPrintService()
+export default thermalPrintService

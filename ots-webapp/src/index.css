@@ -51,7 +51,8 @@
 body {
   min-height: 100vh;
   overflow-x: hidden;
-  background: radial-gradient(circle at top right, rgba(99, 102, 241, 0.08), transparent 40%),
+  background:
+    radial-gradient(circle at top right, rgba(99, 102, 241, 0.08), transparent 40%),
     radial-gradient(circle at bottom left, rgba(236, 72, 153, 0.05), transparent 40%);
 }
 
@@ -133,7 +134,6 @@ button {
 
 /* Larger touch targets for mobile */
 @media (max-width: 768px) {
-
   button,
   .btn-primary,
   .btn-secondary {
@@ -172,7 +172,6 @@ button {
 
 /* Reduce motion for accessibility */
 @media (prefers-reduced-motion: reduce) {
-
   *,
   *::before,
   *::after {
@@ -221,7 +220,6 @@ button {
 }
 
 @media (max-width: 480px) {
-
   button,
   .btn-primary {
     min-height: 44px;

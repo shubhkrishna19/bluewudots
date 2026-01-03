@@ -1,7 +1,7 @@
 /**
  * Deduplication Utilities
  * Optimized for processing large batches of orders (10k+)
- * 
+ *
  * Features:
  * - Streaming deduplication
  * - Multiple deduplication strategies
@@ -17,19 +17,19 @@
  * @returns {array} Deduplicated orders
  */
 export const deduplicateOrders = (orders, key = 'id') => {
-  const seen = new Set();
-  const deduplicated = [];
+  const seen = new Set()
+  const deduplicated = []
 
   for (const order of orders) {
-    const identifier = order[key];
+    const identifier = order[key]
     if (!seen.has(identifier)) {
-      seen.add(identifier);
-      deduplicated.push(order);
+      seen.add(identifier)
+      deduplicated.push(order)
     }
   }
 
-  return deduplicated;
-};
+  return deduplicated
+}
 
 /**
  * Streaming deduplication for memory efficiency
@@ -40,25 +40,25 @@ export const deduplicateOrders = (orders, key = 'id') => {
  * @returns {Generator} Generator yielding deduplicated batches
  */
 export function* streamDeduplicateOrders(orders, chunkSize = 1000, key = 'id') {
-  const seen = new Set();
-  let chunk = [];
+  const seen = new Set()
+  let chunk = []
 
   for (const order of orders) {
-    const identifier = order[key];
-    
+    const identifier = order[key]
+
     if (!seen.has(identifier)) {
-      seen.add(identifier);
-      chunk.push(order);
+      seen.add(identifier)
+      chunk.push(order)
 
       if (chunk.length >= chunkSize) {
-        yield chunk;
-        chunk = [];
+        yield chunk
+        chunk = []
       }
     }
   }
 
   if (chunk.length > 0) {
-    yield chunk;
+    yield chunk
   }
 }
 
@@ -69,20 +69,20 @@ export function* streamDeduplicateOrders(orders, chunkSize = 1000, key = 'id') {
  * @returns {array} Deduplicated orders
  */
 export const deduplicateByMultipleFields = (orders, keys = ['id', 'email']) => {
-  const seen = new Map();
-  const deduplicated = [];
+  const seen = new Map()
+  const deduplicated = []
 
   for (const order of orders) {
-    const composite = keys.map(k => order[k]).join('|');
-    
+    const composite = keys.map((k) => order[k]).join('|')
+
     if (!seen.has(composite)) {
-      seen.set(composite, order);
-      deduplicated.push(order);
+      seen.set(composite, order)
+      deduplicated.push(order)
     }
   }
 
-  return deduplicated;
-};
+  return deduplicated
+}
 
 /**
  * Deduplication with similarity detection
@@ -91,51 +91,50 @@ export const deduplicateByMultipleFields = (orders, keys = ['id', 'email']) => {
  * @param {number} timeWindowMs - Time window for considering duplicates
  * @returns {array} Deduplicated orders with merge info
  */
-export const deduplicateWithMerge = (orders, timeWindowMs = 3600000) => { // 1 hour default
-  const grouped = new Map();
-  const timestamp = Date.now();
+export const deduplicateWithMerge = (orders, timeWindowMs = 3600000) => {
+  // 1 hour default
+  const grouped = new Map()
+  const timestamp = Date.now()
 
   for (const order of orders) {
     // Use email as primary key for grouping
-    const primaryKey = order.customer?.email || order.email;
-    
-    if (!primaryKey) continue;
+    const primaryKey = order.customer?.email || order.email
+
+    if (!primaryKey) continue
 
     if (!grouped.has(primaryKey)) {
-      grouped.set(primaryKey, []);
+      grouped.set(primaryKey, [])
     }
 
-    const group = grouped.get(primaryKey);
-    const orderTime = new Date(order.createdAt).getTime();
+    const group = grouped.get(primaryKey)
+    const orderTime = new Date(order.createdAt).getTime()
 
     // Check if within time window
     if (timestamp - orderTime <= timeWindowMs) {
-      group.push(order);
+      group.push(order)
     }
   }
 
   // Merge duplicate orders
-  const result = [];
+  const result = []
   for (const [email, orderGroup] of grouped.entries()) {
-    if (orderGroup.length === 0) continue;
+    if (orderGroup.length === 0) continue
 
     // Keep the most recent order
-    const merged = orderGroup.sort((a, b) => 
-      new Date(b.createdAt) - new Date(a.createdAt)
-    )[0];
+    const merged = orderGroup.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))[0]
 
     // Merge quantities if applicable
     if (orderGroup.length > 1) {
-      merged.isDuplicate = true;
-      merged.duplicateCount = orderGroup.length;
-      merged.totalQuantity = orderGroup.reduce((sum, o) => sum + (o.quantity || 1), 0);
+      merged.isDuplicate = true
+      merged.duplicateCount = orderGroup.length
+      merged.totalQuantity = orderGroup.reduce((sum, o) => sum + (o.quantity || 1), 0)
     }
 
-    result.push(merged);
+    result.push(merged)
   }
 
-  return result;
-};
+  return result
+}
 
 /**
  * Performance metrics for deduplication
@@ -144,18 +143,21 @@ export const deduplicateWithMerge = (orders, timeWindowMs = 3600000) => { // 1 h
  * @returns {object} Performance metrics
  */
 export const getDeduplicationMetrics = (original, deduplicated) => {
-  const startTime = performance.now();
-  
+  const startTime = performance.now()
+
   const metrics = {
     originalCount: original.length,
     deduplicatedCount: deduplicated.length,
     duplicatesRemoved: original.length - deduplicated.length,
-    reductionPercentage: ((original.length - deduplicated.length) / original.length * 100).toFixed(2),
-    processingTimeMs: (performance.now() - startTime).toFixed(2)
-  };
+    reductionPercentage: (
+      ((original.length - deduplicated.length) / original.length) *
+      100
+    ).toFixed(2),
+    processingTimeMs: (performance.now() - startTime).toFixed(2),
+  }
 
-  return metrics;
-};
+  return metrics
+}
 
 /**
  * Batch deduplication with progress callback
@@ -165,40 +167,40 @@ export const getDeduplicationMetrics = (original, deduplicated) => {
  * @returns {Promise<array>} Deduplicated orders
  */
 export const batchDeduplicateOrders = async (orders, onProgress = null, key = 'id') => {
-  const batchSize = 1000;
-  const seen = new Set();
-  const deduplicated = [];
-  const totalBatches = Math.ceil(orders.length / batchSize);
+  const batchSize = 1000
+  const seen = new Set()
+  const deduplicated = []
+  const totalBatches = Math.ceil(orders.length / batchSize)
 
   for (let i = 0; i < orders.length; i += batchSize) {
-    const batch = orders.slice(i, i + batchSize);
-    
+    const batch = orders.slice(i, i + batchSize)
+
     for (const order of batch) {
-      const identifier = order[key];
+      const identifier = order[key]
       if (!seen.has(identifier)) {
-        seen.add(identifier);
-        deduplicated.push(order);
+        seen.add(identifier)
+        deduplicated.push(order)
       }
     }
 
     // Call progress callback
     if (onProgress) {
-      const currentBatch = Math.floor(i / batchSize) + 1;
+      const currentBatch = Math.floor(i / batchSize) + 1
       onProgress({
         currentBatch,
         totalBatches,
-        percentage: (currentBatch / totalBatches * 100).toFixed(1),
+        percentage: ((currentBatch / totalBatches) * 100).toFixed(1),
         itemsProcessed: i + batch.length,
-        itemsDeduped: deduplicated.length
-      });
+        itemsDeduped: deduplicated.length,
+      })
     }
 
     // Yield to event loop every batch
-    await new Promise(resolve => setTimeout(resolve, 0));
+    await new Promise((resolve) => setTimeout(resolve, 0))
   }
 
-  return deduplicated;
-};
+  return deduplicated
+}
 
 /**
  * Deduplicates and indexes orders for fast lookup
@@ -207,30 +209,30 @@ export const batchDeduplicateOrders = async (orders, onProgress = null, key = 'i
  * @returns {object} Deduplicated orders and indexes
  */
 export const deduplicateWithIndexes = (orders, indexKeys = ['id', 'email', 'phone']) => {
-  const seen = new Set();
-  const deduplicated = [];
-  const indexes = {};
+  const seen = new Set()
+  const deduplicated = []
+  const indexes = {}
 
   // Initialize indexes
-  indexKeys.forEach(key => {
-    indexes[key] = new Map();
-  });
+  indexKeys.forEach((key) => {
+    indexes[key] = new Map()
+  })
 
   for (const order of orders) {
     if (!seen.has(order.id)) {
-      seen.add(order.id);
-      deduplicated.push(order);
+      seen.add(order.id)
+      deduplicated.push(order)
 
       // Add to indexes
-      indexKeys.forEach(key => {
-        const value = order[key] || order.customer?.[key];
+      indexKeys.forEach((key) => {
+        const value = order[key] || order.customer?.[key]
         if (value) {
           if (!indexes[key].has(value)) {
-            indexes[key].set(value, []);
+            indexes[key].set(value, [])
           }
-          indexes[key].get(value).push(order);
+          indexes[key].get(value).push(order)
         }
-      });
+      })
     }
   }
 
@@ -239,9 +241,9 @@ export const deduplicateWithIndexes = (orders, indexKeys = ['id', 'email', 'phon
     indexes,
     findByEmail: (email) => indexes.email?.get(email) || [],
     findByPhone: (phone) => indexes.phone?.get(phone) || [],
-    findById: (id) => indexes.id?.get(id)?.[0]
-  };
-};
+    findById: (id) => indexes.id?.get(id)?.[0],
+  }
+}
 
 /**
  * WebWorker-ready deduplication for heavy lifting
@@ -250,17 +252,17 @@ export const deduplicateWithIndexes = (orders, indexKeys = ['id', 'email', 'phon
  * @returns {object} Deduplication result
  */
 export const deduplicateWorkerFunction = (orders, key = 'id') => {
-  const seen = new Set();
-  const deduplicated = [];
-  const duplicates = [];
+  const seen = new Set()
+  const deduplicated = []
+  const duplicates = []
 
   for (const order of orders) {
-    const identifier = order[key];
+    const identifier = order[key]
     if (seen.has(identifier)) {
-      duplicates.push(order);
+      duplicates.push(order)
     } else {
-      seen.add(identifier);
-      deduplicated.push(order);
+      seen.add(identifier)
+      deduplicated.push(order)
     }
   }
 
@@ -272,10 +274,10 @@ export const deduplicateWorkerFunction = (orders, key = 'id') => {
       original: orders.length,
       unique: deduplicated.length,
       duplicateCount: duplicates.length,
-      reductionPercentage: ((duplicates.length / orders.length) * 100).toFixed(2)
-    }
-  };
-};
+      reductionPercentage: ((duplicates.length / orders.length) * 100).toFixed(2),
+    },
+  }
+}
 
 // Export all functions
 export default {
@@ -286,5 +288,5 @@ export default {
   getDeduplicationMetrics,
   batchDeduplicateOrders,
   deduplicateWithIndexes,
-  deduplicateWorkerFunction
-};
+  deduplicateWorkerFunction,
+}

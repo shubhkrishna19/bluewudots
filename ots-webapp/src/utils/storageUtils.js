@@ -18,12 +18,12 @@ const localStorageUtils = {
         value,
         timestamp: Date.now(),
         expiry: expiryMs ? Date.now() + expiryMs : null,
-      };
-      localStorage.setItem(key, JSON.stringify(item));
-      return true;
+      }
+      localStorage.setItem(key, JSON.stringify(item))
+      return true
     } catch (error) {
-      console.error(`Failed to set localStorage key "${key}":`, error);
-      return false;
+      console.error(`Failed to set localStorage key "${key}":`, error)
+      return false
     }
   },
 
@@ -34,18 +34,18 @@ const localStorageUtils = {
    */
   get: (key, defaultValue = null) => {
     try {
-      const item = localStorage.getItem(key);
-      if (!item) return defaultValue;
+      const item = localStorage.getItem(key)
+      if (!item) return defaultValue
 
-      const parsed = JSON.parse(item);
+      const parsed = JSON.parse(item)
       if (parsed.expiry && Date.now() > parsed.expiry) {
-        localStorage.removeItem(key);
-        return defaultValue;
+        localStorage.removeItem(key)
+        return defaultValue
       }
-      return parsed.value;
+      return parsed.value
     } catch (error) {
-      console.error(`Failed to get localStorage key "${key}":`, error);
-      return defaultValue;
+      console.error(`Failed to get localStorage key "${key}":`, error)
+      return defaultValue
     }
   },
 
@@ -55,11 +55,11 @@ const localStorageUtils = {
    */
   remove: (key) => {
     try {
-      localStorage.removeItem(key);
-      return true;
+      localStorage.removeItem(key)
+      return true
     } catch (error) {
-      console.error(`Failed to remove localStorage key "${key}":`, error);
-      return false;
+      console.error(`Failed to remove localStorage key "${key}":`, error)
+      return false
     }
   },
 
@@ -68,11 +68,11 @@ const localStorageUtils = {
    */
   clear: () => {
     try {
-      localStorage.clear();
-      return true;
+      localStorage.clear()
+      return true
     } catch (error) {
-      console.error('Failed to clear localStorage:', error);
-      return false;
+      console.error('Failed to clear localStorage:', error)
+      return false
     }
   },
 
@@ -82,16 +82,16 @@ const localStorageUtils = {
    */
   has: (key) => {
     try {
-      const item = localStorage.getItem(key);
-      if (!item) return false;
-      const parsed = JSON.parse(item);
+      const item = localStorage.getItem(key)
+      if (!item) return false
+      const parsed = JSON.parse(item)
       if (parsed.expiry && Date.now() > parsed.expiry) {
-        localStorage.removeItem(key);
-        return false;
+        localStorage.removeItem(key)
+        return false
       }
-      return true;
+      return true
     } catch (error) {
-      return false;
+      return false
     }
   },
 
@@ -101,25 +101,25 @@ const localStorageUtils = {
   keys: () => {
     try {
       return Object.keys(localStorage).filter((key) => {
-        const item = localStorage.getItem(key);
-        if (!item) return false;
+        const item = localStorage.getItem(key)
+        if (!item) return false
         try {
-          const parsed = JSON.parse(item);
+          const parsed = JSON.parse(item)
           if (parsed.expiry && Date.now() > parsed.expiry) {
-            localStorage.removeItem(key);
-            return false;
+            localStorage.removeItem(key)
+            return false
           }
-          return true;
+          return true
         } catch {
-          return true;
+          return true
         }
-      });
+      })
     } catch (error) {
-      console.error('Failed to get localStorage keys:', error);
-      return [];
+      console.error('Failed to get localStorage keys:', error)
+      return []
     }
   },
-};
+}
 
 // SessionStorage wrapper
 const sessionStorageUtils = {
@@ -130,11 +130,11 @@ const sessionStorageUtils = {
    */
   set: (key, value) => {
     try {
-      sessionStorage.setItem(key, JSON.stringify(value));
-      return true;
+      sessionStorage.setItem(key, JSON.stringify(value))
+      return true
     } catch (error) {
-      console.error(`Failed to set sessionStorage key "${key}":`, error);
-      return false;
+      console.error(`Failed to set sessionStorage key "${key}":`, error)
+      return false
     }
   },
 
@@ -145,11 +145,11 @@ const sessionStorageUtils = {
    */
   get: (key, defaultValue = null) => {
     try {
-      const item = sessionStorage.getItem(key);
-      return item ? JSON.parse(item) : defaultValue;
+      const item = sessionStorage.getItem(key)
+      return item ? JSON.parse(item) : defaultValue
     } catch (error) {
-      console.error(`Failed to get sessionStorage key "${key}":`, error);
-      return defaultValue;
+      console.error(`Failed to get sessionStorage key "${key}":`, error)
+      return defaultValue
     }
   },
 
@@ -159,11 +159,11 @@ const sessionStorageUtils = {
    */
   remove: (key) => {
     try {
-      sessionStorage.removeItem(key);
-      return true;
+      sessionStorage.removeItem(key)
+      return true
     } catch (error) {
-      console.error(`Failed to remove sessionStorage key "${key}":`, error);
-      return false;
+      console.error(`Failed to remove sessionStorage key "${key}":`, error)
+      return false
     }
   },
 
@@ -172,14 +172,14 @@ const sessionStorageUtils = {
    */
   clear: () => {
     try {
-      sessionStorage.clear();
-      return true;
+      sessionStorage.clear()
+      return true
     } catch (error) {
-      console.error('Failed to clear sessionStorage:', error);
-      return false;
+      console.error('Failed to clear sessionStorage:', error)
+      return false
     }
   },
-};
+}
 
 // IndexedDB wrapper
 const indexedDBUtils = {
@@ -193,30 +193,30 @@ const indexedDBUtils = {
    */
   init: async (stores = []) => {
     return new Promise((resolve, reject) => {
-      const request = indexedDB.open(indexedDBUtils.dbName, indexedDBUtils.version);
+      const request = indexedDB.open(indexedDBUtils.dbName, indexedDBUtils.version)
 
-      request.onerror = () => reject(request.error);
+      request.onerror = () => reject(request.error)
       request.onsuccess = () => {
-        indexedDBUtils.db = request.result;
-        resolve(indexedDBUtils.db);
-      };
+        indexedDBUtils.db = request.result
+        resolve(indexedDBUtils.db)
+      }
 
       request.onupgradeneeded = (event) => {
-        const db = event.target.result;
+        const db = event.target.result
         stores.forEach((store) => {
           if (!db.objectStoreNames.contains(store.name)) {
             const objectStore = db.createObjectStore(store.name, {
               keyPath: store.keyPath || 'id',
-            });
+            })
             if (store.indexes) {
               store.indexes.forEach((index) => {
-                objectStore.createIndex(index.name, index.keyPath, index.options || {});
-              });
+                objectStore.createIndex(index.name, index.keyPath, index.options || {})
+              })
             }
           }
-        });
-      };
-    });
+        })
+      }
+    })
   },
 
   /**
@@ -226,16 +226,16 @@ const indexedDBUtils = {
    */
   add: async (storeName, value) => {
     try {
-      const transaction = indexedDBUtils.db.transaction([storeName], 'readwrite');
-      const store = transaction.objectStore(storeName);
+      const transaction = indexedDBUtils.db.transaction([storeName], 'readwrite')
+      const store = transaction.objectStore(storeName)
       return new Promise((resolve, reject) => {
-        const request = store.add(value);
-        request.onerror = () => reject(request.error);
-        request.onsuccess = () => resolve(request.result);
-      });
+        const request = store.add(value)
+        request.onerror = () => reject(request.error)
+        request.onsuccess = () => resolve(request.result)
+      })
     } catch (error) {
-      console.error(`Failed to add to IndexedDB store "${storeName}":`, error);
-      throw error;
+      console.error(`Failed to add to IndexedDB store "${storeName}":`, error)
+      throw error
     }
   },
 
@@ -246,16 +246,16 @@ const indexedDBUtils = {
    */
   put: async (storeName, value) => {
     try {
-      const transaction = indexedDBUtils.db.transaction([storeName], 'readwrite');
-      const store = transaction.objectStore(storeName);
+      const transaction = indexedDBUtils.db.transaction([storeName], 'readwrite')
+      const store = transaction.objectStore(storeName)
       return new Promise((resolve, reject) => {
-        const request = store.put(value);
-        request.onerror = () => reject(request.error);
-        request.onsuccess = () => resolve(request.result);
-      });
+        const request = store.put(value)
+        request.onerror = () => reject(request.error)
+        request.onsuccess = () => resolve(request.result)
+      })
     } catch (error) {
-      console.error(`Failed to put in IndexedDB store "${storeName}":`, error);
-      throw error;
+      console.error(`Failed to put in IndexedDB store "${storeName}":`, error)
+      throw error
     }
   },
 
@@ -266,16 +266,16 @@ const indexedDBUtils = {
    */
   get: async (storeName, key) => {
     try {
-      const transaction = indexedDBUtils.db.transaction([storeName], 'readonly');
-      const store = transaction.objectStore(storeName);
+      const transaction = indexedDBUtils.db.transaction([storeName], 'readonly')
+      const store = transaction.objectStore(storeName)
       return new Promise((resolve, reject) => {
-        const request = store.get(key);
-        request.onerror = () => reject(request.error);
-        request.onsuccess = () => resolve(request.result);
-      });
+        const request = store.get(key)
+        request.onerror = () => reject(request.error)
+        request.onsuccess = () => resolve(request.result)
+      })
     } catch (error) {
-      console.error(`Failed to get from IndexedDB store "${storeName}":`, error);
-      throw error;
+      console.error(`Failed to get from IndexedDB store "${storeName}":`, error)
+      throw error
     }
   },
 
@@ -285,16 +285,16 @@ const indexedDBUtils = {
    */
   getAll: async (storeName) => {
     try {
-      const transaction = indexedDBUtils.db.transaction([storeName], 'readonly');
-      const store = transaction.objectStore(storeName);
+      const transaction = indexedDBUtils.db.transaction([storeName], 'readonly')
+      const store = transaction.objectStore(storeName)
       return new Promise((resolve, reject) => {
-        const request = store.getAll();
-        request.onerror = () => reject(request.error);
-        request.onsuccess = () => resolve(request.result);
-      });
+        const request = store.getAll()
+        request.onerror = () => reject(request.error)
+        request.onsuccess = () => resolve(request.result)
+      })
     } catch (error) {
-      console.error(`Failed to get all from IndexedDB store "${storeName}":`, error);
-      throw error;
+      console.error(`Failed to get all from IndexedDB store "${storeName}":`, error)
+      throw error
     }
   },
 
@@ -305,16 +305,16 @@ const indexedDBUtils = {
    */
   delete: async (storeName, key) => {
     try {
-      const transaction = indexedDBUtils.db.transaction([storeName], 'readwrite');
-      const store = transaction.objectStore(storeName);
+      const transaction = indexedDBUtils.db.transaction([storeName], 'readwrite')
+      const store = transaction.objectStore(storeName)
       return new Promise((resolve, reject) => {
-        const request = store.delete(key);
-        request.onerror = () => reject(request.error);
-        request.onsuccess = () => resolve();
-      });
+        const request = store.delete(key)
+        request.onerror = () => reject(request.error)
+        request.onsuccess = () => resolve()
+      })
     } catch (error) {
-      console.error(`Failed to delete from IndexedDB store "${storeName}":`, error);
-      throw error;
+      console.error(`Failed to delete from IndexedDB store "${storeName}":`, error)
+      throw error
     }
   },
 
@@ -324,24 +324,24 @@ const indexedDBUtils = {
    */
   clear: async (storeName) => {
     try {
-      const transaction = indexedDBUtils.db.transaction([storeName], 'readwrite');
-      const store = transaction.objectStore(storeName);
+      const transaction = indexedDBUtils.db.transaction([storeName], 'readwrite')
+      const store = transaction.objectStore(storeName)
       return new Promise((resolve, reject) => {
-        const request = store.clear();
-        request.onerror = () => reject(request.error);
-        request.onsuccess = () => resolve();
-      });
+        const request = store.clear()
+        request.onerror = () => reject(request.error)
+        request.onsuccess = () => resolve()
+      })
     } catch (error) {
-      console.error(`Failed to clear IndexedDB store "${storeName}":`, error);
-      throw error;
+      console.error(`Failed to clear IndexedDB store "${storeName}":`, error)
+      throw error
     }
   },
-};
+}
 
 export default {
   localStorageUtils,
   sessionStorageUtils,
   indexedDBUtils,
-};
+}
 
-export { localStorageUtils, sessionStorageUtils, indexedDBUtils };
+export { localStorageUtils, sessionStorageUtils, indexedDBUtils }
