@@ -3,11 +3,11 @@ import './MobileBottomNav.css'
 import { useTranslation } from '../../context/LocalizationContext'
 
 const navItems = [
-  { id: 'dashboard', label_key: 'nav_home', icon: '🏠', activeIcon: '🏡' },
-  { id: 'orderlist', label_key: 'nav_orders', icon: '📦', activeIcon: '📬' },
-  { id: 'orders', label_key: 'nav_import', icon: '📥', activeIcon: '⬇️' },
-  { id: 'finance', label_key: 'nav_finance', icon: '💹', activeIcon: '📈' },
-  { id: 'settings', label_key: 'nav_more', icon: '⚙️', activeIcon: '🔧' },
+  { id: 'dashboard', label_key: 'nav.dashboard', icon: '🏠', activeIcon: '🏡' },
+  { id: 'orderlist', label_key: 'nav.orders', icon: '📦', activeIcon: '📬' },
+  { id: 'orders', label_key: 'nav.importer', icon: '📥', activeIcon: '⬇️' },
+  { id: 'finance', label_key: 'nav.finance', icon: '💹', activeIcon: '📈' },
+  { id: 'settings', label_key: 'nav.settings', icon: '⚙️', activeIcon: '🔧' },
 ]
 
 const MobileBottomNav = ({ activeTab, onTabChange, notificationCount = 0 }) => {

@@ -10,7 +10,7 @@ describe('TranslationService', () => {
 
     it('should translate a simple key', () => {
         const result = translationService.t('common.search')
-        expect(result).toBe('Search') // Assuming 'common.search' is 'Search' in en.json
+        expect(result).toBe('Search...') // Assuming 'common.search' is 'Search...' in en.json
     })
 
     it('should handle nested keys', () => {

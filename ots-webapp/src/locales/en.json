@@ -54,7 +54,8 @@
         "audit": "Marketplace Audit",
         "cust_intel": "Customer Intel",
         "marketing": "Marketing Center",
-        "activity_log": "Activity Log"
+        "activity_log": "Activity Log",
+        "settings": "Settings"
     },
     "dashboard": {
         "title": "Order Analytics",
