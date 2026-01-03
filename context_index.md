@@ -1,6 +1,6 @@
 # Bluewud OTS: Global Context Index
 
-Generated on 2026-01-03T21:27:39.624Z
+Generated on 2026-01-03T21:40:15.058Z
 
 ## [App.jsx](file:///Users/anandinisingh/Downloads/webdev2/ots-webapp/src/App.jsx)
 > No summary available.
@@ -70,6 +70,18 @@ const handleSearch = (e) => {
 ```
 
 ```javascript
+// HEAD used universalSearch context function. Incoming used searchService directly.
+```
+
+```javascript
+// but HEAD's universalSearch function signature might differ.
+```
+
+```javascript
+if (typeof universalSearch === 'function') {
+```
+
+```javascript
 <button className="mobile-close" onClick={() => setIsMobileMenuOpen(false)}>✕</button>
 ```
 
@@ -78,15 +90,19 @@ const handleSearch = (e) => {
 ```
 
 ```javascript
-{user?.role !== 'viewer' && <li className={activeTab === 'metrics' ? 'active' : ''} onClick={() => { setActiveTab('metrics'); setIsMobileMenuOpen(false); }}>📈 KPIs</li>}
+<li className={activeTab === 'metrics' ? 'active' : ''} onClick={() => { setActiveTab('metrics'); setIsMobileMenuOpen(false); }}>📈 KPIs</li>
 ```
 
 ```javascript
-{user?.role !== 'viewer' && <li className={activeTab === 'orderlist' ? 'active' : ''} onClick={() => { setActiveTab('orderlist'); setIsMobileMenuOpen(false); }}>📋 Orders</li>}
+<li className={activeTab === 'orderlist' ? 'active' : ''} onClick={() => { setActiveTab('orderlist'); setIsMobileMenuOpen(false); }}>📋 Orders</li>
 ```
 
 ```javascript
-{['admin', 'manager'].includes(user?.role) && <li className={activeTab === 'bulk' ? 'active' : ''} onClick={() => { setActiveTab('bulk'); setIsMobileMenuOpen(false); }}>⚡ Bulk</li>}
+<li className={activeTab === 'dealer-portal' ? 'active' : ''} onClick={() => { setActiveTab('dealer-portal'); setIsMobileMenuOpen(false); }}>🛒 Partner Portal</li>
+```
+
+```javascript
+<li className={activeTab === 'bulk' ? 'active' : ''} onClick={() => { setActiveTab('bulk'); setIsMobileMenuOpen(false); }}>⚡ Bulk</li>
 ```
 
 ```javascript
@@ -94,7 +110,7 @@ const handleSearch = (e) => {
 ```
 
 ```javascript
-{user?.role !== 'viewer' && <li className={activeTab === 'rto' ? 'active' : ''} onClick={() => { setActiveTab('rto'); setIsMobileMenuOpen(false); }}>↩️ RTO</li>}
+<li className={activeTab === 'rto' ? 'active' : ''} onClick={() => { setActiveTab('rto'); setIsMobileMenuOpen(false); }}>↩️ RTO</li>
 ```
 
 ```javascript
@@ -182,7 +198,7 @@ const handleSearch = (e) => {
 ```
 
 ```javascript
-{user?.role === 'admin' && <li className={activeTab === 'activity' ? 'active' : ''} onClick={() => { setActiveTab('activity'); setIsMobileMenuOpen(false); }}>📜 Activity Log</li>}
+<li className={activeTab === 'activity' ? 'active' : ''} onClick={() => { setActiveTab('activity'); setIsMobileMenuOpen(false); }}>📜 Activity Log</li>
 ```
 
 ```javascript
@@ -190,7 +206,15 @@ const handleSearch = (e) => {
 ```
 
 ```javascript
-<li className={activeTab === 'roadmap' ? 'active' : ''} onClick={() => { setActiveTab('roadmap'); setIsMobileMenuOpen(false); }}>🛣️ Roadmap</li>
+<li className={activeTab === 'performance' ? 'active' : ''} onClick={() => { setActiveTab('performance'); setIsMobileMenuOpen(false); }}>📈 Performance Score</li>
+```
+
+```javascript
+<li className={activeTab === 'ml-forecast' ? 'active' : ''} onClick={() => { setActiveTab('ml-forecast'); setIsMobileMenuOpen(false); }}>🧠 ML Forecast</li>
+```
+
+```javascript
+<li className={activeTab === 'roadmap' ? 'active' : ''} onClick={() => { setActiveTab('roadmap'); setIsMobileMenuOpen(false); }}>🛣️ Product Roadmap</li>
 ```
 
 ```javascript
@@ -198,7 +222,7 @@ const handleSearch = (e) => {
 ```
 
 ```javascript
-{user?.role === 'admin' && <li className={activeTab === 'settings' ? 'active' : ''} onClick={() => { setActiveTab('settings'); setIsMobileMenuOpen(false); }}>⚙️ Settings</li>}
+<li className={activeTab === 'settings' ? 'active' : ''} onClick={() => { setActiveTab('settings'); setIsMobileMenuOpen(false); }}>⚙️ Settings</li>
 ```
 
 ```javascript
@@ -214,23 +238,23 @@ onFocus={() => searchQuery.length >= 2 && setIsSearchActive(true)}
 ```
 
 ```javascript
-<button onClick={() => { setIsSearchActive(false); setSearchResults(null); }} className="close-search" style={{ background: 'none', border: 'none', cursor: 'pointer' }}>×</button>
+<button onClick={() => setIsSearchActive(false)} className="close-search">×</button>
 ```
 
 ```javascript
-{searchResults.orders.map(o => (
+{searchResults.orders.map(order => (
 ```
 
 ```javascript
-<div key={o.id} className="search-item glass-hover" style={{ padding: '8px', borderRadius: '4px', cursor: 'pointer' }} onClick={() => { setActiveTab('orderlist'); setSearchQuery(''); setSearchResults(null); setIsSearchActive(false); }}>
+<div key={order.id} className="result-item" onClick={() => { setActiveTab('orderlist'); setIsSearchActive(false); }}>
 ```
 
 ```javascript
-{searchResults.skus.map(s => (
+{searchResults.skus.map(sku => (
 ```
 
 ```javascript
-<div key={s.sku || s.code} className="search-item glass-hover" style={{ padding: '8px', borderRadius: '4px', cursor: 'pointer' }} onClick={() => { setActiveTab('inventory'); setSearchQuery(''); setSearchResults(null); setIsSearchActive(false); }}>
+<div key={sku.code} className="result-item" onClick={() => { setActiveTab('inventory'); setIsSearchActive(false); }}>
 ```
 
 ```javascript
@@ -948,6 +972,10 @@ onChange={(e) => setSearchTerm(e.target.value)}
 ```
 
 ```javascript
+{(() => {
+```
+
+```javascript
 onClick={() => setSelectedSKU(enhancedSku)}
 ```
 
@@ -1287,6 +1315,61 @@ const data = useMemo(() => {
 tickFormatter={(str) => {
 ```
 
+## [MLAnalyticsDashboard.jsx](file:///Users/anandinisingh/Downloads/webdev2/ots-webapp/src/components/Dashboard/MLAnalyticsDashboard.jsx)
+> No summary available.
+
+```javascript
+const MLAnalyticsDashboard = () => {
+```
+
+```javascript
+const analysis = useMemo(() => {
+```
+
+```javascript
+const stockOut = useMemo(() => {
+```
+
+```javascript
+onChange={e => setSelectedSKU(e.target.value)}
+```
+
+```javascript
+{skuMaster.map(s => <option key={s.sku} value={s.sku}>{s.name} ({s.sku})</option>)}
+```
+
+```javascript
+...analysis.history.map(h => ({ ...h, type: 'actual', isHistorical: true })),
+```
+
+```javascript
+...analysis.forecast.map(f => ({ ...f, type: 'forecast', isHistorical: false }))
+```
+
+```javascript
+const getUrgencyColor = (urgency) => {
+```
+
+```javascript
+onClick={() => setViewMode('forecast')}
+```
+
+```javascript
+onClick={() => setViewMode('decomposition')}
+```
+
+```javascript
+onChange={e => setSelectedSKU(e.target.value)}
+```
+
+```javascript
+{skuMaster.map(s => <option key={s.sku} value={s.sku}>{s.name}</option>)}
+```
+
+```javascript
+<ComposedChart data={chartData.filter(d => !d.isHistorical)} margin={{ top: 40, right: 30, left: 0, bottom: 0 }}>
+```
+
 ## [PerformanceMetrics.jsx](file:///Users/anandinisingh/Downloads/webdev2/ots-webapp/src/components/Dashboard/PerformanceMetrics.jsx)
 > No summary available.
 
@@ -1307,15 +1390,15 @@ const pending = orders.filter(o => o.status === 'Imported' || o.status === 'MTP-
 ```
 
 ```javascript
+const rtoCount = orders.filter(o => o.status?.startsWith('RTO')).length;
+```
+
+```javascript
 const sourceDistribution = orders.reduce((acc, o) => {
 ```
 
 ```javascript
 ? (orders.reduce((sum, o) => sum + (o.weight || 0), 0) / orders.length).toFixed(1)
-```
-
-```javascript
-{ label: 'Active Carriers', value: logistics.filter(l => l.active).length, icon: '🚚', color: 'var(--primary)', desc: 'Carriers in use' },
 ```
 
 ```javascript
@@ -1369,6 +1452,14 @@ const formatINR = (amount) => new Intl.NumberFormat('en-IN', { style: 'currency'
 ```
 
 ```javascript
+onBack={() => setIsCreatingOrder(false)}
+```
+
+```javascript
+onComplete={() => {
+```
+
+```javascript
 onChange={(e) => setSearchTerm(e.target.value)}
 ```
 
@@ -1382,6 +1473,99 @@ onChange={(e) => setFilterType(e.target.value)}
 
 ```javascript
 onClick={() => setSelectedDealer(dealer)}
+```
+
+```javascript
+onClick={() => setIsCreatingOrder(true)}
+```
+
+## [DealerOrderEntry.jsx](file:///Users/anandinisingh/Downloads/webdev2/ots-webapp/src/components/Dealers/DealerOrderEntry.jsx)
+> DealerOrderEntry Component
+  A specialized form for placing B2B wholesale orders.
+  Handles quantity-based tiered pricing and credit limit validation.
+
+```javascript
+/**
+* DealerOrderEntry Component
+* A specialized form for placing B2B wholesale orders.
+* Handles quantity-based tiered pricing and credit limit validation.
+*/
+const DealerOrderEntry = ({ dealer, onBack, onComplete }) => {
+```
+
+```javascript
+const availableSkus = skuMaster.filter(s => !s.isParent);
+```
+
+```javascript
+useEffect(() => {
+```
+
+```javascript
+const sku = availableSkus.find(s => s.sku === selectedSku);
+```
+
+```javascript
+const handleSubmit = async (e) => {
+```
+
+```javascript
+setTimeout(() => onComplete(), 2000);
+```
+
+```javascript
+onChange={(e) => setSelectedSku(e.target.value)}
+```
+
+```javascript
+{availableSkus.map(s => (
+```
+
+```javascript
+onChange={(e) => setQuantity(e.target.value)}
+```
+
+## [DealerPortal.jsx](file:///Users/anandinisingh/Downloads/webdev2/ots-webapp/src/components/Dealers/DealerPortal.jsx)
+> No summary available.
+
+```javascript
+const DealerPortal = () => {
+```
+
+```javascript
+const dealerOrders = useMemo(() => {
+```
+
+```javascript
+return orders.filter(o => o.dealerId === user.id);
+```
+
+```javascript
+const stats = useMemo(() => {
+```
+
+```javascript
+.filter(o => {
+```
+
+```javascript
+.reduce((sum, o) => sum + o.amount, 0);
+```
+
+```javascript
+onBack={() => setView('dashboard')}
+```
+
+```javascript
+onComplete={() => setView('dashboard')}
+```
+
+```javascript
+<div className="glass p-6 flex items-center gap-4 cursor-pointer hover:bg-white/5 transition-colors" onClick={() => setView('order')}>
+```
+
+```javascript
+{dealerOrders.map(o => (
 ```
 
 ## [ErrorBoundary.jsx](file:///Users/anandinisingh/Downloads/webdev2/ots-webapp/src/components/ErrorBoundary.jsx)
@@ -1435,6 +1619,46 @@ const renderContent = () => {
 
 ```javascript
 onClick={() => setActiveSection(s.id)}
+```
+
+## [KeyboardShortcutsHud.jsx](file:///Users/anandinisingh/Downloads/webdev2/ots-webapp/src/components/Help/KeyboardShortcutsHud.jsx)
+> KeyboardShortcutsHud Component
+  Displays available keyboard shortcuts in a floating HUD
+
+```javascript
+/**
+* KeyboardShortcutsHud Component
+* Displays available keyboard shortcuts in a floating HUD
+*/
+const KeyboardShortcutsHud = () => {
+```
+
+```javascript
+useEffect(() => {
+```
+
+```javascript
+const getShortcuts = async () => {
+```
+
+```javascript
+const handleKeyPress = (e) => {
+```
+
+```javascript
+return () => window.removeEventListener('keydown', handleKeyPress);
+```
+
+```javascript
+onClick={() => setIsVisible(!isVisible)}
+```
+
+```javascript
+onClick={() => setIsVisible(false)}
+```
+
+```javascript
+shortcuts.map((shortcut, idx) => (
 ```
 
 ## [ShortcutsModal.jsx](file:///Users/anandinisingh/Downloads/webdev2/ots-webapp/src/components/Help/ShortcutsModal.jsx)
@@ -1810,6 +2034,62 @@ onClick={() => handleExport(segment)}
 
 ```javascript
 segmentedData[segment].slice(0, 5).map(c => (
+```
+
+## [WhatsAppTemplateManager.jsx](file:///Users/anandinisingh/Downloads/webdev2/ots-webapp/src/components/Marketing/WhatsAppTemplateManager.jsx)
+> WhatsAppTemplateManager Component
+  Manages WhatsApp message templates for bulk messaging
+
+```javascript
+/**
+* WhatsAppTemplateManager Component
+* Manages WhatsApp message templates for bulk messaging
+*/
+const WhatsAppTemplateManager = () => {
+```
+
+```javascript
+const handleSaveTemplate = async () => {
+```
+
+```javascript
+? templates.map(t => t.id === currentTemplate.id ? currentTemplate : t)
+```
+
+```javascript
+const handleDeleteTemplate = (id) => {
+```
+
+```javascript
+setTemplates(templates.filter(t => t.id !== id));
+```
+
+```javascript
+const handleEditTemplate = (template) => {
+```
+
+```javascript
+onChange={(e) => setCurrentTemplate({ ...currentTemplate, name: e.target.value })}
+```
+
+```javascript
+onChange={(e) => setCurrentTemplate({ ...currentTemplate, body: e.target.value })}
+```
+
+```javascript
+onClick={() => { setCurrentTemplate({ name: '', body: '' }); setIsEditing(false); }}
+```
+
+```javascript
+templates.map(template => (
+```
+
+```javascript
+onClick={() => handleEditTemplate(template)}
+```
+
+```javascript
+onClick={() => handleDeleteTemplate(template.id)}
 ```
 
 ## [KeyboardShortcutsHud.jsx](file:///Users/anandinisingh/Downloads/webdev2/ots-webapp/src/components/Navigation/KeyboardShortcutsHud.jsx)
@@ -2405,6 +2685,10 @@ onChange={() => toggleOrderSelection(order.id)}
 ```
 
 ```javascript
+(() => {
+```
+
+```javascript
 onClick={(e) => { e.stopPropagation(); setSelectedOrder(order); }}
 ```
 
@@ -2421,19 +2705,15 @@ onClick={() => setSelectedOrder(null)}
 ```
 
 ```javascript
-onClick={() => {/* Future: Process logic */ }}
+{(() => {
 ```
 
 ```javascript
-onClick={() => generatePackingSlip(selectedOrder)}
+onClick={() => alert(`Initiating manual verification call for ${selectedOrder.id}...`)}
 ```
 
 ```javascript
-onClick={() => generateShippingLabel(selectedOrder)}
-```
-
-```javascript
-onClick={() => setSelectedOrder(null)}
+onClick={() => {
 ```
 
 ```javascript
@@ -2999,20 +3279,62 @@ onClick={() => handleMethodSelect('sms')}
 onClick={() => handleMethodSelect(selectedMethod)}
 ```
 
-## [ErrorBoundary.jsx](file:///Users/anandinisingh/Downloads/webdev2/ots-webapp/src/components/Shared/ErrorBoundary.jsx)
-> Error Boundary Component
-  Catches JavaScript errors in child components and displays a fallback UI.
+## [ContextProviders.jsx](file:///Users/anandinisingh/Downloads/webdev2/ots-webapp/src/components/Shared/ContextProviders.jsx)
+> ContextProviders Layout Component
+  Wraps the application with all necessary context providers
+  This includes error handling, notifications, analytics, etc.
 
 ```javascript
 /**
-* Error Boundary Component
-* Catches JavaScript errors in child components and displays a fallback UI.
+* ContextProviders Layout Component
+* Wraps the application with all necessary context providers
+* This includes error handling, notifications, analytics, etc.
 */
-class ErrorBoundary extends Component {
+const ContextProviders = ({ children }) => {
 ```
 
 ```javascript
-handleRetry = () => {
+// - Offline sync context for offline-first functionality
+```
+
+```javascript
+function App() {
+```
+
+## [ErrorBoundary.jsx](file:///Users/anandinisingh/Downloads/webdev2/ots-webapp/src/components/Shared/ErrorBoundary.jsx)
+> ErrorBoundary Component
+  Catches JavaScript errors in child components and displays fallback UI
+  Integrates with errorHandlerService for error logging and recovery suggestions
+
+```javascript
+/**
+* ErrorBoundary Component
+* Catches JavaScript errors in child components and displays fallback UI
+* Integrates with errorHandlerService for error logging and recovery suggestions
+*/
+class ErrorBoundary extends React.Component {
+```
+
+```javascript
+handleReset = () => {
+```
+
+```javascript
+{this.state.recoveryHints.map((hint, idx) => (
+```
+
+## [MainLayout.jsx](file:///Users/anandinisingh/Downloads/webdev2/ots-webapp/src/components/Shared/MainLayout.jsx)
+> MainLayout Component
+  Primary layout wrapper for authenticated pages
+  Includes header, sidebar, main content area, and footer
+
+```javascript
+/**
+* MainLayout Component
+* Primary layout wrapper for authenticated pages
+* Includes header, sidebar, main content area, and footer
+*/
+const MainLayout = () => {
 ```
 
 ## [ResponsiveLayout.jsx](file:///Users/anandinisingh/Downloads/webdev2/ots-webapp/src/components/Shared/ResponsiveLayout.jsx)
@@ -3323,11 +3645,11 @@ onClick={() => setTransferModal({ show: false, sku: null })}
 * Warehouse Selector Component
 * Displays warehouse utilization and allows manual override of warehouse selection.
 */
-const WarehouseSelector = ({ selectedWarehouse, onSelect, order = null }) => {
+const WarehouseSelector = ({ selectedWarehouse, onSelect, order = null, currentLoads = {} }) => {
 ```
 
 ```javascript
-const utilization = useMemo(() => warehouseOptimizer.getUtilizationMetrics(), []);
+const utilization = useMemo(() => warehouseOptimizer.getUtilizationMetrics(currentLoads), [currentLoads]);
 ```
 
 ```javascript
@@ -3339,7 +3661,7 @@ const getStatusColor = (status) => {
 ```
 
 ```javascript
-{utilization.map(wh => (
+{utilization.map(wh => {
 ```
 
 ```javascript
@@ -3404,7 +3726,7 @@ function App() {
 ```
 
 ## [DataContext.jsx](file:///Users/anandinisingh/Downloads/webdev2/ots-webapp/src/context/DataContext.jsx)
-> Smart routing for regional warehouse selection
+> Smart routing for regional warehouse selection with real-time load balancing
 
 ```javascript
 export const DataProvider = ({ children }) => {
@@ -3447,7 +3769,7 @@ setInventoryLevels(prev => ({ ...prev, [data.sku]: data.levels }));
 ```
 
 ```javascript
-orders.forEach(o => cache.cacheData('orders', o.id, o));
+orders.forEach(o => cacheService.cacheData('orders', o.id, o));
 ```
 
 ```javascript
@@ -3475,7 +3797,15 @@ const initializeData = async () => {
 ```
 
 ```javascript
-const invEntry = cachedInventoryLevels?.find(m => m.key === 'inventoryLevels');
+const invEntry = cachedMetadata?.find(m => m.key === 'inventoryLevels');
+```
+
+```javascript
+const loadEntry = cachedMetadata?.find(m => m.key === 'warehouseLoads');
+```
+
+```javascript
+const creditEntry = cachedMetadata?.find(m => m.key === 'dealerCredits');
 ```
 
 ```javascript
@@ -3528,9 +3858,17 @@ return () => clearInterval(interval);
 
 ```javascript
 /**
-* Smart routing for regional warehouse selection
+* Smart routing for regional warehouse selection with real-time load balancing
 */
 const smartRouteOrder = useCallback((pincode, state) => {
+```
+
+```javascript
+useEffect(() => {
+```
+
+```javascript
+orders.forEach(o => {
 ```
 
 ```javascript
@@ -3538,6 +3876,10 @@ const smartRouteOrder = useCallback((pincode, state) => {
 * Add a new order
 */
 const addOrder = useCallback((orderData) => {
+```
+
+```javascript
+setDealerCredits(prev => ({
 ```
 
 ```javascript
@@ -3826,6 +4168,10 @@ const sku = skuMaster.find(s => s.sku === skuId);
 ```
 
 ```javascript
+getMLDemandForecast: (skuId) => mlForecastService.predictDemand(orders, skuId),
+```
+
+```javascript
 universalSearch: (query) => searchService.universalSearch({ orders, skuMaster }, query),
 ```
 
@@ -4052,6 +4398,18 @@ export const SKU_MASTER = [
 
 ```javascript
 export const SKU_ALIASES = [
+```
+
+## [warehouseData.js](file:///Users/anandinisingh/Downloads/webdev2/ots-webapp/src/data/warehouseData.js)
+> Warehouse Metadata
+  Unified source of truth for the Bluewud warehouse network.
+
+```javascript
+/**
+* Warehouse Metadata
+* Unified source of truth for the Bluewud warehouse network.
+*/
+export const WAREHOUSES = {
 ```
 
 ## [useAPI.js](file:///Users/anandinisingh/Downloads/webdev2/ots-webapp/src/hooks/useAPI.js)
@@ -4360,6 +4718,28 @@ const resetSettings = useCallback(() => {
 * @returns {[*, function]} - [value, setValue]
 */
 export const useSessionValue = (key, initialValue) => {
+```
+
+## [ContextProviders.jsx](file:///Users/anandinisingh/Downloads/webdev2/ots-webapp/src/layouts/ContextProviders.jsx)
+> ContextProviders Layout Component
+  Wraps the application with all necessary context providers
+  This includes error handling, notifications, analytics, etc.
+
+```javascript
+/**
+* ContextProviders Layout Component
+* Wraps the application with all necessary context providers
+* This includes error handling, notifications, analytics, etc.
+*/
+const ContextProviders = ({ children }) => {
+```
+
+```javascript
+// - Offline sync context for offline-first functionality
+```
+
+```javascript
+function App() {
 ```
 
 ## [MainLayout.jsx](file:///Users/anandinisingh/Downloads/webdev2/ots-webapp/src/layouts/MainLayout.jsx)
@@ -4881,6 +5261,40 @@ export const cacheAnalytics = async (key, data, ttl = 3600000) => {
 export const getCachedAnalytics = async (key) => {
 ```
 
+```javascript
+/**
+* Project future revenue based on current trends
+*/
+export const projectRevenue = (orders = [], days = 30) => {
+```
+
+```javascript
+? orders.reduce((sum, o) => sum + (o.amount || 0), 0) / orders.length
+```
+
+```javascript
+/**
+* Calculate profitability per SKU
+*/
+export const calculateSKUProfitability = (orders = [], skuMaster = []) => {
+```
+
+```javascript
+orders.forEach(o => {
+```
+
+```javascript
+const skuData = (skuMaster || []).find(s => s.sku === o.sku) || {};
+```
+
+```javascript
+return Object.values(profitability).map(p => ({
+```
+
+```javascript
+})).sort((a, b) => b.profit - a.profit);
+```
+
 ## [apiService.js](file:///Users/anandinisingh/Downloads/webdev2/ots-webapp/src/services/apiService.js)
 > API Service Layer - Centralized API management for all integrations
   This abstracts away the complexity of different API endpoints
@@ -5172,58 +5586,48 @@ const lastOrderDate = customerOrders.reduce((latest, order) => {
 
 ## [complianceService.js](file:///Users/anandinisingh/Downloads/webdev2/ots-webapp/src/services/complianceService.js)
 > Compliance Service
-<<<<<<< HEAD
-  
-  Handles HSN/SAC code validation, cross-border duty calculations,
-  and documentation requirements for international shipments.
+  Handles HSN/SAC code mapping, GST calculations, and E-way bill generation.
 
 ```javascript
 /**
 * Compliance Service
-<<<<<<< HEAD
-*
-* Handles HSN/SAC code validation, cross-border duty calculations,
-* and documentation requirements for international shipments.
+* Handles HSN/SAC code mapping, GST calculations, and E-way bill generation.
 */
-/**
-* Validate HSN Code
-* @param {string} hsnCode
-* @returns {object|null}
-*/
-export const validateHSN = (hsnCode) => {
-```
-
-```javascript
-/**
-* Get required documentation for destination country
-* @param {string} country
-* @returns {string[]}
-*/
-export const getRequiredDocuments = (country) => {
-```
-
-```javascript
-/**
-* Calculate export duty (placeholder)
-* @param {number} value - Product value in INR
-* @param {string} destinationCountry
-* @param {string} hsnCode
-* @returns {number}
-*/
-export const calculateExportDuty = (value, destinationCountry, hsnCode) => {
-```
-
-```javascript
-/**
-* Generate compliance summary for an order
-* @param {object} order
-* @returns {object}
-*/
-export const generateComplianceSummary = (order) => {
+export const HSN_DATABASE = {
 ```
 
 ```javascript
 class ComplianceService {
+```
+
+```javascript
+/**
+* Get HSN code for a given SKU.
+* @param {string} sku - Product SKU
+* @returns {string} HSN Code
+*/
+/**
+* Get applicable GST rate based on SKU category.
+* @param {string} sku
+* @returns {number} GST percentage
+*/
+/**
+* Determine if E-way bill is required.
+* @param {number} invoiceValue
+* @param {string} originState
+* @param {string} destState
+* @returns {boolean}
+*/
+/**
+* Generate E-way bill data structure.
+* @param {Object} order
+* @returns {Object} E-way bill details
+*/
+export const validateHSN = (code) => service.validateHSN(code);
+```
+
+```javascript
+export const getHSNCode = (sku) => service.getHSNCode(sku);
 ```
 
 ## [currencyService.js](file:///Users/anandinisingh/Downloads/webdev2/ots-webapp/src/services/currencyService.js)
@@ -5338,6 +5742,18 @@ const rows = orders.map(order => [
 
 ```javascript
 ...rows.map(row => row.map(cell => `"${cell}"`).join(','))
+```
+
+## [dealerService.js](file:///Users/anandinisingh/Downloads/webdev2/ots-webapp/src/services/dealerService.js)
+> Dealer Service
+  Handles wholesale logic, credit limits, and tiered pricing for B2B partners.
+
+```javascript
+/**
+* Dealer Service
+* Handles wholesale logic, credit limits, and tiered pricing for B2B partners.
+*/
+class DealerService {
 ```
 
 ## [errorHandlerService.js](file:///Users/anandinisingh/Downloads/webdev2/ots-webapp/src/services/errorHandlerService.js)
@@ -5644,9 +6060,9 @@ Object.entries(customShortcuts).forEach(([combo, config]) => {
 ```javascript
 /**
 * Register a keyboard shortcut
-* @param {String} combo - Key combination (e.g., 'Ctrl+K', 'Shift+Alt+S')
-* @param {String|Function} action - Action name or callback function
-* @param {String} description - Human-readable description
+* @param {String} shortcut - Key combination (e.g., 'Ctrl+K', 'Shift+Alt+S')
+* @param {String|Function} callback - Action name or callback function
+* @param {Object} options - Options { description, scope }
 */
 export const registerShortcut = (shortcut, callback, options = {}) => {
 ```
@@ -5656,16 +6072,20 @@ return () => unregisterShortcut(shortcut);
 ```
 
 ```javascript
-export const registerShortcut = (combo, action, description = '') => {
+export const unregisterShortcut = (shortcut) => {
 ```
 
 ```javascript
 /**
-* Bind a shortcut to a callback function
+* Bind a shortcut to a callback function (for named actions)
 * @param {String} action - Action name
 * @param {Function} callback - Function to execute
 */
 export const bindAction = (action, callback) => {
+```
+
+```javascript
+config.callback = callback; // Rebind string action to function
 ```
 
 ```javascript
@@ -5678,6 +6098,21 @@ export const getAllShortcuts = () => {
 
 ```javascript
 return Array.from(shortcuts.entries()).map(([combo, config]) => ({
+```
+
+```javascript
+export const getShortcuts = getAllShortcuts;
+```
+
+```javascript
+/**
+* Format shortcut for display (e.g. 'ctrl+k' -> 'Ctrl + K')
+*/
+export const formatShortcut = (combo) => {
+```
+
+```javascript
+.map(part => part.charAt(0).toUpperCase() + part.slice(1))
 ```
 
 ```javascript
@@ -5702,6 +6137,28 @@ export const cleanup = () => {
 ```
 
 ```javascript
+/**
+* Destroy shortcuts (Alias for cleanup)
+*/
+export const destroyShortcuts = cleanup;
+```
+
+```javascript
+/**
+* Register default shortcuts (Helper)
+*/
+export const registerDefaultShortcuts = (actionsMap) => {
+```
+
+```javascript
+Object.entries(actionsMap).forEach(([actionName, callback]) => {
+```
+
+```javascript
+function parseShortcut(shortcut) {
+```
+
+```javascript
 function parseKeyCombo(event) {
 ```
 
@@ -5710,7 +6167,15 @@ function handleKeyDown(event) {
 ```
 
 ```javascript
+if (typeof config.callback === 'function') {
+```
+
+```javascript
 } else if (typeof config.action === 'function') {
+```
+
+```javascript
+export const initShortcuts = initializeShortcuts; // Alias
 ```
 
 ## [keyboardShortcutsEnhanced.js](file:///Users/anandinisingh/Downloads/webdev2/ots-webapp/src/services/keyboardShortcutsEnhanced.js)
@@ -6088,6 +6553,84 @@ export const fetchFlipkartOrders = async () => {
 export const syncInventoryToMarketplaces = async (inventoryLevels) => {
 ```
 
+## [mlForecastService.js](file:///Users/anandinisingh/Downloads/webdev2/ots-webapp/src/services/mlForecastService.js)
+> ML Forecast Service
+  Advanced demand forecasting using additive trend-seasonal decomposition.
+
+```javascript
+/**
+* ML Forecast Service
+* Advanced demand forecasting using additive trend-seasonal decomposition.
+*/
+class MLForecastService {
+```
+
+```javascript
+/**
+* Predict demand for a specific SKU.
+* @param {Array} orders - Historical orders
+* @param {string} sku - SKU ID
+* @param {number} forecastDays - Days to predict
+* @returns {Object} Forecast results with decomposition
+*/
+.filter(o => o.sku === sku)
+```
+
+```javascript
+.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+```
+
+```javascript
+const values = dailyData.map(d => d.quantity);
+```
+
+```javascript
+avgDemand: (values.reduce((a, b) => a + b, 0) / values.length).toFixed(1)
+```
+
+```javascript
+/**
+* Predict when an item will go out of stock.
+*/
+orders.forEach(o => {
+```
+
+```javascript
+const residuals = values.map((v, i) => v - (trend.slope * i + trend.intercept));
+```
+
+```javascript
+const seasonal = Array(7).fill(0).map(() => []);
+```
+
+```javascript
+residuals.forEach((r, i) => {
+```
+
+```javascript
+return seasonal.map(dayValues => {
+```
+
+```javascript
+return dayValues.reduce((a, b) => a + b, 0) / dayValues.length;
+```
+
+```javascript
+const avg = values.reduce((a, b) => a + b, 0) / values.length;
+```
+
+```javascript
+const squareDiffs = values.map(v => Math.pow(v - avg, 2));
+```
+
+```javascript
+return Math.sqrt(squareDiffs.reduce((a, b) => a + b, 0) / values.length) || 0;
+```
+
+```javascript
+.reduce((sum, day) => sum + day.quantity, 0);
+```
+
 ## [notificationService.js](file:///Users/anandinisingh/Downloads/webdev2/ots-webapp/src/services/notificationService.js)
 > Notification Service - Centralized notification management
   Handles in-app notifications, with hooks for future email/SMS/WhatsApp
@@ -6227,89 +6770,27 @@ export const notifyCODPending = (count, amount) => {
 
 ## [offlineCacheService.js](file:///Users/anandinisingh/Downloads/webdev2/ots-webapp/src/services/offlineCacheService.js)
 > Offline Cache Service
-<<<<<<< HEAD
+  IndexedDB wrapper for offline-first data persistence
   
-  Simple IndexedDB wrapper for persisting operational data offline.
+  Features:
+  - Simple key-value storage
+  - Automatic schema initialization
+  - TTL support for data expiration
+  - Batch operations
+  - Sync state tracking
 
 ```javascript
 /**
 * Offline Cache Service
-<<<<<<< HEAD
+* IndexedDB wrapper for offline-first data persistence
 *
-* Simple IndexedDB wrapper for persisting operational data offline.
+* Features:
+* - Simple key-value storage
+* - Automatic schema initialization
+* - TTL support for data expiration
+* - Batch operations
+* - Sync state tracking
 */
-/**
-* Initialize / Open the IndexedDB
-*/
-const openDB = () => {
-```
-
-```javascript
-return new Promise((resolve, reject) => {
-```
-
-```javascript
-request.onupgradeneeded = (event) => {
-```
-
-```javascript
-request.onsuccess = () => resolve(request.result);
-```
-
-```javascript
-request.onerror = () => reject(request.error);
-```
-
-```javascript
-/**
-* Save data to a store
-*/
-export const cacheData = async (storeName, data) => {
-```
-
-```javascript
-data.forEach(item => store.put(item));
-```
-
-```javascript
-return new Promise((resolve, reject) => {
-```
-
-```javascript
-tx.oncomplete = () => resolve(true);
-```
-
-```javascript
-tx.onerror = () => reject(tx.error);
-```
-
-```javascript
-/**
-* Retrieve all data from a store
-*/
-export const retrieveCachedData = async (storeName) => {
-```
-
-```javascript
-return new Promise((resolve, reject) => {
-```
-
-```javascript
-request.onsuccess = () => resolve(request.result);
-```
-
-```javascript
-request.onerror = () => reject(request.error);
-```
-
-```javascript
-/**
-* Clear a specific store
-*/
-export const clearCache = async (storeName) => {
-```
-
-```javascript
 class OfflineCacheService {
 ```
 
@@ -6345,7 +6826,7 @@ Object.entries(this.stores).forEach(([storeName, config]) => {
 /**
 * Caches data in IndexedDB
 * @param {string} storeName - Object store name
-* @param {string} key - Data key
+* @param {string} key - Data key (optional for auto-increment or keyPath based)
 * @param {*} data - Data to cache
 * @param {number} ttl - Time to live in milliseconds (optional)
 * @returns {Promise<boolean>}
@@ -6364,9 +6845,6 @@ request.onerror = () => reject(request.error);
 ```javascript
 /**
 * Retrieves cached data
-* @param {string} storeName - Object store name
-* @param {string} key - Data key
-* @returns {Promise<*|null>}
 */
 return new Promise((resolve, reject) => {
 ```
@@ -6380,11 +6858,6 @@ request.onerror = () => reject(request.error);
 ```
 
 ```javascript
-/**
-* Retrieves all data from a store
-* @param {string} storeName - Object store name
-* @returns {Promise<array>}
-*/
 return new Promise((resolve, reject) => {
 ```
 
@@ -6397,12 +6870,6 @@ request.onerror = () => reject(request.error);
 ```
 
 ```javascript
-/**
-* Removes cached data
-* @param {string} storeName - Object store name
-* @param {string} key - Data key
-* @returns {Promise<boolean>}
-*/
 return new Promise((resolve, reject) => {
 ```
 
@@ -6415,11 +6882,6 @@ request.onerror = () => reject(request.error);
 ```
 
 ```javascript
-/**
-* Clears entire object store
-* @param {string} storeName - Object store name
-* @returns {Promise<boolean>}
-*/
 return new Promise((resolve, reject) => {
 ```
 
@@ -6432,38 +6894,23 @@ request.onerror = () => reject(request.error);
 ```
 
 ```javascript
-/**
-* Gets data count in store
-* @param {string} storeName - Object store name
-* @returns {Promise<number>}
-*/
-return new Promise((resolve, reject) => {
-```
-
-```javascript
-request.onsuccess = () => resolve(request.result);
-```
-
-```javascript
-request.onerror = () => reject(request.error);
-```
-
-```javascript
-/**
-* Syncs data with backend
-* @param {string} storeName - Object store name
-* @param {string} endpoint - API endpoint
-* @returns {Promise<object>}
-*/
-/**
-* Clears expired data from all stores
-* @returns {Promise<void>}
-*/
 export const initOfflineCacheService = () => {
 ```
 
 ```javascript
-export const getOfflineCacheService = () => {
+export const cacheData = (store, key, data) => cacheInstance.cacheData(store, key, data);
+```
+
+```javascript
+export const retrieveCachedData = (store, key) => cacheInstance.retrieveCachedData(store, key);
+```
+
+```javascript
+export const clearCache = (store) => cacheInstance.clearStore(store);
+```
+
+```javascript
+export const getOfflineCacheService = () => cacheInstance;
 ```
 
 ## [orderStateMachine.js](file:///Users/anandinisingh/Downloads/webdev2/ots-webapp/src/services/orderStateMachine.js)
@@ -6549,25 +6996,28 @@ const deliveredAt = history.find(h => h.to === ORDER_STATUSES.DELIVERED)?.timest
 ```
 
 ## [pushNotificationService.js](file:///Users/anandinisingh/Downloads/webdev2/ots-webapp/src/services/pushNotificationService.js)
-> <<<<<<< HEAD
-  Web Push Notification Service
+> Push Notification Service
+  Manages web push notifications for real-time alerts
   
-  Handles VAPID registration and browser subscription for real-time alerts.
+  Features:
+  - Service Worker integration
+  - Subscription management
+  - Notification persistence
+  - Badge & icon management
+  - Notification click handling
 
 ```javascript
 /**
-<<<<<<< HEAD
-* Web Push Notification Service
+* Push Notification Service
+* Manages web push notifications for real-time alerts
 *
-* Handles VAPID registration and browser subscription for real-time alerts.
+* Features:
+* - Service Worker integration
+* - Subscription management
+* - Notification persistence
+* - Badge & icon management
+* - Notification click handling
 */
-/**
-* Convert base64 string to Uint8Array for VAPID key
-*/
-const urlBase64ToUint8Array = (base64String) => {
-```
-
-```javascript
 class PushNotificationService {
 ```
 
@@ -6626,28 +7076,11 @@ navigator.serviceWorker.addEventListener('message', (event) => {
 * @param {string} base64String - Base64 encoded key
 * @returns {Uint8Array}
 */
-/**
-* Register the browser for push notifications
-* @returns {object|null} - Subscription object
-*/
-export const subscribeUser = async () => {
+export const initPushNotificationService = (key) => {
 ```
 
 ```javascript
-/**
-* Send a local push notification (Development/Testing)
-* @param {string} title
-* @param {object} options
-*/
-export const sendLocalNotification = async (title, options = {}) => {
-```
-
-```javascript
-export const initPushNotificationService = (vapidPublicKey) => {
-```
-
-```javascript
-export const getPushNotificationService = () => {
+export const getPushNotificationService = () => pushNotificationInstance;
 ```
 
 ## [qcService.js](file:///Users/anandinisingh/Downloads/webdev2/ots-webapp/src/services/qcService.js)
@@ -6725,6 +7158,39 @@ export const getStatus = () => {
 requests: limiter.requests.filter(time => now - time < limiter.windowMs).length,
 ```
 
+## [rbacMiddleware.js](file:///Users/anandinisingh/Downloads/webdev2/ots-webapp/src/services/rbacMiddleware.js)
+> RBAC Middleware Utility
+  Defines permissions and roles for the Bluewud OTS ecosystem.
+
+```javascript
+/**
+* RBAC Middleware Utility
+* Defines permissions and roles for the Bluewud OTS ecosystem.
+*/
+export const ROLES = {
+```
+
+```javascript
+export const PERMISSIONS = {
+```
+
+```javascript
+/**
+* Check if a user has a specific permission.
+* @param {Object} user - User object containing role
+* @param {string} permission - Permission key
+* @returns {boolean}
+*/
+export const can = (user, permission) => {
+```
+
+```javascript
+/**
+* Components wrapper for RBAC
+*/
+export const Guard = ({ user, permission, children, fallback = null }) => {
+```
+
 ## [retryService.js](file:///Users/anandinisingh/Downloads/webdev2/ots-webapp/src/services/retryService.js)
 > Retry a function with exponential backoff
   @param {Function} fn - Async function to retry
@@ -6796,6 +7262,32 @@ new Promise((_, reject) =>
 
 ```javascript
 setTimeout(() => reject(new Error('Circuit breaker timeout')), timeout)
+```
+
+## [reverseLogisticsService.js](file:///Users/anandinisingh/Downloads/webdev2/ots-webapp/src/services/reverseLogisticsService.js)
+> Reverse Logistics Service
+  Manages Return Merchandise Authorizations (RMA) and reverse shipment tracking.
+
+```javascript
+/**
+* Reverse Logistics Service
+* Manages Return Merchandise Authorizations (RMA) and reverse shipment tracking.
+*/
+class ReverseLogisticsService {
+```
+
+## [rtoService.js](file:///Users/anandinisingh/Downloads/webdev2/ots-webapp/src/services/rtoService.js)
+> RTO Service
+  Intelligence layer for predicting Return-to-Origin (RTO) risk.
+  Analysis based on payment method, pincode history, and customer behavior.
+
+```javascript
+/**
+* RTO Service
+* Intelligence layer for predicting Return-to-Origin (RTO) risk.
+* Analysis based on payment method, pincode history, and customer behavior.
+*/
+class RTOService {
 ```
 
 ## [searchService.js](file:///Users/anandinisingh/Downloads/webdev2/ots-webapp/src/services/searchService.js)
@@ -7123,74 +7615,55 @@ class WarehouseOptimizer {
 ```javascript
 /**
 * Get all available warehouses.
-* @returns {Array}
+*/
+/**
+* Calculate distance between two coordinates (Simplified Haversine)
 */
 /**
 * Find optimal warehouse based on pincode.
-* @param {string} pincode
-* @returns {Object} Selected warehouse
 */
 /**
 * Find optimal warehouse based on state.
-* @param {string} state
-* @returns {Object} Selected warehouse
 */
 /**
-* Smart warehouse selection considering load balancing.
-* @param {Object} order - Order with pincode, state, and weight
-* @returns {Object} { warehouse, reason }
+* Smart warehouse selection considering load balancing and proximity.
 */
-.filter(wh => wh.currentLoad < wh.capacity)
+.filter(wh => (currentLoads[wh.id] || 0) < wh.capacity * 0.95)
 ```
 
 ```javascript
-.sort((a, b) => (a.currentLoad / a.capacity) - (b.currentLoad / b.capacity));
+.map(wh => ({
 ```
 
 ```javascript
-/**
-* Update warehouse load after order assignment.
-* @param {string} warehouseId
-* @param {number} units
-*/
-/**
-* Decrease warehouse load after order fulfillment.
-* @param {string} warehouseId
-* @param {number} units
-*/
+.sort((a, b) => a.distance - b.distance);
+```
+
+```javascript
+.sort((a, b) => {
+```
+
+```javascript
 /**
 * Get warehouse utilization metrics.
-* @returns {Array}
 */
-return Object.values(this.warehouses).map(wh => ({
+return Object.values(this.warehouses).map(wh => {
 ```
 
 ## [warehouseService.js](file:///Users/anandinisingh/Downloads/webdev2/ots-webapp/src/services/warehouseService.js)
-> warehouseService.js
-  Logic for multi-node fulfillment and inventory management.
+> Warehouse Service Adapter
+  Bridges WarehouseManager.jsx requirements with WarehouseOptimizer logic.
 
 ```javascript
 /**
-* warehouseService.js
-* Logic for multi-node fulfillment and inventory management.
+* Warehouse Service Adapter
+* Bridges WarehouseManager.jsx requirements with WarehouseOptimizer logic.
 */
-/**
-* Find the best warehouse for an order based on pincode.
-* @param {string} pincode - Order destination pincode
-* @returns {Object} Selected warehouse
-*/
+export const getWarehouses = () => {
+```
+
+```javascript
 export const routeOrderToWarehouse = (pincode) => {
-```
-
-```javascript
-const assigned = WAREHOUSES.find(wh => wh.pincodes.some(p => pincode.startsWith(p)));
-```
-
-```javascript
-/**
-* Get all available warehouses
-*/
-export const getWarehouses = () => WAREHOUSES;
 ```
 
 ## [whatsappService.js](file:///Users/anandinisingh/Downloads/webdev2/ots-webapp/src/services/whatsappService.js)
@@ -7201,34 +7674,9 @@ export const getWarehouses = () => WAREHOUSES;
 * Message templates approved by Meta for WhatsApp Business
 */
 /**
-* Send WhatsApp message to a customer
-* @param {String} phoneNumber - Customer phone number with country code (e.g., "919876543210")
-* @param {String} templateKey - Template key from MESSAGE_TEMPLATES
-* @param {Object} variables - Variables to interpolate in message
-* @returns {Promise<Object>} - API response
+* Format phone number to E.164 or required format (Add 91 if missing)
 */
 const formatPhoneNumber = (phone) => {
-```
-
-```javascript
-/**
-* Replace template placeholders with actual values
-* @param {string} template - Template body with {{placeholders}}
-* @param {object} data - Key-value pairs for replacement
-* @returns {string} - Filled message
-*/
-const fillTemplate = (template, data) => {
-```
-
-```javascript
-Object.entries(data).forEach(([key, value]) => {
-```
-
-```javascript
-/**
-* Send WhatsApp message via API
-*/
-const sendWhatsAppMessage = async (phone, templateId, data) => {
 ```
 
 ```javascript
@@ -7271,10 +7719,6 @@ export const queueWhatsAppMessage = async (phoneNumber, templateKey, variables =
 * Process queued WhatsApp messages (call when coming online)
 */
 export const processQueuedWhatsAppMessages = async () => {
-```
-
-```javascript
-const updated = queue.filter(m => m.id !== msg.id);
 ```
 
 ```javascript
@@ -7427,6 +7871,28 @@ export const initWhatsAppService = (apiToken, businessAccountId, phoneNumberId) 
 
 ```javascript
 export const getWhatsAppService = () => {
+```
+
+## [wholesaleService.js](file:///Users/anandinisingh/Downloads/webdev2/ots-webapp/src/services/wholesaleService.js)
+> Wholesale Service
+  Manages tiered pricing for bulk orders and credit limit validations for dealers.
+
+```javascript
+/**
+* Wholesale Service
+* Manages tiered pricing for bulk orders and credit limit validations for dealers.
+*/
+class WholesaleService {
+```
+
+```javascript
+/**
+* Calculates the discounted unit price based on quantity.
+* @param {number} basePrice - The standard retail price
+* @param {number} quantity - Number of units being ordered
+* @returns {number} The discounted unit price
+*/
+const tier = PRICE_TIERS.find(t => quantity >= t.minQty);
 ```
 
 ## [zohoBridgeService.js](file:///Users/anandinisingh/Downloads/webdev2/ots-webapp/src/services/zohoBridgeService.js)
@@ -9562,6 +10028,35 @@ export const perfMark = (markName) => {
 * @param {string} endMark
 */
 export const perfMeasure = (name, startMark, endMark) => {
+```
+
+## [permissionUtils.js](file:///Users/anandinisingh/Downloads/webdev2/ots-webapp/src/utils/permissionUtils.js)
+> Permission Utilities
+  Centralized mapping of permissions to roles and helper functions.
+
+```javascript
+/**
+* Permission Utilities
+* Centralized mapping of permissions to roles and helper functions.
+*/
+export const PERMISSIONS = {
+```
+
+```javascript
+/**
+* Checks if a user object has a specific permission.
+* @param {Object} user - The user session object from AuthContext
+* @param {string} permission - The permission key from PERMISSIONS
+* @returns {boolean}
+*/
+export const hasPermission = (user, permission) => {
+```
+
+```javascript
+/**
+* Helper to check if user is a dealer
+*/
+export const isDealer = (user) => {
 ```
 
 ## [securityUtils.js](file:///Users/anandinisingh/Downloads/webdev2/ots-webapp/src/utils/securityUtils.js)

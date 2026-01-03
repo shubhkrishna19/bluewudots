@@ -64,9 +64,76 @@ Before closing your session:
 ---
 
 ## 🚀 5. Post-v2.0 Expansion Ideas (Future Consideration)
-- **Phase 25**: Multi-warehouse fulfillment logic optimization.
-- **Phase 26**: Real-time ML model deployment for demand forecasting.
-- **Phase 27**: B2B Dealer Portal with role-based access control.
+### Phase 25: Multi-Warehouse Fulfillment ✅
+- [x] **Intelligent Routing**: `warehouseOptimizer.js` for regional hub selection.
+- [x] **Load Balancing**: Capacity-aware assignment logic.
+- [x] **UI Control**: `WarehouseSelector.jsx` for hub monitoring.
+
+### Phase 26: Real-time ML Demand Forecasting ✅
+- [x] **Prophet-like Forecasting**: Enhanced ML logic for demand prediction in `mlForecastService.js`.
+- [x] **Trend Decomposition**: Visualizing seasonal and growth components in `MLAnalyticsDashboard.jsx`.
+- [x] **Operational Integration**: RRQ insights and stock-out risks integrated in `SKUMaster.jsx`.
+
+### Phase 27: B2B Dealer Portal & RBAC ✅
+- [x] **Role-Based Access**: Specialized `Guard` component and permission boundaries in `rbacMiddleware.js`.
+- [x] **Wholesale Logic**: Tiered pricing (Gold/Platinum) and credit management in `dealerService.js`.
+- [x] **Partner Portal**: Dedicated `DealerPortal.jsx` for seamless wholesale ordering.
+
+### Phase 28: RTO Prediction & Reverse Logistics ✅
+- [x] **Risk Scoring**: `rtoService.js` for predictive COD return analysis.
+- [x] **Reverse Logistics**: `reverseLogisticsService.js` for automated RMA and return windows.
+- [x] **UI Integration**: Risk badges in `OrderList.jsx` and RTO KPIs in `PerformanceMetrics.jsx`.
+
+### Phase 29: AI-Powered Inventory Intelligence ✅
+- [x] **Predictive Restocking**: Reorder Point (ROP) logic based on ML demand in `mlForecastService.js`.
+- [x] **Warehouse Rebalancing**: `InventoryOptimizer.js` suggesting transfers between hubs.
+- [x] **StockOptix UI**: Inventory heatmaps and aging analysis in `StockOptix.jsx`.
+
+### Phase 30: Marketplace Automation & Ecosystem Integration ✅
+- [x] **Amazon Bridge**: Bi-directional inventory sync via `AmazonMapper.jsx` and `MarketplaceSyncService.js`.
+- [x] **Marketplace Reconciliation**: Automated fee analysis and net margin calculation in `MarketplaceReconciliation.jsx`.
+- [x] **Universal Import**: Smart Auto-Map for unknown CSV/Excel formats in `UniversalImporter.jsx`.
+
+---
+
+## 🏗️ 5. Global System Architecture
+
+### 5.1 Fulfillment & Logistics (Phase 25)
+Intelligent routing engine for multi-region hubs.
+
+```mermaid
+graph TD
+    A[New Order] --> B{warehouseOptimizer}
+    B -->|Pincode/State Scan| C[North: Ambala]
+    B -->|Load Balancing| D[South: Bangalore]
+    B -->|Capacity Check| E[East: Kolkata]
+    B -->|Express Priority| F[West: Mumbai]
+    C & D & E & F --> G[Logistics Carrier Assignment]
+```
+
+### 5.2 Real-time ML Forecasting (Phase 26)
+Predictive demand modeling using historical sales data.
+
+```mermaid
+graph LR
+    H[Order History] --> I[mlForecastService]
+    I -->|Trend Decomposition| J[Projected Growth]
+    I -->|Seasonal Analysis| K[Weekly Patterns]
+    J & K --> L[ML Demand Forecast Dashboard]
+    L --> M[Automated Reorder Alerts in SKU Master]
+```
+
+### 5.3 RBAC Permission Matrix (Phase 27)
+Security boundaries for multi-stakeholder management.
+
+| Feature / Node | Admin | Manager | Dealer | Viewer |
+| :--- | :---: | :---: | :---: | :---: |
+| **Analytics Dashboard** | ✅ | ✅ | ❌ | ✅ |
+| **Orders (Global View)** | ✅ | ✅ | ❌ | ✅ |
+| **Partner Portal (Wholesale)** | ✅ | ✅ | ✅ | ❌ |
+| **BOM / Finance Auditor** | ✅ | ✅ | ❌ | ❌ |
+| **Activity Logs (Audit)** | ✅ | ❌ | ❌ | ❌ |
+| **System Settings** | ✅ | ❌ | ❌ | ❌ |
 
 ---
 
