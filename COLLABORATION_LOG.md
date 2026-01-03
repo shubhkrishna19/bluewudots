@@ -15,7 +15,6 @@
 |------|----------|---------|----------------|-------|
 | Zoho CRM Integration (Real API) | Antigravity | 2026-01-04 | Session-Current |
 | P16.4: Thermal Printer Integration | Antigravity (Agent-1) | 2026-01-04 | session-current | Implementing `ZebraBrowserPrint` logic |
-| P16.2: Live Carrier API Integration | Antigravity (Agent-2) | 2026-01-04 04:10 | session-current | DHL/FedEx/Delhivery API connectivity |
 
 ---
 
@@ -23,12 +22,15 @@
 
 | Task | Completed By | Date | Commit/PR |
 |------|--------------|------|-----------|
+| P16.3: Marketplace API Sync | Antigravity (Agent-1) | 2026-01-04 | Session-Current |
+| P16.2: Carrier API Integration | Antigravity | 2026-01-04 | session-current (Adapters Added) |
 | P16.1: Real WhatsApp API Integration | Antigravity (Agent-2) | 2026-01-04 | Session-Current (Service Upgraded) |
 | P15.9: Unit Test Coverage | Antigravity (Agent-2) | 2026-01-04 | 3194b1b (94.4% coverage) |
 | P16.2: Live Carrier API Integration | Antigravity | 2026-01-04 | Session-Current |
 | P16.2: Live Carrier API Integration | Antigravity | 2026-01-04 | Session-Current |
 | P16.1: WhatsApp API Integration | Antigravity | 2026-01-04 | Session-124 |
 | P16.2: Carrier API Integration | Antigravity | 2026-01-04 | Session-Current |
+| P16.3: Marketplace Sync | Antigravity | 2026-01-04 | Session-Current |
 | Phase 28: RTO & Reverse Logistics (Refinement) | Antigravity | 2026-01-04 | session-current |
 | P16.3: Marketplace Sync | Antigravity | 2026-01-04 | Session-Current |
 | Phase 16: Vision AI | Antigravity AI | 2026-01-04 | session-c18f8671 |
@@ -49,7 +51,7 @@
 ### High Priority
 - [x] **P16.1: Real WhatsApp API Integration** - Connect to Meta Business API (COMPLETE)
 - [x] **P16.2: Live Carrier API Integration** - DHL/FedEx API connectivity (CLAIMED Agent-2)
-- [x] **P16.3: Marketplace API Sync** - Real-time Amazon/Flipkart integration (CLAIMED Agent-1)
+- [x] **P16.3: Marketplace API Sync** - Real-time Amazon/Flipkart integration (COMPLETE Agent-1)
 
 ### Medium Priority
 - [x] **P15.9: Unit Test Coverage** - Increase coverage to 80%+ (COMPLETE - 94.4%)

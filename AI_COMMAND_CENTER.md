@@ -18,9 +18,9 @@
 ---
 
 ## 🚨 CRITICAL HANDOVER NOTE (Latest)
-**Phase 28 (Automated RTO Management)** is COMPLETE.
-**Current Status:** The system now automatically holds high-risk COD orders. `rtoService` and `zohoWebhookService` are active. `OrderList` has a "High Risk" filter, and `RTOManager` supports blocking/unblocking.
-**Next Shift Focus:** Start **Phase 29 (ML Demand Forecasting)**.
+**Phase 29 (ML Forecasting)** is COMPLETE.
+**Current Status:** Prophet-style forecasting active with Recharts dashboard. `InventoryOptimizer` generates stock-out alerts.
+**Next Shift Focus:** Start **Phase 30 (Advanced WMS)**.
 
 ---
 
@@ -28,9 +28,13 @@
 
 | Task ID | Description | Assigned To | Status | Last Updated |
 |---------|-------------|-------------|--------|--------------|
+| **P29.1** | Prophet Model Integration (JS Based) | Antigravity | ✅ Complete | 2026-01-04 |
+| **P29.2** | Forecast Visualization (Recharts) | Antigravity | ✅ Complete | 2026-01-04 |
+| **P29.3** | Inventory Reorder Alerts | Antigravity | ✅ Complete | 2026-01-04 |
+| **P28.1** | Automated RTO Risk Blocking | Antigravity AI | ✅ Complete | 2026-01-04 |
 | **P16.1** | Real WhatsApp Business API | Antigravity AI | ✅ Complete | 2026-01-04 |
 | **P16.2** | Carrier API Live Integration | Antigravity AI | ✅ Complete | 2026-01-04 |
-| **P16.3** | Marketplace Sync (Amazon/Flipkart) | Antigravity AI | 🔵 In Progress | 2026-01-04 |
+| **P16.3** | Marketplace Sync (Amazon/Flipkart) | Antigravity AI | ✅ Complete | 2026-01-04 |
 | **P16.4** | Thermal Printer Integration | Antigravity AI | ✅ Complete | 2026-01-04 |
 | **P10.1** | Zoho CRM Integration (Real API) | Antigravity AI | ✅ Complete | 2026-01-04 |
 | **P14.2** | Global Financial Ledger | Antigravity AI | 2026-01-04 | `GlobalLedger.jsx` |
