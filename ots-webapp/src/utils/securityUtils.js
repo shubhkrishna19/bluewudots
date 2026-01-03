@@ -140,7 +140,6 @@ export const checkRateLimit = (key, maxAttempts = 5, windowMs = 60000) => {
     return { allowed: false, retryAfter: Math.ceil((record.firstAttempt + windowMs - now) / 1000) };
   }
   record.attempts++;
-  record.attempts++;
   return { allowed: true, remaining: maxAttempts - record.attempts };
 };
 
@@ -188,15 +187,11 @@ export default {
   hashPassword,
   encryptData,
   decryptData,
-<<<<<<< HEAD
   initiate2FA,
   verify2FA,
   addIPToWhitelist,
   isIPWhitelisted,
-  checkRateLimit
-=======
   checkRateLimit,
   redactPII,
   validateIP
->>>>>>> d69d792bf4d2adf3b6ce1623aaa55ba05e8e8502
 };

@@ -10,15 +10,36 @@ const LOG_BATCH_SIZE = 50;
 const SYNC_INTERVAL = 300000; // 5 mins
 const LOG_RETENTION_DAYS = 90;
 
+export const ACTIVITY_TYPES = {
+    ORDER_CREATE: 'order_create',
+    ORDER_UPDATE: 'order_update',
+    STATUS_CHANGE: 'status_change',
+    BULK_UPDATE: 'bulk_update',
+    CARRIER_ASSIGN: 'carrier_assign',
+    LABEL_GENERATE: 'label_generate',
+    IMPORT_COMPLETE: 'import_complete',
+    EXPORT: 'export',
+    USER_LOGIN: 'user_login',
+    USER_LOGOUT: 'user_logout',
+    INVENTORY_ADJUST: 'inventory_adjust',
+    STOCK_TRANSFER: 'stock_transfer'
+};
+
 class ActivityLogger {
     constructor() {
         this.queue = [];
         this.syncTimer = null;
         this.isInitialized = false;
+        this.localLogs = [];
     }
 
-    async initialize() {
-        if (this.isInitialized) return;
+    async initialize(initialLogs = null) {
+        if (this.isInitialized && !initialLogs) return;
+        if (initialLogs) {
+            this.localLogs = initialLogs;
+        } else {
+            this.localLogs = (await retrieveCachedData('activityLog')) || [];
+        }
         this.startAutoSync();
         this.isInitialized = true;
     }
@@ -32,6 +53,8 @@ class ActivityLogger {
             action = 'UNKNOWN',
             module = 'SYSTEM',
             data = {},
+            entityId = null,
+            entityType = null,
             userId = 'system',
             userEmail = 'system@bluewud.com'
         } = activity;
@@ -42,24 +65,21 @@ class ActivityLogger {
             type,
             action,
             module,
+            entityId,
+            entityType,
             userId,
             userEmail,
             data,
             status: 'pending'
         };
 
-<<<<<<< HEAD
         // Store in local persistence
         try {
-            const existingLogs = (await retrieveCachedData('activity:logs')) || [];
-            existingLogs.push(log);
+            this.localLogs.push(log);
+            if (this.localLogs.length > 2000) this.localLogs.shift();
+            await cacheData('activityLog', this.localLogs);
 
-            // Limit local history to 1000 items
-            if (existingLogs.length > 1000) existingLogs.shift();
-
-            await cacheData('activity:logs', existingLogs);
             this.queue.push(log);
-
             if (this.queue.length >= LOG_BATCH_SIZE) {
                 this.syncToBackend();
             }
@@ -70,93 +90,28 @@ class ActivityLogger {
         return log;
     }
 
-    // Specialized Logging Helpers
+    // Specialized Helpers
     async logOrderActivity(order, action, userId = 'user') {
         return this.logActivity({
-            type: 'ORDER',
+            type: ACTIVITY_TYPES.ORDER_UPDATE,
             action,
             module: 'ORDERS',
-            data: { orderId: order.id, status: order.status, amount: order.amount },
+            entityId: order.id,
+            entityType: 'order',
+            data: { status: order.status, amount: order.amount },
             userId
         });
-=======
-/**
- * Sync activity to backend and local cache
- * @param {object} activity 
- */
-const syncToBackend = async (activity) => {
-    // 1. Persist to high-speed local cache (IndexedDB)
-    cacheData('activityLog', activity);
-
-    // 2. Sync with Backend
-    try {
-        await fetch('/server/activity', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(activity)
-        });
-    } catch (error) {
-        console.warn('Activity sync failed:', error);
-    }
-};
-
-/**
- * Get activity log with filters
- * @param {object} filters 
- * @returns {object[]}
- */
-export const getActivityLog = (filters = {}) => {
-    let result = [...activityLog];
-
-    if (filters.type) {
-        result = result.filter(a => a.type === filters.type);
-    }
-    if (filters.entityType) {
-        result = result.filter(a => a.entityType === filters.entityType);
-    }
-    if (filters.entityId) {
-        result = result.filter(a => a.entityId === filters.entityId);
-    }
-    if (filters.userId) {
-        result = result.filter(a => a.user?.id === filters.userId);
-    }
-    if (filters.startDate) {
-        result = result.filter(a => new Date(a.timestamp) >= new Date(filters.startDate));
-    }
-    if (filters.endDate) {
-        result = result.filter(a => new Date(a.timestamp) <= new Date(filters.endDate));
-    }
-    if (filters.search) {
-        const searchLower = filters.search.toLowerCase();
-        result = result.filter(a =>
-            a.action.toLowerCase().includes(searchLower) ||
-            a.entityId?.toLowerCase().includes(searchLower) ||
-            JSON.stringify(a.details).toLowerCase().includes(searchLower)
-        );
-    }
-    if (filters.limit) {
-        result = result.slice(0, filters.limit);
->>>>>>> d69d792bf4d2adf3b6ce1623aaa55ba05e8e8502
     }
 
     async logInventoryActivity(sku, action, delta, userId = 'user') {
         return this.logActivity({
-            type: 'INVENTORY',
+            type: ACTIVITY_TYPES.INVENTORY_ADJUST,
             action,
             module: 'WAREHOUSE',
-            data: { sku, delta },
+            entityId: sku,
+            entityType: 'sku',
+            data: { delta },
             userId
-        });
-    }
-
-    async logAuthActivity(action, userId, userEmail, success, reason = '') {
-        return this.logActivity({
-            type: 'AUTH',
-            action,
-            module: 'SECURITY',
-            data: { success, reason },
-            userId,
-            userEmail
         });
     }
 
@@ -164,23 +119,17 @@ export const getActivityLog = (filters = {}) => {
      * Sync pending logs to backend
      */
     async syncToBackend() {
-        const logs = (await retrieveCachedData('activity:logs')) || [];
-        const pending = logs.filter(l => l.status === 'pending');
-
+        const pending = this.localLogs.filter(l => l.status === 'pending');
         if (pending.length === 0) return;
 
         try {
-            // Mock API call to Zoho Catalyst
-            // const response = await fetch('/api/activity-logs/sync', { ... });
+            // Mock API Sync
+            // await fetch('/api/logs/sync', { ... });
 
-            // Mark as synced locally
-            const updatedLogs = logs.map(l =>
-                pending.some(p => p.id === l.id) ? { ...l, status: 'synced' } : l
-            );
-            await cacheData('activity:logs', updatedLogs);
+            pending.forEach(l => l.status = 'synced');
+            await cacheData('activityLog', this.localLogs);
             this.queue = [];
-
-            console.log(`[ActivityLogger] Synced ${pending.length} activities to backend.`);
+            console.log(`[ActivityLogger] Synced ${pending.length} activities.`);
         } catch (e) {
             console.error('[ActivityLogger] Sync failed:', e);
         }
@@ -191,76 +140,43 @@ export const getActivityLog = (filters = {}) => {
         this.syncTimer = setInterval(() => this.syncToBackend(), SYNC_INTERVAL);
     }
 
-    stopAutoSync() {
-        if (this.syncTimer) clearInterval(this.syncTimer);
-    }
-
-    async getActivityLogs(limit = 100) {
-        const logs = (await retrieveCachedData('activity:logs')) || [];
-        return logs.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)).slice(0, limit);
+    async getActivityLogs(filters = {}) {
+        let result = [...this.localLogs];
+        if (filters.type) result = result.filter(a => a.type === filters.type);
+        if (filters.entityId) result = result.filter(a => a.entityId === filters.entityId);
+        if (filters.limit) result = result.slice(-filters.limit);
+        return result.reverse();
     }
 }
 
-<<<<<<< HEAD
-// Singleton Instance
-const activityLogger = new ActivityLogger();
+const instance = new ActivityLogger();
+instance.initialize();
 
-// Named exports for compatibility
-export const logActivity = (a) => activityLogger.logActivity(a);
-export const logOrderActivity = (o, a, u) => activityLogger.logOrderActivity(o, a, u);
-export const logInventoryActivity = (s, a, d, u) => activityLogger.logInventoryActivity(s, a, d, u);
-export const logAuthActivity = (a, ui, ue, s, r) => activityLogger.logAuthActivity(a, ui, ue, s, r);
-export const getActivityLogs = (l) => activityLogger.getActivityLogs(l);
-=======
-export const logImportComplete = (source, count, errors = 0) => {
-    return logActivity({
-        type: ACTIVITY_TYPES.IMPORT_COMPLETE,
-        action: `Imported ${count} orders from ${source}`,
-        details: { source, count, errors }
-    });
-};
->>>>>>> d69d792bf4d2adf3b6ce1623aaa55ba05e8e8502
-
-// Legacy functional exports support
-export const logOrderCreate = (o) => activityLogger.logOrderActivity(o, 'CREATE');
-export const logOrderStatusChange = (o, prev, next) => activityLogger.logOrderActivity(o, `STATUS_CHANGE: ${prev} -> ${next}`);
-
-<<<<<<< HEAD
-export default activityLogger;
-=======
-export const logUserLogin = (user) => {
-    return logActivity({
-        type: ACTIVITY_TYPES.USER_LOGIN,
-        action: `User ${user.email} logged in`,
-        entityType: 'user',
-        entityId: user.id,
-        details: { email: user.email, role: user.role }
-    });
-};
-
-export const logUserLogout = (user) => {
-    return logActivity({
-        type: ACTIVITY_TYPES.USER_LOGOUT,
-        action: `User ${user.email} logged out`,
-        entityType: 'user',
-        entityId: user.id
-    });
-};
+// Functional Exports
+export const logActivity = (a) => instance.logActivity(a);
+export const getActivityLog = (f) => instance.getActivityLogs(f);
+export const logOrderCreate = (o) => instance.logOrderActivity(o, 'Order Created');
+export const logOrderStatusChange = (o, prev, next) => instance.logOrderActivity(o, `Status Change: ${prev} -> ${next}`);
+export const logBulkUpdate = (ids, status) => instance.logActivity({ type: ACTIVITY_TYPES.BULK_UPDATE, action: `Bulk status ${status} for ${ids.length} orders` });
+export const logCarrierAssign = (o, c) => instance.logOrderActivity(o, `Carrier Assigned: ${c}`);
+export const logLabelGenerate = (o, type) => instance.logOrderActivity(o, `Label Generated: ${type}`);
+export const logImportComplete = (s, c) => instance.logActivity({ type: ACTIVITY_TYPES.IMPORT_COMPLETE, action: `Imported ${c} orders from ${s}` });
+export const logUserLogin = (u) => instance.logActivity({ type: ACTIVITY_TYPES.USER_LOGIN, action: `Login: ${u.email}`, entityId: u.id, entityType: 'user' });
+export const logUserLogout = (u) => instance.logActivity({ type: ACTIVITY_TYPES.USER_LOGOUT, action: `Logout: ${u?.email}`, entityId: u?.id, entityType: 'user' });
+export const initializeActivityLog = (l) => instance.initialize(l);
+export const getActivityLogInstance = () => instance;
 
 export default {
     ACTIVITY_TYPES,
     logActivity,
     getActivityLog,
-    getEntityHistory,
-    clearActivityLog,
     logOrderCreate,
     logOrderStatusChange,
     logBulkUpdate,
     logCarrierAssign,
     logLabelGenerate,
     logImportComplete,
-    logExport,
     logUserLogin,
-    logUserLogout
+    logUserLogout,
+    initializeActivityLog
 };
->>>>>>> d69d792bf4d2adf3b6ce1623aaa55ba05e8e8502
