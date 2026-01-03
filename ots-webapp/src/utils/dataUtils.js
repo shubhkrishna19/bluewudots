@@ -183,17 +183,17 @@ export const normalizeOrder = (rawOrder, source, aliases = []) => {
         case 'flipkart':
             return {
                 ...base,
-                externalId: rawOrder.order_item_id || rawOrder.orderId,
-                customerName: rawOrder.buyer_name || 'Flipkart Customer',
-                phone: rawOrder.buyer_phone || '',
-                address: rawOrder.ship_address || '',
-                city: rawOrder.ship_city || '',
-                state: rawOrder.ship_state || '',
-                pincode: rawOrder.ship_pincode || '',
-                sku: resolveSkuAlias(rawOrder.sku || rawOrder.seller_sku || '', aliases),
+                externalId: rawOrder.order_item_id || rawOrder.orderId || rawOrder['Order ID'],
+                customerName: rawOrder.buyer_name || rawOrder['Customer Name'] || 'Flipkart Customer',
+                phone: rawOrder.buyer_phone || rawOrder['Mobile'] || '',
+                address: rawOrder.ship_address || rawOrder['Address'] || '',
+                city: rawOrder.ship_city || rawOrder['City'] || '',
+                state: rawOrder.ship_state || rawOrder['State'] || '',
+                pincode: rawOrder.ship_pincode || rawOrder['Pincode'] || '',
+                sku: resolveSkuAlias(rawOrder.sku || rawOrder.seller_sku || rawOrder['SKU'] || '', aliases),
 
-                quantity: parseInt(rawOrder.quantity || 1),
-                amount: parseFloat(rawOrder.selling_price || 0),
+                quantity: parseInt(rawOrder.quantity || rawOrder['Quantity'] || 1),
+                amount: parseFloat(rawOrder.selling_price || rawOrder['Estimated Item Price'] || 0),
                 weight: parseFloat(rawOrder.weight || 0.5)
             };
 
@@ -300,11 +300,11 @@ export const exportJSON = (data, filename = 'export.json') => {
  * @returns {string}
  */
 export const formatDateIN = (date) => {
-    return new Date(date).toLocaleDateString('en-IN', {
-        day: '2-digit',
-        month: 'short',
-        year: 'numeric'
-    });
+    const d = new Date(date);
+    const day = String(d.getDate()).padStart(2, '0');
+    const month = d.toLocaleString('en-IN', { month: 'short' });
+    const year = d.getFullYear();
+    return `${day}-${month}-${year}`;
 };
 
 /**

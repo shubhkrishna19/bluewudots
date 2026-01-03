@@ -8,16 +8,13 @@ import { calculateSMAForecast, predictSKUDemand } from '../services/forecastServ
 import { getOrderTrend, projectRevenue, calculateSKUProfitability } from '../services/analyticsService';
 import { fetchSKUMaster, pushOrderToZoho } from '../services/zohoBridgeService';
 import marketplaceService from '../services/marketplaceService';
-<<<<<<< HEAD
 import searchService from '../services/searchService';
 import marginProtectionService from '../services/marginProtectionService';
-import cacheService from '../services/offlineCacheService';
-=======
 import { getWhatsAppService } from '../services/whatsappServiceEnhanced';
 import webhookService from '../services/zohoWebhookService';
 import { syncDeltaOrders } from '../services/zohoBridgeService';
 import { initOfflineCacheService, getOfflineCacheService } from '../services/offlineCacheService';
->>>>>>> 4be53487f72a2bfacf3cde5d60b2e7a7e0ec3174
+import warehouseOptimizer from '../services/warehouseOptimizer';
 
 import { SKU_MASTER, SKU_ALIASES } from '../data/skuMasterData';
 
@@ -267,13 +264,9 @@ export const DataProvider = ({ children }) => {
     /**
      * Smart routing for regional warehouse selection
      */
-    const smartRouteOrder = useCallback((pincode) => {
-        const p = parseInt(pincode);
-        if (p >= 110000 && p < 300000) return 'NORTH-HUB';
-        if (p >= 400000 && p < 600000) return 'WEST-HUB';
-        if (p >= 500000 && p < 600000) return 'SOUTH-HUB';
-        if (p >= 700000 && p < 900000) return 'EAST-HUB';
-        return 'CENTRAL-WH';
+    const smartRouteOrder = useCallback((pincode, state) => {
+        const result = warehouseOptimizer.selectOptimalWarehouse({ pincode, state });
+        return result.warehouse.id;
     }, []);
 
     // ============================================
@@ -300,7 +293,7 @@ export const DataProvider = ({ children }) => {
                 user: 'system'
             }],
             createdAt: new Date().toISOString(),
-            warehouse: smartRouteOrder(orderData.pincode)
+            warehouse: smartRouteOrder(orderData.pincode, orderData.state)
         };
 
         // --- MARGIN PROTECTION CHECK ---
@@ -405,27 +398,27 @@ export const DataProvider = ({ children }) => {
                     }
 
                     // Trigger notifications for key statuses
-<<<<<<< HEAD
-                    if (newStatus === ORDER_STATUSES.IN_TRANSIT || newStatus === ORDER_STATUSES.PICKED_UP) {
-                        notifyOrderShipped(transitionResult.order);
-                    } else if (newStatus === ORDER_STATUSES.DELIVERED) {
-                        notifyOrderDelivered(transitionResult.order);
-                    } else if (newStatus.startsWith('RTO')) {
-                        notifyOrderRTO(transitionResult.order, metadata.reason || 'Shipment returned');
-=======
                     try {
                         const whatsapp = getWhatsAppService();
                         if (newStatus === ORDER_STATUSES.IN_TRANSIT || newStatus === ORDER_STATUSES.PICKED_UP) {
                             notifyOrderShipped(transitionResult.order);
                             whatsapp.sendWhatsAppMessage(orderId, 'shipping_update', order.phone, { orderId, status: newStatus });
                         } else if (newStatus === ORDER_STATUSES.DELIVERED) {
+                            notifyOrderDelivered(transitionResult.order);
                             whatsapp.sendWhatsAppMessage(orderId, 'delivery_confirmation', order.phone, { orderId });
                         } else if (newStatus.startsWith('RTO')) {
-                            whatsapp.sendWhatsAppMessage(orderId, 'rto_alert', order.phone, { orderId });
+                            const reason = metadata.reason || 'Shipment returned';
+                            notifyOrderRTO(transitionResult.order, reason);
+                            whatsapp.sendWhatsAppMessage(orderId, 'rto_alert', order.phone, { orderId, reason });
                         }
                     } catch (e) {
-                        console.warn('WhatsApp service not available for transitions:', e.message);
->>>>>>> 4be53487f72a2bfacf3cde5d60b2e7a7e0ec3174
+                        console.warn('Notification service error during transitions:', e.message);
+                        // Fallback to basic notifications
+                        if (newStatus === ORDER_STATUSES.IN_TRANSIT || newStatus === ORDER_STATUSES.PICKED_UP) {
+                            notifyOrderShipped(transitionResult.order);
+                        } else if (newStatus === ORDER_STATUSES.DELIVERED) {
+                            notifyOrderDelivered(transitionResult.order);
+                        }
                     }
 
                     return transitionResult.order;
@@ -494,7 +487,8 @@ export const DataProvider = ({ children }) => {
                     timestamp: new Date().toISOString(),
                     user: 'import'
                 }],
-                createdAt: new Date().toISOString()
+                createdAt: new Date().toISOString(),
+                warehouse: smartRouteOrder(normalized.pincode, normalized.state)
             };
         });
 
@@ -836,11 +830,11 @@ export const DataProvider = ({ children }) => {
         // Legacy compatibility
         setLogistics,
         setSkuMaster,
-        getRecommendations: (state, city, weight) => getAllRates({ state, city, weight })
+        getRecommendations: (state, city, weight) => getAllRates({ state, city, weight }),
 
-    // Push Notifications & Offline Support
-    pushEnabled,
-        enablePushNotifications,
+        // Push Notifications & Offline Support
+        pushEnabled,
+        enablePushNotifications: initializePushNotifications,
         queueOrderOffline,
         syncOfflineOrders
     };

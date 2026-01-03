@@ -1,0 +1,2583 @@
+{
+  "ots-webapp/src/App.jsx": {
+    "summary": "No summary available.",
+    "functions": [
+      "function App() {",
+      "useEffect(() => {",
+      "useEffect(() => {",
+      "import('./services/pushNotificationService').then(service => {",
+      "dashboard: () => setActiveTab('dashboard'),",
+      "orders: () => setActiveTab('orderlist'),",
+      "search: () => document.querySelector('.search-bar input')?.focus(),",
+      "bulk: () => setActiveTab('bulk'),",
+      "help: () => setShowShortcuts(true),",
+      "closeModal: () => {",
+      "return () => destroyShortcuts();",
+      "useEffect(() => {",
+      "keyboardShortcuts.on('commandPalette', () => {",
+      "keyboardShortcuts.on('newOrder', () => setShowQuickOrder(true));",
+      "return () => {",
+      "const handleSearch = (e) => {",
+      "<button className=\"mobile-close\" onClick={() => setIsMobileMenuOpen(false)}>✕</button>",
+      "<li className={activeTab === 'dashboard' ? 'active' : ''} onClick={() => { setActiveTab('dashboard'); setIsMobileMenuOpen(false); }}>📊 Analytics</li>",
+      "{user?.role !== 'viewer' && <li className={activeTab === 'metrics' ? 'active' : ''} onClick={() => { setActiveTab('metrics'); setIsMobileMenuOpen(false); }}>📈 KPIs</li>}",
+      "{user?.role !== 'viewer' && <li className={activeTab === 'orderlist' ? 'active' : ''} onClick={() => { setActiveTab('orderlist'); setIsMobileMenuOpen(false); }}>📋 Orders</li>}",
+      "{['admin', 'manager'].includes(user?.role) && <li className={activeTab === 'bulk' ? 'active' : ''} onClick={() => { setActiveTab('bulk'); setIsMobileMenuOpen(false); }}>⚡ Bulk</li>}",
+      "<li className={activeTab === 'tracking' ? 'active' : ''} onClick={() => { setActiveTab('tracking'); setIsMobileMenuOpen(false); }}>📡 Tracking</li>",
+      "{user?.role !== 'viewer' && <li className={activeTab === 'rto' ? 'active' : ''} onClick={() => { setActiveTab('rto'); setIsMobileMenuOpen(false); }}>↩️ RTO</li>}",
+      "<li className={activeTab === 'inventory' ? 'active' : ''} onClick={() => { setActiveTab('inventory'); setIsMobileMenuOpen(false); }}>🏷️ SKU Master</li>",
+      "<li className={activeTab === 'warehouse' ? 'active' : ''} onClick={() => { setActiveTab('warehouse'); setIsMobileMenuOpen(false); }}>🏭 Warehouse</li>",
+      "<li className={activeTab === 'dispatcher' ? 'active' : ''} onClick={() => { setActiveTab('dispatcher'); setIsMobileMenuOpen(false); }}>📷 Dispatch</li>",
+      "<li className={activeTab === 'orders' ? 'active' : ''} onClick={() => { setActiveTab('orders'); setIsMobileMenuOpen(false); }}>📤 Universal Import</li>",
+      "<li className={activeTab === 'automation' ? 'active' : ''} onClick={() => { setActiveTab('automation'); setIsMobileMenuOpen(false); }}>🤖 Amazon Mapper</li>",
+      "<li className={activeTab === 'logistics' ? 'active' : ''} onClick={() => { setActiveTab('logistics'); setIsMobileMenuOpen(false); }}>🚚 Carriers</li>",
+      "<li className={activeTab === 'intlship' ? 'active' : ''} onClick={() => { setActiveTab('intlship'); setIsMobileMenuOpen(false); }}>🌐 Int'l Shipping</li>",
+      "<li className={activeTab === 'carrierperf' ? 'active' : ''} onClick={() => { setActiveTab('carrierperf'); setIsMobileMenuOpen(false); }}>🏆 Performance</li>",
+      "<li className={activeTab === 'zones' ? 'active' : ''} onClick={() => { setActiveTab('zones'); setIsMobileMenuOpen(false); }}>🗺️ Zones</li>",
+      "<li className={activeTab === 'finance' ? 'active' : ''} onClick={() => { setActiveTab('finance'); setIsMobileMenuOpen(false); }}>💹 Financials</li>",
+      "<li className={activeTab === 'commhub' ? 'active' : ''} onClick={() => { setActiveTab('commhub'); setIsMobileMenuOpen(false); }}>💎 Comm. Hub</li>",
+      "<li className={activeTab === 'guards' ? 'active' : ''} onClick={() => { setActiveTab('guards'); setIsMobileMenuOpen(false); }}>🛡️ Margin Guard</li>",
+      "<li className={activeTab === 'globalledger' ? 'active' : ''} onClick={() => { setActiveTab('globalledger'); setIsMobileMenuOpen(false); }}>🌍 Global Ledger</li>",
+      "<li className={activeTab === 'invoice' ? 'active' : ''} onClick={() => { setActiveTab('invoice'); setIsMobileMenuOpen(false); }}>🧾 Invoicing</li>",
+      "<li className={activeTab === 'cod' ? 'active' : ''} onClick={() => { setActiveTab('cod'); setIsMobileMenuOpen(false); }}>💰 COD Recon</li>",
+      "<li className={activeTab === 'customers' ? 'active' : ''} onClick={() => { setActiveTab('customers'); setIsMobileMenuOpen(false); }}>👥 Customers</li>",
+      "<li className={activeTab === 'custintel' ? 'active' : ''} onClick={() => { setActiveTab('custintel'); setIsMobileMenuOpen(false); }}>💎 Customer Intel</li>",
+      "<li className={activeTab === 'marketing' ? 'active' : ''} onClick={() => { setActiveTab('marketing'); setIsMobileMenuOpen(false); }}>🎯 Marketing</li>",
+      "<li className={activeTab === 'dealers' ? 'active' : ''} onClick={() => { setActiveTab('dealers'); setIsMobileMenuOpen(false); }}>🤝 Dealers</li>",
+      "<li className={activeTab === 'production' ? 'active' : ''} onClick={() => { setActiveTab('production'); setIsMobileMenuOpen(false); }}>🏭 Production</li>",
+      "<li className={activeTab === 'qa' ? 'active' : ''} onClick={() => { setActiveTab('qa'); setIsMobileMenuOpen(false); }}>💎 Quality Gate</li>",
+      "{user?.role === 'admin' && <li className={activeTab === 'activity' ? 'active' : ''} onClick={() => { setActiveTab('activity'); setIsMobileMenuOpen(false); }}>📜 Activity Log</li>}",
+      "<li className={activeTab === 'reports' ? 'active' : ''} onClick={() => { setActiveTab('reports'); setIsMobileMenuOpen(false); }}>📄 Export</li>",
+      "<li className={activeTab === 'roadmap' ? 'active' : ''} onClick={() => { setActiveTab('roadmap'); setIsMobileMenuOpen(false); }}>🛣️ Roadmap</li>",
+      "<li className={activeTab === 'help' ? 'active' : ''} onClick={() => { setActiveTab('help'); setIsMobileMenuOpen(false); }}>❓ Help</li>",
+      "{user?.role === 'admin' && <li className={activeTab === 'settings' ? 'active' : ''} onClick={() => { setActiveTab('settings'); setIsMobileMenuOpen(false); }}>⚙️ Settings</li>}",
+      "<div className=\"user-profile\" style={{ cursor: 'pointer' }} onClick={() => setShowProfile(true)}>",
+      "<button className=\"hamburger\" onClick={() => setIsMobileMenuOpen(true)}>☰</button>",
+      "onFocus={() => searchQuery.length >= 2 && setIsSearchActive(true)}",
+      "<button onClick={() => { setIsSearchActive(false); setSearchResults(null); }} className=\"close-search\" style={{ background: 'none', border: 'none', cursor: 'pointer' }}>×</button>",
+      "{searchResults.orders.map(o => (",
+      "<div key={o.id} className=\"search-item glass-hover\" style={{ padding: '8px', borderRadius: '4px', cursor: 'pointer' }} onClick={() => { setActiveTab('orderlist'); setSearchQuery(''); setSearchResults(null); setIsSearchActive(false); }}>",
+      "{searchResults.skus.map(s => (",
+      "<div key={s.sku || s.code} className=\"search-item glass-hover\" style={{ padding: '8px', borderRadius: '4px', cursor: 'pointer' }} onClick={() => { setActiveTab('inventory'); setSearchQuery(''); setSearchResults(null); setIsSearchActive(false); }}>",
+      "<button className=\"btn-primary glass-hover\" onClick={() => setShowQuickOrder(true)}>+ New Order</button>",
+      "<div className=\"notifications glass\" style={{ cursor: 'pointer', position: 'relative' }} onClick={() => setShowNotifications(true)}>",
+      "}} onClick={() => setShowQuickOrder(false)}>",
+      "<div style={{ maxWidth: '700px', width: '90%' }} onClick={(e) => e.stopPropagation()}>",
+      "<QuickOrderForm onClose={() => setShowQuickOrder(false)} />",
+      "<NotificationCenter isOpen={showNotifications} onClose={() => setShowNotifications(false)} />",
+      "{showProfile && <UserProfile onClose={() => setShowProfile(false)} />}",
+      "{showShortcuts && <ShortcutsModal onClose={() => setShowShortcuts(false)} />}"
+    ]
+  },
+  "ots-webapp/src/catalyst/BridgeFunctions.js": {
+    "summary": "Bridge Functions - Catalyst Backend\n  API gateway functions for frontend-backend communication",
+    "functions": [
+      "export const createOrder = async (orderData) => {",
+      "export const updateOrderStatus = async (orderId, newStatus) => {",
+      "export const getOrder = async (orderId) => {",
+      "export const updateInventory = async (productId, quantity) => {",
+      "export const getInventory = async (productId) => {",
+      "export const createCustomer = async (customerData) => {",
+      "export const getCustomer = async (customerId) => {",
+      "const logActivity = async (action, resourceId, details = {}) => {",
+      "export const getOrderAnalytics = async (dateRange) => {",
+      "export const sendNotification = async (userId, notification) => {"
+    ]
+  },
+  "ots-webapp/src/catalyst/sdk.js": {
+    "summary": "No summary available.",
+    "functions": [
+      "export const catalyst = {",
+      "datastore: () => ({",
+      "table: (name) => ({",
+      "getFile: () => console.log(`Fetching from ${name}...`),",
+      "insertRow: (data) => console.log(`Inserting into ${name}:`, data),",
+      "auth: () => ({",
+      "signIn: () => console.log('Initiating Zoho SSO...'),"
+    ]
+  },
+  "ots-webapp/src/catalyst/zohoIntegration.js": {
+    "summary": "Zoho Catalyst Integration\n  Backend functions for Zoho Creator and Catalyst integration\n  Handles API calls, data syncing, and business logic",
+    "functions": [
+      "export const createOrderInZoho = async (orderData) => {",
+      "export const updateOrderInZoho = async (rowId, orderData) => {",
+      "export const fetchOrdersFromZoho = async (filters = {}) => {",
+      "export const syncOrdersToZoho = async (localOrders) => {",
+      "export const fetchInventoryFromZohoCRM = async () => {",
+      "export const logActivityToZoho = async (activity) => {",
+      "export const fetchAnalyticsFromZoho = async (dateRange = {}) => {",
+      "const aggregateAnalyticsData = (orders) => {",
+      "orders.forEach(order => {",
+      "order.items.forEach(item => {",
+      "export const validateZohoConnection = async () => {"
+    ]
+  },
+  "ots-webapp/src/components/Activity/ActivityLog.jsx": {
+    "summary": "No summary available.",
+    "functions": [
+      "const ActivityLog = () => {",
+      "useEffect(() => {",
+      "const fetchActivities = () => {",
+      "const generateFromOrders = () => {",
+      "orders.forEach(order => {",
+      "return generated.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));",
+      "const getActivityIcon = (type) => {",
+      "const getActivityColor = (type) => {",
+      "onChange={(e) => setSearchQuery(e.target.value)}",
+      "onChange={(e) => setDateRange(prev => ({ ...prev, start: e.target.value }))}",
+      "onChange={(e) => setDateRange(prev => ({ ...prev, end: e.target.value }))}",
+      "onClick={() => {",
+      "{filterOptions.map(f => (",
+      "onClick={() => setFilter(f.key)}",
+      "{activities.slice(0, 50).map((activity, idx) => (",
+      "{Object.entries(activity.details).slice(0, 3).map(([key, value]) => (",
+      "{activities.filter(a => a.type === ACTIVITY_TYPES.ORDER_CREATE).length}",
+      "{activities.filter(a => a.type === ACTIVITY_TYPES.CARRIER_ASSIGN).length}",
+      "{activities.filter(a => a.type === ACTIVITY_TYPES.LABEL_GENERATE).length}",
+      "{activities.filter(a => a.type === ACTIVITY_TYPES.ORDER_STATUS_CHANGE).length}"
+    ]
+  },
+  "ots-webapp/src/components/Auth/LoginPage.jsx": {
+    "summary": "No summary available.",
+    "functions": [
+      "const LoginPage = () => {",
+      "const handleSubmit = async (e) => {",
+      "const fillDemo = (account) => {",
+      "onChange={(e) => setEmail(e.target.value)}",
+      "onChange={(e) => setPassword(e.target.value)}",
+      "onClick={() => setShowPassword(!showPassword)}",
+      "{demoAccounts.map(acc => (",
+      "onClick={() => fillDemo(acc)}"
+    ]
+  },
+  "ots-webapp/src/components/Auth/UserProfile.jsx": {
+    "summary": "No summary available.",
+    "functions": [
+      "const UserProfile = ({ onClose }) => {",
+      "const getRoleBadgeColor = (role) => {",
+      ".filter(([key, value]) => value === true)",
+      ".map(([key]) => key.replace('can', '').replace(/([A-Z])/g, ' $1').trim());",
+      "{permissionsList.map(perm => ("
+    ]
+  },
+  "ots-webapp/src/components/Automation/AmazonMapper.jsx": {
+    "summary": "No summary available.",
+    "functions": [
+      "const AmazonMapper = () => {",
+      "const handleFileUpload = (e) => {",
+      "complete: (results) => {",
+      "const transformed = rawData.map(row => ({",
+      "setOrders(prev => [...transformed, ...prev]);",
+      "error: (err) => {",
+      "{orders.filter(o => o.source === 'Amazon' || o.status === 'Imported').map(order => ("
+    ]
+  },
+  "ots-webapp/src/components/Automation/ChannelSelector.jsx": {
+    "summary": "No summary available.",
+    "functions": [
+      "const ChannelSelector = ({ onSelect, selectedChannel }) => {",
+      "{CHANNELS.map(channel => (",
+      "onClick={() => onSelect(channel.id)}"
+    ]
+  },
+  "ots-webapp/src/components/Automation/UniversalImporter.jsx": {
+    "summary": "No summary available.",
+    "functions": [
+      "const UniversalImporter = () => {",
+      "const handleFileUpload = (e) => {",
+      "complete: (results) => {",
+      "const transformed = rawData.map(row => ({",
+      "setOrders(prev => [...transformed, ...prev]);",
+      "error: (err) => {",
+      "const importedOrders = orders.filter(o => o.status === 'Imported' || o.source);",
+      "onClick={() => { setSelectedChannel(null); setStats(null); }}",
+      "{importedOrders.slice(0, 6).map(order => ("
+    ]
+  },
+  "ots-webapp/src/components/Commercial/CODReconciliation.jsx": {
+    "summary": "No summary available.",
+    "functions": [
+      "const CODReconciliation = () => {",
+      ".filter(order => order.amount > 0) // Simplified filter for COD orders (in reality would check payment_mode)",
+      ".map(order => {",
+      "const totalCollected = codRemittances.reduce((sum, c) => sum + c.codAmount, 0);",
+      "const pendingAmount = codRemittances.filter(c => c.status !== 'Remitted').reduce((sum, c) => sum + c.codAmount, 0);",
+      "const overdueAmount = codRemittances.filter(c => c.status === 'Overdue').reduce((sum, c) => sum + c.codAmount, 0);",
+      "const filteredRemittances = codRemittances.filter(c => {",
+      "const getStatusColor = (status) => {",
+      "{['all', 'collected', 'pending', 'remitted', 'overdue'].map(f => (",
+      "onClick={() => setFilter(f)}",
+      "{filteredRemittances.map(cod => ("
+    ]
+  },
+  "ots-webapp/src/components/Commercial/CommercialHub.jsx": {
+    "summary": "No summary available.",
+    "functions": [
+      "const PricingSimulator = ({ sku, getSKUProfitability }) => {",
+      "onChange={(e) => setSimPrice(parseInt(e.target.value))}",
+      "const CommercialHub = () => {",
+      "const parents = useMemo(() => skuMaster.filter(s => s.isParent), [skuMaster]);",
+      "const children = useMemo(() => skuMaster.filter(s => !s.isParent), [skuMaster]);",
+      "const categories = useMemo(() => ['All', ...new Set(parents.map(p => p.category))], [parents]);",
+      ": parents.filter(p => p.category === selectedCategory);",
+      "{categories.map(cat => (",
+      "onClick={() => setSelectedCategory(cat)}",
+      "{filteredParents.map(parent => (",
+      "{children.filter(c => c.parentSku === parent.sku).map(child => {",
+      "onClick={() => setSelectedSkuForSim(child)}",
+      "{filteredParents.slice(0, 5).map(p => ("
+    ]
+  },
+  "ots-webapp/src/components/Commercial/FinancialCenter.jsx": {
+    "summary": "No summary available.",
+    "functions": [
+      "const FinancialCenter = () => {",
+      "const formatINR = (val) => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(val);",
+      "onClick={() => setSelectedView('overview')}",
+      "onClick={() => setSelectedView('settlements')}",
+      "onClick={() => setSelectedView('audit')}",
+      "orders.slice(0, 8).map(order => {",
+      "orders.slice(0, 10).map(order => {",
+      "settlements.map(set => ("
+    ]
+  },
+  "ots-webapp/src/components/Commercial/GlobalLedger.jsx": {
+    "summary": "No summary available.",
+    "functions": [
+      "const GlobalLedger = () => {",
+      "const totals = orders.reduce((acc, order) => {",
+      "onChange={(e) => setTargetCurrency(e.target.value)}",
+      "{Object.keys(CURRENCY_DATABASE).map(code => (",
+      "{orders.slice(0, 10).map(order => ("
+    ]
+  },
+  "ots-webapp/src/components/Commercial/InvoiceGenerator.jsx": {
+    "summary": "No summary available.",
+    "functions": [
+      "const InvoiceGenerator = () => {",
+      "const totalRevenue = mockInvoices.reduce((sum, inv) => sum + inv.total, 0);",
+      "const totalGST = mockInvoices.reduce((sum, inv) => sum + inv.gstAmount, 0);",
+      "const generateInvoicePDF = (invoice) => {",
+      "const generateEwayBill = (invoice) => {",
+      "{mockInvoices.filter(i => i.status === 'Pending').length}",
+      "{mockInvoices.map(invoice => (",
+      "onClick={() => setSelectedOrder(invoice)}",
+      "onClick={() => generateInvoicePDF(invoice)}",
+      "onClick={() => generateEwayBill(invoice)}",
+      "}} onClick={() => setSelectedOrder(null)}>",
+      "}} onClick={(e) => e.stopPropagation()}>",
+      "{selectedOrder.items.map((item, idx) => (",
+      "onClick={() => { generateInvoicePDF(selectedOrder); setSelectedOrder(null); }}"
+    ]
+  },
+  "ots-webapp/src/components/Commercial/MarginGuard.jsx": {
+    "summary": "No summary available.",
+    "functions": [
+      "const MarginGuard = () => {",
+      "const formatINR = (val) => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(val);",
+      "flaggedOrders.map(order => (",
+      "<button className=\"btn-secondary\" style={{ flex: 1, padding: '10px' }} onClick={() => resolveFlag(order.id)}>Approve Exception</button>",
+      "{formatINR(flaggedOrders.reduce((sum, o) => sum + o.amount, 0))}"
+    ]
+  },
+  "ots-webapp/src/components/Commercial/PricingHeatmap.jsx": {
+    "summary": "No summary available.",
+    "functions": [
+      "const PricingHeatmap = () => {",
+      ".filter(s => !s.isParent)",
+      ".map(child => {",
+      "const CustomTooltip = ({ active, payload, label }) => {",
+      "{data.map((entry, index) => (",
+      "{data.map((entry, index) => ("
+    ]
+  },
+  "ots-webapp/src/components/Commercial/SKUMaster.jsx": {
+    "summary": "No summary available.",
+    "functions": [
+      "const SKUMaster = () => {",
+      ".filter(sku => !sku.isParent) // Only show sellable child products",
+      ".filter(sku =>",
+      "const renderProfitMetric = (label, value, color = 'var(--text)') => (",
+      "onChange={(e) => setSearchTerm(e.target.value)}",
+      "{filteredSKUs.map((sku, idx) => {",
+      "onClick={() => setSelectedSKU(enhancedSku)}",
+      "<button className=\"btn-icon\" onClick={() => setSelectedSKU(null)}>✕</button>",
+      "{(() => {",
+      "<button className=\"btn-primary\" onClick={() => setSelectedSKU(null)}>Close Insight</button>"
+    ]
+  },
+  "ots-webapp/src/components/Commercial/WhatsAppTemplateManager.jsx": {
+    "summary": "WhatsAppTemplateManager Component\n  Manages WhatsApp message templates for bulk messaging",
+    "functions": [
+      "const WhatsAppTemplateManager = () => {",
+      "const handleSaveTemplate = async () => {",
+      "? templates.map(t => t.id === currentTemplate.id ? currentTemplate : t)",
+      "const handleDeleteTemplate = (id) => {",
+      "setTemplates(templates.filter(t => t.id !== id));",
+      "const handleEditTemplate = (template) => {",
+      "onChange={(e) => setCurrentTemplate({ ...currentTemplate, name: e.target.value })}",
+      "onChange={(e) => setCurrentTemplate({ ...currentTemplate, body: e.target.value })}",
+      "onClick={() => { setCurrentTemplate({ name: '', body: '' }); setIsEditing(false); }}",
+      "templates.map(template => (",
+      "onClick={() => handleEditTemplate(template)}",
+      "onClick={() => handleDeleteTemplate(template.id)}"
+    ]
+  },
+  "ots-webapp/src/components/Customers/CustomerAnalytics.jsx": {
+    "summary": "No summary available.",
+    "functions": [
+      "const CustomerAnalytics = () => {",
+      "const analysis = useMemo(() => {",
+      "customerMaster.forEach(c => {",
+      "const segmentData = Object.keys(segments).map(name => ({ name, value: segments[name] }));",
+      "const ltvData = Object.keys(ltvBySegment).map(name => ({ name, ltv: Math.round(ltvBySegment[name]) }));",
+      "topCustomers.sort((a, b) => b.ltv - a.ltv);",
+      "{analysis.segmentData.map((entry, index) => (",
+      "{analysis.ltvData.map((entry, index) => (",
+      "{analysis.top5.map((c, i) => ("
+    ]
+  },
+  "ots-webapp/src/components/Customers/CustomerLookup.jsx": {
+    "summary": "No summary available.",
+    "functions": [
+      "const CustomerLookup = () => {",
+      "const filteredCustomers = useMemo(() => {",
+      "let customers = customerMaster?.map(c => ({",
+      "customers = customers.filter(c => c.churn.riskLevel === 'HIGH' || c.churn.riskLevel === 'CRITICAL');",
+      "customers = customers.filter(c =>",
+      "const sendReactivationMessage = async (customer) => {",
+      "onChange={(e) => setSearchTerm(e.target.value)}",
+      "onClick={() => setShowAtRiskOnly(!showAtRiskOnly)}",
+      "{filteredCustomers.map((customer, idx) => {",
+      "onClick={() => setSelectedCustomer(customer)}",
+      "onClick={(e) => { e.stopPropagation(); sendReactivationMessage(customer); }}",
+      "{selectedCustomer && (() => {",
+      "onClick={() => setSelectedCustomer(null)}",
+      "{metrics.orders.map(order => ("
+    ]
+  },
+  "ots-webapp/src/components/Dashboard/AnalyticsCharts.jsx": {
+    "summary": "AnalyticsCharts Component\n  Displays analytics data with charts and KPI metrics",
+    "functions": [
+      "const AnalyticsCharts = ({ dateRange = 7 }) => {",
+      "useEffect(() => {",
+      "const loadAnalytics = async () => {",
+      "].map((kpi, idx) => (",
+      "{trend.dataPoints?.slice(0, 7).map((point, idx) => ("
+    ]
+  },
+  "ots-webapp/src/components/Dashboard/AnalyticsDashboard.jsx": {
+    "summary": "No summary available.",
+    "functions": [
+      "const AnalyticsDashboard = () => {",
+      "const vendors = useMemo(() => vendorService.getVendors(), []);",
+      "const arrivalPredictions = useMemo(() => {",
+      "return skuMaster.slice(0, 5).map(sku => ({",
+      "{ name: 'Imported', value: orders.filter(o => o?.status === 'Imported').length || 3 },",
+      "{ name: 'Processing', value: orders.filter(o => o?.status === 'Processing' || o?.status === 'MTP-Applied').length || 2 },",
+      "{ name: 'In-Transit', value: orders.filter(o => o?.status === 'In-Transit').length || 5 },",
+      "{ name: 'Delivered', value: orders.filter(o => o?.status === 'Delivered').length || 8 }",
+      "const carrierData = (logistics || []).map(c => ({",
+      "{arrivalPredictions.map(pred => (",
+      "{statusData.map((entry, index) => (",
+      "<h2 style={{ color: 'var(--success)' }}>{logistics.filter(l => l.active).length}</h2>"
+    ]
+  },
+  "ots-webapp/src/components/Dashboard/AnalyticsEnhanced.jsx": {
+    "summary": "AnalyticsEnhanced.jsx\n  Advanced analytics dashboard for Bluewud OTS\n  Real-time metrics, trends, and business insights",
+    "functions": [
+      "const AnalyticsEnhanced = ({ timeRange = '7days' }) => {",
+      "useEffect(() => {",
+      "const fetchMetrics = async () => {",
+      "const formatNumber = (num) => {",
+      "const formatCurrency = (num) => {",
+      "{['7days', '30days', '90days', 'yearly'].map(range => (",
+      "onClick={() => setSelectedRange(range)}",
+      "{metrics?.topChannels?.map((channel, i) => ("
+    ]
+  },
+  "ots-webapp/src/components/Dashboard/DashboardMetrics.jsx": {
+    "summary": "DashboardMetrics Component\n  Displays KPI cards, trend indicators, and forecast data\n  Integrates analyticsService for real-time metrics",
+    "functions": [
+      "export const DashboardMetrics = ({ orders = [] }) => {",
+      "useEffect(() => {",
+      "{[1, 2, 3, 4].map(i => (",
+      "const MetricCard = ({ icon: Icon, title, value, subtitle, trend: trendValue, color = 'blue' }) => (",
+      "{forecast.slice(0, 7).map((day, idx) => (",
+      "style={{ width: `${Math.min((day.predictedVolume / Math.max(...forecast.map(f => f.predictedVolume), 100)) * 100, 100)}%` }}"
+    ]
+  },
+  "ots-webapp/src/components/Dashboard/DemandForecast.jsx": {
+    "summary": "No summary available.",
+    "functions": [
+      "const DemandForecast = () => {",
+      "const data = useMemo(() => {",
+      "tickFormatter={(str) => {"
+    ]
+  },
+  "ots-webapp/src/components/Dashboard/PerformanceMetrics.jsx": {
+    "summary": "No summary available.",
+    "functions": [
+      "const PerformanceMetrics = () => {",
+      "const deliveredOrders = orders.filter(o => o.status === 'Delivered').length;",
+      "const inTransit = orders.filter(o => o.status === 'In-Transit').length;",
+      "const pending = orders.filter(o => o.status === 'Imported' || o.status === 'MTP-Applied').length;",
+      "const sourceDistribution = orders.reduce((acc, o) => {",
+      "? (orders.reduce((sum, o) => sum + (o.weight || 0), 0) / orders.length).toFixed(1)",
+      "{ label: 'Active Carriers', value: logistics.filter(l => l.active).length, icon: '🚚', color: 'var(--primary)', desc: 'Carriers in use' },",
+      "{metrics.map((m, idx) => (",
+      "{Object.entries(sourceDistribution).sort((a, b) => b[1] - a[1]).map(([source, count], idx) => ("
+    ]
+  },
+  "ots-webapp/src/components/Dashboard/PredictiveAnalytics.jsx": {
+    "summary": "No summary available.",
+    "functions": [
+      "const PredictiveAnalytics = () => {",
+      "const trend = useMemo(() => getTrend(15), [getTrend, orders]);",
+      "const revenueProjection = useMemo(() => getRevenueProjection(30), [getRevenueProjection, orders]);",
+      "const chartData = useMemo(() => {",
+      "return trend.trendLine.map(item => ({",
+      "actual: orders?.filter(o => o.createdAt?.startsWith(item.date)).length || 0"
+    ]
+  },
+  "ots-webapp/src/components/Dealers/DealerLookup.jsx": {
+    "summary": "No summary available.",
+    "functions": [
+      "const DealerLookup = () => {",
+      "const filteredDealers = MOCK_DEALERS.filter(dealer => {",
+      "const formatINR = (amount) => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(amount);",
+      "onChange={(e) => setSearchTerm(e.target.value)}",
+      "onChange={(e) => setFilterType(e.target.value)}",
+      "{filteredDealers.map(dealer => (",
+      "onClick={() => setSelectedDealer(dealer)}"
+    ]
+  },
+  "ots-webapp/src/components/ErrorBoundary.jsx": {
+    "summary": "ErrorBoundary Component\n  Catches JavaScript errors in child components and displays fallback UI\n  Integrates with errorHandlerService for error logging and recovery suggestions",
+    "functions": [
+      "class ErrorBoundary extends React.Component {",
+      "handleReset = () => {",
+      "{this.state.recoveryHints.map((hint, idx) => ("
+    ]
+  },
+  "ots-webapp/src/components/Help/HelpCenter.jsx": {
+    "summary": "No summary available.",
+    "functions": [
+      "const HelpCenter = () => {",
+      "const renderContent = () => {",
+      "{shortcuts.map((s, idx) => (",
+      "{s.keys.map((key, i) => (",
+      "{faqs.map((faq, idx) => (",
+      "{sections.map(s => (",
+      "onClick={() => setActiveSection(s.id)}"
+    ]
+  },
+  "ots-webapp/src/components/Help/ShortcutsModal.jsx": {
+    "summary": "No summary available.",
+    "functions": [
+      "const ShortcutsModal = ({ onClose }) => {",
+      "}} onClick={(e) => e.stopPropagation()}>",
+      "{shortcuts.map((s, idx) => ("
+    ]
+  },
+  "ots-webapp/src/components/Import/OrderImport.jsx": {
+    "summary": "No summary available.",
+    "functions": [
+      "const OrderImport = () => {",
+      "const parseCSV = (content) => {",
+      "const headers = lines[0].split(',').map(h => h.trim().toLowerCase().replace(/['\"]/g, ''));",
+      "const values = lines[i].split(',').map(v => v.trim().replace(/^[\"']|[\"']$/g, ''));",
+      "headers.forEach((header, idx) => {",
+      "const handleFileUpload = (event) => {",
+      "reader.onload = (e) => {",
+      "const normalized = records.map(raw => normalizeOrder(raw, selectedSource));",
+      "const validationResults = normalized.map(order => ({",
+      "const executeImport = async () => {",
+      ".filter(r => r.validation.valid)",
+      ".map(r => r.order);",
+      "await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate processing",
+      "const downloadTemplate = () => {",
+      "onClick={() => setImportStatus(null)}",
+      "{errors.map((err, i) => (",
+      "{sources.map(source => (",
+      "onClick={() => setSelectedSource(source.id)}",
+      "<h4>📋 Preview ({previewData.filter(r => r.validation.valid).length} valid / {previewData.length} total)</h4>",
+      "disabled={isProcessing || previewData.filter(r => r.validation.valid).length === 0}",
+      "{isProcessing ? '⏳ Importing...' : `✅ Import ${previewData.filter(r => r.validation.valid).length} Orders`}",
+      "{previewData.slice(0, 20).map((row, idx) => (",
+      "{orders.filter(o => o.source === 'Amazon').length}",
+      "{orders.filter(o => o.source === 'Flipkart').length}",
+      "{orders.filter(o => !['Amazon', 'Flipkart', 'Shopify'].includes(o.source)).length}"
+    ]
+  },
+  "ots-webapp/src/components/Logistics/CarrierPerformance.jsx": {
+    "summary": "No summary available.",
+    "functions": [
+      "const CarrierPerformance = () => {",
+      "const pieData = carrierData.map(c => ({ name: c.name, value: c.totalShipments }));",
+      "{carrierData.map((carrier, idx) => (",
+      "{pieData.map((entry, index) => (",
+      "{carrierData.map((c, idx) => ("
+    ]
+  },
+  "ots-webapp/src/components/Logistics/CarrierSelection.jsx": {
+    "summary": "No summary available.",
+    "functions": [
+      "const CarrierSelection = () => {",
+      "const pendingAssignment = orders.filter(o =>",
+      "const handleAssignCarrier = (order, carrier) => {",
+      "const updateShipment = (field, value) => {",
+      "setShipment(prev => ({ ...prev, [field]: value }));",
+      "onChange={(e) => updateShipment('weight', parseFloat(e.target.value) || 0.5)}",
+      "onChange={(e) => updateShipment('state', e.target.value)}",
+      "{Object.keys(STATE_CODES).map(state => (",
+      "onChange={(e) => updateShipment('city', e.target.value)}",
+      "<input type=\"radio\" checked={!shipment.isCOD} onChange={() => updateShipment('isCOD', false)} />",
+      "<input type=\"radio\" checked={shipment.isCOD} onChange={() => updateShipment('isCOD', true)} />",
+      "onChange={(e) => updateShipment('codAmount', parseFloat(e.target.value) || 0)}",
+      "onChange={(e) => setPriority(e.target.value)}",
+      "{rates.map((rate, idx) => (",
+      "{pendingAssignment.slice(0, 6).map(order => (",
+      "onClick={() => {"
+    ]
+  },
+  "ots-webapp/src/components/Logistics/CarrierSelector.jsx": {
+    "summary": "CarrierSelector Component\n  Allows users to select carriers with real-time performance metrics\n  Integrates with carrierOptimizer for intelligent selection",
+    "functions": [
+      "const CarrierSelector = ({ orderId, destination, weight, callback }) => {",
+      "useEffect(() => {",
+      "const loadCarriers = async () => {",
+      "const handleSelect = async (carrier) => {",
+      "{carriers.map(carrier => (",
+      "onClick={() => handleSelect(carrier)}"
+    ]
+  },
+  "ots-webapp/src/components/Logistics/InternationalShipping.jsx": {
+    "summary": "No summary available.",
+    "functions": [
+      "const InternationalShipping = () => {",
+      "const fetchRates = () => {",
+      "const handleBooking = async () => {",
+      "onChange={(e) => setCountry(e.target.value)}",
+      "{countries.map(c => <option key={c} value={c}>{c}</option>)}",
+      "onChange={(e) => setWeight(parseFloat(e.target.value) || 1)}",
+      "{rates.map((rate, idx) => (",
+      "onClick={() => setSelectedRate(rate)}"
+    ]
+  },
+  "ots-webapp/src/components/Logistics/ZoneMap.jsx": {
+    "summary": "No summary available.",
+    "functions": [
+      "const ZoneMap = () => {",
+      "const getZoneForState = (state) => {",
+      "const zoneStats = Object.keys(INDIA_ZONES).reduce((acc, zone) => {",
+      "total: orders.filter(o => getZoneForState(o.state) === zone).length,",
+      "delivered: orders.filter(o => getZoneForState(o.state) === zone && o.status === 'Delivered').length,",
+      "inTransit: orders.filter(o => getZoneForState(o.state) === zone && o.status === 'In-Transit').length",
+      "const topStates = orders.reduce((acc, order) => {",
+      "const sortedStates = Object.entries(topStates).sort((a, b) => b[1] - a[1]).slice(0, 5);",
+      "{Object.entries(INDIA_ZONES).map(([zone, data]) => (",
+      "{sortedStates.map(([state, count], idx) => (",
+      "{Object.entries(INDIA_ZONES).map(([zone, data]) => ("
+    ]
+  },
+  "ots-webapp/src/components/Marketing/MarketingCenter.jsx": {
+    "summary": "No summary available.",
+    "functions": [
+      "const MarketingCenter = () => {",
+      "const segmentedData = useMemo(() => {",
+      "customerMaster.forEach(customer => {",
+      "const stats = useMemo(() => {",
+      "return Object.keys(segmentedData).map(key => ({",
+      "revenue: segmentedData[key].reduce((sum, c) => sum + c.totalSpend, 0)",
+      "const handleExport = (segment) => {",
+      "data.map(c => `\"${c.name}\",\"${c.phone}\",\"${c.email}\",${c.totalSpend},${c.orderCount}`).join(\"\\n\");",
+      "{stats.map(s => (",
+      "{Object.keys(segmentedData).map(segment => (",
+      "onClick={() => handleExport(segment)}",
+      "segmentedData[segment].slice(0, 5).map(c => ("
+    ]
+  },
+  "ots-webapp/src/components/Navigation/KeyboardShortcutsHud.jsx": {
+    "summary": "KeyboardShortcutsHud Component\n  Displays available keyboard shortcuts in a floating HUD",
+    "functions": [
+      "const KeyboardShortcutsHud = () => {",
+      "useEffect(() => {",
+      "const getShortcuts = async () => {",
+      "const handleKeyPress = (e) => {",
+      "return () => window.removeEventListener('keydown', handleKeyPress);",
+      "onClick={() => setIsVisible(!isVisible)}",
+      "onClick={() => setIsVisible(false)}",
+      "shortcuts.map((shortcut, idx) => ("
+    ]
+  },
+  "ots-webapp/src/components/Navigation/MobileBottomNav.jsx": {
+    "summary": "No summary available.",
+    "functions": [
+      "const MobileBottomNav = ({ activeTab, onTabChange, notificationCount = 0 }) => {",
+      "const handleTap = (id) => {",
+      "{navItems.map((item) => (",
+      "onClick={() => handleTap(item.id)}"
+    ]
+  },
+  "ots-webapp/src/components/Notifications/NotificationCenter.jsx": {
+    "summary": "No summary available.",
+    "functions": [
+      "const NotificationCenter = ({ isOpen, onClose }) => {",
+      "useEffect(() => {",
+      "const refreshNotifications = () => {",
+      "const unsubscribe = subscribe((newNotif) => {",
+      "setNotifications(prev => [newNotif, ...prev.slice(0, 49)]);",
+      "return () => unsubscribe();",
+      "const seedDemoNotifications = () => {",
+      "const handleMarkAsRead = (id) => {",
+      "setNotifications(prev => prev.map(n =>",
+      "const handleMarkAllRead = () => {",
+      "setNotifications(prev => prev.map(n => ({ ...n, read: true })));",
+      "const filteredNotifications = notifications.filter(n => {",
+      "const getTypeColor = (type, priority) => {",
+      "].map(f => (",
+      "onClick={() => setFilter(f.key)}",
+      "filteredNotifications.map(notif => (",
+      "onClick={() => handleMarkAsRead(notif.id)}",
+      "onClick={(e) => {",
+      "onClick={() => {"
+    ]
+  },
+  "ots-webapp/src/components/Notifications/NotificationHub.jsx": {
+    "summary": "NotificationHub - Unified Notification Center\n  Consolidates WhatsApp, Push, and System alerts in one premium UI.",
+    "functions": [
+      "const NotificationHub = ({ isOpen, onClose }) => {",
+      "useEffect(() => {",
+      "const refreshNotifications = () => {",
+      "const unsubscribe = subscribe((newNotif) => {",
+      "setNotifications(prev => [newNotif, ...prev.slice(0, 49)]);",
+      "return () => unsubscribe();",
+      "const seedDemoNotifications = () => {",
+      "const handleMarkAsRead = (id) => {",
+      "setNotifications(prev => prev.map(n => n.id === id ? { ...n, read: true } : n));",
+      "const handleMarkAllRead = () => {",
+      "setNotifications(prev => prev.map(n => ({ ...n, read: true })));",
+      "const filteredNotifications = useMemo(() => {",
+      "return notifications.filter(n => {",
+      "const getTypeColor = (type, priority) => {",
+      "{Object.values(CHANNELS).map(channel => (",
+      "onClick={() => setActiveChannel(channel.key)}",
+      "filteredNotifications.map(notif => (",
+      "onClick={() => handleMarkAsRead(notif.id)}"
+    ]
+  },
+  "ots-webapp/src/components/Notifications/OrderNotificationCenter.jsx": {
+    "summary": "OrderNotificationCenter Component\n  Displays order notifications and integrates with push notification and offline cache services\n  Shows toast-like notifications with support for multiple notification types",
+    "functions": [
+      "const OrderNotificationCenter = () => {",
+      "useEffect(() => {",
+      "const loadNotifications = async () => {",
+      "const handleNotification = (notification) => {",
+      "setNotifications(prev => [newNotification, ...prev]);",
+      "const timer = setTimeout(() => {",
+      "return () => clearTimeout(timer);",
+      "const dismissNotification = (id) => {",
+      "setNotifications(prev => prev.filter(n => n.id !== id));",
+      "const getIcon = (type) => {",
+      "const getTypeStyles = (type) => {",
+      "onClick={() => setIsVisible(!isVisible)}",
+      "onClick={() => setIsVisible(false)}",
+      "{notifications.map(notification => (",
+      "onClick={() => dismissNotification(notification.id)}"
+    ]
+  },
+  "ots-webapp/src/components/Orders/BarcodeDispatcher.jsx": {
+    "summary": "No summary available.",
+    "functions": [
+      "const BarcodeDispatcher = () => {",
+      "useEffect(() => {",
+      "const onScanSuccess = async (decodedText) => {",
+      "const order = orders.find(o => o.id === decodedText || o.orderId === decodedText);",
+      "setScanLog(prev => [{ id: order.id, time: new Date().toLocaleTimeString(), status: 'OK' }, ...prev]);",
+      "scanner.render(onScanSuccess, (err) => {",
+      "return () => {",
+      "scanner.clear().catch(error => console.error(\"Scanner Cleanup Failed:\", error));",
+      "const handlePrint = async (order) => {",
+      "onChange={(e) => setSelectedCarrier(e.target.value)}",
+      "onChange={(e) => setPrintFormat(e.target.value)}",
+      "onChange={(e) => setAutoPrint(e.target.checked)}",
+      "onClick={() => handlePrint(orders.find(o => o.id === lastScan.id))}",
+      "{scanLog.map((log, idx) => ("
+    ]
+  },
+  "ots-webapp/src/components/Orders/BulkActions.jsx": {
+    "summary": "No summary available.",
+    "functions": [
+      "const BulkActions = () => {",
+      "const pendingOrders = orders.filter(o => o.status !== 'Delivered' && !o.status.startsWith('RTO') && o.status !== 'Cancelled');",
+      "const toggleSelect = (orderId) => {",
+      "setSelectedOrders(prev =>",
+      "? prev.filter(id => id !== orderId)",
+      "const selectAll = () => {",
+      "setSelectedOrders(pendingOrders.map(o => o.id));",
+      "const selectByStatus = (status) => {",
+      "const filtered = pendingOrders.filter(o => o.status === status).map(o => o.id);",
+      "const executeBulkAction = async () => {",
+      "const ordersToPrint = orders.filter(o => selectedOrders.includes(o.id));",
+      "ordersToPrint.forEach(order => generateShippingLabel(order));",
+      "setResults({ successful: ordersToPrint.map(o => o.id), failed: [] });",
+      "await new Promise(resolve => setTimeout(resolve, 500));",
+      "setSelectedOrders(result.failed.map(f => f.orderId)); // Keep failed ones selected",
+      "const getStatusColor = (status) => {",
+      "const getStatusIcon = (status) => {",
+      "onClick={() => setResults(null)}",
+      "{results.failed.slice(0, 3).map(f => (",
+      "onClick={() => selectByStatus('Pending')}",
+      "onClick={() => selectByStatus('MTP-Applied')}",
+      "onClick={() => selectByStatus('Carrier-Assigned')}",
+      "onChange={(e) => setBulkAction(e.target.value)}",
+      "{availableActions.map(action => (",
+      "onChange={(e) => setActionReason(e.target.value)}",
+      "{pendingOrders.map(order => (",
+      "onClick={() => toggleSelect(order.id)}"
+    ]
+  },
+  "ots-webapp/src/components/Orders/OrderJourney.jsx": {
+    "summary": "No summary available.",
+    "functions": [
+      "const OrderJourney = ({ orderId }) => {",
+      "const order = orders.find(o => o.id === orderId);",
+      "const currentStageIndex = STAGES.findIndex(s => s.key === order.status);",
+      "const handleGenerateLabel = (type) => {",
+      "{STAGES.map((stage, idx) => {",
+      "onClick={() => updateOrderStatus(orderId, stage.key)}",
+      "onClick={() => setShowLabelMenu(!showLabelMenu)}",
+      "onClick={() => handleGenerateLabel('packing')}",
+      "onClick={() => handleGenerateLabel('thermal')}"
+    ]
+  },
+  "ots-webapp/src/components/Orders/OrderList.jsx": {
+    "summary": "No summary available.",
+    "functions": [
+      "const OrderList = () => {",
+      "const filteredOrders = orders.filter(order => {",
+      "const uniqueSources = [...new Set(orders.map(o => o.source).filter(Boolean))];",
+      "const uniqueStatuses = [...new Set(orders.map(o => o.status).filter(Boolean))];",
+      "const getStatusColor = (status) => {",
+      "const toggleOrderSelection = (id) => {",
+      "setSelectedOrders(prev =>",
+      "prev.includes(id) ? prev.filter(oid => oid !== id) : [...prev, id]",
+      "const handleSmartAssign = async () => {",
+      "const order = orders.find(o => o.id === orderId);",
+      "<span className=\"badge\" style={{ background: 'var(--success)' }}>{orders.filter(o => o.status === 'Delivered').length} Delivered</span>",
+      "onClick={() => labelPrintService.printManifest(filteredOrders.filter(o => o.status === 'Ready-to-Ship'), 'Filtered Batch')}",
+      "onChange={(e) => setSearchTerm(e.target.value)}",
+      "onChange={(e) => setStatusFilter(e.target.value)}",
+      "{uniqueStatuses.map(s => <option key={s} value={s}>{s}</option>)}",
+      "onChange={(e) => setSourceFilter(e.target.value)}",
+      "{uniqueSources.map(s => <option key={s} value={s}>{s}</option>)}",
+      "<button className=\"btn-secondary glass-hover\" style={{ padding: '12px 20px' }} onClick={() => { setSearchTerm(''); setStatusFilter('all'); setSourceFilter('all'); }}>",
+      "onChange={(e) => setSelectedOrders(e.target.checked ? filteredOrders.map(o => o.id) : [])}",
+      "filteredOrders.map((order, idx) => (",
+      "onClick={() => setSelectedOrder(order)}",
+      "onClick={(e) => e.stopPropagation()}",
+      "onChange={() => toggleOrderSelection(order.id)}",
+      "onClick={(e) => { e.stopPropagation(); setSelectedOrder(order); }}",
+      "}} onClick={() => setSelectedOrder(null)}>",
+      "}} onClick={(e) => e.stopPropagation()}>",
+      "onClick={() => setSelectedOrder(null)}",
+      "onClick={() => {/* Future: Process logic */ }}",
+      "onClick={() => generatePackingSlip(selectedOrder)}",
+      "onClick={() => generateShippingLabel(selectedOrder)}",
+      "onClick={() => setSelectedOrder(null)}",
+      "onClick={() => labelPrintService.printLabel(selectedOrder)}",
+      "onClick={() => {",
+      "printWindow.onload = () => printWindow.print();",
+      "<button className=\"btn-secondary glass-hover\" style={{ flex: 1 }} onClick={() => setSelectedOrder(null)}>Close</button>"
+    ]
+  },
+  "ots-webapp/src/components/Orders/QuickOrderForm.jsx": {
+    "summary": "No summary available.",
+    "functions": [
+      "const QuickOrderForm = ({ onClose }) => {",
+      "const currencies = useMemo(() => currencyService.getSupportedCurrencies(), []);",
+      "const convertedAmount = useMemo(() => {",
+      "const handleSubmit = (e) => {",
+      "syncOrderToZoho(result.order).then(res => {",
+      "setTimeout(() => {",
+      "const handleChange = (field, value) => {",
+      "setFormData(prev => ({ ...prev, [field]: value }));",
+      "const sku = skuMaster.find(s => s.code === value);",
+      "setFormData(prev => ({",
+      "const calculateRates = () => {",
+      "setFormData(prev => ({",
+      "{errors.map((err, i) => (",
+      "onChange={(e) => handleChange('customerName', e.target.value)}",
+      "onChange={(e) => handleChange('phone', e.target.value)}",
+      "onChange={(e) => handleChange('address', e.target.value)}",
+      "onChange={(e) => handleChange('city', e.target.value)}",
+      "onChange={(e) => handleChange('state', e.target.value)}",
+      "{STATES.map(s => <option key={s} value={s}>{s}</option>)}",
+      "onChange={(e) => handleChange('pincode', e.target.value)}",
+      "onChange={(e) => handleChange('sku', e.target.value)}",
+      "{skuMaster.map(s => (",
+      "onChange={(e) => handleChange('quantity', e.target.value)}",
+      "onChange={(e) => handleChange('weight', e.target.value)}",
+      "onChange={(e) => handleChange('amount', e.target.value)}",
+      "onChange={(e) => setSelectedCurrency(e.target.value)}",
+      "{currencies.map(c => (",
+      "onChange={(e) => handleChange('source', e.target.value)}",
+      "onChange={() => handleChange('isCOD', false)}",
+      "onChange={() => handleChange('isCOD', true)}",
+      "onChange={(e) => handleChange('codAmount', e.target.value)}",
+      "{shippingRates?.map((rate, i) => (",
+      "onClick={() => setFormData(prev => ({ ...prev, carrierId: rate.carrierId, carrierName: rate.carrierName }))}"
+    ]
+  },
+  "ots-webapp/src/components/Orders/RTOManager.jsx": {
+    "summary": "No summary available.",
+    "functions": [
+      "const RTOManager = () => {",
+      "const rtoOrders = orders.filter(o => o.status.startsWith('RTO'));",
+      "const getReasonColor = (reason) => {",
+      "const totalRTOValue = rtoOrders.reduce((sum, o) => sum + (parseFloat(o.amount) || 0), 0);",
+      "const handleAction = (orderId, action) => {",
+      "{rtoOrders.filter(o => o.reason === 'Customer Refused').length}",
+      "{rtoOrders.filter(o => o.reason === 'Incorrect Address').length}",
+      "{rtoOrders.filter(o => o.reason === 'Damaged in Transit').length}",
+      "{rtoOrders.reduce((sum, o) => sum + o.attemptCount, 0)}",
+      "{rtoOrders.map(rto => (",
+      "onClick={() => setSelectedRTO(selectedRTO?.id === rto.id ? null : rto)}",
+      "<button className=\"btn-primary glass-hover\" style={{ flex: 1 }} onClick={(e) => { e.stopPropagation(); handleAction(rto.id, 'reattempt'); }}>",
+      "<button className=\"btn-secondary glass-hover\" style={{ flex: 1 }} onClick={(e) => { e.stopPropagation(); handleAction(rto.id, 'refund'); }}>",
+      "<button className=\"btn-secondary glass-hover\" style={{ padding: '0 16px' }} onClick={(e) => { e.stopPropagation(); handleAction(rto.id, 'writeoff'); }}>"
+    ]
+  },
+  "ots-webapp/src/components/Reports/ExportTools.jsx": {
+    "summary": "No summary available.",
+    "functions": [
+      "const ExportTools = () => {",
+      "const exportToCSV = (data, filename, columns = null) => {",
+      "setTimeout(() => setExportStatus(null), 3000);",
+      "const exportToJSON = (data, filename) => {",
+      "setTimeout(() => setExportStatus(null), 3000);",
+      "const filterByDate = (data) => {",
+      "return data.filter(item => {",
+      "const generateInvoiceReport = () => {",
+      ".filter(o => o.status === 'Delivered')",
+      ".map(o => {",
+      "const generateCarrierReport = () => {",
+      "orders.forEach(o => {",
+      "const reportData = Object.entries(carrierStats).map(([carrier, stats]) => ({",
+      "const generateInventoryReport = () => {",
+      "const invData = skuMaster.map(sku => {",
+      "const inv = inventory.find(i => i.sku === sku.code) || {};",
+      "data: orders.filter(o => !['Delivered', 'Cancelled'].includes(o.status) && !o.status.startsWith('RTO')),",
+      "count: orders.filter(o => !['Delivered', 'Cancelled'].includes(o.status) && !o.status.startsWith('RTO')).length,",
+      "data: orders.filter(o => o.status === 'Delivered'),",
+      "count: orders.filter(o => o.status === 'Delivered').length,",
+      "data: orders.filter(o => o.status.startsWith('RTO')),",
+      "count: orders.filter(o => o.status.startsWith('RTO')).length,",
+      "onChange={(e) => setDateRange(prev => ({ ...prev, start: e.target.value }))}",
+      "onChange={(e) => setDateRange(prev => ({ ...prev, end: e.target.value }))}",
+      "onClick={() => setDateRange({ start: '', end: '' })}",
+      "{reports.map((report, idx) => (",
+      "onClick={() => exportToCSV(report.data, report.name.replace(/\\s/g, '_'), report.columns)}",
+      "onClick={() => exportToJSON(report.data, report.name.replace(/\\s/g, '_'))}",
+      "{specialReports.map((report, idx) => ("
+    ]
+  },
+  "ots-webapp/src/components/Roadmap/RoadmapPage.jsx": {
+    "summary": "No summary available.",
+    "functions": [
+      "const RoadmapPage = () => {",
+      "{ name: 'SKU Inheritance', desc: 'Parent->Child attribute inheritance (Dimensions, Weight, Costing) is fully functional', status: 'live', module: 'Warehouse' },",
+      "{ phase: 'Phase 5', title: 'MVP Complete', status: 'Complete', desc: '26 modules with full functionality' },",
+      "{developmentPhases.map((p, idx) => (",
+      "{completedFeatures.map((f, idx) => (",
+      "{upcomingFeatures.map((f, idx) => (",
+      "{techStack.map((t, idx) => ("
+    ]
+  },
+  "ots-webapp/src/components/Settings/IPWhitelistManager.jsx": {
+    "summary": "IPWhitelistManager.jsx\n  IP whitelist management component for restricted access\n  Add, remove, and manage allowed IP addresses",
+    "functions": [
+      "const IPWhitelistManager = ({ onIpListUpdate }) => {",
+      "useEffect(() => {",
+      "const fetchWhitelist = async () => {",
+      "const validateIp = (ip) => {",
+      "return parts.every(p => parseInt(p) <= 255);",
+      "const handleAddIp = async () => {",
+      "setTimeout(() => setMessage(''), 3000);",
+      "const handleRemoveIp = async (ip) => {",
+      "const updated = ipList.filter(i => i !== ip);",
+      "setTimeout(() => setMessage(''), 3000);",
+      "const filteredIps = ipList.filter(ip => ip.includes(filter));",
+      "onChange={(e) => setNewIp(e.target.value)}",
+      "onKeyPress={(e) => e.key === 'Enter' && handleAddIp()}",
+      "onChange={(e) => setFilter(e.target.value)}",
+      "filteredIps.map(ip => (",
+      "onClick={() => handleRemoveIp(ip)}"
+    ]
+  },
+  "ots-webapp/src/components/Settings/SettingsPanel.jsx": {
+    "summary": "No summary available.",
+    "functions": [
+      "const SettingsPanel = () => {",
+      "const handleToggle = (key) => {",
+      "setSettings(prev => ({ ...prev, [key]: !prev[key] }));",
+      "onChange={(e) => setSettings(prev => ({ ...prev, companyName: e.target.value }))}",
+      "onChange={(e) => setSettings(prev => ({ ...prev, gstNumber: e.target.value }))}",
+      "onChange={(e) => setSettings(prev => ({ ...prev, warehouse: e.target.value }))}",
+      "onChange={(e) => setSettings(prev => ({ ...prev, defaultCarrier: e.target.value }))}",
+      "onClick={() => handleToggle('autoAssignCarrier')}",
+      "onClick={() => handleToggle('emailNotifications')}",
+      "onClick={() => handleToggle('smsAlerts')}",
+      "onChange={(e) => setSettings(prev => ({ ...prev, minMargin: parseFloat(e.target.value) }))}",
+      "onChange={(e) => setSettings(prev => ({ ...prev, criticalMargin: parseFloat(e.target.value) }))}",
+      "onVerificationSuccess={() => console.log('2FA Enabled')}",
+      "onCancel={() => console.log('2FA Setup Cancelled')}",
+      "<IPWhitelistManager onIpListUpdate={(list) => console.log('IP Whitelist Updated', list)} />",
+      "onClick={() => handleToggle('pushNotifications')}"
+    ]
+  },
+  "ots-webapp/src/components/Settings/TwoFactorAuth.jsx": {
+    "summary": "TwoFactorAuth.jsx\n  Two-Factor Authentication component for secure user access\n  Supports OTP via email/SMS, verification, and account recovery",
+    "functions": [
+      "}) => {",
+      "const formatTime = (seconds) => {",
+      "React.useEffect(() => {",
+      "const timer = setTimeout(() => setTimeRemaining(timeRemaining - 1), 1000);",
+      "return () => clearTimeout(timer);",
+      "const handleMethodSelect = async (chosenMethod) => {",
+      "setTimeout(() => setSuccessMessage(''), 3000);",
+      "const handleVerifyOTP = async () => {",
+      "setTimeout(() => onVerificationSuccess?.(), 2000);",
+      "const handleOtpChange = (e) => {",
+      "onClick={() => handleMethodSelect('email')}",
+      "onClick={() => handleMethodSelect('sms')}",
+      "onClick={() => handleMethodSelect(selectedMethod)}"
+    ]
+  },
+  "ots-webapp/src/components/Shared/ErrorBoundary.jsx": {
+    "summary": "Error Boundary Component\n  Catches JavaScript errors in child components and displays a fallback UI.",
+    "functions": [
+      "class ErrorBoundary extends Component {",
+      "handleRetry = () => {"
+    ]
+  },
+  "ots-webapp/src/components/Shared/ResponsiveLayout.jsx": {
+    "summary": "ResponsiveLayout.jsx\n  Responsive layout component for Bluewud OTS\n  Provides adaptive layouts for desktop, tablet, and mobile views\n  Uses Bluewud Dark Elite glassmorphism theme",
+    "functions": [
+      "}) => {",
+      "const getViewportType = (width) => {",
+      "const handleResize = useCallback(() => {",
+      "React.useEffect(() => {",
+      "return () => window.removeEventListener('resize', handleResize);",
+      "onClick={() => setSidebarOpen(!sidebarOpen)}"
+    ]
+  },
+  "ots-webapp/src/components/SupplyChain/ProductionTracker.jsx": {
+    "summary": "No summary available.",
+    "functions": [
+      "const ProductionTracker = () => {",
+      "const activeSkus = useMemo(() => skuMaster.filter(s => !s.isParent), [skuMaster]);",
+      "const handleSkuChange = (sku) => {",
+      "const handleAIScan = async () => {",
+      "const handleReceive = () => {",
+      "setTimeout(() => {",
+      "onChange={(e) => handleSkuChange(e.target.value)}",
+      "{activeSkus.map(sku => (",
+      "onChange={(e) => setQuantity(parseInt(e.target.value) || 0)}",
+      "{batches.slice().reverse().slice(0, 8).map(batch => ("
+    ]
+  },
+  "ots-webapp/src/components/SupplyChain/QualityGate.jsx": {
+    "summary": "No summary available.",
+    "functions": [
+      "const QualityGate = () => {",
+      "const pendingQA = useMemo(() =>",
+      "orders.filter(o => o.status === ORDER_STATUSES.PENDING || o.status === ORDER_STATUSES.MTP_APPLIED),",
+      "const handleScan = (e) => {",
+      "const order = pendingQA.find(o => o.id === scanInput || o.awb === scanInput);",
+      "const toggleCheck = (key) => {",
+      "setChecklist(prev => ({ ...prev, [key]: !prev[key] }));",
+      "const isPassed = Object.values(checklist).every(v => v);",
+      "const handlePass = () => {",
+      "onChange={(e) => setScanInput(e.target.value)}",
+      "{pendingQA.slice(0, 5).map(o => (",
+      "onClick={() => setSelectedOrder(o)}",
+      "<button className=\"btn-pill\" onClick={() => setSelectedOrder(null)} style={{ background: 'rgba(255,255,255,0.05)' }}>Cancel</button>",
+      "{Object.keys(checklist).map(key => (",
+      "onClick={() => toggleCheck(key)}",
+      "<input type=\"checkbox\" checked={checklist[key]} onChange={() => { }} />",
+      "onClick={() => { updateOrderStatus(selectedOrder.id, ORDER_STATUSES.ON_HOLD, { reason: 'QA Failed' }); setSelectedOrder(null); alert('Order Marked ON HOLD (QA Failed)'); }}"
+    ]
+  },
+  "ots-webapp/src/components/SupplyChain/ShortageAlerts.jsx": {
+    "summary": "No summary available.",
+    "functions": [
+      "const ShortageAlerts = () => {",
+      "const alerts = useMemo(() => {",
+      ".filter(s => !s.isParent)",
+      ".map(sku => ({",
+      "<span className=\"badge\" style={{ background: alerts.some(a => a.urgency === 'CRITICAL') ? 'var(--danger)' : 'var(--warning)' }}>",
+      "{alerts.map((alert, i) => ("
+    ]
+  },
+  "ots-webapp/src/components/Tracking/ShipmentTracker.jsx": {
+    "summary": "No summary available.",
+    "functions": [
+      "const ShipmentTracker = () => {",
+      ".filter(order => transitStatuses.includes(order.status))",
+      ".map(order => {",
+      "const events = (order.statusHistory || []).map(h => ({",
+      "{activeShipments.map(shipment => (",
+      "{shipment.events.map((event, idx) => ("
+    ]
+  },
+  "ots-webapp/src/components/Warehouse/WarehouseManager.jsx": {
+    "summary": "No summary available.",
+    "functions": [
+      "const WarehouseManager = () => {",
+      "const inventory = useMemo(() => {",
+      ".filter(sku => !sku.isParent)",
+      ".map(sku => ({",
+      "const categories = useMemo(() => ['All', ...new Set(inventory.map(i => i.category))], [inventory]);",
+      "const filteredInventory = inventory.filter(item => {",
+      "const totalUnits = inventory.reduce((sum, i) => sum + i.inStock, 0);",
+      "const lowStockItems = inventory.filter(i => i.available <= (i.reorderLevel || 15));",
+      "const handleTransfer = (skuId) => {",
+      "const confirmTransfer = (from, to, qty) => {",
+      "onChange={(e) => setRoutingPincode(e.target.value)}",
+      "onClick={() => setRoutedWarehouse(routeOrderToWarehouse(routingPincode))}",
+      "onChange={(e) => setSearchTerm(e.target.value)}",
+      "onChange={(e) => setSelectedCategory(e.target.value)}",
+      "{categories.map(cat => <option key={cat} value={cat}>{cat}</option>)}",
+      "{filteredInventory.map(item => (",
+      "onClick={() => handleTransfer(item.sku)}",
+      "onClick={() => adjustStock(item.sku, 1)}",
+      "onClick={() => adjustStock(item.sku, -1)}",
+      "{batches.slice(-6).reverse().map(batch => (",
+      "{warehouses.map(w => <option key={w.id} value={w.id}>{w.name}</option>)}",
+      "onClick={() => confirmTransfer(",
+      "onClick={() => setTransferModal({ show: false, sku: null })}"
+    ]
+  },
+  "ots-webapp/src/components/Warehouse/WarehouseSelector.jsx": {
+    "summary": "Warehouse Selector Component\n  Displays warehouse utilization and allows manual override of warehouse selection.",
+    "functions": [
+      "const WarehouseSelector = ({ selectedWarehouse, onSelect, order = null }) => {",
+      "const utilization = useMemo(() => warehouseOptimizer.getUtilizationMetrics(), []);",
+      "const recommendation = useMemo(() => {",
+      "const getStatusColor = (status) => {",
+      "{utilization.map(wh => (",
+      "onClick={() => onSelect?.(wh.id)}"
+    ]
+  },
+  "ots-webapp/src/context/AuthContext.jsx": {
+    "summary": "No summary available.",
+    "functions": [
+      "export const AuthProvider = ({ children }) => {",
+      "useEffect(() => {",
+      "const login = async (email, password) => {",
+      "await new Promise(resolve => setTimeout(resolve, 800));",
+      "const foundUser = MOCK_USERS.find(u => u.email === email && u.password === password);",
+      "const logout = () => {",
+      "const hasPermission = (permission) => {",
+      "export const useAuth = () => {"
+    ]
+  },
+  "ots-webapp/src/context/ContextProviders.jsx": {
+    "summary": "ContextProviders Layout Component\n  Wraps the application with all necessary context providers\n  This includes error handling, notifications, analytics, etc.",
+    "functions": [
+      "const ContextProviders = ({ children }) => {",
+      "// - Offline sync context for offline-first functionality",
+      "function App() {"
+    ]
+  },
+  "ots-webapp/src/context/DataContext.jsx": {
+    "summary": "Smart routing for regional warehouse selection",
+    "functions": [
+      "export const DataProvider = ({ children }) => {",
+      "useEffect(() => {",
+      "cache.initialize().then(async () => {",
+      "setOrders(cachedOrders.map(c => c.data));",
+      "useEffect(() => {",
+      "const unsubscribe = webhookService.subscribe(({ type, data }) => {",
+      "setOrders(prev => {",
+      "const updatedOrders = prev.map(o => o.id === data.id ? { ...o, ...data } : o);",
+      "setAgentMetadata(m => ({ ...m, mutations: m.mutations + 1 }));",
+      "setInventoryLevels(prev => ({ ...prev, [data.sku]: data.levels }));",
+      "orders.forEach(o => cache.cacheData('orders', o.id, o));",
+      "const syncInterval = setInterval(() => {",
+      "syncDeltaOrders(orders).catch(err => console.error('Delta Sync Failed:', err));",
+      "return () => {",
+      "useEffect(() => {",
+      "const initializeData = async () => {",
+      "...Array(6).fill(0).map((_, i) => ({",
+      "const invEntry = cachedInventoryLevels?.find(m => m.key === 'inventoryLevels');",
+      "SKU_MASTER.filter(s => !s.isParent).forEach(child => {",
+      "const batchEntry = cachedBatches?.find(m => m.key === 'batches');",
+      "SKU_MASTER.filter(s => !s.isParent).forEach(sku => {",
+      "useEffect(() => {",
+      "useEffect(() => {",
+      "useEffect(() => {",
+      "useEffect(() => {",
+      "useEffect(() => {",
+      "useEffect(() => {",
+      "const interval = setInterval(() => {",
+      "setOrders(prev => prev.map(order => {",
+      "return () => clearInterval(interval);",
+      "const smartRouteOrder = useCallback((pincode, state) => {",
+      "const addOrder = useCallback((orderData) => {",
+      "const skuData = skuMaster.find(s => s.sku === newOrder.sku);",
+      "setFlaggedOrders(prev => [...prev, newOrder]);",
+      "setOrders(prev => deduplicateOrders(prev, [newOrder]));",
+      "setInventoryLevels(prev => ({",
+      "setCustomerMaster(prev => deduplicateCustomers([...prev, customer]));",
+      "const updateOrder = useCallback((orderId, updates) => {",
+      "setOrders(prev => prev.map(order =>",
+      "const updateOrderStatus = useCallback((orderId, newStatus, metadata = {}) => {",
+      "setOrders(prev => prev.map(order => {",
+      "setInventoryLevels(p => ({",
+      "setInventoryLevels(p => ({",
+      "const bulkUpdateStatus = useCallback((orderIds, newStatus, metadata = {}) => {",
+      "const ordersToUpdate = orders.filter(o => orderIds.includes(o.id));",
+      "setOrders(prev => {",
+      "const successIds = results.successful.map(o => o.id);",
+      "return prev.map(order =>",
+      "? results.successful.find(o => o.id === order.id)",
+      "const assignCarrier = useCallback((orderId, carrierId, carrierName) => {",
+      "setOrders(prev => prev.map(order => {",
+      "const importOrders = useCallback((rawOrders, source) => {",
+      "const imported = rawOrders.map(raw => {",
+      "setOrders(prev => deduplicateOrders(prev, imported));",
+      "const newCustomers = imported.map(o => ({",
+      "setCustomerMaster(prev => deduplicateCustomers([...prev, ...newCustomers]));",
+      "const syncSKUMaster = useCallback(async () => {",
+      "const syncOrderToZoho = useCallback(async (order) => {",
+      "setOrders(prev => prev.map(o => o.id === order.id ? { ...o, zoho_id: result.zoho_id } : o));",
+      "const adjustStock = useCallback((skuId, adjustment) => {",
+      "setInventoryLevels(prev => ({",
+      "const setStockLocation = useCallback((skuId, location) => {",
+      "setInventoryLevels(prev => ({",
+      "const transferStock = useCallback((sku, fromBin, toBin, qty) => {",
+      "setInventoryLevels(prev => {",
+      "setActivityLog(prev => [{",
+      "const receiveStock = useCallback((skuId, vendor, quantity) => {",
+      "setBatches(prev => [...prev, newBatch]);",
+      "setInventoryLevels(prev => ({",
+      "const getCarrierRates = useCallback((shipment) => {",
+      "const getCarrierRecommendation = useCallback((shipment, priority = 'cost') => {",
+      "const getOrderNextStatuses = useCallback((orderId) => {",
+      "const order = orders.find(o => o.id === orderId);",
+      "const syncAllMarketplaces = useCallback(async () => {",
+      "const exportOrders = useCallback((format = 'csv', filter = {}) => {",
+      "data = data.filter(o => o.status === filter.status);",
+      "data = data.filter(o => o.source === filter.source);",
+      "const getOrderStats = useCallback(() => {",
+      "const delivered = orders.filter(o => o.status === 'Delivered').length;",
+      "const inTransit = orders.filter(o => ['In-Transit', 'Out-for-Delivery', 'Picked-Up'].includes(o.status)).length;",
+      "const pending = orders.filter(o => ['Pending', 'MTP-Applied', 'Carrier-Assigned'].includes(o.status)).length;",
+      "const rto = orders.filter(o => o.status.startsWith('RTO')).length;",
+      "const getCustomerMetrics = useCallback((phone) => {",
+      "const customerOrders = orders.filter(o =>",
+      "const totalSpend = customerOrders.reduce((sum, o) => sum + (parseFloat(o.amount) || 0), 0);",
+      "? new Date(Math.max(...customerOrders.map(o => new Date(o.createdAt || Date.now()))))",
+      "getDemandForecast: (days, forecastDays) => calculateSMAForecast(orders, days, forecastDays),",
+      "getSKUPrediction: (sku, days) => predictSKUDemand(orders, sku, days),",
+      "getTrend: (days) => getOrderTrend(orders, days),",
+      "getRevenueProjection: (nextDays) => projectRevenue(orders, nextDays),",
+      "getSKUProfitability: (skuId, price) => {",
+      "const sku = skuMaster.find(s => s.sku === skuId);",
+      "universalSearch: (query) => searchService.universalSearch({ orders, skuMaster }, query),",
+      "quickLookup: (id) => searchService.quickLookup(orders, id),",
+      "resolveFlag: (orderId) => setFlaggedOrders(prev => prev.filter(o => o.id !== orderId)),",
+      "getRecommendations: (state, city, weight) => getAllRates({ state, city, weight }),",
+      "const initializePushNotifications = useCallback(async () => {",
+      "const enablePushNotifications = useCallback(async () => {",
+      "const queueOrderOffline = useCallback((order) => {",
+      "setOfflineQueue(prev => [...prev, { ...order, queuedAt: new Date().toISOString() }]);",
+      "const syncOfflineOrders = useCallback(async () => {",
+      "offlineQueue.map(order => importOrders([order], 'offline-sync'))",
+      "const synced = results.reduce((sum, r) => sum + (r.count || 0), 0);",
+      "useEffect(() => {",
+      "export const useData = () => {"
+    ]
+  },
+  "ots-webapp/src/context/FinancialContext.jsx": {
+    "summary": "No summary available.",
+    "functions": [
+      "export const FinancialProvider = ({ children }) => {",
+      "useEffect(() => {",
+      "const calculateTotals = () => {",
+      "orders.forEach(order => {",
+      "const fetchSettlements = async () => {",
+      "const mockSettlements = orders.map(order => ({",
+      "export const useFinance = () => useContext(FinancialContext);"
+    ]
+  },
+  "ots-webapp/src/context/NotificationContext.jsx": {
+    "summary": "Notification Context - Unified Notification Hub\n  \n  Provides a single React context to manage all notification channels:\n  - In-App Toasts\n  - Notification Center (sidebar panel)\n  - Web Push Notifications\n  - WhatsApp Business Alerts (mock)",
+    "functions": [
+      "export const NotificationProvider = ({ children }) => {",
+      "useEffect(() => {",
+      "const unsubscribe = notificationService.subscribe((newNotif) => {",
+      "setNotifications(prev => [newNotif, ...prev.slice(0, 49)]);",
+      "return () => unsubscribe();",
+      "const showToast = useCallback((notification) => {",
+      "setToasts(prev => [...prev, toast]);",
+      "setTimeout(() => {",
+      "setToasts(prev => prev.filter(t => t.toastId !== toastId));",
+      "const dismissToast = useCallback((toastId) => {",
+      "setToasts(prev => prev.filter(t => t.toastId !== toastId));",
+      "const markRead = useCallback((notificationId) => {",
+      "setNotifications(prev => prev.map(n =>",
+      "const markAllRead = useCallback(() => {",
+      "setNotifications(prev => prev.map(n => ({ ...n, read: true })));",
+      "const pushNotification = useCallback((type, title, message, data = {}) => {",
+      "const ToastContainer = ({ toasts, onDismiss }) => {",
+      "{toasts.map(toast => (",
+      "onClick={() => onDismiss(toast.toastId)}",
+      "export const useNotifications = () => {"
+    ]
+  },
+  "ots-webapp/src/data/skuMasterData.js": {
+    "summary": "SKU Master Data - Aligned with Legacy Excel Structure\n  Parent SKUs: Internal referencing (Design/Dimensions/Weight)\n  Child SKUs: Sellable products with color variations",
+    "functions": [
+      "export const SKU_MASTER = [",
+      "export const SKU_ALIASES = ["
+    ]
+  },
+  "ots-webapp/src/hooks/useAPI.js": {
+    "summary": "Custom hook for making API requests with loading and error states\n  @param {string} endpoint - API endpoint\n  @param {Object} options - Request options\n  @returns {Object} - {data, loading, error, refetch}",
+    "functions": [
+      "export const useAPI = (endpoint, options = {}) => {",
+      "const fetchData = useCallback(async () => {",
+      "useEffect(() => {",
+      "return () => {",
+      "export const useMutation = (endpoint, method = 'POST') => {",
+      "async (body = null, options = {}) => {",
+      "useEffect(() => {",
+      "return () => {",
+      "export const useBatchAPI = (requests) => {",
+      "useEffect(() => {",
+      "const fetchBatch = async () => {",
+      "return () => {",
+      "export const usePaginatedAPI = (endpoint, pageSize = 20) => {",
+      "useEffect(() => {",
+      "const fetchPage = async () => {",
+      "return () => {",
+      "const nextPage = useCallback(() => {",
+      "if (hasMore) setPage((p) => p + 1);",
+      "const prevPage = useCallback(() => {",
+      "setPage((p) => Math.max(1, p - 1));"
+    ]
+  },
+  "ots-webapp/src/hooks/useAnalytics.js": {
+    "summary": "useAnalytics Hook\n  Provides analytics data and KPI calculations",
+    "functions": [
+      "export const useAnalytics = (dateRange = 7) => {",
+      "useEffect(() => {",
+      "const fetchAnalytics = async () => {"
+    ]
+  },
+  "ots-webapp/src/hooks/useErrorHandler.js": {
+    "summary": "useErrorHandler Hook\n  Provides error state management and recovery handling",
+    "functions": [
+      "export const useErrorHandler = () => {",
+      "const handleError = useCallback((err, context = {}) => {",
+      "const clearError = useCallback(() => {",
+      "const attemptRecovery = useCallback(async (recoveryFn) => {"
+    ]
+  },
+  "ots-webapp/src/hooks/useNotifications.js": {
+    "summary": "useNotifications Hook\n  Manages notification state and lifecycle",
+    "functions": [
+      "export const useNotifications = () => {",
+      "const addNotification = useCallback((notification) => {",
+      "setNotifications(prev => [newNotif, ...prev]);",
+      "setUnreadCount(prev => prev + 1);",
+      "const markAsRead = useCallback((id) => {",
+      "setNotifications(prev => {",
+      "const updated = prev.map(n => n.id === id ? { ...n, read: true } : n);",
+      "setUnreadCount(prev => Math.max(0, prev - 1));",
+      "const removeNotification = useCallback((id) => {",
+      "setNotifications(prev => prev.filter(n => n.id !== id));",
+      "const clearAll = useCallback(() => {"
+    ]
+  },
+  "ots-webapp/src/hooks/useStorage.js": {
+    "summary": "Custom hook for managing localStorage with React state\n  @param {string} key - Storage key\n  @param {} initialValue - Initial value if not in storage\n  @param {number} expiryMs - Optional expiry time in milliseconds\n  @returns {[, function]} - [value, setValue]",
+    "functions": [
+      "export const useLocalStorage = (key, initialValue, expiryMs = null) => {",
+      "const [storedValue, setStoredValue] = useState(() => {",
+      "(value) => {",
+      "export const useSessionStorage = (key, initialValue) => {",
+      "const [storedValue, setStoredValue] = useState(() => {",
+      "(value) => {",
+      "export const useLocalStorageState = (namespace, initialState) => {",
+      "const [state, setState] = useState(() => {",
+      "(updates) => {",
+      "setState((prevState) => {",
+      "export const usePreference = (key, defaultValue) => {",
+      "export const useUserSettings = (initialSettings) => {",
+      "(key, value) => {",
+      "const resetSettings = useCallback(() => {",
+      "export const useSessionValue = (key, initialValue) => {"
+    ]
+  },
+  "ots-webapp/src/layouts/MainLayout.jsx": {
+    "summary": "MainLayout Component\n  Primary layout wrapper for authenticated pages\n  Includes header, sidebar, main content area, and footer",
+    "functions": [
+      "const MainLayout = () => {"
+    ]
+  },
+  "ots-webapp/src/main.jsx": {
+    "summary": "No summary available.",
+    "functions": [
+      "window.addEventListener('load', () => {",
+      ".then((registration) => {",
+      ".catch((error) => {"
+    ]
+  },
+  "ots-webapp/src/services/activityLogger.js": {
+    "summary": "Activity Logger - Audit trail for all system actions\n  Integrates with UI components and will sync to backend",
+    "functions": [
+      "export const ACTIVITY_TYPES = {",
+      "export const logActivity = ({",
+      "}) => {",
+      "const getCurrentUser = () => {",
+      "const syncToBackend = async (activity) => {",
+      "export const getActivityLog = (filters = {}) => {",
+      "result = result.filter(a => a.type === filters.type);",
+      "result = result.filter(a => a.entityType === filters.entityType);",
+      "result = result.filter(a => a.entityId === filters.entityId);",
+      "result = result.filter(a => a.user?.id === filters.userId);",
+      "result = result.filter(a => new Date(a.timestamp) >= new Date(filters.startDate));",
+      "result = result.filter(a => new Date(a.timestamp) <= new Date(filters.endDate));",
+      "result = result.filter(a =>",
+      "export const getEntityHistory = (entityType, entityId) => {",
+      "export const clearActivityLog = () => {",
+      "export const initializeActivityLog = (logs) => {",
+      "export const logOrderCreate = (order) => {",
+      "export const logOrderStatusChange = (order, previousStatus, newStatus, reason = '') => {",
+      "export const logBulkUpdate = (orderIds, status) => {",
+      "export const logCarrierAssign = (order, carrier) => {",
+      "export const logLabelGenerate = (order, awb) => {",
+      "export const logImportComplete = (source, count, errors = 0) => {",
+      "export const logExport = (type, count) => {",
+      "export const logUserLogin = (user) => {",
+      "export const logUserLogout = (user) => {"
+    ]
+  },
+  "ots-webapp/src/services/activityLoggerEnhanced.js": {
+    "summary": "Activity Logger Enhanced Service\n  Comprehensive audit trail and activity logging for production environments\n  Persists logs to Zoho Catalyst backend",
+    "functions": [
+      "export const logActivity = async (activity = {}) => {",
+      "export const logOrderActivity = async (order, action, userId) => {",
+      "export const logInventoryActivity = async (inventory, action, quantityChange, userId) => {",
+      "export const logAuthActivity = async (action, userId, userEmail, success, reason) => {",
+      "export const logReportActivity = async (reportName, filters, recordCount, userId) => {",
+      "const saveLogLocally = async (log) => {",
+      "export const syncLogsToBackend = async () => {",
+      "const pendingLogs = logQueue.filter((log) => log.status === 'pending');",
+      "// This should call your Catalyst cloud function",
+      "logs: pendingLogs.map((log) => ({",
+      "logQueue = logQueue.map((log) =>",
+      "pendingLogs.some((p) => p.id === log.id)",
+      "export const getActivityLogs = (filters = {}) => {",
+      "if (module) logs = logs.filter((log) => log.module === module);",
+      "if (action) logs = logs.filter((log) => log.action === action);",
+      "if (userId) logs = logs.filter((log) => log.userId === userId);",
+      "export const getActivitySummary = () => {",
+      "logs.forEach((log) => {",
+      "export const cleanupOldLogs = async () => {",
+      "(log) => new Date(log.timestamp) >= cutoffDate",
+      "export const startAutoSync = (interval = SYNC_INTERVAL) => {",
+      "syncTimer = setInterval(() => {",
+      "export const stopAutoSync = () => {",
+      "const generateLogId = () => {",
+      "export const clearAllLogs = async () => {"
+    ]
+  },
+  "ots-webapp/src/services/analyticsService.js": {
+    "summary": "Calculate order volume trend with linear regression\n  @param {Array} orders - List of orders\n  @param {number} days - Days to analyze (default 30)\n  @returns {Object} - {slope, intercept, r2, trend}",
+    "functions": [
+      "export const getOrderTrend = (orders = [], days = 30) => {",
+      "orders.forEach(order => {",
+      "const sumY = data.reduce((a, b) => a + b, 0);",
+      "const sumXY = data.reduce((sum, y, x) => sum + x * y, 0);",
+      "const predictions = data.map((_, x) => slope * x + intercept);",
+      "const ssRes = data.reduce((sum, y, x) => sum + Math.pow(y - predictions[x], 2), 0);",
+      "const ssTot = data.reduce((sum, y) => sum + Math.pow(y - meanY, 2), 0);",
+      "export const forecastOrderVolume = (orders = [], daysAhead = 7) => {",
+      "export const getKPIs = (orders = [], startDate, endDate) => {",
+      "const filtered = orders.filter(o => {",
+      "const totalRevenue = filtered.reduce((sum, o) => sum + (o.amount || 0), 0);",
+      "const delivered = filtered.filter(o => o.status === 'DELIVERED').length;",
+      "const rto = filtered.filter(o => o.status === 'RTO_INITIATED').length;",
+      "const deliveredOrders = filtered.filter(o => o.status === 'DELIVERED' && o.deliveredAt);",
+      "const totalTime = deliveredOrders.reduce((sum, o) => {",
+      "filtered.forEach(o => {",
+      "const topCarrier = Object.entries(carrierCounts).sort((a, b) => b[1] - a[1])[0]?.[0] || null;",
+      "export const getRevenueByCarrier = (orders = []) => {",
+      "orders.forEach(o => {",
+      ".map(([carrier, revenue]) => ({ carrier, revenue }))",
+      ".sort((a, b) => b.revenue - a.revenue);",
+      "export const getStatusDistribution = (orders = []) => {",
+      "orders.forEach(o => {",
+      ".map(([status, count]) => ({",
+      ".sort((a, b) => b.count - a.count);",
+      "export const getZonePerformance = (orders = []) => {",
+      "orders.forEach(o => {",
+      "return Object.entries(zoneMetrics).map(([zone, metrics]) => ({",
+      "export const cacheAnalytics = async (key, data, ttl = 3600000) => {",
+      "export const getCachedAnalytics = async (key) => {"
+    ]
+  },
+  "ots-webapp/src/services/apiService.js": {
+    "summary": "API Service Layer - Centralized API management for all integrations\n  This abstracts away the complexity of different API endpoints",
+    "functions": [
+      "export const CreatorAPI = {",
+      "export const CRMAPI = {",
+      "export const AmazonAPI = {",
+      "export const FlipkartAPI = {",
+      "export const CarrierAPI = {",
+      "export const checkAPIHealth = async () => {"
+    ]
+  },
+  "ots-webapp/src/services/carrierOptimizer.js": {
+    "summary": "Get optimal carrier for an order\n  @param {Object} order - Order data {pincode, weight, amount, zone, delivery_type}\n  @returns {Promise<Object>} - Recommended carrier with cost details",
+    "functions": [
+      "export const getOptimalCarrier = async (order) => {",
+      "const eligibleCarriers = Object.values(CARRIER_CONFIG).filter(carrier => {",
+      "const scoredCarriers = eligibleCarriers.map(carrier => {",
+      "const best = scoredCarriers.sort((a, b) => b.score - a.score)[0];",
+      "alternates: scoredCarriers.slice(1, 3).map(sc => ({",
+      "export const recordCarrierPerformance = async (carrierId, performance) => {",
+      "export const getCarriersByZone = (zone) => {",
+      "return Object.values(CARRIER_CONFIG).filter(c => c.zones.includes(zone));",
+      "function calculateCarrierScore(carrier, order, historicalData) {",
+      "function calculateShippingCost(carrier, order) {"
+    ]
+  },
+  "ots-webapp/src/services/carrierRateEngine.js": {
+    "summary": "Carrier Rate Engine - Calculate shipping rates based on weight, zone, and carrier\n  Uses actual rate card logic for Pan-India logistics",
+    "functions": [
+      "export const CARRIER_RATES = {",
+      "export const PREFERRED_CARRIER_MATRIX = {",
+      "export const getZone = (state, city = '') => {",
+      "export const calculateRate = (carrierId, shipment) => {",
+      "export const getAllRates = (shipment) => {",
+      "const rates = Object.keys(CARRIER_RATES).map(carrierId => {",
+      ".filter(r => !r.error)",
+      ".sort((a, b) => a.total - b.total);",
+      "export const getRecommendation = (shipment, priority = 'smart') => {",
+      "const options = rates.map(rate => {",
+      "const minCost = Math.min(...rates.map(r => r.total));",
+      "const maxCost = Math.max(...rates.map(r => r.total));",
+      "const minDays = Math.min(...rates.map(r => r.estimatedDelivery[0]));",
+      "const maxDays = Math.max(...rates.map(r => r.estimatedDelivery[0]));",
+      "winner = options.sort((a, b) => a.scores.speed - b.scores.speed)[0];",
+      "winner = options.sort((a, b) => a.scores.reliability - b.scores.reliability)[0];",
+      "winner = options.sort((a, b) => a.scores.cost - b.scores.cost)[0];",
+      "options.sort((a, b) => {",
+      "const matrixCarrier = options.find(o => o.carrierId === matrixOverrideId);",
+      "export const isPincodeServiceable = async (pincode, carrierId = null) => {"
+    ]
+  },
+  "ots-webapp/src/services/churnService.js": {
+    "summary": "Churn Service (Retention AI)\n  Simulates AI-driven customer retention scoring and identification.",
+    "functions": [
+      "class ChurnService {",
+      "const customerOrders = orders.filter(o => o.customerPhone === customer.phone);",
+      "const lastOrderDate = customerOrders.reduce((latest, order) => {",
+      ".map(customer => ({",
+      ".filter(c => c.churn.riskLevel === 'HIGH' || c.churn.riskLevel === 'CRITICAL')",
+      ".sort((a, b) => b.churn.score - a.churn.score);"
+    ]
+  },
+  "ots-webapp/src/services/complianceService.js": {
+    "summary": "Compliance Service\n<<<<<<< HEAD\n  \n  Handles HSN/SAC code validation, cross-border duty calculations,\n  and documentation requirements for international shipments.",
+    "functions": [
+      "export const validateHSN = (hsnCode) => {",
+      "export const getRequiredDocuments = (country) => {",
+      "export const calculateExportDuty = (value, destinationCountry, hsnCode) => {",
+      "export const generateComplianceSummary = (order) => {",
+      "class ComplianceService {"
+    ]
+  },
+  "ots-webapp/src/services/currencyService.js": {
+    "summary": "Currency Service\n  Provides multi-currency pricing support with simulated exchange rates.",
+    "functions": [
+      "class CurrencyService {",
+      "return Object.entries(SUPPORTED_CURRENCIES).map(([code, data]) => ({"
+    ]
+  },
+  "ots-webapp/src/services/dataUtilsOptimized.js": {
+    "summary": "DataUtilsOptimized.js\n  Optimized data processing utilities for order management\n  Includes deduplication, merging, validation, and transformation functions",
+    "functions": [
+      "class DataUtilsOptimized {",
+      ".sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt))",
+      ".filter(order => {",
+      "localOrders.forEach(order => {",
+      "remoteOrders.forEach(remoteOrder => {",
+      "const missing = required.filter(field => !order[field]);",
+      "return orders.filter(order => {",
+      "orders.forEach(order => {",
+      "sorted.sort((a, b) => {",
+      "const totalAmount = orders.reduce((sum, order) => sum + (order.amount || 0), 0);",
+      "orders.forEach(order => {",
+      "return orders.map(order => this.normalizeOrder(order));",
+      "const rows = orders.map(order => [",
+      "...rows.map(row => row.map(cell => `\"${cell}\"`).join(','))"
+    ]
+  },
+  "ots-webapp/src/services/errorHandlerService.js": {
+    "summary": "Log an error",
+    "functions": [
+      "export const logError = (error, context = {}) => {",
+      "export const getErrorLogs = (limit = 50) => {",
+      "export const clearErrorLogs = () => {",
+      "export const handleError = (error, recovery = {}) => {",
+      "export const getErrorType = (status) => {",
+      "export const createError = (message, type, severity = ERROR_SEVERITY.MEDIUM, status = 500) => {"
+    ]
+  },
+  "ots-webapp/src/services/forecastService.js": {
+    "summary": "Demand Forecasting Service\n  Provides insights into future order volumes based on historical data.",
+    "functions": [
+      "export const calculateSMAForecast = (orders, days = 30, forecastDays = 7) => {",
+      "orders.forEach(order => {",
+      "const sma = window.reduce((a, b) => a + b, 0) / window.length;",
+      "export const predictSKUDemand = (orders, sku, days = 30) => {",
+      "const skuOrders = orders.filter(o => o.sku === sku);",
+      "const totalQuantity = skuOrders.reduce((sum, o) => sum + (parseInt(o.quantity) || 1), 0);",
+      "export const predictVendorArrival = (vendorId, sku) => {"
+    ]
+  },
+  "ots-webapp/src/services/handoffService.js": {
+    "summary": "Handoff Service\n  Automates the creation of session summaries and prepares the repository for agent transitions.",
+    "functions": [
+      "class HandoffService {",
+      ".filter(line => line.trim() !== '')",
+      ".map(line => line.slice(3).trim());"
+    ]
+  },
+  "ots-webapp/src/services/healthCheck.js": {
+    "summary": "Health Check Service\n  Verifies connectivity to critical APIs and services.",
+    "functions": [
+      "class HealthCheckService {",
+      "await new Promise(resolve => setTimeout(resolve, Math.random() * 200 + 50));",
+      "Object.keys(this.endpoints).map(service => this.checkService(service))",
+      "const healthy = results.filter(r => r.status === 'healthy').length;"
+    ]
+  },
+  "ots-webapp/src/services/internationalService.js": {
+    "summary": "International Operations Service\n  \n  Handles multi-currency conversion, international shipping calculations,\n  and cross-border compliance (HSN/VAT/Duty).",
+    "functions": [
+      "export const CURRENCY_DATABASE = {",
+      "export const convertFromINR = (amount, targetCurrency = 'USD') => {",
+      "export const getInternationalShippingEstimate = (country, weight) => {",
+      "export const calculateCrossBorderDuty = (productValue, destinationCountry) => {"
+    ]
+  },
+  "ots-webapp/src/services/internationalShippingService.js": {
+    "summary": "International Shipping Service\n  \n  API stubs for international carriers (DHL, FedEx, Aramex).\n  These will be connected to live APIs when credentials are available.",
+    "functions": [
+      "const getZoneForCountry = (country) => {",
+      "export const getInternationalRate = (carrierId, country, weight) => {",
+      "export const compareInternationalRates = (country, weight) => {",
+      "return Object.keys(CARRIERS).map(key => {",
+      "}).filter(Boolean).sort((a, b) => a.total - b.total);",
+      "export const createInternationalShipment = async (order, carrierId) => {",
+      "await new Promise(resolve => setTimeout(resolve, 800));",
+      "export const trackInternationalShipment = async (trackingNumber) => {",
+      "await new Promise(resolve => setTimeout(resolve, 500));"
+    ]
+  },
+  "ots-webapp/src/services/keyboardShortcuts.js": {
+    "summary": "Initialize keyboard shortcuts system\n  @param {Object} customShortcuts - Optional custom shortcuts to add",
+    "functions": [
+      "export const initializeShortcuts = (customShortcuts = {}) => {",
+      "Object.entries(DEFAULT_SHORTCUTS).forEach(([combo, config]) => {",
+      "Object.entries(customShortcuts).forEach(([combo, config]) => {",
+      "export const registerShortcut = (shortcut, callback, options = {}) => {",
+      "return () => unregisterShortcut(shortcut);",
+      "export const registerShortcut = (combo, action, description = '') => {",
+      "export const bindAction = (action, callback) => {",
+      "export const getAllShortcuts = () => {",
+      "return Array.from(shortcuts.entries()).map(([combo, config]) => ({",
+      "export const toggleShortcuts = (enable = null) => {",
+      "export const removeShortcut = (combo) => {",
+      "export const cleanup = () => {",
+      "function parseKeyCombo(event) {",
+      "function handleKeyDown(event) {",
+      "} else if (typeof config.action === 'function') {"
+    ]
+  },
+  "ots-webapp/src/services/keyboardShortcutsEnhanced.js": {
+    "summary": "KeyboardShortcutsEnhanced.js\n  Global keyboard shortcuts for Bluewud OTS application\n  Supports custom shortcuts, command palette, and global hotkeys",
+    "functions": [
+      "class KeyboardShortcutsEnhanced {",
+      "document.addEventListener('keydown', (e) => this.handleKeyDown(e));",
+      "return ['ctrl', 'alt'].some(mod => {",
+      "const callbacks = this.listeners.filter(l => l.action === action);",
+      "callbacks.forEach(callback => {",
+      "this.listeners = this.listeners.filter(l =>",
+      "return this.commandPalette.filter(cmd =>",
+      "imported.forEach(([key, { action, handler }]) => {",
+      "this.addCustomShortcut(key, action, handler || (() => {}));"
+    ]
+  },
+  "ots-webapp/src/services/labelGeneratorEnhanced.js": {
+    "summary": "LabelGeneratorEnhanced.js\n  Enhanced shipping label generation for multiple carriers\n  Supports Delhivery, BlueDart, XpressBees, and other logistics partners",
+    "functions": [
+      "class LabelGeneratorEnhanced {",
+      "required.forEach(field => {",
+      "contents: items.map(item => `${item.quantity}x ${item.name}`).join('; ')",
+      "product: items.map(i => i.name).join(', ')",
+      "description: items.map(i => i.name).join(', ')",
+      "return items.reduce((total, item) => total + (item.weight || 0.5), 0);"
+    ]
+  },
+  "ots-webapp/src/services/labelPrintService.js": {
+    "summary": "Label & Print Service - Generate shipping labels, manifests, and invoices\n  Uses browser print APIs with proper formatting for thermal printers",
+    "functions": [
+      "export const LABEL_SIZES = {",
+      "const generateBarcode128 = (text) => {",
+      "return text.split('').map(c => {",
+      "export const generateLabelHTML = (order, size = '4x6') => {",
+      "export const printLabel = (order, size = '4x6') => {",
+      "printWindow.onload = () => {",
+      "export const generateManifestHTML = (orders, carrier = 'All Carriers') => {",
+      "const rows = orders.map((order, idx) => `",
+      "export const printManifest = (orders, carrier) => {",
+      "printWindow.onload = () => printWindow.print();",
+      "export const generatePackingSlipHTML = (order) => {",
+      "export const batchPrintLabels = (orders, size = '4x6') => {",
+      "orders.forEach((order, idx) => {",
+      "setTimeout(() => {"
+    ]
+  },
+  "ots-webapp/src/services/localizationService.js": {
+    "summary": "Localization Service\n  \n  Provides locale-specific formatting and translations for\n  international market support.",
+    "functions": [
+      "export const setLocale = (locale) => {",
+      "export const getLocale = () => {",
+      "export const formatCurrency = (value, localeOverride = null) => {",
+      "export const formatDate = (date, localeOverride = null) => {",
+      "export const getAvailableLocales = () => {",
+      "return Object.entries(LOCALES).map(([code, data]) => ({"
+    ]
+  },
+  "ots-webapp/src/services/localizedTemplateService.js": {
+    "summary": "Localized Template Service\n  \n  Generates invoices, packing slips, and labels in target locale languages.",
+    "functions": [
+      "export const getTemplate = (templateType, locale = null) => {",
+      "export const generateLocalizedInvoice = (order, items = [], locale = null) => {",
+      "const itemsHtml = items.map((item, idx) => `",
+      "export const getSupportedLocales = (templateType) => {"
+    ]
+  },
+  "ots-webapp/src/services/marginProtectionService.js": {
+    "summary": "AI-Powered Margin Protection Service\n  \n  Protects profitability by analyzing orders and flagged those that fall\n  below acceptable margin thresholds based on real-time cost data.",
+    "functions": [
+      "export const getMarginThresholds = () => {",
+      "export const validateMargin = (order, skuData) => {",
+      "export const detectMarginLeakage = (orders, skuMaster) => {",
+      "return orders.map(order => {",
+      "const skuData = skuMaster.find(s => s.sku === order.sku);",
+      "}).filter(o => o.marginAlert !== null);"
+    ]
+  },
+  "ots-webapp/src/services/marketplaceService.js": {
+    "summary": "Marketplace Sync Service\n  Handles communication (stubs) with Amazon SP-API and Flipkart API.",
+    "functions": [
+      "export const fetchAmazonOrders = async () => {",
+      "export const fetchFlipkartOrders = async () => {",
+      "export const syncInventoryToMarketplaces = async (inventoryLevels) => {"
+    ]
+  },
+  "ots-webapp/src/services/notificationService.js": {
+    "summary": "Notification Service - Centralized notification management\n  Handles in-app notifications, with hooks for future email/SMS/WhatsApp",
+    "functions": [
+      "export const NOTIFICATION_TYPES = {",
+      "export const createNotification = ({",
+      "}) => {",
+      "listeners.forEach(callback => callback(notification));",
+      "export const getNotifications = (filters = {}) => {",
+      "result = result.filter(n => !n.read);",
+      "result = result.filter(n => n.type === filters.type);",
+      "result = result.filter(n => n.priority === filters.priority);",
+      "export const markAsRead = (notificationId) => {",
+      "const notif = notifications.find(n => n.id === notificationId);",
+      "export const markAllAsRead = () => {",
+      "notifications.forEach(n => {",
+      "export const getUnreadCount = () => {",
+      "return notifications.filter(n => !n.read).length;",
+      "export const subscribe = (callback) => {",
+      "return () => {",
+      "listeners = listeners.filter(l => l !== callback);",
+      "export const clearAll = () => {",
+      "export const notifyOrderCreated = (order) => {",
+      "export const notifyOrderShipped = (order) => {",
+      "export const notifyOrderDelivered = (order) => {",
+      "export const notifyOrderRTO = (order, reason) => {",
+      "export const notifyLowStock = (sku, currentStock, reorderLevel) => {",
+      "export const notifyBulkImport = (count, source) => {",
+      "export const notifyCODPending = (count, amount) => {"
+    ]
+  },
+  "ots-webapp/src/services/offlineCacheService.js": {
+    "summary": "Offline Cache Service\n<<<<<<< HEAD\n  \n  Simple IndexedDB wrapper for persisting operational data offline.",
+    "functions": [
+      "const openDB = () => {",
+      "return new Promise((resolve, reject) => {",
+      "request.onupgradeneeded = (event) => {",
+      "request.onsuccess = () => resolve(request.result);",
+      "request.onerror = () => reject(request.error);",
+      "export const cacheData = async (storeName, data) => {",
+      "data.forEach(item => store.put(item));",
+      "return new Promise((resolve, reject) => {",
+      "tx.oncomplete = () => resolve(true);",
+      "tx.onerror = () => reject(tx.error);",
+      "export const retrieveCachedData = async (storeName) => {",
+      "return new Promise((resolve, reject) => {",
+      "request.onsuccess = () => resolve(request.result);",
+      "request.onerror = () => reject(request.error);",
+      "export const clearCache = async (storeName) => {",
+      "class OfflineCacheService {",
+      "return new Promise((resolve, reject) => {",
+      "request.onerror = () => {",
+      "request.onsuccess = () => {",
+      "request.onupgradeneeded = (event) => {",
+      "Object.entries(this.stores).forEach(([storeName, config]) => {",
+      "(config.indexes || []).forEach(indexName => {",
+      "return new Promise((resolve, reject) => {",
+      "request.onsuccess = () => resolve(true);",
+      "request.onerror = () => reject(request.error);",
+      "return new Promise((resolve, reject) => {",
+      "request.onsuccess = () => {",
+      "request.onerror = () => reject(request.error);",
+      "return new Promise((resolve, reject) => {",
+      "request.onsuccess = () => resolve(request.result);",
+      "request.onerror = () => reject(request.error);",
+      "return new Promise((resolve, reject) => {",
+      "request.onsuccess = () => resolve(true);",
+      "request.onerror = () => reject(request.error);",
+      "return new Promise((resolve, reject) => {",
+      "request.onsuccess = () => resolve(true);",
+      "request.onerror = () => reject(request.error);",
+      "return new Promise((resolve, reject) => {",
+      "request.onsuccess = () => resolve(request.result);",
+      "request.onerror = () => reject(request.error);",
+      "export const initOfflineCacheService = () => {",
+      "export const getOfflineCacheService = () => {"
+    ]
+  },
+  "ots-webapp/src/services/orderStateMachine.js": {
+    "summary": "Order State Machine - Manages valid order status transitions\n  Ensures business logic is enforced for order lifecycle",
+    "functions": [
+      "export const ORDER_STATUSES = {",
+      "export const STATUS_META = {",
+      "export const isValidTransition = (currentStatus, newStatus) => {",
+      "export const getValidNextStatuses = (currentStatus) => {",
+      "export const transitionOrder = (order, newStatus, metadata = {}) => {",
+      "export const bulkTransition = (orders, newStatus, metadata = {}) => {",
+      "orders.forEach(order => {",
+      "export const calculateOrderMetrics = (order) => {",
+      "const createdAt = history.find(h => h.to === ORDER_STATUSES.PENDING)?.timestamp;",
+      "const pickedAt = history.find(h => h.to === ORDER_STATUSES.PICKED_UP)?.timestamp;",
+      "const deliveredAt = history.find(h => h.to === ORDER_STATUSES.DELIVERED)?.timestamp;"
+    ]
+  },
+  "ots-webapp/src/services/pushNotificationService.js": {
+    "summary": "<<<<<<< HEAD\n  Web Push Notification Service\n  \n  Handles VAPID registration and browser subscription for real-time alerts.",
+    "functions": [
+      "const urlBase64ToUint8Array = (base64String) => {",
+      "class PushNotificationService {",
+      "navigator.serviceWorker.addEventListener('message', (event) => {",
+      "export const subscribeUser = async () => {",
+      "export const sendLocalNotification = async (title, options = {}) => {",
+      "export const initPushNotificationService = (vapidPublicKey) => {",
+      "export const getPushNotificationService = () => {"
+    ]
+  },
+  "ots-webapp/src/services/qcService.js": {
+    "summary": "QC Service (AI Integration)\n  Simulates high-fidelity computer vision for quality control during GRN.",
+    "functions": [
+      "class QCService {",
+      "return new Promise((resolve) => {",
+      "setTimeout(() => {"
+    ]
+  },
+  "ots-webapp/src/services/rateLimitService.js": {
+    "summary": "Create or get rate limiter for an endpoint",
+    "functions": [
+      "export const getRateLimiter = (endpoint, maxRequests = 100, windowMs = 60000) => {",
+      "export const checkLimit = (endpoint, maxRequests = 100, windowMs = 60000) => {",
+      "limiter.requests = limiter.requests.filter(time => now - time < windowMs);",
+      "export const rateLimitMiddleware = (maxRequests = 100, windowMs = 60000) => {",
+      "return (req, res, next) => {",
+      "export const resetLimiter = (endpoint) => {",
+      "export const getStatus = () => {",
+      "requests: limiter.requests.filter(time => now - time < limiter.windowMs).length,"
+    ]
+  },
+  "ots-webapp/src/services/retryService.js": {
+    "summary": "Retry a function with exponential backoff\n  @param {Function} fn - Async function to retry\n  @param {Object} options - Retry options\n  @returns {Promise} - Result of the function",
+    "functions": [
+      "export const retryWithBackoff = async (fn, options = {}) => {",
+      "shouldRetry = (err) => true,",
+      "new Promise((_, reject) =>",
+      "() => reject(new Error(`${name} timeout after ${timeout}ms`)),",
+      "await new Promise(resolve => setTimeout(resolve, delay));",
+      "export const withRetry = (fn, options = {}) => {",
+      "return (...args) => retryWithBackoff(() => fn(...args), options);",
+      "export const retryApiCall = async (apiCall, options = {}) => {",
+      "shouldRetry: (err) => {",
+      "export const circuitBreaker = (fn, options = {}) => {",
+      "return async (...args) => {",
+      "new Promise((_, reject) =>",
+      "setTimeout(() => reject(new Error('Circuit breaker timeout')), timeout)"
+    ]
+  },
+  "ots-webapp/src/services/searchService.js": {
+    "summary": "Search Service - Unified search across orders, customers, and SKUs\n  Supports fuzzy matching, filters, and recent searches",
+    "functions": [
+      "export const getSearchHistory = () => {",
+      "export const addToHistory = (query, type = 'general') => {",
+      "const filtered = history.filter(h => h.query.toLowerCase() !== query.toLowerCase());",
+      "export const clearHistory = () => {",
+      "const fuzzyScore = (text, query) => {",
+      "export const searchOrders = (orders, query, filters = {}) => {",
+      "let results = orders.map(order => {",
+      "}).filter(order => order._searchScore > 20);",
+      "results = results.filter(o => o.status === filters.status);",
+      "results = results.filter(o => o.source === filters.source);",
+      "results = results.filter(o => o.carrier === filters.carrier);",
+      "results = results.filter(o => new Date(o.createdAt) >= new Date(filters.dateFrom));",
+      "results = results.filter(o => new Date(o.createdAt) <= new Date(filters.dateTo));",
+      "return results.sort((a, b) => b._searchScore - a._searchScore);",
+      "export const searchCustomers = (orders, query) => {",
+      "orders.forEach(order => {",
+      "return customers.map(customer => {",
+      "}).filter(c => c._searchScore > 20)",
+      ".sort((a, b) => b._searchScore - a._searchScore);",
+      "export const searchSKUs = (skuMaster, query) => {",
+      "return skuMaster.map(sku => {",
+      "}).filter(s => s._searchScore > 20)",
+      ".sort((a, b) => b._searchScore - a._searchScore);",
+      "export const universalSearch = (data, query) => {",
+      "export const quickLookup = (orders, id) => {",
+      "return orders.find(o =>"
+    ]
+  },
+  "ots-webapp/src/services/securityServices.js": {
+    "summary": "SecurityServices.js\n  Comprehensive security features for Bluewud OTS\n  Includes 2FA, IP whitelist, rate limiting, encryption, and audit logging",
+    "functions": [
+      "class SecurityServices {",
+      ".map(b => b.toString(16).padStart(2, '0'))",
+      "logs = logs.filter(l => l.userId === userId);"
+    ]
+  },
+  "ots-webapp/src/services/supplyChainService.js": {
+    "summary": "supplyChainService.js\n  Logic for batch-level inventory tracking and vendor management.",
+    "functions": [
+      "export const allocateFIFO = (batches, quantity) => {",
+      "const sortedBatches = [...batches].sort((a, b) => new Date(a.receivedAt) - new Date(b.receivedAt));",
+      "export const getVendors = () => VENDORS;",
+      "export const getShortagePredictions = (inventory, orders) => {",
+      "inventory.forEach(item => {",
+      "const skuOrders = orders.filter(o => o.sku === item.sku);",
+      "const totalQty = skuOrders.reduce((sum, o) => sum + (parseInt(o.quantity) || 1), 0);",
+      "return alerts.sort((a, b) => (a.urgency === 'CRITICAL' ? -1 : 1));"
+    ]
+  },
+  "ots-webapp/src/services/vendorService.js": {
+    "summary": "Vendor Service\n  Manages supply chain partners and tracks historical lead-time performance.",
+    "functions": [
+      "class VendorService {",
+      "return VENDORS.find(v => v.id === id);"
+    ]
+  },
+  "ots-webapp/src/services/warehouseOptimizer.js": {
+    "summary": "Warehouse Optimizer Service\n  Intelligent multi-warehouse routing and fulfillment optimization.",
+    "functions": [
+      "class WarehouseOptimizer {",
+      ".filter(wh => wh.currentLoad < wh.capacity)",
+      ".sort((a, b) => (a.currentLoad / a.capacity) - (b.currentLoad / b.capacity));",
+      "return Object.values(this.warehouses).map(wh => ({"
+    ]
+  },
+  "ots-webapp/src/services/warehouseService.js": {
+    "summary": "warehouseService.js\n  Logic for multi-node fulfillment and inventory management.",
+    "functions": [
+      "export const routeOrderToWarehouse = (pincode) => {",
+      "const assigned = WAREHOUSES.find(wh => wh.pincodes.some(p => pincode.startsWith(p)));",
+      "export const getWarehouses = () => WAREHOUSES;"
+    ]
+  },
+  "ots-webapp/src/services/whatsappService.js": {
+    "summary": "Message templates approved by Meta for WhatsApp Business",
+    "functions": [
+      "const formatPhoneNumber = (phone) => {",
+      "const fillTemplate = (template, data) => {",
+      "Object.entries(data).forEach(([key, value]) => {",
+      "const sendWhatsAppMessage = async (phone, templateId, data) => {",
+      "export const sendWhatsAppMessage = async (phoneNumber, templateKey, variables = {}) => {",
+      "export const sendBatchWhatsAppMessages = async (orders) => {",
+      "batch.map(order =>",
+      "batchResults.forEach((result, idx) => {",
+      "await new Promise(resolve => setTimeout(resolve, 1000));",
+      "export const queueWhatsAppMessage = async (phoneNumber, templateKey, variables = {}) => {",
+      "export const processQueuedWhatsAppMessages = async () => {",
+      "const updated = queue.filter(m => m.id !== msg.id);",
+      "await new Promise(resolve => setTimeout(resolve, 200));",
+      "export const getMessageStatus = async (messageId) => {",
+      "export const validateWhatsAppConfig = () => {",
+      "function interpolateTemplate(template, variables) {",
+      "Object.entries(variables).forEach(([key, value]) => {",
+      "async function logWhatsAppDelivery(phoneNumber, templateKey, messageId) {"
+    ]
+  },
+  "ots-webapp/src/services/whatsappServiceEnhanced.js": {
+    "summary": "WhatsApp Business API Service\n  Sends order status updates via WhatsApp messaging\n  \n  Features:\n  - Token refresh and management\n  - Message templating\n  - Error handling & retry logic\n  - Rate limiting\n  - Delivery tracking",
+    "functions": [
+      "class WhatsAppService {",
+      "const paramValues = Object.values(parameters).map(val => ({",
+      "time => now - time < this.rateLimitWindow",
+      "return new Promise((resolve, reject) => {",
+      "request.onsuccess = () => resolve(request.result);",
+      "request.onerror = () => reject(request.error);",
+      "return new Promise(resolve => setTimeout(resolve, ms));",
+      "export const initWhatsAppService = (apiToken, businessAccountId, phoneNumberId) => {",
+      "export const getWhatsAppService = () => {"
+    ]
+  },
+  "ots-webapp/src/services/zohoBridgeService.js": {
+    "summary": "Zoho CRM Bridge Service\n  Handles communication with the Zoho Catalyst/CRM backend.",
+    "functions": [
+      "const API_BASE = '/server/zoho'; // Base path for Catalyst functions",
+      "export const fetchSKUMaster = async () => {",
+      "export const pushOrderToZoho = async (order) => {",
+      "export const syncDeltaOrders = async (orders) => {",
+      "const modifiedOrders = orders.filter(o => !lastSync || new Date(o.lastUpdated || o.updatedAt) > new Date(lastSync));",
+      "const results = await Promise.allSettled(modifiedOrders.map(o => pushOrderToZoho(o)));"
+    ]
+  },
+  "ots-webapp/src/services/zohoWebhookService.js": {
+    "summary": "Zoho Webhook Service (Simulated)\n  Processes incoming data stream from Zoho CRM/Inventory\n  Enables real-time reactive state updates",
+    "functions": [
+      "class ZohoWebhookService {",
+      "return () => {",
+      "this.listeners = this.listeners.filter(l => l !== callback);",
+      "this.listeners.forEach(listener => listener({ type, data }));",
+      "this.listeners.forEach(listener => listener(mappedEvent));"
+    ]
+  },
+  "ots-webapp/src/setupTests.js": {
+    "summary": "No summary available.",
+    "functions": []
+  },
+  "ots-webapp/src/tests/integration.test.js": {
+    "summary": "Bluewud OTS - Integration Tests\n  \n  Order flow integration tests for major user workflows.\n  Tests the complete lifecycle using mock data.",
+    "functions": [
+      "vi.mock('../services/offlineCacheService', () => ({",
+      "vi.mock('../services/notificationService', () => ({",
+      "describe('Order Flow Integration', () => {",
+      "describe('Order Creation & Validation', () => {",
+      "it('should validate and create a complete order', () => {",
+      "it('should normalize Amazon order format', () => {",
+      "it('should normalize Flipkart order format', () => {",
+      "describe('Order State Machine', () => {",
+      "beforeEach(() => {",
+      "it('should transition from Pending to MTP-Applied', () => {",
+      "it('should reject invalid transitions', () => {",
+      "it('should track status history', () => {",
+      "it('should return valid next statuses', () => {",
+      "it('should handle bulk transitions', () => {",
+      "describe('Carrier Rate Engine', () => {",
+      "it('should return rates from all carriers', () => {",
+      "rates.forEach(rate => {",
+      "it('should provide carrier recommendation', () => {",
+      "describe('Order Deduplication', () => {",
+      "it('should merge orders with same external ID', () => {",
+      "const amz100 = result.find(o => o.externalId === 'AMZ-100');",
+      "it('should preserve unique orders', () => {",
+      "describe('Complete Order Lifecycle', () => {",
+      "it('should complete full order lifecycle', () => {"
+    ]
+  },
+  "ots-webapp/src/tests/utils.test.js": {
+    "summary": "Bluewud OTS - Unit Tests\n  \n  Core utility function tests using vanilla JS testing pattern.\n  For use with Vitest or Jest.",
+    "functions": [
+      "describe('Security Utils', () => {",
+      "describe('escapeHtml', () => {",
+      "it('should escape HTML special characters', () => {",
+      "it('should handle non-string inputs', () => {",
+      "describe('stripHtml', () => {",
+      "it('should remove HTML tags', () => {",
+      "describe('isValidEmail', () => {",
+      "it('should validate correct emails', () => {",
+      "it('should reject invalid emails', () => {",
+      "describe('isValidIndianPhone', () => {",
+      "it('should validate Indian mobile numbers', () => {",
+      "it('should reject invalid numbers', () => {",
+      "describe('isValidPincode', () => {",
+      "it('should validate 6-digit pincodes', () => {",
+      "it('should reject invalid pincodes', () => {",
+      "describe('isValidGST', () => {",
+      "it('should validate correct GST format', () => {",
+      "it('should reject invalid GST', () => {",
+      "describe('sanitizeFilename', () => {",
+      "it('should remove dangerous characters', () => {",
+      "describe('Data Utils', () => {",
+      "describe('calculateGST', () => {",
+      "it('should calculate 18% GST by default', () => {",
+      "it('should calculate reduced GST rate', () => {",
+      "describe('getGSTType', () => {",
+      "it('should return CGST+SGST for same state', () => {",
+      "it('should return IGST for different states', () => {",
+      "describe('generateOrderId', () => {",
+      "it('should generate unique IDs', () => {",
+      "it('should use provided prefix', () => {",
+      "describe('validateOrder', () => {",
+      "it('should pass valid order', () => {",
+      "it('should fail invalid order', () => {",
+      "describe('deduplicateOrders', () => {",
+      "it('should merge duplicate orders', () => {",
+      "describe('International Service', () => {",
+      "describe('convertFromINR', () => {",
+      "it('should convert INR to USD', () => {",
+      "it('should format currency correctly', () => {"
+    ]
+  },
+  "ots-webapp/src/utils/analyticsUtils.js": {
+    "summary": "Analytics Utilities\n  Functions for data analysis, forecasting, and anomaly detection",
+    "functions": [
+      "export const calculateMovingAverage = (data, windowSize = 7) => {",
+      "const avg = window.reduce((sum, val) => sum + val, 0) / windowSize;",
+      "export const detectAnomalies = (data, threshold = 2.5) => {",
+      "const mean = data.reduce((a, b) => a + b, 0) / data.length;",
+      "const variance = data.reduce((sum, val) => sum + Math.pow(val - mean, 2), 0) / data.length;",
+      "return data.map((val, idx) => ({",
+      "export const linearRegression = (data, forecastDays = 7) => {",
+      "const sumY = data.reduce((a, b) => a + b, 0);",
+      "const sumXY = data.reduce((sum, y, i) => sum + (i + 1) * y, 0);",
+      "export const calculateGrowthRate = (current, previous) => {",
+      "export const aggregateByPeriod = (data, period = 'day') => {",
+      "data.forEach(item => {",
+      "return Object.entries(aggregated).map(([period, data]) => ({",
+      "export const calculatePercentile = (data, percentile) => {",
+      "const sorted = [...data].sort((a, b) => a - b);",
+      "export const getDistributionStats = (data) => {",
+      "const sorted = [...data].sort((a, b) => a - b);",
+      "const mean = data.reduce((a, b) => a + b, 0) / n;",
+      "const mode = data.reduce((prev, current) =>",
+      "(data.filter(v => v === current).length > data.filter(v => v === prev).length) ? current : prev",
+      "export const calculateRetention = (cohortData) => {",
+      "cohortData.forEach(user => {"
+    ]
+  },
+  "ots-webapp/src/utils/apiUtils.js": {
+    "summary": "API Utilities\n  Provides API request handling with retry logic, offline support, and response normalization",
+    "functions": [
+      "class APIError extends Error {",
+      ") => {",
+      "await new Promise((resolve) => setTimeout(resolve, delay));",
+      "const isSuccessStatus = (status) => status >= 200 && status < 300;",
+      "const normalizeResponse = (data) => {",
+      ") => {",
+      "const timeoutId = setTimeout(() => controller.abort(), timeout);",
+      "const data = await response.json().catch(() => ({}));",
+      ") => {",
+      "() => fetchWithErrorHandling(endpoint, fetchOptions),",
+      "const get = (endpoint, options = {}) =>",
+      "const post = (endpoint, body, options = {}) =>",
+      "const put = (endpoint, body, options = {}) =>",
+      "const patch = (endpoint, body, options = {}) =>",
+      "const del = (endpoint, options = {}) =>",
+      "const batch = async (requests) => {",
+      "requests.map((req) => {",
+      "return results.map((result) =>",
+      "const queueForRetry = (endpoint, options = {}) => {",
+      "const processQueue = async () => {"
+    ]
+  },
+  "ots-webapp/src/utils/commercialUtils.js": {
+    "summary": "Commercial Utilities - Business logic for pricing, commissions, and profitability\n  Based on legacy Bluewud Commercial Model (Deluge)",
+    "functions": [
+      "export const TMS_LEVELS = {",
+      "export const calculateProfitability = ({",
+      "}) => {",
+      "export const getEnhancedSKU = (skuCode, skuMaster = []) => {",
+      "const sku = skuMaster.find(s => s.sku === skuCode);",
+      "const parent = skuMaster.find(s => s.sku === sku.parentSku);",
+      "export const resolveSkuAlias = (alias, aliasMaster = []) => {",
+      "const found = aliasMaster.find(item => item.alias === alias);"
+    ]
+  },
+  "ots-webapp/src/utils/contextInjection.js": {
+    "summary": "Context Injection Utility\n  Scans the src directory to extract function signatures and JSDoc for indexing.",
+    "functions": [
+      "class ContextInjection {",
+      "files.forEach(file => {",
+      "lines.forEach(line => {",
+      "// Simple regex for function signatures (classes, const functions, traditional functions)",
+      "if (trimmed.includes('function') || trimmed.includes('=>') || trimmed.startsWith('class ') || (trimmed.startsWith('export const') && trimmed.includes('='))) {",
+      "files.forEach(file => {",
+      "functions: signatures.map(s => s.signature)",
+      "signatures.forEach(sig => {"
+    ]
+  },
+  "ots-webapp/src/utils/dataUtils.js": {
+    "summary": "Data Utilities - Common data transformation and validation functions",
+    "functions": [
+      "export const STATE_CODES = {",
+      "export const calculateGST = (amount, gstType = 'standard') => {",
+      "export const getGSTType = (sellerState, buyerState) => {",
+      "export const getStateCode = (stateName) => {",
+      "export const generateOrderId = (prefix = 'BW') => {",
+      "export const validateOrder = (order) => {",
+      "export const resolveSkuAlias = (sku, aliases = []) => {",
+      "const found = aliases.find(a => a.alias.toLowerCase() === sku.toLowerCase());",
+      "export const normalizeOrder = (rawOrder, source, aliases = []) => {",
+      "quantity: rawOrder.line_items?.reduce((sum, item) => sum + item.quantity, 0) || 1,",
+      "export const toCSV = (data, columns = null) => {",
+      "const rows = data.map(row =>",
+      "cols.map(col => {",
+      "export const downloadFile = (content, filename, mimeType = 'text/csv') => {",
+      "export const exportOrdersCSV = (orders, filename = 'orders_export.csv') => {",
+      "export const exportJSON = (data, filename = 'export.json') => {",
+      "export const formatDateIN = (date) => {",
+      "export const formatDateTimeIN = (date) => {",
+      "export const getRelativeTime = (date) => {",
+      "export const deduplicateOrders = (existingOrders = [], newOrders = []) => {",
+      "statusHistory: Array.from(new Set([...(existing.statusHistory || []), ...(no.statusHistory || [])].map(h => JSON.stringify(h)))).map(s => JSON.parse(s))",
+      "export const deduplicateCustomers = (customers = []) => {"
+    ]
+  },
+  "ots-webapp/src/utils/dateTimeUtils.js": {
+    "summary": "Date/Time Utilities\n  Advanced date/time operations including scheduling, timezone handling, and calendar utilities",
+    "functions": [
+      "const now = () => new Date().toISOString();",
+      "const timestamp = () => Date.now();",
+      "const addDays = (date, days) => {",
+      "const addHours = (date, hours) => {",
+      "const addMinutes = (date, minutes) => {",
+      "const daysBetween = (date1, date2) => {",
+      "const hoursBetween = (date1, date2) => {",
+      "const minutesBetween = (date1, date2) => {",
+      "const isPast = (date) => new Date(date) < new Date();",
+      "const isFuture = (date) => new Date(date) > new Date();",
+      "const isToday = (date) => {",
+      "const isTomorrow = (date) => {",
+      "const startOfDay = (date = new Date()) => {",
+      "const endOfDay = (date = new Date()) => {",
+      "const startOfWeek = (date = new Date()) => {",
+      "const startOfMonth = (date = new Date()) => {",
+      "const endOfMonth = (date = new Date()) => {",
+      "const getDaysInMonth = (date = new Date()) => {",
+      "const isLeapYear = (year) => {",
+      "const getWeekNumber = (date = new Date()) => {",
+      "const getDayName = (date = new Date(), locale = 'en-US') => {",
+      "const getMonthName = (date = new Date(), locale = 'en-US') => {",
+      "const getRelativeTime = (date) => {",
+      "const getBusinessDaysBetween = (date1, date2) => {",
+      "const scheduleAt = (targetTime, callback) => {",
+      "const scheduleRecurring = (interval, callback, options = {}) => {",
+      "const scheduleNext = () => {",
+      "setTimeout(() => {",
+      "return { stop: () => { stopTime = -1; } };",
+      "const getNextOccurrence = (hour, minute = 0) => {",
+      "const convertTimezone = (date, fromOffset, toOffset) => {"
+    ]
+  },
+  "ots-webapp/src/utils/deduplicationEngine.js": {
+    "summary": "Optimized Deduplication Engine\n  High-performance streaming deduplication with O(n) time complexity\n  Suitable for large batch operations (100k+ records)",
+    "functions": [
+      "export const deduplicateOrdersOptimized = (existingOrders = [], newOrders = [], onProgress = null) => {",
+      "export async function* deduplicateOrdersStream(existingOrdersStream, newOrdersStream) {",
+      "export const deduplicateOrdersBatched = (existingOrders = [], newOrders = [], batchSize = 5000) => {",
+      "export const deduplicateOrdersIncremental = (cache = new Map(), newOrders = []) => {",
+      "export const deduplicateCustomersAdvanced = (",
+      ") => {",
+      "function generateOrderKey(order) {",
+      "function mergeOrderRecords(existing, incoming) {",
+      "new Map(histories.map(h => [h.timestamp, h])).values()",
+      ").sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));",
+      "function normalizePhone(phone) {",
+      "function normalizeEmail(email) {",
+      "export const getDeduplicationStats = (original, deduplicated) => {"
+    ]
+  },
+  "ots-webapp/src/utils/deduplicationUtils.js": {
+    "summary": "Deduplication Utilities\n  Optimized for processing large batches of orders (10k+)\n  \n  Features:\n  - Streaming deduplication\n  - Multiple deduplication strategies\n  - Performance metrics\n  - Memory-efficient processing",
+    "functions": [
+      "export const deduplicateOrders = (orders, key = 'id') => {",
+      "export function* streamDeduplicateOrders(orders, chunkSize = 1000, key = 'id') {",
+      "export const deduplicateByMultipleFields = (orders, keys = ['id', 'email']) => {",
+      "const composite = keys.map(k => order[k]).join('|');",
+      "export const deduplicateWithMerge = (orders, timeWindowMs = 3600000) => { // 1 hour default",
+      "const merged = orderGroup.sort((a, b) =>",
+      "merged.totalQuantity = orderGroup.reduce((sum, o) => sum + (o.quantity || 1), 0);",
+      "export const getDeduplicationMetrics = (original, deduplicated) => {",
+      "export const batchDeduplicateOrders = async (orders, onProgress = null, key = 'id') => {",
+      "await new Promise(resolve => setTimeout(resolve, 0));",
+      "export const deduplicateWithIndexes = (orders, indexKeys = ['id', 'email', 'phone']) => {",
+      "indexKeys.forEach(key => {",
+      "indexKeys.forEach(key => {",
+      "findByEmail: (email) => indexes.email?.get(email) || [],",
+      "findByPhone: (phone) => indexes.phone?.get(phone) || [],",
+      "findById: (id) => indexes.id?.get(id)?.[0]",
+      "export const deduplicateWorkerFunction = (orders, key = 'id') => {",
+      "// Export all functions"
+    ]
+  },
+  "ots-webapp/src/utils/formatUtils.js": {
+    "summary": "Format Utilities\n  Functions for formatting dates, currency, phone numbers, etc.",
+    "functions": [
+      "export const formatDate = (date) => {",
+      "export const formatDateTime = (date) => {",
+      "export const formatCurrency = (amount, currency = 'INR') => {",
+      "export const formatPhone = (phone) => {",
+      "export const formatPincode = (pincode) => {",
+      "export const formatPercentage = (value, decimals = 2) => {",
+      "export const formatBytes = (bytes) => {",
+      "export const formatOrderId = (id) => {",
+      "export const capitalize = (str) => {",
+      "export const toTitleCase = (str) => {",
+      "return str.replace(/\\w\\S*/g, (txt) => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase());",
+      "export const truncate = (text, maxLength, suffix = '...') => {",
+      "export const formatAddress = (address) => {",
+      "export const formatDuration = (ms) => {"
+    ]
+  },
+  "ots-webapp/src/utils/formatters.js": {
+    "summary": "Formatters - Display formatting functions for the app\n  Handles currency (INR), dates, status badges, and localized displays",
+    "functions": [
+      "export const formatCurrency = (amount, opts = {}) => {",
+      "export const formatCompactCurrency = (amount) => {",
+      "export const formatDate = (date, format = 'DD/MM/YYYY') => {",
+      "Object.entries(replacements).forEach(([key, value]) => {",
+      "export const formatRelativeTime = (date) => {",
+      "export const formatStatus = (status) => {",
+      "export const formatPaymentMethod = (method) => {",
+      "export const formatCarrier = (carrier) => {",
+      "export const formatOrderSource = (source) => {",
+      "export const formatAddress = (address, format = 'singleLine') => {",
+      "export const formatPhoneNumber = (phone) => {",
+      "export const formatPercentage = (value, decimals = 1) => {",
+      "export const formatFileSize = (bytes) => {",
+      "export const truncateText = (text, maxLength = 50, suffix = '...') => {",
+      "export const capitalize = (str) => {",
+      "export const uppercase = (str) => {",
+      "export const lowercase = (str) => {",
+      "export const titleCase = (str) => {",
+      ".map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())",
+      "export const formatOrderId = (id) => {",
+      "export const formatSKU = (sku) => {",
+      "export const formatQuantity = (qty, unit = 'pcs') => {",
+      "export const formatWeight = (weight, unit = 'kg') => {",
+      "export const formatDimensions = (length, width, height, unit = 'cm') => {",
+      "export const formatPincode = (pincode) => {",
+      "export const formatAadhar = (aadhar) => {",
+      "export const formatPAN = (pan) => {",
+      "export const formatGST = (gst) => {",
+      "export const formatBatch = (items, formatter) => {",
+      "return items.map(item => formatter(item));"
+    ]
+  },
+  "ots-webapp/src/utils/integrationHelpers.js": {
+    "summary": "Integration Helpers\n  Utilities for integrating the AI package with the main app",
+    "functions": [
+      "export const initializeIntegration = async (config = {}) => {",
+      "const registerServiceWorker = async () => {",
+      "const initializeOfflineSupport = () => {",
+      "window.addEventListener('online', () => {",
+      "window.addEventListener('offline', () => {",
+      "const syncOfflineQueue = async () => {",
+      "const initializeKeyboardShortcuts = () => {",
+      "const registerShortcut = (keys, handler, description) => {",
+      "const handleKeydown = (e) => {",
+      "const initializeActivityLogging = () => {",
+      "const logActivity = (action, details) => {",
+      "const getUserId = () => {",
+      "export const isFeatureEnabled = (featureName) => {",
+      "export const getIntegrationStatus = () => {",
+      "export const migrateData = (oldData, schema) => {",
+      "Object.keys(schema).forEach(key => {",
+      "const transformer = schema[key].transform || (v => v);",
+      "export const validateCompatibility = () => {"
+    ]
+  },
+  "ots-webapp/src/utils/keyboardShortcuts.js": {
+    "summary": "Keyboard Shortcuts Utility\n  Comprehensive keyboard shortcut registry with 75+ shortcuts\n  for power users in Bluewud OTS",
+    "functions": [
+      "export const registerShortcut = (keys, callback) => {",
+      "document.addEventListener('keydown', (e) => {",
+      "const matchesKeyCombo = (e, keys) => {",
+      "const getKeyName = (e) => {",
+      "export const getAllShortcuts = () => shortcuts;",
+      "export const getShortcutsByCategory = (category) => {",
+      "([, value]) => value.category === category",
+      "export const getShortcutByAction = (action) => {",
+      "([, value]) => value.action === action",
+      "export const getCategories = () => {",
+      "Object.values(shortcuts).forEach(s => categories.add(s.category));",
+      "export const getFormattedShortcuts = () => {",
+      "return Object.entries(shortcuts).map(([keys, value]) => ({"
+    ]
+  },
+  "ots-webapp/src/utils/labelGenerator.js": {
+    "summary": "Generates a professional packing slip PDF for an order.\n  @param {Object} order - The order data object.",
+    "functions": [
+      "export const generatePackingSlip = (order) => {",
+      "export const generateShippingLabel = (order) => {"
+    ]
+  },
+  "ots-webapp/src/utils/labelGeneratorEnhanced.js": {
+    "summary": "Enhanced Label Generator Utility\n  Integrates with multiple carrier APIs for label generation\n  \n  Supported Carriers:\n  - Delhivery\n  - BlueDart\n  - XpressBees\n  \n  Features:\n  - Multi-carrier support\n  - PDF generation\n  - Barcode creation\n  - Error handling & retry logic",
+    "functions": [
+      "export const generateLabel = async (order, carrier = 'delhivery') => {",
+      "const callCarrierAPI = async (order, carrier, config) => {",
+      "const buildCarrierPayload = (order, carrier) => {",
+      "const formatAddress = (address) => {",
+      "const calculateWeight = (order) => {",
+      "return (order.items || []).reduce((total, item) => {",
+      "const calculateDimensions = (order) => {",
+      "const getCarrierToken = (carrier) => {",
+      "export const generatePDF = async (labelData) => {",
+      "const createLabelHTML = (labelData) => {",
+      "export const downloadLabel = async (labelData, filename = 'shipping_label.pdf') => {",
+      "export const generateBarcode = (value) => {",
+      "export const generateLabelWithRetry = async (order, carrier, maxRetries = 3) => {",
+      "await new Promise(resolve => setTimeout(resolve, 1000 * attempt));",
+      "// Export all functions"
+    ]
+  },
+  "ots-webapp/src/utils/logisticsUtils.js": {
+    "summary": "India Logistics Utility Engine\n  Handles Pan-India Zone Mapping, Rate Estimation, and Delivery Time Calculation.",
+    "functions": [
+      "export const INDIA_ZONES = {",
+      "export const getZoneFromLocation = (state, city) => {",
+      "export const estimateRate = (config, weight, zone) => {",
+      "export const getSLA = (zone) => {"
+    ]
+  },
+  "ots-webapp/src/utils/performanceMonitor.js": {
+    "summary": "Performance Monitor Utility\n  Tools for tracking and logging component render performance.",
+    "functions": [
+      "export const useRenderTime = (componentName) => {",
+      "useEffect(() => {",
+      "export const measureTime = (fn, label) => {",
+      "return async (...args) => {",
+      "export const perfMark = (markName) => {",
+      "export const perfMeasure = (name, startMark, endMark) => {"
+    ]
+  },
+  "ots-webapp/src/utils/securityUtils.js": {
+    "summary": "Security Utilities\n  Input Sanitization, Encryption, and Security-related helpers",
+    "functions": [
+      "export const escapeHtml = (str) => {",
+      "return str.replace(/[&<>\"'`=/]/g, char => htmlEntities[char]);",
+      "export const stripHtml = (str) => {",
+      "export const sanitizeObject = (obj) => {",
+      "export const isValidEmail = (email) => {",
+      "export const isValidIndianPhone = (phone) => {",
+      "export const isValidPincode = (pincode) => {",
+      "export const isValidGST = (gst) => {",
+      "export const sanitizeFilename = (filename) => {",
+      "export const checkRateLimit = (key, maxAttempts = 5, windowMs = 60000) => {",
+      "export const generateSecureToken = (length = 32) => {",
+      "export const hashPassword = (password) => {",
+      "export const verifyPassword = (password, hash) => {",
+      "export const encryptData = (data, key = process.env.VITE_ENCRYPTION_KEY) => {",
+      "export const decryptData = (encryptedData, key = process.env.VITE_ENCRYPTION_KEY) => {",
+      "export const generateTOTPSecret = () => {",
+      "export const generateOTP = (length = 6) => {",
+      "export const hashIdentifier = (identifier) => {",
+      "export const generateCSRFToken = () => {",
+      "export const validateCSRFToken = (token, storedToken) => {",
+      "export const sanitizeInput = (input) => {",
+      "export const isSafeUrl = (url) => {",
+      "export const createSecureCookie = (name, value, options = {}) => {",
+      "export const isValidJWTStructure = (token) => {",
+      "return parts.length === 3 && parts.every(part => part.length > 0);",
+      "export const extractJWTPayload = (token) => {",
+      "export const isJWTExpired = (token) => {",
+      "export const generateRateLimitKey = (identifier, action) => {"
+    ]
+  },
+  "ots-webapp/src/utils/selectors.js": {
+    "summary": "Selectors - Redux/State selector functions\n  Used for extracting and transforming data from global state\n  Can be used with Reselect for memoization if needed",
+    "functions": [
+      "export const selectAllOrders = (state) => state?.orders?.list || [];",
+      "export const selectOrderById = (state, orderId) =>",
+      "state?.orders?.list?.find(o => o.orderId === orderId);",
+      "export const selectOrdersByStatus = (state, status) =>",
+      "state?.orders?.list?.filter(o => o.status === status) || [];",
+      "export const selectOrdersBySource = (state, source) =>",
+      "state?.orders?.list?.filter(o => o.source === source) || [];",
+      "export const selectOrdersByDateRange = (state, startDate, endDate) =>",
+      "state?.orders?.list?.filter(o => {",
+      "export const selectPendingOrders = (state) =>",
+      "export const selectDeliveredOrders = (state) =>",
+      "export const selectCancelledOrders = (state) =>",
+      "export const selectTotalOrders = (state) => selectAllOrders(state).length;",
+      "export const selectTotalOrderValue = (state) =>",
+      "selectAllOrders(state).reduce((sum, order) => sum + (order.totalAmount || 0), 0);",
+      "export const selectAverageOrderValue = (state) => {",
+      "export const selectOrdersByPaymentMethod = (state, method) =>",
+      "selectAllOrders(state).filter(o => o.paymentMethod === method);",
+      "export const selectCODOrders = (state) =>",
+      "export const selectPrepaidOrders = (state) =>",
+      "export const selectAllProducts = (state) => state?.products?.list || [];",
+      "export const selectProductById = (state, productId) =>",
+      "state?.products?.list?.find(p => p.id === productId);",
+      "export const selectProductBySKU = (state, sku) =>",
+      "state?.products?.list?.find(p => p.sku === sku);",
+      "export const selectProductsByCategory = (state, category) =>",
+      "state?.products?.list?.filter(p => p.category === category) || [];",
+      "export const selectLowStockProducts = (state, threshold = 10) =>",
+      "state?.products?.list?.filter(p => p.stock <= threshold) || [];",
+      "export const selectProductInventoryValue = (state) =>",
+      "state?.products?.list?.reduce((sum, p) => sum + (p.price * p.stock), 0) || 0;",
+      "export const selectAllCustomers = (state) => state?.customers?.list || [];",
+      "export const selectCustomerById = (state, customerId) =>",
+      "state?.customers?.list?.find(c => c.id === customerId);",
+      "export const selectCustomerByEmail = (state, email) =>",
+      "state?.customers?.list?.find(c => c.email === email);",
+      "export const selectCustomerByPhone = (state, phone) =>",
+      "state?.customers?.list?.find(c => c.phone === phone);",
+      "export const selectCustomerOrderCount = (state, customerId) =>",
+      "selectAllOrders(state).filter(o => o.customerId === customerId).length;",
+      "export const selectTopCustomers = (state, limit = 10) => {",
+      ".map(c => ({",
+      ".filter(o => o.customerId === c.id)",
+      ".reduce((sum, o) => sum + (o.totalAmount || 0), 0)",
+      ".sort((a, b) => b.totalSpent - a.totalSpent)",
+      "export const selectAllWarehouses = (state) => state?.warehouses?.list || [];",
+      "export const selectWarehouseById = (state, warehouseId) =>",
+      "state?.warehouses?.list?.find(w => w.id === warehouseId);",
+      "export const selectWarehouseByZone = (state, zone) =>",
+      "state?.warehouses?.list?.filter(w => w.zone === zone) || [];",
+      "export const selectWarehouseInventory = (state, warehouseId) =>",
+      "state?.inventory?.filter(i => i.warehouseId === warehouseId) || [];",
+      "export const selectAllShipments = (state) => state?.shipments?.list || [];",
+      "export const selectShipmentById = (state, shipmentId) =>",
+      "state?.shipments?.list?.find(s => s.id === shipmentId);",
+      "export const selectShipmentsByCarrier = (state, carrier) =>",
+      "state?.shipments?.list?.filter(s => s.carrier === carrier) || [];",
+      "export const selectShipmentsByStatus = (state, status) =>",
+      "state?.shipments?.list?.filter(s => s.status === status) || [];",
+      "export const selectInTransitShipments = (state) =>",
+      "export const selectPendingShipments = (state) =>",
+      "export const selectDeliveredShipments = (state) =>",
+      "export const selectOrdersByChannel = (state, channel) =>",
+      "selectAllOrders(state).filter(o => o.source === channel);",
+      "export const selectChannelMetrics = (state, channel) => {",
+      "totalValue: orders.reduce((sum, o) => sum + (o.totalAmount || 0), 0),",
+      "avgOrderValue: orders.length > 0 ? orders.reduce((sum, o) => sum + (o.totalAmount || 0), 0) / orders.length : 0",
+      "export const selectAllChannelMetrics = (state) => {",
+      "return channels.map(ch => selectChannelMetrics(state, ch));",
+      "export const selectFilteredOrders = (state, filters = {}) => {",
+      "if (filters.status) results = results.filter(o => o.status === filters.status);",
+      "if (filters.source) results = results.filter(o => o.source === filters.source);",
+      "if (filters.minAmount) results = results.filter(o => o.totalAmount >= filters.minAmount);",
+      "if (filters.maxAmount) results = results.filter(o => o.totalAmount <= filters.maxAmount);",
+      "if (filters.startDate) results = results.filter(o => new Date(o.createdAt) >= new Date(filters.startDate));",
+      "if (filters.endDate) results = results.filter(o => new Date(o.createdAt) <= new Date(filters.endDate));",
+      "results = results.filter(o =>",
+      "export const selectPaginatedOrders = (state, page = 1, pageSize = 20) => {",
+      "export const selectDashboardSummary = (state) => ({",
+      "export const selectIsLoading = (state) => state?.ui?.loading || false;",
+      "export const selectError = (state) => state?.ui?.error || null;",
+      "export const selectOrdersLoading = (state) => state?.orders?.loading || false;",
+      "export const selectOrdersError = (state) => state?.orders?.error || null;",
+      "export const selectSortedOrders = (state, sortBy = 'createdAt', order = 'desc') => {",
+      "return orders.sort((a, b) => {",
+      "export const selectOrderCountByStatus = (state) => {",
+      "orders.forEach(o => {",
+      "export const selectRevenueByMonth = (state) => {",
+      "orders.forEach(o => {"
+    ]
+  },
+  "ots-webapp/src/utils/storageUtils.js": {
+    "summary": "Storage Utilities\n  Provides abstraction for localStorage, sessionStorage, and IndexedDB operations\n  with automatic serialization/deserialization and error handling",
+    "functions": [
+      "set: (key, value, expiryMs = null) => {",
+      "get: (key, defaultValue = null) => {",
+      "remove: (key) => {",
+      "clear: () => {",
+      "has: (key) => {",
+      "keys: () => {",
+      "return Object.keys(localStorage).filter((key) => {",
+      "set: (key, value) => {",
+      "get: (key, defaultValue = null) => {",
+      "remove: (key) => {",
+      "clear: () => {",
+      "init: async (stores = []) => {",
+      "return new Promise((resolve, reject) => {",
+      "request.onerror = () => reject(request.error);",
+      "request.onsuccess = () => {",
+      "request.onupgradeneeded = (event) => {",
+      "stores.forEach((store) => {",
+      "store.indexes.forEach((index) => {",
+      "add: async (storeName, value) => {",
+      "return new Promise((resolve, reject) => {",
+      "request.onerror = () => reject(request.error);",
+      "request.onsuccess = () => resolve(request.result);",
+      "put: async (storeName, value) => {",
+      "return new Promise((resolve, reject) => {",
+      "request.onerror = () => reject(request.error);",
+      "request.onsuccess = () => resolve(request.result);",
+      "get: async (storeName, key) => {",
+      "return new Promise((resolve, reject) => {",
+      "request.onerror = () => reject(request.error);",
+      "request.onsuccess = () => resolve(request.result);",
+      "getAll: async (storeName) => {",
+      "return new Promise((resolve, reject) => {",
+      "request.onerror = () => reject(request.error);",
+      "request.onsuccess = () => resolve(request.result);",
+      "delete: async (storeName, key) => {",
+      "return new Promise((resolve, reject) => {",
+      "request.onerror = () => reject(request.error);",
+      "request.onsuccess = () => resolve();",
+      "clear: async (storeName) => {",
+      "return new Promise((resolve, reject) => {",
+      "request.onerror = () => reject(request.error);",
+      "request.onsuccess = () => resolve();"
+    ]
+  },
+  "ots-webapp/src/utils/validationUtils.js": {
+    "summary": "ValidationUtils - Core validation functions for the app\n  Used for orders, users, addresses, and field-level validation\n  India-first: handles GST, state codes, phone numbers",
+    "functions": [
+      "export const isValidIndianPhoneNumber = (phone) => {",
+      "export const isValidEmail = (email) => {",
+      "export const isValidGST = (gst) => {",
+      "export const isValidPAN = (pan) => {",
+      "export const isValidIndianPincode = (pincode) => {",
+      "export const isValidAadhar = (aadhar) => {",
+      "export const isValidAddress = (address) => {",
+      "export const isValidOrderId = (orderId) => {",
+      "export const isValidSKU = (sku) => {",
+      "export const isValidAmount = (amount) => {",
+      "export const isValidQuantity = (qty) => {",
+      "export const isValidWeight = (weight) => {",
+      "export const isValidDimensions = (length, width, height) => {",
+      "const isValid = (dim) => {",
+      "export const isValidOrderStatus = (status) => {",
+      "export const isValidPaymentMethod = (method) => {",
+      "export const isValidCarrier = (carrier) => {",
+      "export const isValidOrderSource = (source) => {",
+      "export const isValidStateCode = (stateCode) => {",
+      "export const validateOrder = (order) => {",
+      "order.items.forEach((item, idx) => {",
+      "export const validateBatchEmails = (emails) => {",
+      "return emails.map((email, idx) => ({",
+      "export const validateBatchPhones = (phones) => {",
+      "return phones.map((phone, idx) => ({"
+    ]
+  }
+}
