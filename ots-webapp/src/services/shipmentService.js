@@ -5,6 +5,8 @@
 
 import { generateLabelHTML } from './labelPrintService';
 import { CARRIER_RATES } from './carrierRateEngine';
+import delhiveryAdapter from './delhiveryAdapter';
+import bluedartAdapter from './bluedartAdapter';
 
 const API_CONFIG = {
     delhivery: {
@@ -26,19 +28,22 @@ const simulateDelay = () => new Promise(resolve => setTimeout(resolve, 800 + Mat
  * @returns {Promise<object>} { awb, labelUrl, carrier, status, shippingId }
  */
 export const createForwardShipment = async (order) => {
-    const carrierId = order.carrier?.toLowerCase().includes('delhivery') ? 'delhivery'
-        : order.carrier?.toLowerCase().includes('bluedart') ? 'bluedart'
-            : 'delhivery'; // Default
+    const carrierId = order.carrier?.toLowerCase().includes('bluedart') ? 'bluedart' : 'delhivery';
 
     console.log(`[ShipmentService] Booking order ${order.id} with ${carrierId}...`);
 
     try {
         // 1. Try Live API if Token Exists
-        if (API_CONFIG[carrierId]?.token) {
-            return await bookViaApi(carrierId, order);
+        if (carrierId === 'delhivery' && API_CONFIG.delhivery.token) {
+            return await delhiveryAdapter.createShipment(order, API_CONFIG.delhivery.token);
+        }
+
+        if (carrierId === 'bluedart' && API_CONFIG.bluedart.key) {
+            return await bluedartAdapter.createShipment(order, API_CONFIG.bluedart.key);
         }
 
         // 2. Fallback to Simulation
+        console.warn(`[ShipmentService] No API keys for ${carrierId}. Using Simulation.`);
         await simulateDelay();
         return mockBookingResponse(carrierId, order);
 
@@ -58,9 +63,12 @@ export const trackShipment = async (awb, carrier = 'delhivery') => {
     const carrierId = carrier.toLowerCase();
 
     try {
-        if (API_CONFIG[carrierId]?.token) {
-            // Placeholder for real tracking API call
-            // const response = await fetch(...)
+        if (carrierId.includes('delhivery') && API_CONFIG.delhivery.token) {
+            return await delhiveryAdapter.trackShipment(awb, API_CONFIG.delhivery.token);
+        }
+
+        if (carrierId.includes('bluedart') && API_CONFIG.bluedart.key) {
+            return await bluedartAdapter.trackShipment(awb, API_CONFIG.bluedart.key);
         }
 
         await simulateDelay();
@@ -68,7 +76,7 @@ export const trackShipment = async (awb, carrier = 'delhivery') => {
 
     } catch (error) {
         console.error('[ShipmentService] Tracking Error:', error);
-        return { error: 'Tracking unavailable' };
+        return { error: 'Tracking unavailable (API Error)' };
     }
 };
 

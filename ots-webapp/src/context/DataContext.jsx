@@ -477,38 +477,37 @@ export const DataProvider = ({ children }) => {
     /**
      * Update order status with state machine validation
      */
-    const updateOrder = useCallback((orderId, updates) => {
-        setOrders(prev => prev.map(order =>
-            ```
-    // --- ORDER ACTIONS ---
-    const updateStatus = async (orderId, newStatus, metadata = {}) => {
-        try {
-            // Find order
-            const orderIndex = orders.findIndex(o => o.id === orderId);
-            if (orderIndex === -1) throw new Error("Order not found");
+    const updateOrderStatus = useCallback(async (orderId, newStatus, metadata = {}) => {
+        let result = { success: false };
 
-            const currentOrder = orders[orderIndex];
+        setOrders(prev => {
+            const orderIndex = prev.findIndex(o => o.id === orderId);
+            if (orderIndex === -1) return prev;
 
-            // Execute Transition (Now Async)
-            const updatedOrder = await transitionOrder(currentOrder, newStatus, {
+            const currentOrder = prev[orderIndex];
+
+            // 1. Validate Transition
+            const transitionResult = transitionOrder(currentOrder, newStatus, {
                 ...metadata,
                 user: agentMetadata.lastAgent
             });
 
-            // Update State
-            setOrders(prev => {
-                const newOrders = [...prev];
-                newOrders[orderIndex] = updatedOrder;
-                return newOrders;
-            });
+            if (!transitionResult.success) {
+                console.warn(`Invalid transition for ${orderId}: ${currentOrder.status} -> ${newStatus}`);
+                result = { success: false, error: transitionResult.error };
+                return prev;
+            }
 
-            // Log Activity
+            const updatedOrder = transitionResult.order;
+            const newOrders = [...prev];
+            newOrders[orderIndex] = updatedOrder;
+
+            // 2. Log Activity
             logOrderStatusChange(orderId, currentOrder.status, newStatus, agentMetadata.lastAgent);
             setAgentMetadata(m => ({ ...m, mutations: m.mutations + 1 }));
 
-            // --- GLOBAL SYNC: Inventory Deduction / Restock ---
+            // 3. Inventory Updates
             if (newStatus === 'Delivered' || newStatus === 'In-Transit') {
-                // Deduct from Stock when Shipped/Delivered (for demo, we deduct 1 from inStock and 1 from reserved)
                 setInventoryLevels(p => ({
                     ...p,
                     [updatedOrder.sku]: {
@@ -518,24 +517,22 @@ export const DataProvider = ({ children }) => {
                     }
                 }));
             } else if (newStatus === 'Cancelled' || newStatus === 'RTO-Delivered') {
-                // Return to stock if cancelled before delivery
                 setInventoryLevels(p => ({
                     ...p,
                     [updatedOrder.sku]: {
                         ...p[updatedOrder.sku],
                         reserved: Math.max(0, (p[updatedOrder.sku]?.reserved || 0) - 1)
-                        // Note: In a real system, RTO-Delivered would involve a QA step before adding back to inStock
                     }
                 }));
             }
 
-            // Notifications
+            // 4. Notifications (Async Handlers)
             try {
                 const whatsapp = getWhatsAppService();
-                if (newStatus === ORDER_STATUSES.IN_TRANSIT || newStatus === ORDER_STATUSES.PICKED_UP) {
+                if (newStatus === 'In-Transit' || newStatus === 'Picked Up') {
                     notifyOrderShipped(updatedOrder);
                     whatsapp.sendWhatsAppMessage(orderId, 'shipping_update', updatedOrder.phone, { orderId, status: newStatus });
-                } else if (newStatus === ORDER_STATUSES.DELIVERED) {
+                } else if (newStatus === 'Delivered') {
                     notifyOrderDelivered(updatedOrder);
                     whatsapp.sendWhatsAppMessage(orderId, 'delivery_confirmation', updatedOrder.phone, { orderId });
                 } else if (newStatus.startsWith('RTO')) {
@@ -544,55 +541,15 @@ export const DataProvider = ({ children }) => {
                     whatsapp.sendWhatsAppMessage(orderId, 'rto_alert', updatedOrder.phone, { orderId, reason });
                 }
             } catch (e) {
-                console.warn('Notification service error during transitions:', e.message);
-                // Fallback to basic notifications
-                if (newStatus === ORDER_STATUSES.IN_TRANSIT || newStatus === ORDER_STATUSES.PICKED_UP) {
-                    notifyOrderShipped(updatedOrder);
-                } else if (newStatus === ORDER_STATUSES.DELIVERED) {
-                    notifyOrderDelivered(updatedOrder);
-                }
+                console.warn('Notification error:', e);
             }
 
-            return { success: true };
-        } catch (err) {
-            console.error("Status Update Failed:", err);
-            return { success: false, error: err.message };
-        }
-    };
+            result = { success: true, order: updatedOrder };
+            return newOrders;
+        });
 
-                    // Trigger notifications for key statuses
-                    try {
-                        const whatsapp = getWhatsAppService();
-                        if (newStatus === ORDER_STATUSES.IN_TRANSIT || newStatus === ORDER_STATUSES.PICKED_UP) {
-                            notifyOrderShipped(transitionResult.order);
-                            whatsapp.sendWhatsAppMessage(orderId, 'shipping_update', order.phone, { orderId, status: newStatus });
-                        } else if (newStatus === ORDER_STATUSES.DELIVERED) {
-                            notifyOrderDelivered(transitionResult.order);
-                            whatsapp.sendWhatsAppMessage(orderId, 'delivery_confirmation', order.phone, { orderId });
-                        } else if (newStatus.startsWith('RTO')) {
-                            const reason = metadata.reason || 'Shipment returned';
-                            notifyOrderRTO(transitionResult.order, reason);
-                            whatsapp.sendWhatsAppMessage(orderId, 'rto_alert', order.phone, { orderId, reason });
-                        }
-                    } catch (e) {
-                        console.warn('Notification service error during transitions:', e.message);
-                        // Fallback to basic notifications
-                        if (newStatus === ORDER_STATUSES.IN_TRANSIT || newStatus === ORDER_STATUSES.PICKED_UP) {
-                            notifyOrderShipped(transitionResult.order);
-                        } else if (newStatus === ORDER_STATUSES.DELIVERED) {
-                            notifyOrderDelivered(transitionResult.order);
-                        }
-                    }
-
-                    return transitionResult.order;
-                }
-            }
-            return order;
-        }));
-
-        return result || { success: false, error: 'Order not found' };
+        return result;
     }, []);
-
     /**
      * Bulk update order statuses
      */
@@ -611,7 +568,7 @@ export const DataProvider = ({ children }) => {
             });
 
             logBulkUpdate(orderIds, newStatus);
-            notifyBulkImport(results.successful.length, `Bulk ${ newStatus }`);
+            notifyBulkImport(results.successful.length, `Bulk ${newStatus}`);
         }
 
         return results;
@@ -738,7 +695,7 @@ export const DataProvider = ({ children }) => {
      * Warehouse: Transfer stock between locations/bins
      */
     const transferStock = useCallback((sku, fromBin, toBin, qty) => {
-        console.log(`📦 Transferring ${ qty } of ${ sku } from ${ fromBin } to ${ toBin }`);
+        console.log(`📦 Transferring ${qty} of ${sku} from ${fromBin} to ${toBin}`);
         setInventoryLevels(prev => {
             const current = prev[sku] || { inStock: 0, reserved: 0, location: 'UNKNOWN' };
             return {
@@ -754,7 +711,7 @@ export const DataProvider = ({ children }) => {
             id: Date.now(),
             action: 'STOCK_TRANSFER',
             sku,
-            details: `${ qty } units moved: ${ fromBin } -> ${ toBin }`,
+            details: `${qty} units moved: ${fromBin} -> ${toBin}`,
             timestamp: new Date().toISOString()
         }, ...prev]);
     }, []);
@@ -764,7 +721,7 @@ export const DataProvider = ({ children }) => {
      */
     const receiveStock = useCallback((skuId, vendor, quantity) => {
         const newBatch = {
-            id: `BATCH - ${ skuId } - ${ Date.now() }`,
+            id: `BATCH - ${skuId} - ${Date.now()}`,
             sku: skuId,
             vendor,
             quantity,
@@ -887,9 +844,9 @@ export const DataProvider = ({ children }) => {
         }
 
         if (format === 'csv') {
-            exportOrdersCSV(data, `orders_export_${ Date.now() }.csv`);
+            exportOrdersCSV(data, `orders_export_${Date.now()}.csv`);
         } else {
-            exportJSON(data, `orders_export_${ Date.now() }.json`);
+            exportJSON(data, `orders_export_${Date.now()}.json`);
         }
 
         return { success: true, count: data.length };

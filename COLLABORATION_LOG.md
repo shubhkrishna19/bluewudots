@@ -13,7 +13,9 @@
 
 | Task | Assignee | Started | Branch/Session | Notes |
 |------|----------|---------|----------------|-------|
+| Zoho CRM Integration (Real API) | Antigravity | 2026-01-04 | Session-Current |
 | P16.4: Thermal Printer Integration | Antigravity (Agent-1) | 2026-01-04 | session-current | Implementing `ZebraBrowserPrint` logic |
+| P16.2: Live Carrier API Integration | Antigravity (Agent-2) | 2026-01-04 04:10 | session-current | DHL/FedEx/Delhivery API connectivity |
 
 ---
 
@@ -46,7 +48,7 @@
 
 ### High Priority
 - [x] **P16.1: Real WhatsApp API Integration** - Connect to Meta Business API (COMPLETE)
-- [ ] **P16.2: Live Carrier API Integration** - DHL/FedEx API connectivity
+- [x] **P16.2: Live Carrier API Integration** - DHL/FedEx API connectivity (CLAIMED Agent-2)
 - [x] **P16.3: Marketplace API Sync** - Real-time Amazon/Flipkart integration (CLAIMED Agent-1)
 
 ### Medium Priority
@@ -98,5 +100,5 @@
 
 ---
 
-*Last Updated: 2026-01-04 04:08 IST*
+*Last Updated: 2026-01-04 04:11 IST*
 *Updated By: Antigravity AI (Agent-2)*

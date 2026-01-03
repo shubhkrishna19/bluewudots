@@ -1,11 +1,14 @@
 import React, { useState, useMemo } from 'react';
 import { useData } from '../../context/DataContext';
 import marketplaceSyncService from '../../services/marketplaceService';
-import { DollarSign, AlertCircle, TrendingUp, FileText } from 'lucide-react';
+import { DollarSign, AlertCircle, TrendingUp, FileText, RefreshCw, Download } from 'lucide-react';
 
 const MarketplaceReconciliation = () => {
-    const { orders } = useData();
+    const { orders, addOrder } = useData();
     const [selectedChannel, setSelectedChannel] = useState('AMAZON');
+    const [isSyncing, setIsSyncing] = useState(false);
+    const [lastSynced, setLastSynced] = useState(null);
+    const [foundOrders, setFoundOrders] = useState([]);
 
     // Simulate fetching a settlement report
     const [settlementReport, setSettlementReport] = useState([]);
@@ -65,6 +68,55 @@ const MarketplaceReconciliation = () => {
                             {ch}
                         </button>
                     ))}
+                </div>
+            </div>
+
+            {/* Sync Control Panel */}
+            <div className="glass p-4 mt-6 flex justify-between items-center">
+                <div>
+                    <h3 className="text-lg font-bold flex items-center gap-2">
+                        {selectedChannel === 'AMAZON' ? 'Amazon SP-API' : 'Flipkart API'} Sync
+                        <span className={`text-xs px-2 py-0.5 rounded ${marketplaceSyncService.isAmazonLive ? 'bg-green-500/20 text-green-400' : 'bg-yellow-500/20 text-yellow-400'}`}>
+                            {marketplaceSyncService.isAmazonLive ? 'LIVE' : 'SIMULATION'}
+                        </span>
+                    </h3>
+                    <p className="text-xs text-slate-400">Last Synced: {lastSynced ? lastSynced.toLocaleTimeString() : 'Never'}</p>
+                </div>
+                <div className="flex gap-3">
+                    <button
+                        disabled={isSyncing}
+                        onClick={async () => {
+                            setIsSyncing(true);
+                            const newOrders = await marketplaceSyncService.fetchOrders(selectedChannel.toLowerCase());
+                            setFoundOrders(newOrders);
+                            setLastSynced(new Date());
+                            setIsSyncing(false);
+                        }}
+                        className="btn-secondary flex items-center gap-2"
+                    >
+                        <RefreshCw className={`w-4 h-4 ${isSyncing ? 'animate-spin' : ''}`} />
+                        {isSyncing ? 'Fetching...' : 'Sync Now'}
+                    </button>
+
+                    {foundOrders.length > 0 && (
+                        <button
+                            className="btn-primary flex items-center gap-2 animate-fade"
+                            onClick={() => {
+                                let imported = 0;
+                                foundOrders.forEach(o => {
+                                    // Check if exists
+                                    if (!orders.find(ex => ex.id === o.id)) {
+                                        addOrder(o);
+                                        imported++;
+                                    }
+                                });
+                                alert(`Successfully Imported ${imported} orders from ${selectedChannel}!`);
+                                setFoundOrders([]);
+                            }}
+                        >
+                            <Download className="w-4 h-4" /> Import {foundOrders.length} Orders
+                        </button>
+                    )}
                 </div>
             </div>
 
