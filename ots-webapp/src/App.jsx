@@ -12,12 +12,8 @@ import SkeletonLoader from '@/components/Common/SkeletonLoader'
 import NotificationCenter from '@/components/Notifications/NotificationCenter'
 
 // Service & Utility Imports
-import {
-  initShortcuts,
-  registerDefaultShortcuts,
-  destroyShortcuts,
-  keyboardShortcuts,
-} from '@/services/keyboardShortcutsEnhanced'
+import { initShortcuts, registerDefaultShortcuts, destroyShortcuts } from './services/keyboardShortcutsEnhanced'
+import keyboardShortcuts from './services/keyboardShortcutsEnhanced'
 import { initWhatsAppService } from '@/services/whatsappService'
 import searchService from '@/services/searchService'
 
