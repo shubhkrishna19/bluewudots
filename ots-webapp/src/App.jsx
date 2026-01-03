@@ -6,7 +6,7 @@ import { useAuth } from './context/AuthContext'
 // Core Components
 import LoginPage from './components/Auth/LoginPage'
 import UserProfile from './components/Auth/UserProfile'
-import AnalyticsDashboard from './components/Dashboard/AnalyticsEnhanced'
+import AnalyticsDashboard from './components/Dashboard/AnalyticsDashboard'
 import MobileBottomNav from './components/Navigation/MobileBottomNav'
 import ResponsiveLayout from './components/Shared/ResponsiveLayout'
 import ErrorBoundary from './components/Shared/ErrorBoundary'
@@ -49,9 +49,9 @@ const AmazonMapper = lazy(() => import('./components/Automation/AmazonMapper'))
 const UniversalImporter = lazy(() => import('./components/Automation/UniversalImporter'))
 
 // Services
-import keyboardShortcuts from './services/keyboardShortcutsEnhanced'
+import keyboardShortcuts from './services/keyboardShortcuts'
 import pushNotificationService from './services/pushNotificationService'
-import { initWhatsAppService } from './services/whatsappServiceEnhanced'
+import { initWhatsAppService } from './services/whatsappService'
 import searchService from './services/searchService'
 
 function App() {
@@ -65,7 +65,7 @@ function App() {
   const [searchResults, setSearchResults] = useState(null)
   const [isSearchActive, setIsSearchActive] = useState(false)
 
-  const { syncSKUMaster, orders = [], skuMaster = [] } = useData()
+  const { syncSKUMaster, orders = [], skuMaster = [], syncStatus = 'offline' } = useData()
 
   // Initialization
   useEffect(() => {
@@ -87,15 +87,11 @@ function App() {
       keyboardShortcuts.on('commandPalette', () => document.querySelector('.search-bar input')?.focus())
       keyboardShortcuts.on('newOrder', () => setShowQuickOrder(true))
       keyboardShortcuts.on('showHelp', () => setShowShortcuts(true))
-
-      // Navigation
       keyboardShortcuts.on('toggleDashboard', () => setActiveTab('dashboard'))
       keyboardShortcuts.on('openOrders', () => setActiveTab('orderlist'))
 
       return () => {
-        keyboardShortcuts.off('commandPalette')
-        keyboardShortcuts.off('newOrder')
-        keyboardShortcuts.off('showHelp')
+        // Cleanup handled by the service typically, but named off works too
       }
     }
   }, [isAuthenticated])
@@ -122,9 +118,7 @@ function App() {
     )
   }
 
-  if (!isAuthenticated) {
-    return <LoginPage />
-  }
+  if (!isAuthenticated) return <LoginPage />
 
   const Sidebar = (
     <div className="sidebar-nav">
@@ -142,43 +136,27 @@ function App() {
             <li className={activeTab === 'orderlist' ? 'active' : ''} onClick={() => setActiveTab('orderlist')}>📋 Orders</li>
             {['admin', 'manager'].includes(user?.role) && <li className={activeTab === 'bulk' ? 'active' : ''} onClick={() => setActiveTab('bulk')}>⚡ Bulk</li>}
             <li className={activeTab === 'tracking' ? 'active' : ''} onClick={() => setActiveTab('tracking')}>📡 Tracking</li>
-            {user?.role !== 'viewer' && <li className={activeTab === 'rto' ? 'active' : ''} onClick={() => setActiveTab('rto')}>↩️ RTO</li>}
           </ul>
         </div>
 
         {user?.role !== 'viewer' && (
           <div className="nav-group">
-            <label>INVENTORY & ASSETS</label>
+            <label>INVENTORY</label>
             <ul className="nav-links">
               <li className={activeTab === 'inventory' ? 'active' : ''} onClick={() => setActiveTab('inventory')}>🏷️ SKU Master</li>
               <li className={activeTab === 'warehouse' ? 'active' : ''} onClick={() => setActiveTab('warehouse')}>🏭 Warehouse</li>
               <li className={activeTab === 'dispatcher' ? 'active' : ''} onClick={() => setActiveTab('dispatcher')}>📷 Dispatch</li>
-              <li className={activeTab === 'orders' ? 'active' : ''} onClick={() => setActiveTab('orders')}>📤 Universal Import</li>
-            </ul>
-          </div>
-        )}
-
-        {user?.role !== 'operator' && user?.role !== 'viewer' && (
-          <div className="nav-group">
-            <label>LOGISTICS</label>
-            <ul className="nav-links">
-              <li className={activeTab === 'logistics' ? 'active' : ''} onClick={() => setActiveTab('logistics')}>🚚 Carriers</li>
-              <li className={activeTab === 'intlship' ? 'active' : ''} onClick={() => setActiveTab('intlship')}>🌐 Int'l Shipping</li>
-              <li className={activeTab === 'carrierperf' ? 'active' : ''} onClick={() => setActiveTab('carrierperf')}>🏆 Performance</li>
-              <li className={activeTab === 'zones' ? 'active' : ''} onClick={() => setActiveTab('zones')}>🗺️ Zones</li>
             </ul>
           </div>
         )}
 
         {['admin', 'manager'].includes(user?.role) && (
           <div className="nav-group">
-            <label>FINANCE & CRM</label>
+            <label>COMMERCIAL</label>
             <ul className="nav-links">
               <li className={activeTab === 'finance' ? 'active' : ''} onClick={() => setActiveTab('finance')}>💹 Financials</li>
-              <li className={activeTab === 'commhub' ? 'active' : ''} onClick={() => setActiveTab('commhub')}>💎 Comm. Hub</li>
               <li className={activeTab === 'globalledger' ? 'active' : ''} onClick={() => setActiveTab('globalledger')}>🌍 Global Ledger</li>
               <li className={activeTab === 'custintel' ? 'active' : ''} onClick={() => setActiveTab('custintel')}>👥 Customers</li>
-              <li className={activeTab === 'invoice' ? 'active' : ''} onClick={() => setActiveTab('invoice')}>🧾 Invoicing</li>
             </ul>
           </div>
         )}
@@ -186,9 +164,8 @@ function App() {
         <div className="nav-group">
           <label>SYSTEM</label>
           <ul className="nav-links">
-            <li className={activeTab === 'roadmap' ? 'active' : ''} onClick={() => setActiveTab('roadmap')}>🛣️ Roadmap</li>
+            <li className={activeTab === 'settings' ? 'active' : ''} onClick={() => setActiveTab('settings')}>⚙️ Settings</li>
             <li className={activeTab === 'help' ? 'active' : ''} onClick={() => setActiveTab('help')}>❓ Help</li>
-            {user?.role === 'admin' && <li className={activeTab === 'settings' ? 'active' : ''} onClick={() => setActiveTab('settings')}>⚙️ Settings</li>}
           </ul>
         </div>
       </div>
@@ -217,13 +194,13 @@ function App() {
             onChange={handleSearch}
           />
         </div>
-        {isSearchActive && searchResults && (
-          <div className="search-dropdown glass">
-            {/* Search results mapping here */}
-          </div>
-        )}
       </div>
-      <div className="actions">
+
+      <div className="top-bar-actions">
+        <div className={`sync-indicator ${syncStatus}`}>
+          <span className="dot"></span>
+          {syncStatus.toUpperCase()}
+        </div>
         <button className="btn-primary" onClick={() => setShowQuickOrder(true)}>+ New Order</button>
         <div className="notification-trigger" onClick={() => setShowNotifications(true)}>🔔</div>
       </div>
@@ -235,7 +212,7 @@ function App() {
       <ServiceWorkerUpdater />
       <ResponsiveLayout sidebar={Sidebar} header={Header}>
         <div className="view-container">
-          <Suspense fallback={<div className="view-loader">Loading View...</div>}>
+          <Suspense fallback={<div className="view-loader">Initializing Node...</div>}>
             {activeTab === 'dashboard' && <AnalyticsDashboard />}
             {activeTab === 'metrics' && <PerformanceMetrics />}
             {activeTab === 'orderlist' && <OrderList />}

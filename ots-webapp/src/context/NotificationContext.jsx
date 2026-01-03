@@ -21,7 +21,15 @@ export const NotificationProvider = ({ children }) => {
     // Initialize and subscribe
     useEffect(() => {
         // Load initial
-        setNotifications(notificationService.getNotifications({ limit: 50 }));
+        let initialNotifs = notificationService.getNotifications({ limit: 50 });
+
+        // Seed demo data if empty (for MVP show)
+        if (initialNotifs.length === 0) {
+            seedDemoNotifications();
+            initialNotifs = notificationService.getNotifications({ limit: 50 });
+        }
+
+        setNotifications(initialNotifs);
         setUnreadCount(notificationService.getUnreadCount());
 
         // Subscribe to live updates
@@ -37,6 +45,37 @@ export const NotificationProvider = ({ children }) => {
 
         return () => unsubscribe();
     }, []);
+
+    const seedDemoNotifications = () => {
+        notificationService.createNotification({
+            type: 'ORDER_DELIVERED',
+            title: 'Order Delivered',
+            message: 'BW-9901 delivered to Mumbai successfully',
+            data: { orderId: 'BW-9901' },
+            priority: 'low'
+        });
+        notificationService.createNotification({
+            type: 'ORDER_SHIPPED',
+            title: 'Order Shipped',
+            message: 'BW-9902 picked up by BlueDart. AWB: BD987654321',
+            data: { orderId: 'BW-9902', awb: 'BD987654321' },
+            priority: 'normal'
+        });
+        notificationService.createNotification({
+            type: 'CARRIER_ISSUE',
+            title: 'Carrier Delay Alert',
+            message: 'Delhivery shipments delayed in North Zone due to weather',
+            data: { carrier: 'Delhivery', zone: 'NORTH' },
+            priority: 'critical'
+        });
+        notificationService.createNotification({
+            type: 'LOW_STOCK',
+            title: 'Low Stock Alert',
+            message: 'BL-DESK-01 is below reorder level (8/15 units)',
+            data: { sku: 'BL-DESK-01', currentStock: 8, reorderLevel: 15 },
+            priority: 'high'
+        });
+    };
 
     /**
      * Show a transient toast notification

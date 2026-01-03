@@ -12,6 +12,7 @@ import { initOfflineCacheService, getOfflineCacheService } from '../services/off
 import { sendWhatsAppMessage } from '../services/whatsappService';
 import warehouseOptimizer from '../services/warehouseOptimizer';
 import webhookService from '../services/zohoWebhookService';
+import { getOrderTrend, getKPIs } from '../services/analyticsService';
 
 import { SKU_MASTER, SKU_ALIASES } from '../data/skuMasterData';
 
@@ -148,6 +149,23 @@ export const DataProvider = ({ children }) => {
         }
     }, []);
 
+    // Analytics Helpers for UI
+    const getTrend = useCallback((days) => {
+        const result = getOrderTrend(orders, days);
+        // Map service result to component expectations if needed
+        return {
+            slope: result.slope,
+            trendLine: result.trendLine || [], // Ensure trendLine exists
+            status: result.trend
+        };
+    }, [orders]);
+
+    const getRevenueProjection = useCallback((days) => {
+        const kpis = getKPIs(orders, new Date(Date.now() - 30 * 86400000), new Date());
+        const dailyAvg = kpis.totalRevenue / 30;
+        return Math.round(dailyAvg * days);
+    }, [orders]);
+
     const value = {
         orders,
         skuMaster,
@@ -164,6 +182,8 @@ export const DataProvider = ({ children }) => {
         syncSKUMaster,
         adjustStock,
         transferStock,
+        getTrend,
+        getRevenueProjection,
         getCarrierRates: (s) => getAllRates(s),
         getCarrierRecommendation: (s, p) => getRecommendation(s, p)
     };

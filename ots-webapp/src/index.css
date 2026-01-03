@@ -40,6 +40,29 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  scrollbar-width: thin;
+  scrollbar-color: var(--primary) transparent;
+}
+
+/* Custom Scrollbar - Webkit */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--glass-border);
+  border-radius: 10px;
+  transition: background 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primary);
 }
 
 * {
@@ -233,5 +256,84 @@ button {
   select,
   textarea {
     font-size: 0.9rem;
+  }
+}
+
+/* ============================================
+   POWER USER & SYSTEM INDICATORS
+   ============================================ */
+
+.sync-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 1px;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--glass-border);
+}
+
+.sync-indicator .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.sync-indicator.online .dot {
+  background: var(--success);
+  box-shadow: 0 0 8px var(--success);
+}
+
+.sync-indicator.syncing .dot {
+  background: var(--warning);
+  animation: pulse 1s infinite alternate;
+}
+
+.sync-indicator.error .dot {
+  background: var(--danger);
+}
+
+@keyframes pulse {
+  from {
+    opacity: 0.4;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+.highlight-match {
+  background: rgba(99, 102, 241, 0.3);
+  color: #fff;
+  border-radius: 2px;
+  padding: 0 2px;
+}
+
+.view-loader {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  color: var(--text-muted);
+  font-size: 1.2rem;
+  letter-spacing: 2px;
+  animation: breathe 2s infinite ease-in-out;
+}
+
+@keyframes breathe {
+
+  0%,
+  100% {
+    opacity: 0.5;
+    transform: scale(0.98);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1);
   }
 }

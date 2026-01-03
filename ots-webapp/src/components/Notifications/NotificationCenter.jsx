@@ -1,104 +1,25 @@
-import React, { useState, useEffect } from 'react';
-import {
-    getNotifications,
-    markAsRead,
-    markAllAsRead,
-    getUnreadCount,
-    subscribe,
-    createNotification,
-    NOTIFICATION_TYPES
-} from '../../services/notificationService';
+import React, { useState } from 'react';
+import { useNotifications } from '../../context/NotificationContext';
 import { getRelativeTime } from '../../utils/dataUtils';
+import { NOTIFICATION_TYPES } from '../../services/notificationService';
 
 const NotificationCenter = ({ isOpen, onClose }) => {
-    const [notifications, setNotifications] = useState([]);
+    const {
+        notifications,
+        unreadCount,
+        markRead,
+        markAllRead,
+        pushNotification
+    } = useNotifications();
+
     const [filter, setFilter] = useState('all');
-    const [unreadCount, setUnreadCount] = useState(0);
-
-    // Fetch notifications and subscribe to updates
-    useEffect(() => {
-        const refreshNotifications = () => {
-            let notifs = getNotifications({ limit: 50 });
-
-            // If no notifications, seed with demo data
-            if (notifs.length === 0) {
-                seedDemoNotifications();
-                notifs = getNotifications({ limit: 50 });
-            }
-
-            setNotifications(notifs);
-            setUnreadCount(getUnreadCount());
-        };
-
-        refreshNotifications();
-
-        // Subscribe to new notifications
-        const unsubscribe = subscribe((newNotif) => {
-            setNotifications(prev => [newNotif, ...prev.slice(0, 49)]);
-            setUnreadCount(getUnreadCount());
-        });
-
-        return () => unsubscribe();
-    }, []);
-
-    // Seed demo notifications
-    const seedDemoNotifications = () => {
-        createNotification({
-            type: 'ORDER_DELIVERED',
-            title: 'Order Delivered',
-            message: 'BW-9901 delivered to Mumbai successfully',
-            data: { orderId: 'BW-9901' }
-        });
-        createNotification({
-            type: 'ORDER_SHIPPED',
-            title: 'Order Shipped',
-            message: 'BW-9902 picked up by BlueDart. AWB: BD987654321',
-            data: { orderId: 'BW-9902', awb: 'BD987654321' }
-        });
-        createNotification({
-            type: 'CARRIER_ISSUE',
-            title: 'Carrier Delay Alert',
-            message: 'Delhivery shipments delayed in North Zone due to weather',
-            data: { carrier: 'Delhivery', zone: 'NORTH' }
-        });
-        createNotification({
-            type: 'BULK_IMPORT',
-            title: 'Bulk Import Complete',
-            message: '12 orders imported from Amazon marketplace',
-            data: { count: 12, source: 'Amazon' }
-        });
-        createNotification({
-            type: 'COD_PENDING',
-            title: 'COD Remittance Pending',
-            message: '5 COD orders awaiting reconciliation (₹45,000)',
-            data: { count: 5, amount: 45000 }
-        });
-        createNotification({
-            type: 'ORDER_RTO',
-            title: 'RTO Initiated',
-            message: 'BW-9856 returned - Customer refused delivery',
-            data: { orderId: 'BW-9856', reason: 'Customer refused' }
-        });
-        createNotification({
-            type: 'LOW_STOCK',
-            title: 'Low Stock Alert',
-            message: 'BL-DESK-01 is below reorder level (8/15 units)',
-            data: { sku: 'BL-DESK-01', currentStock: 8, reorderLevel: 15 }
-        });
-    };
 
     const handleMarkAsRead = (id) => {
-        markAsRead(id);
-        setNotifications(prev => prev.map(n =>
-            n.id === id ? { ...n, read: true } : n
-        ));
-        setUnreadCount(getUnreadCount());
+        markRead(id);
     };
 
     const handleMarkAllRead = () => {
-        markAllAsRead();
-        setNotifications(prev => prev.map(n => ({ ...n, read: true })));
-        setUnreadCount(0);
+        markAllRead();
     };
 
     const filteredNotifications = notifications.filter(n => {
@@ -250,7 +171,6 @@ const NotificationCenter = ({ isOpen, onClose }) => {
                                                 style={{ marginTop: '10px', padding: '6px 12px', fontSize: '0.75rem' }}
                                                 onClick={(e) => {
                                                     e.stopPropagation();
-                                                    // Would navigate to order details
                                                     console.log('View order:', notif.data.orderId);
                                                 }}
                                             >
@@ -291,15 +211,13 @@ const NotificationCenter = ({ isOpen, onClose }) => {
                     className="btn-primary glass-hover"
                     style={{ flex: 1 }}
                     onClick={() => {
-                        // Simulate new notification for demo
-                        createNotification({
-                            type: 'SYSTEM_ALERT',
-                            title: 'Test Notification',
-                            message: 'This is a test notification created just now',
-                            data: {}
-                        });
-                        setNotifications(getNotifications({ limit: 50 }));
-                        setUnreadCount(getUnreadCount());
+                        // Demo notification via context
+                        pushNotification(
+                            'SYSTEM_ALERT',
+                            'Test Notification',
+                            'This is a test notification created via context',
+                            {}
+                        );
                     }}
                 >
                     🧪 Test

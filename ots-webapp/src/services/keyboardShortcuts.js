@@ -1,168 +1,150 @@
 /**
  * Keyboard Shortcuts Service
  * Global keyboard bindings for power users with conflict resolution,
- * accessibility support, and customizable key combinations.
+ * command palette support, and accessibility features.
  */
 
-const shortcuts = new Map();
-let isEnabled = true;
-
-export const DEFAULT_SHORTCUTS = {
-  'Ctrl+K': { action: 'openCommandPalette', description: 'Open command palette' },
-  'Ctrl+/': { action: 'openSearch', description: 'Quick search orders' },
-  'Ctrl+N': { action: 'newOrder', description: 'Create new order' },
-  'Ctrl+Shift+L': { action: 'viewLogs', description: 'View activity logs' },
-  'Ctrl+Shift+S': { action: 'saveChanges', description: 'Save all changes' },
-  'Ctrl+Shift+D': { action: 'toggleDarkMode', description: 'Toggle dark mode' },
-  'Escape': { action: 'closeModal', description: 'Close modal/popup' },
-  '?': { action: 'showHelp', description: 'Show keyboard shortcuts help' }
-};
-
-/**
- * Initialize keyboard shortcuts system
- */
-export const initializeShortcuts = (customShortcuts = {}) => {
-  // Load defaults
-  Object.entries(DEFAULT_SHORTCUTS).forEach(([combo, config]) => {
-    registerShortcut(combo, config.action, { description: config.description });
-  });
-
-  // Load custom shortcuts
-  Object.entries(customShortcuts).forEach(([combo, config]) => {
-    registerShortcut(combo, config.action, { description: config.description });
-  });
-
-  // Attach global listener
-  document.addEventListener('keydown', handleKeyDown);
-  console.log('[Shortcuts] Initialized with', shortcuts.size, 'shortcuts');
-};
-
-/**
- * Register a keyboard shortcut
- * @param {String} combo - Key combination (e.g., 'Ctrl+K')
- * @param {String|Function} action - Action name or callback function
- * @param {Object} options - { description, scope, enabled }
- */
-export const registerShortcut = (combo, action, options = {}) => {
-  const normalizedCombo = combo.replace(/\s/g, '');
-
-  if (shortcuts.has(normalizedCombo)) {
-    console.warn(`[Shortcuts] Overwriting existing shortcut: ${normalizedCombo}`);
+class KeyboardShortcuts {
+  constructor() {
+    this.shortcuts = new Map();
+    this.listeners = new Map();
+    this.isEnabled = true;
+    this.defaultShortcuts = {
+      'Ctrl+K': { action: 'commandPalette', description: 'Open command palette' },
+      'Ctrl+/': { action: 'openSearch', description: 'Quick search orders' },
+      'Ctrl+N': { action: 'newOrder', description: 'Create new order' },
+      'Ctrl+Shift+L': { action: 'viewLogs', description: 'View activity logs' },
+      'Ctrl+Shift+S': { action: 'syncData', description: 'Sync all data' },
+      'Ctrl+Shift+D': { action: 'toggleDashboard', description: 'Toggle dashboard view' },
+      'Escape': { action: 'closeModal', description: 'Close modal/popup' },
+      '?': { action: 'showHelp', description: 'Show keyboard shortcuts help' }
+    };
+    this.init();
   }
 
-  const config = {
-    action: typeof action === 'string' ? action : null,
-    callback: typeof action === 'function' ? action : null,
-    description: options.description || '',
-    scope: options.scope || 'global',
-    enabled: options.enabled !== false
-  };
+  init() {
+    // Load defaults
+    Object.entries(this.defaultShortcuts).forEach(([combo, config]) => {
+      this.registerShortcut(combo, config.action, { description: config.description });
+    });
 
-  shortcuts.set(normalizedCombo, config);
-  return () => removeShortcut(normalizedCombo);
-};
-
-/**
- * Bind a shortcut to a callback function
- */
-export const bindAction = (action, callback) => {
-  let bound = false;
-  for (const config of shortcuts.values()) {
-    if (config.action === action) {
-      config.callback = callback;
-      bound = true;
+    // Attach global listener
+    if (typeof document !== 'undefined') {
+      document.addEventListener('keydown', (e) => this.handleKeyDown(e));
     }
   }
-  if (!bound) console.warn(`[Shortcuts] Action not found: ${action}`);
-  return bound;
-};
 
-/**
- * Get all registered shortcuts
- */
-export const getAllShortcuts = () => {
-  return Array.from(shortcuts.entries()).map(([combo, config]) => ({
-    combo,
-    action: config.action,
-    description: config.description,
-    enabled: config.enabled
-  }));
-};
-
-/**
- * Toggle shortcuts on/off
- */
-export const toggleShortcuts = (enable = null) => {
-  isEnabled = enable !== null ? enable : !isEnabled;
-  console.log(`[Shortcuts] ${isEnabled ? 'Enabled' : 'Disabled'}`);
-  return isEnabled;
-};
-
-/**
- * Remove a shortcut
- */
-export const removeShortcut = (combo) => {
-  if (shortcuts.has(combo)) {
-    shortcuts.delete(combo);
-    return true;
-  }
-  return false;
-};
-
-/**
- * Cleanup
- */
-export const cleanup = () => {
-  document.removeEventListener('keydown', handleKeyDown);
-  shortcuts.clear();
-};
-
-// ===== Private Helpers =====
-
-function parseKeyCombo(event) {
-  const parts = [];
-  if (event.ctrlKey || event.metaKey) parts.push('Ctrl');
-  if (event.shiftKey) parts.push('Shift');
-  if (event.altKey) parts.push('Alt');
-
-  const key = event.key === ' ' ? 'Space' : event.key.length === 1 ? event.key.toUpperCase() : event.key;
-  parts.push(key);
-
-  return parts.join('+');
-}
-
-function handleKeyDown(event) {
-  if (!isEnabled) return;
-
-  const target = event.target;
-  if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable) {
-    if (!['Escape'].includes(event.key)) return;
+  /**
+   * Register a shortcut
+   */
+  registerShortcut(combo, action, options = {}) {
+    const normalizedCombo = this.normalizeKeyCombo(combo);
+    this.shortcuts.set(normalizedCombo, {
+      action,
+      description: options.description || '',
+      scope: options.scope || 'global',
+      enabled: options.enabled !== false
+    });
   }
 
-  const combo = parseKeyCombo(event);
-  const config = shortcuts.get(combo);
+  /**
+   * Listen for an action
+   */
+  on(action, handler) {
+    if (!this.listeners.has(action)) {
+      this.listeners.set(action, new Set());
+    }
+    this.listeners.get(action).add(handler);
+    return () => this.off(action, handler);
+  }
 
-  if (config && config.enabled) {
-    event.preventDefault();
+  off(action, handler) {
+    if (this.listeners.has(action)) {
+      this.listeners.get(action).delete(handler);
+    }
+  }
 
-    if (config.callback) {
-      config.callback();
-    } else if (config.action) {
+  /**
+   * Normalize key combination string for consistent mapping
+   */
+  normalizeKeyCombo(combo) {
+    return combo.toLowerCase()
+      .replace(/cmd/g, 'ctrl')
+      .replace(/meta/g, 'ctrl')
+      .replace(/\s/g, '')
+      .split('+')
+      .sort()
+      .join('+');
+  }
+
+  /**
+   * Get shortcut combo from keyboard event
+   */
+  getComboFromEvent(event) {
+    const parts = [];
+    if (event.ctrlKey || event.metaKey) parts.push('ctrl');
+    if (event.shiftKey) parts.push('shift');
+    if (event.altKey) parts.push('alt');
+
+    const key = event.key === ' ' ? 'space' : event.key.length === 1 ? event.key.toLowerCase() : event.key.toLowerCase();
+
+    // Avoid duplicates if Ctrl/Shift etc are the keys themselves
+    if (!['control', 'shift', 'alt', 'meta'].includes(key)) {
+      parts.push(key);
+    }
+
+    return parts.sort().join('+');
+  }
+
+  handleKeyDown(event) {
+    if (!this.isEnabled) return;
+
+    const target = event.target;
+    // Don't trigger shortcuts in inputs unless it's Escape
+    if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable) {
+      if (event.key !== 'Escape') return;
+    }
+
+    const combo = this.getComboFromEvent(event);
+    const config = this.shortcuts.get(combo);
+
+    if (config && config.enabled) {
+      event.preventDefault();
+
+      const handlers = this.listeners.get(config.action);
+      if (handlers) {
+        handlers.forEach(handler => handler(event));
+      }
+
+      // Also dispatch global event
       document.dispatchEvent(new CustomEvent('shortcut', {
         detail: { action: config.action, combo }
       }));
+
+      console.log(`[Shortcuts] Executed: ${combo} (${config.action})`);
     }
-    console.log(`[Shortcuts] Executed: ${combo}`);
+  }
+
+  getAllShortcuts() {
+    return Array.from(this.shortcuts.entries()).map(([combo, config]) => ({
+      combo,
+      action: config.action,
+      description: config.description
+    }));
+  }
+
+  setEnabled(enabled) {
+    this.isEnabled = enabled;
   }
 }
 
-export default {
-  initializeShortcuts,
-  registerShortcut,
-  bindAction,
-  getAllShortcuts,
-  toggleShortcuts,
-  removeShortcut,
-  cleanup,
-  DEFAULT_SHORTCUTS
-};
+// Singleton Instance
+const keyboardShortcuts = new KeyboardShortcuts();
+
+// Named exports for compatibility
+export const registerShortcut = (c, a, o) => keyboardShortcuts.registerShortcut(c, a, o);
+export const onShortcut = (a, h) => keyboardShortcuts.on(a, h);
+export const getShortcutsVisible = () => keyboardShortcuts.getAllShortcuts();
+export const setShortcutsEnabled = (e) => keyboardShortcuts.setEnabled(e);
+
+export default keyboardShortcuts;
