@@ -1,268 +1,249 @@
 /**
  * WhatsApp Business API Service
+ * Comprehensive integration for sending order status updates via WhatsApp,
  * unified service handling both Real API and Simulation modes.
- *
+ * 
  * Features:
- * - Token refresh and management
- * - Message templating
- * - Error handling & retry logic
- * - Rate limiting
- * - Delivery tracking
+ * - Token management and lazy initialization
+ * - Message templating with interpolation
+ * - Batch delivery and rate limiting
+ * - Delivery tracking and persistence
  * - Offline Queue Support
  */
 
-import { cacheData, retrieveCachedData } from './offlineCacheService'
+import { cacheData, retrieveCachedData } from './offlineCacheService';
+
+const WHATSAPP_API_BASE = import.meta.env.VITE_WHATSAPP_API_URL || 'https://graph.facebook.com/v18.0';
+
+/**
+ * Approved Message Templates
+ */
+export const MESSAGE_TEMPLATES = {
+  ORDER_CONFIRMED: {
+    id: 'order_confirmed_v1',
+    body: '✅ Order Confirmed\nYour order #{orderId} has been confirmed!\nTotal: ₹{amount}\nEstimated Delivery: {deliveryDate}'
+  },
+  ORDER_SHIPPED: {
+    id: 'order_shipped_v1',
+    body: '📦 Order Shipped!\nYour order #{orderId} is on its way.\nTracking: {awb}\nCarrier: {carrier}'
+  },
+  ORDER_DELIVERED: {
+    id: 'order_delivered_v1',
+    body: '✅ Order Delivered!\nYour order #{orderId} has been delivered.\nThank you for shopping with Bluewud!'
+  },
+  ORDER_OUT_FOR_DELIVERY: {
+    id: 'order_out_for_delivery_v1',
+    body: '🚚 Out for Delivery!\nYour order #{orderId} is out for delivery today.\nExpected by: {deliveryTime}'
+  },
+  RTO_ALERT: {
+    id: 'rto_alert_v1',
+    body: '⚠️ Delivery Issue\nWe had an issue delivering order #{orderId}.\nWe will attempt re-delivery. Contact us if needed.'
+  }
+};
 
 class WhatsAppService {
-  constructor(apiToken, businessAccountId, phoneNumberId) {
-    this.apiToken = apiToken
-    this.businessAccountId = businessAccountId
-    this.phoneNumberId = phoneNumberId
-    this.baseUrl = 'https://graph.facebook.com/v18.0' // Changed from Instagram to Facebook Graph API
-    this.tokenExpiry = null
-    this.rateLimitWindow = 60000 // 1 minute
-    this.messagesPerWindow = 100
-    this.sentMessages = []
+  constructor(apiToken = null, businessAccountId = null, phoneNumberId = null) {
+    this.apiToken = apiToken || import.meta.env.VITE_WHATSAPP_ACCESS_TOKEN || import.meta.env.VITE_WHATSAPP_API_TOKEN;
+    this.businessAccountId = businessAccountId || import.meta.env.VITE_WHATSAPP_BUSINESS_ID;
+    this.phoneNumberId = phoneNumberId || import.meta.env.VITE_WHATSAPP_PHONE_ID;
+    this.baseUrl = WHATSAPP_API_BASE;
+    this.batchSize = 50;
+    this.retryAttempts = 3;
+    this.rateLimitWindow = 60000;
+    this.messagesPerWindow = 100;
+    this.sentMessages = [];
 
-    // Check if configuration warrants simulation mode
-    this.isSimulationMode = !apiToken || !phoneNumberId
+    this.isSimulationMode = !this.apiToken || !this.phoneNumberId;
     if (this.isSimulationMode) {
-      console.warn('⚠️ WhatsApp Service running in SIMULATION MODE (Missing Credentials)')
+      console.warn('⚠️ WhatsApp Service running in SIMULATION MODE (Missing Credentials)');
     }
   }
 
-  /**
-   * Sends a WhatsApp message using a template
-   * @param {string} orderId - Order ID or Reference
-   * @param {string} templateId - WhatsApp template ID/name
-   * @param {string} phoneNumber - Recipient phone number
-   * @param {object} parameters - Template parameters
-   * @returns {Promise<object>} Message send result
-   */
-  async sendWhatsAppMessage(orderId, templateId, phoneNumber, parameters = {}) {
+  normalizePhoneNumber(phone) {
+    if (!phone) return null;
+    let cleaned = phone.replace(/\D/g, '');
+    if (cleaned.length < 10 || cleaned.length > 15) return null;
+    if (cleaned.length === 10) cleaned = '91' + cleaned;
+    return cleaned;
+  }
+
+  interpolateTemplate(templateKey, variables) {
+    const template = MESSAGE_TEMPLATES[templateKey];
+    if (!template) return '';
+    let message = template.body;
+    Object.entries(variables).forEach(([key, value]) => {
+      message = message.replace(new RegExp(`{${key}}`, 'g'), value || '');
+    });
+    return message;
+  }
+
+  canSendMessage() {
+    const now = Date.now();
+    this.sentMessages = this.sentMessages.filter(time => now - time < this.rateLimitWindow);
+    return this.sentMessages.length < this.messagesPerWindow;
+  }
+
+  async sendWhatsAppMessage(phone, templateKey, variables = {}) {
     try {
-      // 1. Rate Limit Check
       if (!this.canSendMessage()) {
-        throw new Error('Rate limit exceeded. Please try again later.')
+        throw new Error('Rate limit exceeded');
       }
 
-      // 2. Phone Validation
-      const validPhone = this.normalizePhoneNumber(phoneNumber)
-      if (!validPhone) {
-        throw new Error(`Invalid phone number format: ${phoneNumber}`)
-      }
+      const formattedPhone = this.normalizePhoneNumber(phone);
+      if (!formattedPhone) return { success: false, error: 'Invalid phone number' };
 
-      const timestamp = new Date().toISOString()
+      const messageBody = this.interpolateTemplate(templateKey, variables);
+      const timestamp = new Date().toISOString();
 
-      // 3. SIMULATION MODE (Check this FIRST to allow fallback)
       if (this.isSimulationMode) {
-        console.log(
-          `[SIMULATION] Sending WhatsApp to ${validPhone} (Template: ${templateId})`,
-          parameters
-        )
-        this.trackMessage({
-          orderId,
-          messageId: `sim_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`,
-          phoneNumber: validPhone,
-          templateId,
-          timestamp: Date.now(),
-          status: 'simulated',
-        })
-        return {
-          success: true,
-          messageId: `sim_${Date.now()}`,
-          orderId,
+        console.log(`[SIMULATION] To: ${formattedPhone} | Msg: ${messageBody}`);
+        const msgId = `sim_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`;
+        await this.trackMessage({
+          phone: formattedPhone,
+          messageId: msgId,
+          templateKey,
+          variables,
           timestamp,
-          mode: 'simulation',
-        }
+          status: 'simulated'
+        });
+        return { success: true, messageId: msgId, status: 'sent_mock' };
       }
-
-      // 4. REAL API VALIDATION (Only strictly validate if NOT in simulation mode)
-      if (!this.apiToken) throw new Error('Missing API Token')
-      if (!this.businessAccountId) throw new Error('Missing Business Account ID')
-      if (!this.phoneNumberId) throw new Error('Missing Phone Number ID')
-
-      // 5. REAL API SEND
-      const components = this.buildTemplateComponents(parameters)
-
-      const payload = {
-        messaging_product: 'whatsapp',
-        to: validPhone,
-        type: 'template',
-        template: {
-          name: templateId,
-          language: { code: 'en_US' },
-          components: components,
-        },
-      }
-
-      console.log('[WhatsApp API] Payload:', JSON.stringify(payload, null, 2))
 
       const response = await fetch(`${this.baseUrl}/${this.phoneNumberId}/messages`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${this.apiToken}`,
+          'Authorization': `Bearer ${this.apiToken}`,
+          'Content-Type': 'application/json'
         },
-        body: JSON.stringify(payload),
-      })
+        body: JSON.stringify({
+          messaging_product: 'whatsapp',
+          recipient_type: 'individual',
+          to: formattedPhone,
+          type: 'template',
+          template: {
+            name: MESSAGE_TEMPLATES[templateKey]?.id,
+            language: { code: 'en_US' },
+            components: this.buildTemplateComponents(variables)
+          }
+        })
+      });
 
-      if (!response.ok) {
-        const error = await response.json()
-        const errorDetails = error.error || {}
-        const errorCode = errorDetails.code
-        const errorMessage = errorDetails.message || response.statusText
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error?.message || 'WhatsApp API Error');
 
-        console.error(`WhatsApp API Error (${response.status}):`, errorMessage)
-
-        // Specific Error Handling
-        if (errorCode === 190) {
-          // Invalid Token
-          throw new Error('Authentication Failed: Invalid or expired access token.')
-        } else if (errorCode === 131030) {
-          // 24hr Window
-          console.warn('24-hour window closed. Fallback recommended.')
-          throw new Error('Message failed: 24-hour customer service window is closed.')
-        }
-
-        throw new Error(`WhatsApp API Error: ${errorMessage}`)
-      }
-
-      const result = await response.json()
-
-      // 6. Track Success
-      this.trackMessage({
-        orderId,
-        messageId: result.messages?.[0]?.id || `real_${Date.now()}`,
-        phoneNumber: validPhone,
-        templateId,
-        timestamp: Date.now(),
-        status: 'sent',
-      })
-
-      return {
-        success: true,
-        messageId: result.messages?.[0]?.id,
-        orderId,
+      const msgId = result.messages[0].id;
+      await this.trackMessage({
+        phone: formattedPhone,
+        messageId: msgId,
+        templateKey,
+        variables,
         timestamp,
-        mode: 'real',
+        status: 'sent'
+      });
+
+      return { success: true, messageId: msgId, phone: formattedPhone };
+    } catch (err) {
+      console.error('[WhatsApp Error]:', err.message);
+      await this.queueWhatsAppMessage(phone, templateKey, variables);
+      return { success: false, error: err.message };
+    }
+  }
+
+  buildTemplateComponents(variables) {
+    if (!variables || Object.keys(variables).length === 0) return [];
+    const paramValues = Object.values(variables).map(val => ({
+      type: 'text',
+      text: String(val)
+    }));
+    return [{ type: 'body', parameters: paramValues }];
+  }
+
+  async trackMessage(messageData) {
+    this.sentMessages.push(Date.now());
+    const key = `whatsapp:log:${new Date().toISOString().split('T')[0]}`;
+    const log = await retrieveCachedData(key) || [];
+    log.push(messageData);
+    await cacheData(key, log);
+  }
+
+  async sendBatchMessages(requests) {
+    const results = { successful: [], failed: [] };
+    for (let i = 0; i < requests.length; i += this.batchSize) {
+      const batch = requests.slice(i, i + this.batchSize);
+      const batchResults = await Promise.all(
+        batch.map(r => this.sendWhatsAppMessage(r.phone || r.phoneNumber, r.templateKey || r.templateId, r.variables || r.parameters))
+      );
+      batchResults.forEach(res => {
+        if (res.success) results.successful.push(res);
+        else results.failed.push(res);
+      });
+      if (i + this.batchSize < requests.length && !this.isSimulationMode) {
+        await new Promise(r => setTimeout(r, 1000));
       }
-    } catch (error) {
-      console.error('WhatsApp send failed:', error)
-      return {
-        success: false,
-        error: error.message,
-        orderId,
-        timestamp: new Date().toISOString(),
+    }
+    return results;
+  }
+
+  async queueWhatsAppMessage(phone, templateKey, variables = {}) {
+    const queue = (await retrieveCachedData('whatsapp:queue')) || [];
+    queue.push({
+      phone,
+      templateKey,
+      variables,
+      timestamp: Date.now(),
+      retryCount: 0,
+      id: `qwa_${Date.now()}`
+    });
+    await cacheData('whatsapp:queue', queue);
+  }
+
+  async processQueuedMessages() {
+    const queue = (await retrieveCachedData('whatsapp:queue')) || [];
+    if (queue.length === 0) return;
+
+    const remaining = [];
+    for (const msg of queue) {
+      if (msg.retryCount < this.retryAttempts) {
+        const result = await this.sendWhatsAppMessage(msg.phone, msg.templateKey, msg.variables);
+        if (!result.success) {
+          msg.retryCount++;
+          remaining.push(msg);
+        }
       }
     }
-  }
-
-  /**
-   * Sends multiple messages in batch
-   */
-  async sendBatchMessages(orders) {
-    const results = []
-    for (const order of orders) {
-      const result = await this.sendWhatsAppMessage(
-        order.id,
-        order.templateId,
-        order.phoneNumber,
-        order.parameters
-      )
-      results.push(result)
-      if (!this.isSimulationMode) await this.delay(100) // Throttling for real API
-    }
-    return results
-  }
-
-  buildTemplateComponents(parameters) {
-    if (!parameters || Object.keys(parameters).length === 0) return []
-
-    // Improved implementation: Supports header variables if passed explicitly
-    // Structure expected: { header: [], body: [], footer: [] } or just flat values
-
-    // Legacy support (flat object map to BODY)
-    if (!parameters.body && !parameters.header) {
-      const paramValues = Object.values(parameters).map((val) => ({
-        type: 'text',
-        text: String(val),
-      }))
-      return [{ type: 'body', parameters: paramValues }]
-    }
-
-    const components = []
-
-    if (parameters.header) {
-      components.push({
-        type: 'header',
-        parameters: parameters.header.map((val) => ({ type: 'text', text: String(val) })),
-      })
-    }
-
-    if (parameters.body) {
-      components.push({
-        type: 'body',
-        parameters: parameters.body.map((val) => ({ type: 'text', text: String(val) })),
-      })
-    }
-
-    return components
-  }
-
-  canSendMessage() {
-    const now = Date.now()
-    this.sentMessages = this.sentMessages.filter((time) => now - time < this.rateLimitWindow)
-    return this.sentMessages.length < this.messagesPerWindow
-  }
-
-  trackMessage(messageData) {
-    this.sentMessages.push(messageData.timestamp)
-    this.persistMessage(messageData)
-  }
-
-  async persistMessage(messageData) {
-    // Use existing offlineCacheService instead of raw IndexedDB for consistency
-    // Append to daily log or specific store
-    const key = `whatsapp:log:${new Date().toISOString().split('T')[0]}`
-    const log = (await retrieveCachedData(key)) || []
-    log.push(messageData)
-    await cacheData(key, log)
-  }
-
-  normalizePhoneNumber(phone) {
-    if (!phone) return null
-    const cleaned = phone.replace(/\D/g, '')
-    if (cleaned.length < 10 || cleaned.length > 15) return null
-    if (cleaned.length === 10) return `91${cleaned}` // Default to India
-    return cleaned
-  }
-
-  delay(ms) {
-    return new Promise((resolve) => setTimeout(resolve, ms))
+    await cacheData('whatsapp:queue', remaining);
   }
 }
 
-// Singleton Pattern
-let whatsappInstance = null
+let whatsappInstance = null;
 
 export const initWhatsAppService = (apiToken, businessAccountId, phoneNumberId) => {
-  whatsappInstance = new WhatsAppService(apiToken, businessAccountId, phoneNumberId)
-  return whatsappInstance
-}
+  whatsappInstance = new WhatsAppService(apiToken, businessAccountId, phoneNumberId);
+  return whatsappInstance;
+};
 
 export const getWhatsAppService = () => {
   if (!whatsappInstance) {
-    // Auto-initialize with env vars if accessed before explicit init
-    // This ensures components don't break if main.jsx didn't init it yet (lazy init)
-    console.log('Lazy initializing WhatsApp Service...')
-    whatsappInstance = new WhatsAppService(
-      import.meta.env.VITE_WHATSAPP_API_TOKEN,
-      import.meta.env.VITE_WHATSAPP_BUSINESS_ID,
-      import.meta.env.VITE_WHATSAPP_PHONE_ID
-    )
+    whatsappInstance = new WhatsAppService();
   }
-  return whatsappInstance
-}
+  return whatsappInstance;
+};
 
-export default WhatsAppService
+// Functional Exports
+export const sendWhatsAppMessage = (phone, templateKey, variables) =>
+  getWhatsAppService().sendWhatsAppMessage(phone, templateKey, variables);
+
+export const sendBatchWhatsAppMessages = (requests) =>
+  getWhatsAppService().sendBatchMessages(requests);
+
+export const processQueuedWhatsAppMessages = () =>
+  getWhatsAppService().processQueuedMessages();
+
+export default {
+  initWhatsAppService,
+  getWhatsAppService,
+  sendWhatsAppMessage,
+  sendBatchWhatsAppMessages,
+  processQueuedWhatsAppMessages,
+  MESSAGE_TEMPLATES
+};
