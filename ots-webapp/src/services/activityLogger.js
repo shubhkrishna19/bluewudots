@@ -48,6 +48,7 @@ class ActivityLogger {
             status: 'pending'
         };
 
+<<<<<<< HEAD
         // Store in local persistence
         try {
             const existingLogs = (await retrieveCachedData('activity:logs')) || [];
@@ -78,6 +79,64 @@ class ActivityLogger {
             data: { orderId: order.id, status: order.status, amount: order.amount },
             userId
         });
+=======
+/**
+ * Sync activity to backend and local cache
+ * @param {object} activity 
+ */
+const syncToBackend = async (activity) => {
+    // 1. Persist to high-speed local cache (IndexedDB)
+    cacheData('activityLog', activity);
+
+    // 2. Sync with Backend
+    try {
+        await fetch('/server/activity', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(activity)
+        });
+    } catch (error) {
+        console.warn('Activity sync failed:', error);
+    }
+};
+
+/**
+ * Get activity log with filters
+ * @param {object} filters 
+ * @returns {object[]}
+ */
+export const getActivityLog = (filters = {}) => {
+    let result = [...activityLog];
+
+    if (filters.type) {
+        result = result.filter(a => a.type === filters.type);
+    }
+    if (filters.entityType) {
+        result = result.filter(a => a.entityType === filters.entityType);
+    }
+    if (filters.entityId) {
+        result = result.filter(a => a.entityId === filters.entityId);
+    }
+    if (filters.userId) {
+        result = result.filter(a => a.user?.id === filters.userId);
+    }
+    if (filters.startDate) {
+        result = result.filter(a => new Date(a.timestamp) >= new Date(filters.startDate));
+    }
+    if (filters.endDate) {
+        result = result.filter(a => new Date(a.timestamp) <= new Date(filters.endDate));
+    }
+    if (filters.search) {
+        const searchLower = filters.search.toLowerCase();
+        result = result.filter(a =>
+            a.action.toLowerCase().includes(searchLower) ||
+            a.entityId?.toLowerCase().includes(searchLower) ||
+            JSON.stringify(a.details).toLowerCase().includes(searchLower)
+        );
+    }
+    if (filters.limit) {
+        result = result.slice(0, filters.limit);
+>>>>>>> d69d792bf4d2adf3b6ce1623aaa55ba05e8e8502
     }
 
     async logInventoryActivity(sku, action, delta, userId = 'user') {
@@ -142,6 +201,7 @@ class ActivityLogger {
     }
 }
 
+<<<<<<< HEAD
 // Singleton Instance
 const activityLogger = new ActivityLogger();
 
@@ -151,9 +211,56 @@ export const logOrderActivity = (o, a, u) => activityLogger.logOrderActivity(o, 
 export const logInventoryActivity = (s, a, d, u) => activityLogger.logInventoryActivity(s, a, d, u);
 export const logAuthActivity = (a, ui, ue, s, r) => activityLogger.logAuthActivity(a, ui, ue, s, r);
 export const getActivityLogs = (l) => activityLogger.getActivityLogs(l);
+=======
+export const logImportComplete = (source, count, errors = 0) => {
+    return logActivity({
+        type: ACTIVITY_TYPES.IMPORT_COMPLETE,
+        action: `Imported ${count} orders from ${source}`,
+        details: { source, count, errors }
+    });
+};
+>>>>>>> d69d792bf4d2adf3b6ce1623aaa55ba05e8e8502
 
 // Legacy functional exports support
 export const logOrderCreate = (o) => activityLogger.logOrderActivity(o, 'CREATE');
 export const logOrderStatusChange = (o, prev, next) => activityLogger.logOrderActivity(o, `STATUS_CHANGE: ${prev} -> ${next}`);
 
+<<<<<<< HEAD
 export default activityLogger;
+=======
+export const logUserLogin = (user) => {
+    return logActivity({
+        type: ACTIVITY_TYPES.USER_LOGIN,
+        action: `User ${user.email} logged in`,
+        entityType: 'user',
+        entityId: user.id,
+        details: { email: user.email, role: user.role }
+    });
+};
+
+export const logUserLogout = (user) => {
+    return logActivity({
+        type: ACTIVITY_TYPES.USER_LOGOUT,
+        action: `User ${user.email} logged out`,
+        entityType: 'user',
+        entityId: user.id
+    });
+};
+
+export default {
+    ACTIVITY_TYPES,
+    logActivity,
+    getActivityLog,
+    getEntityHistory,
+    clearActivityLog,
+    logOrderCreate,
+    logOrderStatusChange,
+    logBulkUpdate,
+    logCarrierAssign,
+    logLabelGenerate,
+    logImportComplete,
+    logExport,
+    logUserLogin,
+    logUserLogout
+};
+>>>>>>> d69d792bf4d2adf3b6ce1623aaa55ba05e8e8502

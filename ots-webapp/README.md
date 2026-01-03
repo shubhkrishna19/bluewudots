@@ -1,16 +1,48 @@
-# React + Vite
+# Bluewud OTS - Operations & Tracking System (v2.0)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Integrated operations platform for Bluewud India, featuring AI-driven fulfillment, ML demand forecasting, and B2B partner management.
 
-Currently, two official plugins are available:
+## 🚀 Key Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+### 🧠 Intelligence Layer
+- **ML Demand Forecasting**: Realistic demand predictions based on historical trends.
+- **AI Career Optimization**: Real-time carrier selection based on cost and performance.
+- **Retention AI**: Predictive churn analysis to identify at-risk customers.
 
-## React Compiler
+### 🏭 Logistics & Supply Chain
+- **Multi-Warehouse Fulfillment**: Intelligent pincode-based routing across 5 regional hubs.
+- **Universal Importer**: Seamless order mapping from Amazon (SP-API) and Flipkart.
+- **Production Tracker**: End-to-end visibility from BOM to QC and GRN.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### 🤝 Strategic B2B Hub
+- **Dealer Portal**: Wholesale ordering with tiered pricing and credit limits.
+- **Enterprise RBAC**: Strict permission matrix (Admin, Manager, Dealer, Operator).
 
-## Expanding the ESLint configuration
+## 🛠️ Tech Stack
+- **Frontend**: React.js with Glassmorphism UI.
+- **State**: Custom Context Providers with Offline-First Persistence (IndexedDB).
+- **Communication**: WhatsApp Business API Integration + Push Notifications.
+- **Deployment**: Local build scripts + GitHub Actions CI/CD.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## 📦 Setup & Development
+
+1. **Install Dependencies**:
+   ```bash
+   npm install
+   ```
+
+2. **Environment Variables**:
+   Copy `.env.production` to `.env` and fill in API secrets.
+
+3. **Start Development**:
+   ```bash
+   npm run dev
+   ```
+
+4. **Production Build**:
+   ```bash
+   npm run build
+   ```
+
+---
+*Bluewud OTS - Built for Precision.*

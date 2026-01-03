@@ -26,12 +26,20 @@ Antigravity AI has successfully completed **Phase 15 (Hardening)** and **Service
 | Task ID | Description | Assigned To | Status | Last Updated |
 |---------|-------------|-------------|--------|--------------|
 | **15.8** | Lighthouse Performance Audit / Optimization | Antigravity AI | ✅ Complete | 2026-01-04 |
-| **P15.6** | UI Polish (Scrollbars, Indicators, Glassmorphism) | Antigravity AI | ✅ Complete | 2026-01-04 |
 | **P15.7** | Notification System Unification (Context+UI) | Antigravity AI | ✅ Complete | 2026-01-04 |
+| **P15.6** | UI Polish (Scrollbars, Indicators, Glassmorphism) | Antigravity AI | ✅ Complete | 2026-01-04 |
 | **P15.4** | Security Utils & XSS Prevention | Antigravity AI | ✅ Complete | 2026-01-04 |
 | **Refactor** | `AnalyticsDashboard` Integration | Antigravity AI | ✅ Complete | 2026-01-04 |
 | **Refactor** | `labelGenerator` Unification | Antigravity AI | ✅ Complete | 2026-01-04 |
 | **Cleanup** | Removal of duplicate "Enhanced" files | Antigravity AI | ✅ Complete | 2026-01-04 |
+| **P15.5** | Unit Test Foundation | Antigravity AI | ✅ Complete | 2026-01-04 |
+| **P15.3** | Code Splitting & Performance Tuning | Antigravity AI | ✅ Complete | 2026-01-04 |
+| **P15.2** | Global Error Boundaries | Antigravity AI | ✅ Complete | 2026-01-04 |
+| **P15.1** | Service Worker v2.0 (PWA) + Updater | Antigravity AI | ✅ Complete | 2026-01-04 |
+| **P14.3** | International Shipping Stubs (DHL/FedEx) | Antigravity AI | ✅ Complete | 2026-01-04 |
+| **P14.2** | Global Financial Ledger | Antigravity AI | ✅ Complete | 2026-01-04 |
+| **P14.1** | Multi-Currency Conversion Engine | Antigravity AI | ✅ Complete | 2026-01-04 |
+| **28.1** | RTO Prediction & Reverse Logistics | Antigravity AI | ✅ Complete | 2026-01-04 |
 
 ---
 

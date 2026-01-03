@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
 import { useData } from '../../context/DataContext';
+import DealerOrderEntry from './DealerOrderEntry';
+import { ArrowLeft, User, MapPin, CreditCard, Clock } from 'lucide-react';
 
 // Mock dealer data (will be replaced with Zoho CRM API fetch)
 const MOCK_DEALERS = [
@@ -14,6 +15,7 @@ const DealerLookup = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedDealer, setSelectedDealer] = useState(null);
     const [filterType, setFilterType] = useState('all');
+    const [isCreatingOrder, setIsCreatingOrder] = useState(false);
 
     const filteredDealers = MOCK_DEALERS.filter(dealer => {
         const matchesSearch = dealer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -25,11 +27,24 @@ const DealerLookup = () => {
 
     const formatINR = (amount) => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(amount);
 
+    if (isCreatingOrder && selectedDealer) {
+        return (
+            <DealerOrderEntry
+                dealer={selectedDealer}
+                onBack={() => setIsCreatingOrder(false)}
+                onComplete={() => {
+                    setIsCreatingOrder(false);
+                    // Optionally refresh history or profile
+                }}
+            />
+        );
+    }
+
     return (
         <div className="dealer-module animate-fade">
             <div className="section-header">
                 <h2>Dealer Network</h2>
-                <p className="text-muted">CRM Account Lookup (Read-Only)</p>
+                <p className="text-muted">CRM Account Lookup & Wholesale Orders</p>
             </div>
 
             <div className="dealer-controls glass" style={{ padding: '20px', marginTop: '24px', display: 'flex', gap: '16px', alignItems: 'center' }}>
@@ -124,7 +139,11 @@ const DealerLookup = () => {
                         </div>
 
                         <div style={{ marginTop: '28px', paddingTop: '20px', borderTop: '1px solid var(--glass-border)' }}>
-                            <button className="btn-primary glass-hover" style={{ width: '100%', marginBottom: '10px' }}>
+                            <button
+                                className="btn-primary glass-hover"
+                                style={{ width: '100%', marginBottom: '10px' }}
+                                onClick={() => setIsCreatingOrder(true)}
+                            >
                                 Create Dealer Order
                             </button>
                             <button className="btn-secondary glass-hover" style={{ width: '100%' }}>

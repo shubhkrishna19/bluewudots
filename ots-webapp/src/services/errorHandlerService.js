@@ -100,8 +100,20 @@ export const getErrorType = (status) => {
 };
 
 /**
- * Create error object
+ * Get recovery hints for an error
  */
+export const getRecoveryHints = (errorId) => {
+  const error = errorLogs.find(e => e.id === errorId);
+  if (!error) return ['Try refreshing the page', 'Check your internet connection'];
+
+  const hints = ['Try refreshing the page'];
+  if (error.type === ERROR_TYPES.NETWORK) hints.push('Check your internet connection');
+  if (error.type === ERROR_TYPES.AUTH) hints.push('Try logging out and back in');
+  if (error.type === ERROR_TYPES.VALIDATION) hints.push('Check the form for errors');
+
+  return hints;
+};
+
 export const createError = (message, type, severity = ERROR_SEVERITY.MEDIUM, status = 500) => {
   return {
     message,
@@ -120,6 +132,7 @@ export default {
   clearErrorLogs,
   handleError,
   getErrorType,
+  getRecoveryHints,
   createError,
   ERROR_TYPES,
   ERROR_SEVERITY

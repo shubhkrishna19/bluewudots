@@ -1,57 +1,17 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
-const AuthContext = createContext();
+import { ROLES, PERMISSIONS, can } from '../services/rbacMiddleware';
 
-// User roles and their permissions
-const ROLE_PERMISSIONS = {
-    admin: {
-        canViewDashboard: true,
-        canManageOrders: true,
-        canManageInventory: true,
-        canManageUsers: true,
-        canViewReports: true,
-        canManageSettings: true,
-        canManageCarriers: true,
-        canProcessPayments: true
-    },
-    manager: {
-        canViewDashboard: true,
-        canManageOrders: true,
-        canManageInventory: true,
-        canManageUsers: false,
-        canViewReports: true,
-        canManageSettings: false,
-        canManageCarriers: true,
-        canProcessPayments: true
-    },
-    operator: {
-        canViewDashboard: true,
-        canManageOrders: true,
-        canManageInventory: false,
-        canManageUsers: false,
-        canViewReports: false,
-        canManageSettings: false,
-        canManageCarriers: false,
-        canProcessPayments: false
-    },
-    viewer: {
-        canViewDashboard: true,
-        canManageOrders: false,
-        canManageInventory: false,
-        canManageUsers: false,
-        canViewReports: true,
-        canManageSettings: false,
-        canManageCarriers: false,
-        canProcessPayments: false
-    }
-};
+const AuthContext = createContext();
 
 // Mock users - in production from Zoho/Auth provider
 const MOCK_USERS = [
     { id: 1, email: 'admin@bluewud.com', password: 'admin123', name: 'Shubh Krishna', role: 'admin', avatar: 'SK' },
     { id: 2, email: 'manager@bluewud.com', password: 'manager123', name: 'Priya Sharma', role: 'manager', avatar: 'PS' },
     { id: 3, email: 'operator@bluewud.com', password: 'operator123', name: 'Rahul Kumar', role: 'operator', avatar: 'RK' },
-    { id: 4, email: 'viewer@bluewud.com', password: 'viewer123', name: 'Guest User', role: 'viewer', avatar: 'GU' }
+    { id: 4, email: 'viewer@bluewud.com', password: 'viewer123', name: 'Guest User', role: 'viewer', avatar: 'GU' },
+    { id: 5, email: 'dealer@bluewud.com', password: 'dealer123', name: 'Furniture World', role: 'dealer', avatar: 'FW', dealerCode: 'FW-BLR' },
+    { id: 6, email: 'dealer@example.com', password: 'dealer123', name: 'Premium Dealer X', role: 'dealer', avatar: 'DX' }
 ];
 
 export const AuthProvider = ({ children }) => {
@@ -88,7 +48,7 @@ export const AuthProvider = ({ children }) => {
                 name: foundUser.name,
                 role: foundUser.role,
                 avatar: foundUser.avatar,
-                permissions: ROLE_PERMISSIONS[foundUser.role],
+                dealerCode: foundUser.dealerCode,
                 loginTime: new Date().toISOString()
             };
             setUser(userSession);
@@ -108,8 +68,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     const hasPermission = (permission) => {
-        if (!user || !user.permissions) return false;
-        return user.permissions[permission] === true;
+        return can(user, permission);
     };
 
     return (
@@ -121,7 +80,7 @@ export const AuthProvider = ({ children }) => {
             login,
             logout,
             hasPermission,
-            roles: Object.keys(ROLE_PERMISSIONS)
+            roles: Object.values(ROLES)
         }}>
             {children}
         </AuthContext.Provider>

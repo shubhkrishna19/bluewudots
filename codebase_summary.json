@@ -18,13 +18,17 @@
       "keyboardShortcuts.on('newOrder', () => setShowQuickOrder(true));",
       "return () => {",
       "const handleSearch = (e) => {",
+      "// HEAD used universalSearch context function. Incoming used searchService directly.",
+      "// but HEAD's universalSearch function signature might differ.",
+      "if (typeof universalSearch === 'function') {",
       "<button className=\"mobile-close\" onClick={() => setIsMobileMenuOpen(false)}>✕</button>",
       "<li className={activeTab === 'dashboard' ? 'active' : ''} onClick={() => { setActiveTab('dashboard'); setIsMobileMenuOpen(false); }}>📊 Analytics</li>",
-      "{user?.role !== 'viewer' && <li className={activeTab === 'metrics' ? 'active' : ''} onClick={() => { setActiveTab('metrics'); setIsMobileMenuOpen(false); }}>📈 KPIs</li>}",
-      "{user?.role !== 'viewer' && <li className={activeTab === 'orderlist' ? 'active' : ''} onClick={() => { setActiveTab('orderlist'); setIsMobileMenuOpen(false); }}>📋 Orders</li>}",
-      "{['admin', 'manager'].includes(user?.role) && <li className={activeTab === 'bulk' ? 'active' : ''} onClick={() => { setActiveTab('bulk'); setIsMobileMenuOpen(false); }}>⚡ Bulk</li>}",
+      "<li className={activeTab === 'metrics' ? 'active' : ''} onClick={() => { setActiveTab('metrics'); setIsMobileMenuOpen(false); }}>📈 KPIs</li>",
+      "<li className={activeTab === 'orderlist' ? 'active' : ''} onClick={() => { setActiveTab('orderlist'); setIsMobileMenuOpen(false); }}>📋 Orders</li>",
+      "<li className={activeTab === 'dealer-portal' ? 'active' : ''} onClick={() => { setActiveTab('dealer-portal'); setIsMobileMenuOpen(false); }}>🛒 Partner Portal</li>",
+      "<li className={activeTab === 'bulk' ? 'active' : ''} onClick={() => { setActiveTab('bulk'); setIsMobileMenuOpen(false); }}>⚡ Bulk</li>",
       "<li className={activeTab === 'tracking' ? 'active' : ''} onClick={() => { setActiveTab('tracking'); setIsMobileMenuOpen(false); }}>📡 Tracking</li>",
-      "{user?.role !== 'viewer' && <li className={activeTab === 'rto' ? 'active' : ''} onClick={() => { setActiveTab('rto'); setIsMobileMenuOpen(false); }}>↩️ RTO</li>}",
+      "<li className={activeTab === 'rto' ? 'active' : ''} onClick={() => { setActiveTab('rto'); setIsMobileMenuOpen(false); }}>↩️ RTO</li>",
       "<li className={activeTab === 'inventory' ? 'active' : ''} onClick={() => { setActiveTab('inventory'); setIsMobileMenuOpen(false); }}>🏷️ SKU Master</li>",
       "<li className={activeTab === 'warehouse' ? 'active' : ''} onClick={() => { setActiveTab('warehouse'); setIsMobileMenuOpen(false); }}>🏭 Warehouse</li>",
       "<li className={activeTab === 'dispatcher' ? 'active' : ''} onClick={() => { setActiveTab('dispatcher'); setIsMobileMenuOpen(false); }}>📷 Dispatch</li>",
@@ -46,19 +50,21 @@
       "<li className={activeTab === 'dealers' ? 'active' : ''} onClick={() => { setActiveTab('dealers'); setIsMobileMenuOpen(false); }}>🤝 Dealers</li>",
       "<li className={activeTab === 'production' ? 'active' : ''} onClick={() => { setActiveTab('production'); setIsMobileMenuOpen(false); }}>🏭 Production</li>",
       "<li className={activeTab === 'qa' ? 'active' : ''} onClick={() => { setActiveTab('qa'); setIsMobileMenuOpen(false); }}>💎 Quality Gate</li>",
-      "{user?.role === 'admin' && <li className={activeTab === 'activity' ? 'active' : ''} onClick={() => { setActiveTab('activity'); setIsMobileMenuOpen(false); }}>📜 Activity Log</li>}",
+      "<li className={activeTab === 'activity' ? 'active' : ''} onClick={() => { setActiveTab('activity'); setIsMobileMenuOpen(false); }}>📜 Activity Log</li>",
       "<li className={activeTab === 'reports' ? 'active' : ''} onClick={() => { setActiveTab('reports'); setIsMobileMenuOpen(false); }}>📄 Export</li>",
-      "<li className={activeTab === 'roadmap' ? 'active' : ''} onClick={() => { setActiveTab('roadmap'); setIsMobileMenuOpen(false); }}>🛣️ Roadmap</li>",
+      "<li className={activeTab === 'performance' ? 'active' : ''} onClick={() => { setActiveTab('performance'); setIsMobileMenuOpen(false); }}>📈 Performance Score</li>",
+      "<li className={activeTab === 'ml-forecast' ? 'active' : ''} onClick={() => { setActiveTab('ml-forecast'); setIsMobileMenuOpen(false); }}>🧠 ML Forecast</li>",
+      "<li className={activeTab === 'roadmap' ? 'active' : ''} onClick={() => { setActiveTab('roadmap'); setIsMobileMenuOpen(false); }}>🛣️ Product Roadmap</li>",
       "<li className={activeTab === 'help' ? 'active' : ''} onClick={() => { setActiveTab('help'); setIsMobileMenuOpen(false); }}>❓ Help</li>",
-      "{user?.role === 'admin' && <li className={activeTab === 'settings' ? 'active' : ''} onClick={() => { setActiveTab('settings'); setIsMobileMenuOpen(false); }}>⚙️ Settings</li>}",
+      "<li className={activeTab === 'settings' ? 'active' : ''} onClick={() => { setActiveTab('settings'); setIsMobileMenuOpen(false); }}>⚙️ Settings</li>",
       "<div className=\"user-profile\" style={{ cursor: 'pointer' }} onClick={() => setShowProfile(true)}>",
       "<button className=\"hamburger\" onClick={() => setIsMobileMenuOpen(true)}>☰</button>",
       "onFocus={() => searchQuery.length >= 2 && setIsSearchActive(true)}",
-      "<button onClick={() => { setIsSearchActive(false); setSearchResults(null); }} className=\"close-search\" style={{ background: 'none', border: 'none', cursor: 'pointer' }}>×</button>",
-      "{searchResults.orders.map(o => (",
-      "<div key={o.id} className=\"search-item glass-hover\" style={{ padding: '8px', borderRadius: '4px', cursor: 'pointer' }} onClick={() => { setActiveTab('orderlist'); setSearchQuery(''); setSearchResults(null); setIsSearchActive(false); }}>",
-      "{searchResults.skus.map(s => (",
-      "<div key={s.sku || s.code} className=\"search-item glass-hover\" style={{ padding: '8px', borderRadius: '4px', cursor: 'pointer' }} onClick={() => { setActiveTab('inventory'); setSearchQuery(''); setSearchResults(null); setIsSearchActive(false); }}>",
+      "<button onClick={() => setIsSearchActive(false)} className=\"close-search\">×</button>",
+      "{searchResults.orders.map(order => (",
+      "<div key={order.id} className=\"result-item\" onClick={() => { setActiveTab('orderlist'); setIsSearchActive(false); }}>",
+      "{searchResults.skus.map(sku => (",
+      "<div key={sku.code} className=\"result-item\" onClick={() => { setActiveTab('inventory'); setIsSearchActive(false); }}>",
       "<button className=\"btn-primary glass-hover\" onClick={() => setShowQuickOrder(true)}>+ New Order</button>",
       "<div className=\"notifications glass\" style={{ cursor: 'pointer', position: 'relative' }} onClick={() => setShowNotifications(true)}>",
       "}} onClick={() => setShowQuickOrder(false)}>",
@@ -300,6 +306,7 @@
       "const renderProfitMetric = (label, value, color = 'var(--text)') => (",
       "onChange={(e) => setSearchTerm(e.target.value)}",
       "{filteredSKUs.map((sku, idx) => {",
+      "{(() => {",
       "onClick={() => setSelectedSKU(enhancedSku)}",
       "<button className=\"btn-icon\" onClick={() => setSelectedSKU(null)}>✕</button>",
       "{(() => {",
@@ -415,6 +422,24 @@
       "tickFormatter={(str) => {"
     ]
   },
+  "ots-webapp/src/components/Dashboard/MLAnalyticsDashboard.jsx": {
+    "summary": "No summary available.",
+    "functions": [
+      "const MLAnalyticsDashboard = () => {",
+      "const analysis = useMemo(() => {",
+      "const stockOut = useMemo(() => {",
+      "onChange={e => setSelectedSKU(e.target.value)}",
+      "{skuMaster.map(s => <option key={s.sku} value={s.sku}>{s.name} ({s.sku})</option>)}",
+      "...analysis.history.map(h => ({ ...h, type: 'actual', isHistorical: true })),",
+      "...analysis.forecast.map(f => ({ ...f, type: 'forecast', isHistorical: false }))",
+      "const getUrgencyColor = (urgency) => {",
+      "onClick={() => setViewMode('forecast')}",
+      "onClick={() => setViewMode('decomposition')}",
+      "onChange={e => setSelectedSKU(e.target.value)}",
+      "{skuMaster.map(s => <option key={s.sku} value={s.sku}>{s.name}</option>)}",
+      "<ComposedChart data={chartData.filter(d => !d.isHistorical)} margin={{ top: 40, right: 30, left: 0, bottom: 0 }}>"
+    ]
+  },
   "ots-webapp/src/components/Dashboard/PerformanceMetrics.jsx": {
     "summary": "No summary available.",
     "functions": [
@@ -422,9 +447,9 @@
       "const deliveredOrders = orders.filter(o => o.status === 'Delivered').length;",
       "const inTransit = orders.filter(o => o.status === 'In-Transit').length;",
       "const pending = orders.filter(o => o.status === 'Imported' || o.status === 'MTP-Applied').length;",
+      "const rtoCount = orders.filter(o => o.status?.startsWith('RTO')).length;",
       "const sourceDistribution = orders.reduce((acc, o) => {",
       "? (orders.reduce((sum, o) => sum + (o.weight || 0), 0) / orders.length).toFixed(1)",
-      "{ label: 'Active Carriers', value: logistics.filter(l => l.active).length, icon: '🚚', color: 'var(--primary)', desc: 'Carriers in use' },",
       "{metrics.map((m, idx) => (",
       "{Object.entries(sourceDistribution).sort((a, b) => b[1] - a[1]).map(([source, count], idx) => ("
     ]
@@ -446,10 +471,42 @@
       "const DealerLookup = () => {",
       "const filteredDealers = MOCK_DEALERS.filter(dealer => {",
       "const formatINR = (amount) => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(amount);",
+      "onBack={() => setIsCreatingOrder(false)}",
+      "onComplete={() => {",
       "onChange={(e) => setSearchTerm(e.target.value)}",
       "onChange={(e) => setFilterType(e.target.value)}",
       "{filteredDealers.map(dealer => (",
-      "onClick={() => setSelectedDealer(dealer)}"
+      "onClick={() => setSelectedDealer(dealer)}",
+      "onClick={() => setIsCreatingOrder(true)}"
+    ]
+  },
+  "ots-webapp/src/components/Dealers/DealerOrderEntry.jsx": {
+    "summary": "DealerOrderEntry Component\n  A specialized form for placing B2B wholesale orders.\n  Handles quantity-based tiered pricing and credit limit validation.",
+    "functions": [
+      "const DealerOrderEntry = ({ dealer, onBack, onComplete }) => {",
+      "const availableSkus = skuMaster.filter(s => !s.isParent);",
+      "useEffect(() => {",
+      "const sku = availableSkus.find(s => s.sku === selectedSku);",
+      "const handleSubmit = async (e) => {",
+      "setTimeout(() => onComplete(), 2000);",
+      "onChange={(e) => setSelectedSku(e.target.value)}",
+      "{availableSkus.map(s => (",
+      "onChange={(e) => setQuantity(e.target.value)}"
+    ]
+  },
+  "ots-webapp/src/components/Dealers/DealerPortal.jsx": {
+    "summary": "No summary available.",
+    "functions": [
+      "const DealerPortal = () => {",
+      "const dealerOrders = useMemo(() => {",
+      "return orders.filter(o => o.dealerId === user.id);",
+      "const stats = useMemo(() => {",
+      ".filter(o => {",
+      ".reduce((sum, o) => sum + o.amount, 0);",
+      "onBack={() => setView('dashboard')}",
+      "onComplete={() => setView('dashboard')}",
+      "<div className=\"glass p-6 flex items-center gap-4 cursor-pointer hover:bg-white/5 transition-colors\" onClick={() => setView('order')}>",
+      "{dealerOrders.map(o => ("
     ]
   },
   "ots-webapp/src/components/ErrorBoundary.jsx": {
@@ -470,6 +527,19 @@
       "{faqs.map((faq, idx) => (",
       "{sections.map(s => (",
       "onClick={() => setActiveSection(s.id)}"
+    ]
+  },
+  "ots-webapp/src/components/Help/KeyboardShortcutsHud.jsx": {
+    "summary": "KeyboardShortcutsHud Component\n  Displays available keyboard shortcuts in a floating HUD",
+    "functions": [
+      "const KeyboardShortcutsHud = () => {",
+      "useEffect(() => {",
+      "const getShortcuts = async () => {",
+      "const handleKeyPress = (e) => {",
+      "return () => window.removeEventListener('keydown', handleKeyPress);",
+      "onClick={() => setIsVisible(!isVisible)}",
+      "onClick={() => setIsVisible(false)}",
+      "shortcuts.map((shortcut, idx) => ("
     ]
   },
   "ots-webapp/src/components/Help/ShortcutsModal.jsx": {
@@ -596,6 +666,23 @@
       "{Object.keys(segmentedData).map(segment => (",
       "onClick={() => handleExport(segment)}",
       "segmentedData[segment].slice(0, 5).map(c => ("
+    ]
+  },
+  "ots-webapp/src/components/Marketing/WhatsAppTemplateManager.jsx": {
+    "summary": "WhatsAppTemplateManager Component\n  Manages WhatsApp message templates for bulk messaging",
+    "functions": [
+      "const WhatsAppTemplateManager = () => {",
+      "const handleSaveTemplate = async () => {",
+      "? templates.map(t => t.id === currentTemplate.id ? currentTemplate : t)",
+      "const handleDeleteTemplate = (id) => {",
+      "setTemplates(templates.filter(t => t.id !== id));",
+      "const handleEditTemplate = (template) => {",
+      "onChange={(e) => setCurrentTemplate({ ...currentTemplate, name: e.target.value })}",
+      "onChange={(e) => setCurrentTemplate({ ...currentTemplate, body: e.target.value })}",
+      "onClick={() => { setCurrentTemplate({ name: '', body: '' }); setIsEditing(false); }}",
+      "templates.map(template => (",
+      "onClick={() => handleEditTemplate(template)}",
+      "onClick={() => handleDeleteTemplate(template.id)}"
     ]
   },
   "ots-webapp/src/components/Navigation/KeyboardShortcutsHud.jsx": {
@@ -778,14 +865,14 @@
       "onClick={() => setSelectedOrder(order)}",
       "onClick={(e) => e.stopPropagation()}",
       "onChange={() => toggleOrderSelection(order.id)}",
+      "(() => {",
       "onClick={(e) => { e.stopPropagation(); setSelectedOrder(order); }}",
       "}} onClick={() => setSelectedOrder(null)}>",
       "}} onClick={(e) => e.stopPropagation()}>",
       "onClick={() => setSelectedOrder(null)}",
-      "onClick={() => {/* Future: Process logic */ }}",
-      "onClick={() => generatePackingSlip(selectedOrder)}",
-      "onClick={() => generateShippingLabel(selectedOrder)}",
-      "onClick={() => setSelectedOrder(null)}",
+      "{(() => {",
+      "onClick={() => alert(`Initiating manual verification call for ${selectedOrder.id}...`)}",
+      "onClick={() => {",
       "onClick={() => labelPrintService.printLabel(selectedOrder)}",
       "onClick={() => {",
       "printWindow.onload = () => printWindow.print();",
@@ -955,11 +1042,26 @@
       "onClick={() => handleMethodSelect(selectedMethod)}"
     ]
   },
-  "ots-webapp/src/components/Shared/ErrorBoundary.jsx": {
-    "summary": "Error Boundary Component\n  Catches JavaScript errors in child components and displays a fallback UI.",
+  "ots-webapp/src/components/Shared/ContextProviders.jsx": {
+    "summary": "ContextProviders Layout Component\n  Wraps the application with all necessary context providers\n  This includes error handling, notifications, analytics, etc.",
     "functions": [
-      "class ErrorBoundary extends Component {",
-      "handleRetry = () => {"
+      "const ContextProviders = ({ children }) => {",
+      "// - Offline sync context for offline-first functionality",
+      "function App() {"
+    ]
+  },
+  "ots-webapp/src/components/Shared/ErrorBoundary.jsx": {
+    "summary": "ErrorBoundary Component\n  Catches JavaScript errors in child components and displays fallback UI\n  Integrates with errorHandlerService for error logging and recovery suggestions",
+    "functions": [
+      "class ErrorBoundary extends React.Component {",
+      "handleReset = () => {",
+      "{this.state.recoveryHints.map((hint, idx) => ("
+    ]
+  },
+  "ots-webapp/src/components/Shared/MainLayout.jsx": {
+    "summary": "MainLayout Component\n  Primary layout wrapper for authenticated pages\n  Includes header, sidebar, main content area, and footer",
+    "functions": [
+      "const MainLayout = () => {"
     ]
   },
   "ots-webapp/src/components/Shared/ResponsiveLayout.jsx": {
@@ -1063,11 +1165,11 @@
   "ots-webapp/src/components/Warehouse/WarehouseSelector.jsx": {
     "summary": "Warehouse Selector Component\n  Displays warehouse utilization and allows manual override of warehouse selection.",
     "functions": [
-      "const WarehouseSelector = ({ selectedWarehouse, onSelect, order = null }) => {",
-      "const utilization = useMemo(() => warehouseOptimizer.getUtilizationMetrics(), []);",
+      "const WarehouseSelector = ({ selectedWarehouse, onSelect, order = null, currentLoads = {} }) => {",
+      "const utilization = useMemo(() => warehouseOptimizer.getUtilizationMetrics(currentLoads), [currentLoads]);",
       "const recommendation = useMemo(() => {",
       "const getStatusColor = (status) => {",
-      "{utilization.map(wh => (",
+      "{utilization.map(wh => {",
       "onClick={() => onSelect?.(wh.id)}"
     ]
   },
@@ -1093,7 +1195,7 @@
     ]
   },
   "ots-webapp/src/context/DataContext.jsx": {
-    "summary": "Smart routing for regional warehouse selection",
+    "summary": "Smart routing for regional warehouse selection with real-time load balancing",
     "functions": [
       "export const DataProvider = ({ children }) => {",
       "useEffect(() => {",
@@ -1105,14 +1207,16 @@
       "const updatedOrders = prev.map(o => o.id === data.id ? { ...o, ...data } : o);",
       "setAgentMetadata(m => ({ ...m, mutations: m.mutations + 1 }));",
       "setInventoryLevels(prev => ({ ...prev, [data.sku]: data.levels }));",
-      "orders.forEach(o => cache.cacheData('orders', o.id, o));",
+      "orders.forEach(o => cacheService.cacheData('orders', o.id, o));",
       "const syncInterval = setInterval(() => {",
       "syncDeltaOrders(orders).catch(err => console.error('Delta Sync Failed:', err));",
       "return () => {",
       "useEffect(() => {",
       "const initializeData = async () => {",
       "...Array(6).fill(0).map((_, i) => ({",
-      "const invEntry = cachedInventoryLevels?.find(m => m.key === 'inventoryLevels');",
+      "const invEntry = cachedMetadata?.find(m => m.key === 'inventoryLevels');",
+      "const loadEntry = cachedMetadata?.find(m => m.key === 'warehouseLoads');",
+      "const creditEntry = cachedMetadata?.find(m => m.key === 'dealerCredits');",
       "SKU_MASTER.filter(s => !s.isParent).forEach(child => {",
       "const batchEntry = cachedBatches?.find(m => m.key === 'batches');",
       "SKU_MASTER.filter(s => !s.isParent).forEach(sku => {",
@@ -1126,7 +1230,10 @@
       "setOrders(prev => prev.map(order => {",
       "return () => clearInterval(interval);",
       "const smartRouteOrder = useCallback((pincode, state) => {",
+      "useEffect(() => {",
+      "orders.forEach(o => {",
       "const addOrder = useCallback((orderData) => {",
+      "setDealerCredits(prev => ({",
       "const skuData = skuMaster.find(s => s.sku === newOrder.sku);",
       "setFlaggedOrders(prev => [...prev, newOrder]);",
       "setOrders(prev => deduplicateOrders(prev, [newOrder]));",
@@ -1187,6 +1294,7 @@
       "getRevenueProjection: (nextDays) => projectRevenue(orders, nextDays),",
       "getSKUProfitability: (skuId, price) => {",
       "const sku = skuMaster.find(s => s.sku === skuId);",
+      "getMLDemandForecast: (skuId) => mlForecastService.predictDemand(orders, skuId),",
       "universalSearch: (query) => searchService.universalSearch({ orders, skuMaster }, query),",
       "quickLookup: (id) => searchService.quickLookup(orders, id),",
       "resolveFlag: (orderId) => setFlaggedOrders(prev => prev.filter(o => o.id !== orderId)),",
@@ -1244,6 +1352,12 @@
     "functions": [
       "export const SKU_MASTER = [",
       "export const SKU_ALIASES = ["
+    ]
+  },
+  "ots-webapp/src/data/warehouseData.js": {
+    "summary": "Warehouse Metadata\n  Unified source of truth for the Bluewud warehouse network.",
+    "functions": [
+      "export const WAREHOUSES = {"
     ]
   },
   "ots-webapp/src/hooks/useAPI.js": {
@@ -1322,6 +1436,14 @@
       "(key, value) => {",
       "const resetSettings = useCallback(() => {",
       "export const useSessionValue = (key, initialValue) => {"
+    ]
+  },
+  "ots-webapp/src/layouts/ContextProviders.jsx": {
+    "summary": "ContextProviders Layout Component\n  Wraps the application with all necessary context providers\n  This includes error handling, notifications, analytics, etc.",
+    "functions": [
+      "const ContextProviders = ({ children }) => {",
+      "// - Offline sync context for offline-first functionality",
+      "function App() {"
     ]
   },
   "ots-webapp/src/layouts/MainLayout.jsx": {
@@ -1430,7 +1552,14 @@
       "orders.forEach(o => {",
       "return Object.entries(zoneMetrics).map(([zone, metrics]) => ({",
       "export const cacheAnalytics = async (key, data, ttl = 3600000) => {",
-      "export const getCachedAnalytics = async (key) => {"
+      "export const getCachedAnalytics = async (key) => {",
+      "export const projectRevenue = (orders = [], days = 30) => {",
+      "? orders.reduce((sum, o) => sum + (o.amount || 0), 0) / orders.length",
+      "export const calculateSKUProfitability = (orders = [], skuMaster = []) => {",
+      "orders.forEach(o => {",
+      "const skuData = (skuMaster || []).find(s => s.sku === o.sku) || {};",
+      "return Object.values(profitability).map(p => ({",
+      "})).sort((a, b) => b.profit - a.profit);"
     ]
   },
   "ots-webapp/src/services/apiService.js": {
@@ -1496,13 +1625,12 @@
     ]
   },
   "ots-webapp/src/services/complianceService.js": {
-    "summary": "Compliance Service\n<<<<<<< HEAD\n  \n  Handles HSN/SAC code validation, cross-border duty calculations,\n  and documentation requirements for international shipments.",
+    "summary": "Compliance Service\n  Handles HSN/SAC code mapping, GST calculations, and E-way bill generation.",
     "functions": [
-      "export const validateHSN = (hsnCode) => {",
-      "export const getRequiredDocuments = (country) => {",
-      "export const calculateExportDuty = (value, destinationCountry, hsnCode) => {",
-      "export const generateComplianceSummary = (order) => {",
-      "class ComplianceService {"
+      "export const HSN_DATABASE = {",
+      "class ComplianceService {",
+      "export const validateHSN = (code) => service.validateHSN(code);",
+      "export const getHSNCode = (sku) => service.getHSNCode(sku);"
     ]
   },
   "ots-webapp/src/services/currencyService.js": {
@@ -1529,6 +1657,12 @@
       "return orders.map(order => this.normalizeOrder(order));",
       "const rows = orders.map(order => [",
       "...rows.map(row => row.map(cell => `\"${cell}\"`).join(','))"
+    ]
+  },
+  "ots-webapp/src/services/dealerService.js": {
+    "summary": "Dealer Service\n  Handles wholesale logic, credit limits, and tiered pricing for B2B partners.",
+    "functions": [
+      "class DealerService {"
     ]
   },
   "ots-webapp/src/services/errorHandlerService.js": {
@@ -1602,16 +1736,26 @@
       "Object.entries(customShortcuts).forEach(([combo, config]) => {",
       "export const registerShortcut = (shortcut, callback, options = {}) => {",
       "return () => unregisterShortcut(shortcut);",
-      "export const registerShortcut = (combo, action, description = '') => {",
+      "export const unregisterShortcut = (shortcut) => {",
       "export const bindAction = (action, callback) => {",
+      "config.callback = callback; // Rebind string action to function",
       "export const getAllShortcuts = () => {",
       "return Array.from(shortcuts.entries()).map(([combo, config]) => ({",
+      "export const getShortcuts = getAllShortcuts;",
+      "export const formatShortcut = (combo) => {",
+      ".map(part => part.charAt(0).toUpperCase() + part.slice(1))",
       "export const toggleShortcuts = (enable = null) => {",
       "export const removeShortcut = (combo) => {",
       "export const cleanup = () => {",
+      "export const destroyShortcuts = cleanup;",
+      "export const registerDefaultShortcuts = (actionsMap) => {",
+      "Object.entries(actionsMap).forEach(([actionName, callback]) => {",
+      "function parseShortcut(shortcut) {",
       "function parseKeyCombo(event) {",
       "function handleKeyDown(event) {",
-      "} else if (typeof config.action === 'function') {"
+      "if (typeof config.callback === 'function') {",
+      "} else if (typeof config.action === 'function') {",
+      "export const initShortcuts = initializeShortcuts; // Alias"
     ]
   },
   "ots-webapp/src/services/keyboardShortcutsEnhanced.js": {
@@ -1697,6 +1841,26 @@
       "export const syncInventoryToMarketplaces = async (inventoryLevels) => {"
     ]
   },
+  "ots-webapp/src/services/mlForecastService.js": {
+    "summary": "ML Forecast Service\n  Advanced demand forecasting using additive trend-seasonal decomposition.",
+    "functions": [
+      "class MLForecastService {",
+      ".filter(o => o.sku === sku)",
+      ".sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));",
+      "const values = dailyData.map(d => d.quantity);",
+      "avgDemand: (values.reduce((a, b) => a + b, 0) / values.length).toFixed(1)",
+      "orders.forEach(o => {",
+      "const residuals = values.map((v, i) => v - (trend.slope * i + trend.intercept));",
+      "const seasonal = Array(7).fill(0).map(() => []);",
+      "residuals.forEach((r, i) => {",
+      "return seasonal.map(dayValues => {",
+      "return dayValues.reduce((a, b) => a + b, 0) / dayValues.length;",
+      "const avg = values.reduce((a, b) => a + b, 0) / values.length;",
+      "const squareDiffs = values.map(v => Math.pow(v - avg, 2));",
+      "return Math.sqrt(squareDiffs.reduce((a, b) => a + b, 0) / values.length) || 0;",
+      ".reduce((sum, day) => sum + day.quantity, 0);"
+    ]
+  },
   "ots-webapp/src/services/notificationService.js": {
     "summary": "Notification Service - Centralized notification management\n  Handles in-app notifications, with hooks for future email/SMS/WhatsApp",
     "functions": [
@@ -1728,23 +1892,8 @@
     ]
   },
   "ots-webapp/src/services/offlineCacheService.js": {
-    "summary": "Offline Cache Service\n<<<<<<< HEAD\n  \n  Simple IndexedDB wrapper for persisting operational data offline.",
+    "summary": "Offline Cache Service\n  IndexedDB wrapper for offline-first data persistence\n  \n  Features:\n  - Simple key-value storage\n  - Automatic schema initialization\n  - TTL support for data expiration\n  - Batch operations\n  - Sync state tracking",
     "functions": [
-      "const openDB = () => {",
-      "return new Promise((resolve, reject) => {",
-      "request.onupgradeneeded = (event) => {",
-      "request.onsuccess = () => resolve(request.result);",
-      "request.onerror = () => reject(request.error);",
-      "export const cacheData = async (storeName, data) => {",
-      "data.forEach(item => store.put(item));",
-      "return new Promise((resolve, reject) => {",
-      "tx.oncomplete = () => resolve(true);",
-      "tx.onerror = () => reject(tx.error);",
-      "export const retrieveCachedData = async (storeName) => {",
-      "return new Promise((resolve, reject) => {",
-      "request.onsuccess = () => resolve(request.result);",
-      "request.onerror = () => reject(request.error);",
-      "export const clearCache = async (storeName) => {",
       "class OfflineCacheService {",
       "return new Promise((resolve, reject) => {",
       "request.onerror = () => {",
@@ -1767,11 +1916,11 @@
       "return new Promise((resolve, reject) => {",
       "request.onsuccess = () => resolve(true);",
       "request.onerror = () => reject(request.error);",
-      "return new Promise((resolve, reject) => {",
-      "request.onsuccess = () => resolve(request.result);",
-      "request.onerror = () => reject(request.error);",
       "export const initOfflineCacheService = () => {",
-      "export const getOfflineCacheService = () => {"
+      "export const cacheData = (store, key, data) => cacheInstance.cacheData(store, key, data);",
+      "export const retrieveCachedData = (store, key) => cacheInstance.retrieveCachedData(store, key);",
+      "export const clearCache = (store) => cacheInstance.clearStore(store);",
+      "export const getOfflineCacheService = () => cacheInstance;"
     ]
   },
   "ots-webapp/src/services/orderStateMachine.js": {
@@ -1791,15 +1940,12 @@
     ]
   },
   "ots-webapp/src/services/pushNotificationService.js": {
-    "summary": "<<<<<<< HEAD\n  Web Push Notification Service\n  \n  Handles VAPID registration and browser subscription for real-time alerts.",
+    "summary": "Push Notification Service\n  Manages web push notifications for real-time alerts\n  \n  Features:\n  - Service Worker integration\n  - Subscription management\n  - Notification persistence\n  - Badge & icon management\n  - Notification click handling",
     "functions": [
-      "const urlBase64ToUint8Array = (base64String) => {",
       "class PushNotificationService {",
       "navigator.serviceWorker.addEventListener('message', (event) => {",
-      "export const subscribeUser = async () => {",
-      "export const sendLocalNotification = async (title, options = {}) => {",
-      "export const initPushNotificationService = (vapidPublicKey) => {",
-      "export const getPushNotificationService = () => {"
+      "export const initPushNotificationService = (key) => {",
+      "export const getPushNotificationService = () => pushNotificationInstance;"
     ]
   },
   "ots-webapp/src/services/qcService.js": {
@@ -1823,6 +1969,15 @@
       "requests: limiter.requests.filter(time => now - time < limiter.windowMs).length,"
     ]
   },
+  "ots-webapp/src/services/rbacMiddleware.js": {
+    "summary": "RBAC Middleware Utility\n  Defines permissions and roles for the Bluewud OTS ecosystem.",
+    "functions": [
+      "export const ROLES = {",
+      "export const PERMISSIONS = {",
+      "export const can = (user, permission) => {",
+      "export const Guard = ({ user, permission, children, fallback = null }) => {"
+    ]
+  },
   "ots-webapp/src/services/retryService.js": {
     "summary": "Retry a function with exponential backoff\n  @param {Function} fn - Async function to retry\n  @param {Object} options - Retry options\n  @returns {Promise} - Result of the function",
     "functions": [
@@ -1839,6 +1994,18 @@
       "return async (...args) => {",
       "new Promise((_, reject) =>",
       "setTimeout(() => reject(new Error('Circuit breaker timeout')), timeout)"
+    ]
+  },
+  "ots-webapp/src/services/reverseLogisticsService.js": {
+    "summary": "Reverse Logistics Service\n  Manages Return Merchandise Authorizations (RMA) and reverse shipment tracking.",
+    "functions": [
+      "class ReverseLogisticsService {"
+    ]
+  },
+  "ots-webapp/src/services/rtoService.js": {
+    "summary": "RTO Service\n  Intelligence layer for predicting Return-to-Origin (RTO) risk.\n  Analysis based on payment method, pincode history, and customer behavior.",
+    "functions": [
+      "class RTOService {"
     ]
   },
   "ots-webapp/src/services/searchService.js": {
@@ -1904,26 +2071,24 @@
     "summary": "Warehouse Optimizer Service\n  Intelligent multi-warehouse routing and fulfillment optimization.",
     "functions": [
       "class WarehouseOptimizer {",
-      ".filter(wh => wh.currentLoad < wh.capacity)",
-      ".sort((a, b) => (a.currentLoad / a.capacity) - (b.currentLoad / b.capacity));",
-      "return Object.values(this.warehouses).map(wh => ({"
+      ".filter(wh => (currentLoads[wh.id] || 0) < wh.capacity * 0.95)",
+      ".map(wh => ({",
+      ".sort((a, b) => a.distance - b.distance);",
+      ".sort((a, b) => {",
+      "return Object.values(this.warehouses).map(wh => {"
     ]
   },
   "ots-webapp/src/services/warehouseService.js": {
-    "summary": "warehouseService.js\n  Logic for multi-node fulfillment and inventory management.",
+    "summary": "Warehouse Service Adapter\n  Bridges WarehouseManager.jsx requirements with WarehouseOptimizer logic.",
     "functions": [
-      "export const routeOrderToWarehouse = (pincode) => {",
-      "const assigned = WAREHOUSES.find(wh => wh.pincodes.some(p => pincode.startsWith(p)));",
-      "export const getWarehouses = () => WAREHOUSES;"
+      "export const getWarehouses = () => {",
+      "export const routeOrderToWarehouse = (pincode) => {"
     ]
   },
   "ots-webapp/src/services/whatsappService.js": {
     "summary": "Message templates approved by Meta for WhatsApp Business",
     "functions": [
       "const formatPhoneNumber = (phone) => {",
-      "const fillTemplate = (template, data) => {",
-      "Object.entries(data).forEach(([key, value]) => {",
-      "const sendWhatsAppMessage = async (phone, templateId, data) => {",
       "export const sendWhatsAppMessage = async (phoneNumber, templateKey, variables = {}) => {",
       "export const sendBatchWhatsAppMessages = async (orders) => {",
       "batch.map(order =>",
@@ -1931,7 +2096,6 @@
       "await new Promise(resolve => setTimeout(resolve, 1000));",
       "export const queueWhatsAppMessage = async (phoneNumber, templateKey, variables = {}) => {",
       "export const processQueuedWhatsAppMessages = async () => {",
-      "const updated = queue.filter(m => m.id !== msg.id);",
       "await new Promise(resolve => setTimeout(resolve, 200));",
       "export const getMessageStatus = async (messageId) => {",
       "export const validateWhatsAppConfig = () => {",
@@ -1952,6 +2116,13 @@
       "return new Promise(resolve => setTimeout(resolve, ms));",
       "export const initWhatsAppService = (apiToken, businessAccountId, phoneNumberId) => {",
       "export const getWhatsAppService = () => {"
+    ]
+  },
+  "ots-webapp/src/services/wholesaleService.js": {
+    "summary": "Wholesale Service\n  Manages tiered pricing for bulk orders and credit limit validations for dealers.",
+    "functions": [
+      "class WholesaleService {",
+      "const tier = PRICE_TIERS.find(t => quantity >= t.minQty);"
     ]
   },
   "ots-webapp/src/services/zohoBridgeService.js": {
@@ -2374,6 +2545,14 @@
       "return async (...args) => {",
       "export const perfMark = (markName) => {",
       "export const perfMeasure = (name, startMark, endMark) => {"
+    ]
+  },
+  "ots-webapp/src/utils/permissionUtils.js": {
+    "summary": "Permission Utilities\n  Centralized mapping of permissions to roles and helper functions.",
+    "functions": [
+      "export const PERMISSIONS = {",
+      "export const hasPermission = (user, permission) => {",
+      "export const isDealer = (user) => {"
     ]
   },
   "ots-webapp/src/utils/securityUtils.js": {

@@ -1,5 +1,5 @@
 import whatsappService from './whatsappService';
-import { sendLocalNotification } from './pushNotificationService';
+import pushNotificationService from './pushNotificationService';
 
 /**
  * Notification Service - Centralized notification management
@@ -199,7 +199,7 @@ export const notifyOrderCreated = (order) => {
     whatsappService.sendOrderConfirmation(order);
 
     // Browser Push
-    sendLocalNotification(`New Order: ${order.id}`, { body: `For ${order.customerName}` });
+    pushNotificationService.sendNotification(`New Order: ${order.id}`, { body: `For ${order.customerName}` });
 
     return notif;
 };
@@ -216,7 +216,7 @@ export const notifyOrderShipped = (order) => {
     whatsappService.sendShippingUpdate(order);
 
     // Browser Push
-    sendLocalNotification(`Order Shipped: ${order.id}`, { body: `Carrier: ${order.carrier} | AWB: ${order.awb}` });
+    pushNotificationService.sendNotification(`Order Shipped: ${order.id}`, { body: `Carrier: ${order.carrier} | AWB: ${order.awb}` });
 
     return notif;
 };
@@ -233,7 +233,7 @@ export const notifyOrderDelivered = (order) => {
     whatsappService.sendDeliveryConfirmation(order);
 
     // Browser Push
-    sendLocalNotification(`Order Delivered: ${order.id}`, { body: `Successfully delivered to ${order.city}` });
+    pushNotificationService.sendNotification(`Order Delivered: ${order.id}`, { body: `Successfully delivered to ${order.city}` });
 
     return notif;
 };
@@ -250,7 +250,7 @@ export const notifyOrderRTO = (order, reason) => {
     whatsappService.sendRTOAlert(order);
 
     // Browser Push
-    sendLocalNotification(`RTO Alert: ${order.id}`, { body: `Reason: ${reason}` });
+    pushNotificationService.sendNotification(`RTO Alert: ${order.id}`, { body: `Reason: ${reason}` });
 
     return notif;
 };

@@ -222,6 +222,51 @@ export const getCachedAnalytics = async (key) => {
   return await retrieveCachedData(`${ANALYTICS_CACHE_NS}:${key}`);
 };
 
+
+
+/**
+ * Project future revenue based on current trends
+ */
+export const projectRevenue = (orders = [], days = 30) => {
+  const trend = getOrderTrend(orders, 90);
+  const avgRevenuePerOrder = orders.length > 0
+    ? orders.reduce((sum, o) => sum + (o.amount || 0), 0) / orders.length
+    : 0;
+
+  const currentVolume = orders.length / 90; // daily avg
+  const projectedVolume = currentVolume + (trend.slope * days / 90);
+
+  return Math.round(projectedVolume * days * avgRevenuePerOrder);
+};
+
+/**
+ * Calculate profitability per SKU
+ */
+export const calculateSKUProfitability = (orders = [], skuMaster = []) => {
+  const profitability = {};
+
+  orders.forEach(o => {
+    if (!o.sku) return;
+    if (!profitability[o.sku]) {
+      const skuData = (skuMaster || []).find(s => s.sku === o.sku) || {};
+      profitability[o.sku] = {
+        sku: o.sku,
+        revenue: 0,
+        cost: skuData.costPrice || 0,
+        orders: 0
+      };
+    }
+    profitability[o.sku].revenue += (o.amount || 0);
+    profitability[o.sku].orders++;
+  });
+
+  return Object.values(profitability).map(p => ({
+    ...p,
+    profit: p.revenue - (p.cost * p.orders),
+    margin: p.revenue > 0 ? ((p.revenue - (p.cost * p.orders)) / p.revenue * 100).toFixed(2) : 0
+  })).sort((a, b) => b.profit - a.profit);
+};
+
 export default {
   getOrderTrend,
   forecastOrderVolume,
@@ -230,5 +275,7 @@ export default {
   getStatusDistribution,
   getZonePerformance,
   cacheAnalytics,
-  getCachedAnalytics
+  getCachedAnalytics,
+  projectRevenue,
+  calculateSKUProfitability
 };

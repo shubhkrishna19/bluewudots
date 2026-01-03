@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { useData } from '../../context/DataContext';
 import churnService from '../../services/churnService';
-import { getWhatsAppService } from '../../services/whatsappServiceEnhanced';
+import { getWhatsAppService } from '../../services/whatsappService';
 
 const CustomerLookup = () => {
     const { orders, customerMaster, getCustomerMetrics } = useData();

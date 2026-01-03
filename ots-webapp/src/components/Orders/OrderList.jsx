@@ -3,9 +3,12 @@ import { useData } from '../../context/DataContext';
 import OrderJourney from './OrderJourney';
 import labelPrintService from '../../services/labelPrintService';
 import { getOptimalCarrier } from '../../services/carrierOptimizer';
+import rtoService from '../../services/rtoService';
+import reverseLogisticsService from '../../services/reverseLogisticsService';
+import { AlertTriangle, RotateCcw, ShieldCheck, CheckCircle } from 'lucide-react';
 
 const OrderList = () => {
-    const { orders, updateOrderStatus, updateOrder } = useData();
+    const { orders, updateOrderStatus } = useData();
     const [searchTerm, setSearchTerm] = useState('');
     const [statusFilter, setStatusFilter] = useState('all');
     const [sourceFilter, setSourceFilter] = useState('all');
@@ -47,6 +50,7 @@ const OrderList = () => {
         try {
             for (const orderId of selectedOrders) {
                 const order = orders.find(o => o.id === orderId);
+                // In a real app, we'd fetch zone/weight details. Using defaults for demo.
                 const recommendation = await getOptimalCarrier({
                     pincode: order.pincode || '400001',
                     weight: order.weight || 0.5,
@@ -135,7 +139,7 @@ const OrderList = () => {
 
             {/* Orders Table */}
             <div className="orders-table glass" style={{ marginTop: '24px', overflow: 'hidden', borderRadius: '12px' }}>
-                <div className="table-header" style={{ display: 'grid', gridTemplateColumns: '40px 1.5fr 2fr 1fr 1fr 1fr 1fr', padding: '16px 20px', background: 'var(--bg-accent)', fontWeight: '700', fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase' }}>
+                <div className="table-header" style={{ display: 'grid', gridTemplateColumns: '40px 1.5fr 2fr 1fr 1fr 1fr 0.8fr 1fr', padding: '16px 20px', background: 'var(--bg-accent)', fontWeight: '700', fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase' }}>
                     <input
                         type="checkbox"
                         onChange={(e) => setSelectedOrders(e.target.checked ? filteredOrders.map(o => o.id) : [])}
@@ -146,6 +150,7 @@ const OrderList = () => {
                     <span>SKU</span>
                     <span>Source</span>
                     <span>Status</span>
+                    <span>Risk</span>
                     <span>Actions</span>
                 </div>
 
@@ -161,7 +166,7 @@ const OrderList = () => {
                                 className="table-row glass-hover"
                                 style={{
                                     display: 'grid',
-                                    gridTemplateColumns: '40px 1.5fr 2fr 1fr 1fr 1fr 1fr',
+                                    gridTemplateColumns: '40px 1.5fr 2fr 1fr 1fr 1fr 0.8fr 1fr',
                                     padding: '16px 20px',
                                     alignItems: 'center',
                                     borderBottom: '1px solid var(--glass-border)',
@@ -180,6 +185,29 @@ const OrderList = () => {
                                 <span style={{ fontSize: '0.85rem' }}>{order.sku || 'N/A'}</span>
                                 <span className="badge" style={{ background: 'var(--glass-border)', fontSize: '0.65rem', justifySelf: 'start' }}>{order.source || 'Manual'}</span>
                                 <span className="badge" style={{ background: getStatusColor(order.status), fontSize: '0.65rem', justifySelf: 'start' }}>{order.status}</span>
+                                <span className="risk-indicator" style={{ justifySelf: 'start' }}>
+                                    {order.status === 'Pending' && order.paymentMethod?.toLowerCase() === 'cod' ? (
+                                        (() => {
+                                            const risk = rtoService.predictRisk(order);
+                                            return (
+                                                <span
+                                                    className={`badge ${risk.riskLevel.toLowerCase()}`}
+                                                    style={{
+                                                        background: risk.riskLevel === 'CRITICAL' ? 'rgba(239, 68, 68, 0.2)' : risk.riskLevel === 'HIGH' ? 'rgba(245, 158, 11, 0.2)' : 'rgba(16, 185, 129, 0.1)',
+                                                        color: risk.riskLevel === 'CRITICAL' ? '#ef4444' : risk.riskLevel === 'HIGH' ? '#f59e0b' : '#10b981',
+                                                        fontSize: '0.6rem',
+                                                        border: '1px solid currentColor'
+                                                    }}
+                                                    title={risk.reasons.join(', ')}
+                                                >
+                                                    {risk.level}
+                                                </span>
+                                            );
+                                        })()
+                                    ) : (
+                                        <span className="text-muted" style={{ fontSize: '0.6rem' }}>--</span>
+                                    )}
+                                </span>
                                 <button
                                     className="btn-secondary glass-hover"
                                     style={{ padding: '6px 12px', fontSize: '0.75rem' }}
@@ -259,6 +287,63 @@ const OrderList = () => {
 
                         <OrderJourney orderId={selectedOrder.id} />
 
+                        {/* RTO Risk Insights */}
+                        {selectedOrder.status === 'Pending' && selectedOrder.paymentMethod?.toLowerCase() === 'cod' && (
+                            <div className="glass p-4 mt-6 border-l-4 border-yellow-500 bg-yellow-500/5">
+                                <div className="flex items-center gap-2 mb-2 text-yellow-500">
+                                    <AlertTriangle className="w-4 h-4" />
+                                    <span className="text-xs font-bold uppercase tracking-wider">RTO Risk Prediction</span>
+                                </div>
+                                {(() => {
+                                    const risk = rtoService.predictRisk(selectedOrder);
+                                    return (
+                                        <div className="space-y-2">
+                                            <div className="flex justify-between items-center text-sm">
+                                                <span className="text-slate-400">Risk Score: <b className="text-white">{risk.score}%</b></span>
+                                                <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${risk.riskLevel === 'CRITICAL' ? 'bg-red-500/20 text-red-500' : 'bg-yellow-500/20 text-yellow-500'}`}>
+                                                    {risk.level}
+                                                </span>
+                                            </div>
+                                            <p className="text-[10px] text-slate-500">Reasons: {risk.reasons.join(', ')}</p>
+                                            {risk.score > 60 && (
+                                                <button
+                                                    className="w-full mt-2 py-2 bg-slate-800 hover:bg-slate-700 text-xs rounded transition-colors border border-white/5"
+                                                    onClick={() => alert(`Initiating manual verification call for ${selectedOrder.id}...`)}
+                                                >
+                                                    📞 Call Customer for Verification
+                                                </button>
+                                            )}
+                                        </div>
+                                    );
+                                })()}
+                            </div>
+                        )}
+
+                        {/* Reverse Logistics / RMA */}
+                        {selectedOrder.status === 'Delivered' && (
+                            <div className="glass p-4 mt-6 border-l-4 border-blue-500 bg-blue-500/5">
+                                <div className="flex items-center gap-2 mb-3 text-blue-400">
+                                    <RotateCcw className="w-4 h-4" />
+                                    <span className="text-xs font-bold uppercase tracking-wider">Reverse Logistics</span>
+                                </div>
+                                <div className="flex gap-3">
+                                    <button
+                                        className="flex-1 py-3 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded shadow-lg shadow-blue-500/20 transition-all flex items-center justify-center gap-2"
+                                        onClick={async () => {
+                                            const rma = await reverseLogisticsService.createReturnRequest(selectedOrder, [], 'Customer Request');
+                                            if (rma.returnId) alert(`Return Created: ${rma.returnId}\nPickup scheduled.`);
+                                        }}
+
+                                    >
+                                        <RotateCcw className="w-3 h-3" /> Initiate Return (RMA)
+                                    </button>
+                                    <button className="px-4 py-3 bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold rounded border border-white/5 transition-all">
+                                        Support Check
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+
                         <div style={{ marginTop: '24px', display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
                             <button className="btn-primary glass-hover" style={{ flex: 1 }}>Process Order</button>
                             <button
@@ -282,11 +367,11 @@ const OrderList = () => {
                                 📄 Packing Slip
                             </button>
                             <button className="btn-secondary glass-hover" style={{ flex: 1 }} onClick={() => setSelectedOrder(null)}>Close</button>
-                        </div>
-                    </div>
-                </div>
+                        </div >
+                    </div >
+                </div >
             )}
-        </div>
+        </div >
     );
 };
 

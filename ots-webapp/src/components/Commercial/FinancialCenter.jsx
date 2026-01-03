@@ -3,9 +3,10 @@ import { useFinance } from '../../context/FinancialContext';
 import { useData } from '../../context/DataContext';
 import { calculateProfitability, getEnhancedSKU } from '../../utils/commercialUtils';
 
+
 const FinancialCenter = () => {
-    const { finStats, settlements = [] } = useFinance();
-    const { orders, flaggedOrders = [], skuMaster = [] } = useData();
+    const { finStats, settlements } = useFinance();
+    const { orders, skuMaster } = useData();
     const [selectedView, setSelectedView] = useState('overview');
 
     const formatINR = (val) => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(val);

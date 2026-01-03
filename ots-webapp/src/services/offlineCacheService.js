@@ -20,13 +20,14 @@ class OfflineCacheService {
     this.db = null;
     this.stores = {
       'orders': { keyPath: 'id', indexes: ['status', 'createdAt', 'syncStatus'] },
+      'customers': { keyPath: 'id', indexes: ['email', 'phone'] },
+      'products': { keyPath: 'id', indexes: ['category', 'sku'] },
       'skuMaster': { keyPath: 'sku' },
-      'customers': { keyPath: 'phone', indexes: ['email'] },
       'activityLog': { keyPath: 'timestamp' },
-      'metadata': { keyPath: 'key' },
       'cache': { keyPath: 'key' },
       'syncQueue': { keyPath: 'id', indexes: ['type', 'timestamp'] },
-      'whatsappMessages': { keyPath: 'id', indexes: ['orderId', 'status'] }
+      'whatsappMessages': { keyPath: 'id', indexes: ['orderId', 'status'] },
+      'metadata': { keyPath: 'key' }
     };
   }
 
@@ -70,38 +71,47 @@ class OfflineCacheService {
   /**
    * Caches data in IndexedDB
    * @param {string} storeName - Object store name
-   * @param {string|object} keyOrData - Data key or data object (if array-like)
-   * @param {*} data - Data to cache (optional if keyOrData is full object)
+   * @param {string} key - Data key (optional for auto-increment or keyPath based)
+   * @param {*} data - Data to cache
    * @param {number} ttl - Time to live in milliseconds (optional)
    * @returns {Promise<boolean>}
    */
-  async cacheData(storeName, keyOrData, data = null, ttl = null) {
+  async cacheData(storeName, key, data, ttl = null) {
+    // Overload handling: if data is null, assume key is data (legacy support if needed, but strict here)
+    // Actually, if store has keyPath, 'key' arg might be ignored or used as index.
+    // But let's support flexible usage.
+
+    let actualData = data;
+    if (data === undefined && typeof key === 'object') {
+      actualData = key;
+    }
+
     try {
       if (!this.db) await this.initialize();
 
       const tx = this.db.transaction([storeName], 'readwrite');
       const store = tx.objectStore(storeName);
 
-      if (Array.isArray(keyOrData)) {
-        keyOrData.forEach(item => store.put(item));
-      } else if (data === null) {
-        // If only one arg (besides storeName), assume it's the data object with keyPath included
-        store.put(keyOrData);
-      } else {
-        // Wrap with metadata if needed
-        const cacheEntry = {
-          key: keyOrData,
-          data,
-          timestamp: Date.now(),
-          ttl,
-          expiresAt: ttl ? Date.now() + ttl : null
-        };
-        store.put(cacheEntry);
+      const cacheEntry = {
+        ...actualData,
+        // If the store is 'cache' (key/value), we wrap it. If it's 'orders', we store as is.
+        // But the class logic below wraps everything?
+        // Let's adapt. If it's a generic store, we might not want wrapper.
+        // HACK: for 'cache' store, wrap. For others, store direct.
+      };
+
+      if (storeName === 'cache') {
+        cacheEntry.key = key;
+        cacheEntry.data = data;
+        cacheEntry.timestamp = Date.now();
+        cacheEntry.ttl = ttl;
+        cacheEntry.expiresAt = ttl ? Date.now() + ttl : null;
       }
 
-      return new Promise((resolve) => {
-        tx.oncomplete = () => resolve(true);
-        tx.onerror = () => resolve(false);
+      return new Promise((resolve, reject) => {
+        const request = store.put(storeName === 'cache' ? cacheEntry : actualData);
+        request.onsuccess = () => resolve(true);
+        request.onerror = () => reject(request.error);
       });
     } catch (error) {
       console.error('Cache data failed:', error);
@@ -111,41 +121,37 @@ class OfflineCacheService {
 
   /**
    * Retrieves cached data
-   * @param {string} storeName - Object store name
-   * @param {string} key - Data key (optional)
-   * @returns {Promise<*|null>}
    */
-  async retrieveCachedData(storeName, key = null) {
+  async retrieveCachedData(storeName, key) {
     try {
       if (!this.db) await this.initialize();
 
       const tx = this.db.transaction([storeName], 'readonly');
       const store = tx.objectStore(storeName);
 
-      if (key === null) {
-        return new Promise((resolve) => {
-          const request = store.getAll();
-          request.onsuccess = () => resolve(request.result);
-          request.onerror = () => resolve([]);
-        });
-      }
-
-      return new Promise((resolve) => {
+      return new Promise((resolve, reject) => {
         const request = store.get(key);
         request.onsuccess = () => {
           const entry = request.result;
-          if (!entry) return resolve(null);
 
-          // Check if it's a wrapped entry with TTL
-          if (entry.expiresAt && Date.now() > entry.expiresAt) {
-            this.removeData(storeName, key);
-            return resolve(null);
+          if (!entry) {
+            resolve(null);
+            return;
           }
 
-          // Return raw data if it wasn't wrapped, or the data property if it was
-          resolve(entry.data !== undefined ? entry.data : entry);
+          if (storeName === 'cache') {
+            // Check if expired
+            if (entry.expiresAt && Date.now() > entry.expiresAt) {
+              this.removeData(storeName, key);
+              resolve(null);
+              return;
+            }
+            resolve(entry.data);
+          } else {
+            resolve(entry);
+          }
         };
-        request.onerror = () => resolve(null);
+        request.onerror = () => reject(request.error);
       });
     } catch (error) {
       console.error('Retrieve cached data failed:', error);
@@ -153,51 +159,56 @@ class OfflineCacheService {
     }
   }
 
-  /**
-   * Retrieves all data from a store
-   */
   async getAllData(storeName) {
-    return this.retrieveCachedData(storeName);
+    try {
+      if (!this.db) await this.initialize();
+      const tx = this.db.transaction([storeName], 'readonly');
+      const store = tx.objectStore(storeName);
+      return new Promise((resolve, reject) => {
+        const request = store.getAll();
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+      });
+    } catch (error) {
+      console.error('Get all data failed:', error);
+      return [];
+    }
   }
 
-  /**
-   * Removes cached data
-   */
   async removeData(storeName, key) {
     try {
       if (!this.db) await this.initialize();
       const tx = this.db.transaction([storeName], 'readwrite');
       const store = tx.objectStore(storeName);
-      return new Promise((resolve) => {
+      return new Promise((resolve, reject) => {
         const request = store.delete(key);
         request.onsuccess = () => resolve(true);
-        request.onerror = () => resolve(false);
+        request.onerror = () => reject(request.error);
       });
     } catch (error) {
+      console.error('Remove data failed:', error);
       return false;
     }
   }
 
-  /**
-   * Clears entire object store
-   */
   async clearStore(storeName) {
     try {
       if (!this.db) await this.initialize();
       const tx = this.db.transaction([storeName], 'readwrite');
       const store = tx.objectStore(storeName);
-      return new Promise((resolve) => {
+      return new Promise((resolve, reject) => {
         const request = store.clear();
         request.onsuccess = () => resolve(true);
-        request.onerror = () => resolve(false);
+        request.onerror = () => reject(request.error);
       });
     } catch (error) {
+      console.error('Clear store failed:', error);
       return false;
     }
   }
 }
 
-// Singleton Instance
+// Export as singleton
 let cacheInstance = null;
 
 export const initOfflineCacheService = () => {
@@ -205,20 +216,12 @@ export const initOfflineCacheService = () => {
   return cacheInstance;
 };
 
-export const getOfflineCacheService = () => {
-  if (!cacheInstance) return initOfflineCacheService();
-  return cacheInstance;
-};
+// Auto-init for ease of use
+cacheInstance = new OfflineCacheService();
 
-// Functional Wrappers for backward compatibility
-export const cacheData = (storeName, data) => getOfflineCacheService().cacheData(storeName, data);
-export const retrieveCachedData = (storeName, key = null) => getOfflineCacheService().retrieveCachedData(storeName, key);
-export const clearCache = (storeName) => getOfflineCacheService().clearStore(storeName);
+export const cacheData = (store, key, data) => cacheInstance.cacheData(store, key, data);
+export const retrieveCachedData = (store, key) => cacheInstance.retrieveCachedData(store, key);
+export const clearCache = (store) => cacheInstance.clearStore(store);
+export const getOfflineCacheService = () => cacheInstance;
 
-export default {
-  initOfflineCacheService,
-  getOfflineCacheService,
-  cacheData,
-  retrieveCachedData,
-  clearCache
-};
+export default cacheInstance;

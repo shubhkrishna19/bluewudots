@@ -1,69 +1,40 @@
+import { WAREHOUSES } from '../data/warehouseData';
+
 /**
  * Warehouse Optimizer Service
  * Intelligent multi-warehouse routing and fulfillment optimization.
  */
 
-// Warehouse definitions with capacity and coverage
-const WAREHOUSES = {
-    'WH-NORTH': {
-        id: 'WH-NORTH',
-        name: 'North Hub (Delhi NCR)',
-        location: { lat: 28.6139, lng: 77.2090 },
-        states: ['Delhi', 'Haryana', 'Punjab', 'Uttar Pradesh', 'Uttarakhand', 'Himachal Pradesh', 'Jammu & Kashmir'],
-        pincodeRanges: [[110000, 119999], [120000, 139999], [140000, 149999], [200000, 299999]],
-        capacity: 5000,
-        currentLoad: 0,
-        priority: 1
-    },
-    'WH-WEST': {
-        id: 'WH-WEST',
-        name: 'West Hub (Mumbai)',
-        location: { lat: 19.0760, lng: 72.8777 },
-        states: ['Maharashtra', 'Gujarat', 'Goa', 'Madhya Pradesh'],
-        pincodeRanges: [[400000, 449999], [360000, 399999], [450000, 499999]],
-        capacity: 6000,
-        currentLoad: 0,
-        priority: 2
-    },
-    'WH-SOUTH': {
-        id: 'WH-SOUTH',
-        name: 'South Hub (Bangalore)',
-        location: { lat: 12.9716, lng: 77.5946 },
-        states: ['Karnataka', 'Tamil Nadu', 'Kerala', 'Andhra Pradesh', 'Telangana'],
-        pincodeRanges: [[500000, 539999], [560000, 599999], [600000, 699999]],
-        capacity: 5500,
-        currentLoad: 0,
-        priority: 3
-    },
-    'WH-EAST': {
-        id: 'WH-EAST',
-        name: 'East Hub (Kolkata)',
-        location: { lat: 22.5726, lng: 88.3639 },
-        states: ['West Bengal', 'Bihar', 'Jharkhand', 'Odisha', 'Assam', 'Sikkim'],
-        pincodeRanges: [[700000, 749999], [750000, 799999], [800000, 859999]],
-        capacity: 4000,
-        currentLoad: 0,
-        priority: 4
-    }
-};
-
 class WarehouseOptimizer {
     constructor() {
         this.warehouses = { ...WAREHOUSES };
+        // currentLoad will be injected/synced from DataContext in production
     }
 
     /**
      * Get all available warehouses.
-     * @returns {Array}
      */
     getWarehouses() {
         return Object.values(this.warehouses);
     }
 
     /**
+     * Calculate distance between two coordinates (Simplified Haversine)
+     */
+    calculateDistance(lat1, lon1, lat2, lon2) {
+        const R = 6371; // km
+        const dLat = (lat2 - lat1) * Math.PI / 180;
+        const dLon = (lon2 - lon1) * Math.PI / 180;
+        const a =
+            Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+            Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+            Math.sin(dLon / 2) * Math.sin(dLon / 2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        return R * c;
+    }
+
+    /**
      * Find optimal warehouse based on pincode.
-     * @param {string} pincode
-     * @returns {Object} Selected warehouse
      */
     getWarehouseByPincode(pincode) {
         const pin = parseInt(pincode, 10);
@@ -75,15 +46,11 @@ class WarehouseOptimizer {
                 }
             }
         }
-
-        // Default to lowest priority warehouse if no match
-        return this.warehouses['WH-NORTH'];
+        return null;
     }
 
     /**
      * Find optimal warehouse based on state.
-     * @param {string} state
-     * @returns {Object} Selected warehouse
      */
     getWarehouseByState(state) {
         for (const wh of Object.values(this.warehouses)) {
@@ -91,88 +58,77 @@ class WarehouseOptimizer {
                 return wh;
             }
         }
-        return this.warehouses['WH-NORTH'];
+        return null;
     }
 
     /**
-     * Smart warehouse selection considering load balancing.
-     * @param {Object} order - Order with pincode, state, and weight
-     * @returns {Object} { warehouse, reason }
+     * Smart warehouse selection considering load balancing and proximity.
      */
-    selectOptimalWarehouse(order) {
+    selectOptimalWarehouse(order, currentLoads = {}) {
         const pincodeMatch = this.getWarehouseByPincode(order.pincode);
         const stateMatch = this.getWarehouseByState(order.state);
 
-        // Check if pincode warehouse has capacity
-        if (pincodeMatch.currentLoad < pincodeMatch.capacity * 0.9) {
+        // Primary Target
+        let primaryWh = pincodeMatch || stateMatch || this.warehouses['WH-NORTH'];
+        const load = currentLoads[primaryWh.id] || 0;
+
+        // 1. Check if Primary Hub has capacity
+        if (load < primaryWh.capacity * 0.9) {
             return {
-                warehouse: pincodeMatch,
-                reason: `Closest hub by pincode (${pincodeMatch.name})`
+                warehouse: primaryWh,
+                reason: pincodeMatch ? `Closest hub by pincode (${primaryWh.name})` : `Regional hub (${primaryWh.name})`
             };
         }
 
-        // Fallback to state match if pincode warehouse is at capacity
-        if (stateMatch && stateMatch.currentLoad < stateMatch.capacity * 0.95) {
-            return {
-                warehouse: stateMatch,
-                reason: `Regional hub (${stateMatch.name}) - Primary hub at capacity`
-            };
-        }
-
-        // Find any warehouse with lowest load
+        // 2. Failover: Find closest warehouse with capacity
         const available = Object.values(this.warehouses)
-            .filter(wh => wh.currentLoad < wh.capacity)
-            .sort((a, b) => (a.currentLoad / a.capacity) - (b.currentLoad / b.capacity));
+            .filter(wh => (currentLoads[wh.id] || 0) < wh.capacity * 0.95)
+            .map(wh => ({
+                ...wh,
+                distance: order.location ?
+                    this.calculateDistance(order.location.lat, order.location.lng, wh.location.lat, wh.location.lng) :
+                    9999 // Fallback if order has no lat/lng
+            }))
+            .sort((a, b) => a.distance - b.distance);
 
         if (available.length > 0) {
+            const bestAlternative = available[0];
             return {
-                warehouse: available[0],
-                reason: `Load-balanced assignment to ${available[0].name}`
+                warehouse: bestAlternative,
+                reason: `Failover to ${bestAlternative.name} (Primary hub at capacity)`
             };
         }
 
-        // All warehouses full - return primary anyway
+        // 3. Last Resort: Global load balancing
+        const leastBusy = Object.values(this.warehouses)
+            .sort((a, b) => {
+                const loadA = (currentLoads[a.id] || 0) / a.capacity;
+                const loadB = (currentLoads[b.id] || 0) / b.capacity;
+                return loadA - loadB;
+            })[0];
+
         return {
-            warehouse: pincodeMatch,
-            reason: 'All hubs at capacity - assigned to nearest'
+            warehouse: leastBusy,
+            reason: 'Critical load balancing - assigned to least busy hub'
         };
     }
 
     /**
-     * Update warehouse load after order assignment.
-     * @param {string} warehouseId
-     * @param {number} units
-     */
-    incrementLoad(warehouseId, units = 1) {
-        if (this.warehouses[warehouseId]) {
-            this.warehouses[warehouseId].currentLoad += units;
-        }
-    }
-
-    /**
-     * Decrease warehouse load after order fulfillment.
-     * @param {string} warehouseId
-     * @param {number} units
-     */
-    decrementLoad(warehouseId, units = 1) {
-        if (this.warehouses[warehouseId]) {
-            this.warehouses[warehouseId].currentLoad = Math.max(0, this.warehouses[warehouseId].currentLoad - units);
-        }
-    }
-
-    /**
      * Get warehouse utilization metrics.
-     * @returns {Array}
      */
-    getUtilizationMetrics() {
-        return Object.values(this.warehouses).map(wh => ({
-            id: wh.id,
-            name: wh.name,
-            utilization: Math.round((wh.currentLoad / wh.capacity) * 100),
-            available: wh.capacity - wh.currentLoad,
-            status: wh.currentLoad < wh.capacity * 0.7 ? 'HEALTHY' :
-                wh.currentLoad < wh.capacity * 0.9 ? 'MODERATE' : 'HIGH'
-        }));
+    getUtilizationMetrics(currentLoads = {}) {
+        return Object.values(this.warehouses).map(wh => {
+            const load = currentLoads[wh.id] || 0;
+            return {
+                id: wh.id,
+                name: wh.name,
+                utilization: Math.round((load / wh.capacity) * 100),
+                available: wh.capacity - load,
+                status: (load / wh.capacity) < 0.7 ? 'HEALTHY' :
+                    (load / wh.capacity) < 0.9 ? 'MODERATE' : 'HIGH',
+                color: wh.color
+            };
+        });
     }
 }
 

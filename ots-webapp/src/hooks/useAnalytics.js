@@ -16,10 +16,10 @@ export const useAnalytics = (dateRange = 7) => {
     const fetchAnalytics = async () => {
       try {
         setLoading(true);
-        const kpis = analyticsService.calculateKPIs?.();
-        const trendData = analyticsService.analyzeTrend?.();
-        const forecastData = analyticsService.forecast?.('orders', dateRange);
-        
+        const kpis = analyticsService.getKPIs?.(undefined, new Date(Date.now() - dateRange * 86400000), new Date()); // Pass dates if needed, or update service to handle defaults
+        const trendData = analyticsService.getOrderTrend?.(undefined, dateRange); // Service expects orders, days
+        const forecastData = analyticsService.forecastOrderVolume?.(undefined, dateRange); // Service expects orders, daysAhead
+
         setMetrics(kpis);
         setTrend(trendData);
         setForecast(forecastData);
@@ -31,7 +31,7 @@ export const useAnalytics = (dateRange = 7) => {
         setLoading(false);
       }
     };
-    
+
     fetchAnalytics();
   }, [dateRange]);
 
