@@ -4,7 +4,7 @@ import { useData } from '../../context/DataContext';
 import OrderJourney from '../Orders/OrderJourney';
 
 const AmazonMapper = () => {
-    const { setOrders } = useData();
+    const { orders, setOrders } = useData();
     const [isUploading, setIsUploading] = useState(false);
     const [stats, setStats] = useState(null);
 

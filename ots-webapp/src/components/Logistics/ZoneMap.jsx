@@ -20,6 +20,13 @@ const INDIA_ZONES = {
     }
 };
 
+const INTERNATIONAL_ZONES = {
+    'Middle East': { countries: ['UAE', 'Saudi Arabia', 'Qatar', 'Kuwait'], color: '#8B5CF6' },
+    'Americas': { countries: ['USA', 'Canada', 'Mexico'], color: '#EC4899' },
+    'Europe': { countries: ['UK', 'Germany', 'France', 'Italy'], color: '#06B6D4' },
+    'Asia Pacific': { countries: ['Singapore', 'Malaysia', 'Australia'], color: '#14B8A6' }
+};
+
 const ZoneMap = () => {
     const { orders } = useData();
 

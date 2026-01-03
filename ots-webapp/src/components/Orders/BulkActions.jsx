@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useData } from '../../context/DataContext';
 import { ORDER_STATUSES, STATUS_META } from '../../services/orderStateMachine';
+import { generateShippingLabel } from '../../utils/labelGenerator';
 
 const BulkActions = () => {
     const { orders, bulkUpdateStatus } = useData();
@@ -39,6 +40,16 @@ const BulkActions = () => {
         setIsProcessing(true);
         setResults(null);
 
+        // Handle Bulk Print separately (not a status transition)
+        if (bulkAction === 'PRINT_LABELS') {
+            const ordersToPrint = orders.filter(o => selectedOrders.includes(o.id));
+            ordersToPrint.forEach(order => generateShippingLabel(order));
+            setResults({ successful: ordersToPrint.map(o => o.id), failed: [] });
+            setIsProcessing(false);
+            setSelectedOrders([]);
+            return;
+        }
+
         // Simulate processing delay for UX
         await new Promise(resolve => setTimeout(resolve, 500));
 
@@ -74,8 +85,10 @@ const BulkActions = () => {
         { value: ORDER_STATUSES.PICKED_UP, label: '📦 Mark Picked Up' },
         { value: ORDER_STATUSES.IN_TRANSIT, label: '🛣️ Mark In Transit' },
         { value: ORDER_STATUSES.DELIVERED, label: '✅ Mark Delivered' },
+        { value: ORDER_STATUSES.QA_PASSED, label: '✅ QA Passed' },
         { value: ORDER_STATUSES.ON_HOLD, label: '⏸️ Put On Hold' },
-        { value: ORDER_STATUSES.CANCELLED, label: '❌ Cancel Orders' }
+        { value: ORDER_STATUSES.CANCELLED, label: '❌ Cancel Orders' },
+        { value: 'PRINT_LABELS', label: '🖨️ Print Labels (Bulk)' }
     ];
 
     return (

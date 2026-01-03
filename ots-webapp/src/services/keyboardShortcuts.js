@@ -47,8 +47,14 @@ const matchesShortcut = (event, shortcut) => {
  * @param {object} options - { description, scope }
  */
 export const registerShortcut = (shortcut, callback, options = {}) => {
-    const parsed = parseShortcut(shortcut);
     const id = shortcut.toLowerCase();
+
+    // Conflict Resolution: Warn if shortcut already exists in same scope
+    if (shortcuts.has(id) && shortcuts.get(id).scope === (options.scope || 'global')) {
+        console.warn(`[Shortcuts] Conflict: ${shortcut} is already registered in ${options.scope || 'global'} scope. Overwriting.`);
+    }
+
+    const parsed = parseShortcut(shortcut);
 
     shortcuts.set(id, {
         shortcut,

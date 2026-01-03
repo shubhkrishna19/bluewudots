@@ -3,19 +3,22 @@ import ReactDOM from 'react-dom/client'
 import App from './App.jsx'
 import './index.css'
 import { DataProvider } from './context/DataContext'
-import { registerPushSubscription } from './services/pushNotificationService'
+import { subscribeUser } from './services/pushNotificationService'
 import { AuthProvider } from './context/AuthContext'
 import { FinancialProvider } from './context/FinancialContext'
+import ErrorBoundary from './components/ErrorBoundary'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <AuthProvider>
-      <DataProvider>
-        <FinancialProvider>
-          <App />
-        </FinancialProvider>
-      </DataProvider>
-    </AuthProvider>
+    <ErrorBoundary>
+      <AuthProvider>
+        <DataProvider>
+          <FinancialProvider>
+            <App />
+          </FinancialProvider>
+        </DataProvider>
+      </AuthProvider>
+    </ErrorBoundary>
   </React.StrictMode>,
 )
 
@@ -26,7 +29,7 @@ if ('serviceWorker' in navigator) {
       .then((registration) => {
         console.log('[SW] Registered:', registration.scope);
         // Register push subscription for web push notifications
-        registerPushSubscription();
+        subscribeUser();
       })
       .catch((error) => {
         console.log('[SW] Registration failed:', error);

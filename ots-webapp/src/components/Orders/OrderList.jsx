@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useData } from '../../context/DataContext';
 import OrderJourney from './OrderJourney';
+import { generatePackingSlip, generateShippingLabel } from '../../utils/labelGenerator';
 
 const OrderList = () => {
     const { orders, updateOrderStatus } = useData();
@@ -188,9 +189,35 @@ const OrderList = () => {
 
                         <OrderJourney orderId={selectedOrder.id} />
 
-                        <div style={{ marginTop: '24px', display: 'flex', gap: '12px' }}>
-                            <button className="btn-primary glass-hover" style={{ flex: 1 }}>Process Order</button>
-                            <button className="btn-secondary glass-hover" style={{ flex: 1 }} onClick={() => setSelectedOrder(null)}>Close</button>
+                        <div style={{ marginTop: '24px', display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+                            <button
+                                className="btn-primary glass-hover"
+                                style={{ flex: 1, minWidth: '150px' }}
+                                onClick={() => {/* Future: Process logic */ }}
+                            >
+                                Process Order
+                            </button>
+                            <button
+                                className="btn-secondary glass-hover"
+                                style={{ flex: 1, minWidth: '150px' }}
+                                onClick={() => generatePackingSlip(selectedOrder)}
+                            >
+                                📄 Packing Slip
+                            </button>
+                            <button
+                                className="btn-secondary glass-hover"
+                                style={{ flex: 1, minWidth: '150px' }}
+                                onClick={() => generateShippingLabel(selectedOrder)}
+                            >
+                                🏷️ Shipping Label
+                            </button>
+                            <button
+                                className="btn-secondary glass-hover"
+                                style={{ flex: 1, minWidth: '150px' }}
+                                onClick={() => setSelectedOrder(null)}
+                            >
+                                Close
+                            </button>
                         </div>
                     </div>
                 </div>

@@ -1,3 +1,6 @@
+import whatsappService from './whatsappService';
+import { sendLocalNotification } from './pushNotificationService';
+
 /**
  * Notification Service - Centralized notification management
  * Handles in-app notifications, with hooks for future email/SMS/WhatsApp
@@ -185,30 +188,54 @@ export const clearAll = () => {
 // ============================================
 
 export const notifyOrderCreated = (order) => {
-    return createNotification({
+    const notif = createNotification({
         type: 'ORDER_CREATED',
         title: 'New Order',
         message: `Order ${order.id} created for ${order.customerName}`,
         data: { orderId: order.id }
     });
+
+    // Send WhatsApp Confirmation
+    whatsappService.sendOrderConfirmation(order);
+
+    // Browser Push
+    sendLocalNotification(`New Order: ${order.id}`, { body: `For ${order.customerName}` });
+
+    return notif;
 };
 
 export const notifyOrderShipped = (order) => {
-    return createNotification({
+    const notif = createNotification({
         type: 'ORDER_SHIPPED',
         title: 'Order Shipped',
         message: `Order ${order.id} shipped via ${order.carrier}. AWB: ${order.awb}`,
         data: { orderId: order.id, awb: order.awb }
     });
+
+    // WhatsApp Update
+    whatsappService.sendShippingUpdate(order);
+
+    // Browser Push
+    sendLocalNotification(`Order Shipped: ${order.id}`, { body: `Carrier: ${order.carrier} | AWB: ${order.awb}` });
+
+    return notif;
 };
 
 export const notifyOrderDelivered = (order) => {
-    return createNotification({
+    const notif = createNotification({
         type: 'ORDER_DELIVERED',
         title: 'Order Delivered',
         message: `Order ${order.id} delivered to ${order.city}`,
         data: { orderId: order.id }
     });
+
+    // WhatsApp Update
+    whatsappService.sendDeliveryConfirmation(order);
+
+    // Browser Push
+    sendLocalNotification(`Order Delivered: ${order.id}`, { body: `Successfully delivered to ${order.city}` });
+
+    return notif;
 };
 
 export const notifyOrderRTO = (order, reason) => {
@@ -218,6 +245,14 @@ export const notifyOrderRTO = (order, reason) => {
         message: `Order ${order.id} RTO: ${reason}`,
         data: { orderId: order.id, reason }
     });
+
+    // WhatsApp Update
+    whatsappService.sendRTOAlert(order);
+
+    // Browser Push
+    sendLocalNotification(`RTO Alert: ${order.id}`, { body: `Reason: ${reason}` });
+
+    return notif;
 };
 
 export const notifyLowStock = (sku, currentStock, reorderLevel) => {

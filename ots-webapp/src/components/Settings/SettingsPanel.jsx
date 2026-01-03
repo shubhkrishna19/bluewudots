@@ -9,7 +9,9 @@ const SettingsPanel = () => {
         autoAssignCarrier: true,
         emailNotifications: true,
         smsAlerts: false,
-        pushNotifications: false
+        pushNotifications: false,
+        minMargin: 12.0,
+        criticalMargin: 5.0
     });
 
     const handleToggle = (key) => {
@@ -176,6 +178,37 @@ const SettingsPanel = () => {
                                 left: settings.smsAlerts ? '26px' : '2px',
                                 transition: 'left 0.3s'
                             }}></div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Financial Guardrails */}
+                <div className="settings-card glass" style={{ padding: '24px' }}>
+                    <h3 style={{ marginBottom: '20px' }}>🛡️ Financial Guardrails</h3>
+
+                    <div className="setting-item" style={{ marginBottom: '16px' }}>
+                        <label className="text-muted" style={{ fontSize: '0.75rem', display: 'block', marginBottom: '6px' }}>TARGET MARGIN (%)</label>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                            <input
+                                type="number"
+                                value={settings.minMargin}
+                                onChange={(e) => setSettings(prev => ({ ...prev, minMargin: parseFloat(e.target.value) }))}
+                                style={{ flex: 1, padding: '12px', background: 'var(--bg-accent)', border: '1px solid var(--glass-border)', borderRadius: '8px', color: '#fff' }}
+                            />
+                            <span className="text-muted">Target for all orders</span>
+                        </div>
+                    </div>
+
+                    <div className="setting-item">
+                        <label className="text-muted" style={{ fontSize: '0.75rem', display: 'block', marginBottom: '6px' }}>CRITICAL MARGIN BLOCK (%)</label>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                            <input
+                                type="number"
+                                value={settings.criticalMargin}
+                                onChange={(e) => setSettings(prev => ({ ...prev, criticalMargin: parseFloat(e.target.value) }))}
+                                style={{ flex: 1, padding: '12px', background: 'var(--bg-accent)', border: '1px solid var(--glass-border)', borderRadius: '8px', color: 'var(--danger)' }}
+                            />
+                            <span className="text-muted">Prevent order creation below this</span>
                         </div>
                     </div>
                 </div>

@@ -8,42 +8,35 @@ This is a React-based Order Tracking System with the following key principles:
 3. **Platform Labels**: Use carrier/marketplace APIs for labels, not generic PDFs
 4. **India-First**: GST compliance, INR formatting, 28 States + 8 UTs zone mapping
 
-## Key Files
+### Supply Chain & Finance
+- `src/services/supplyChainService.js` - FIFO, batch tracking, shortage prediction
+- `src/services/marginProtectionService.js` - AI margin guard, leakage detection
+- `src/components/SupplyChain/ProductionTracker.jsx` - Batch monitoring
+- `src/components/Commercial/MarginGuard.jsx` - Financial risk oversight
 
-### State Management
-- `src/context/DataContext.jsx` - Global state for orders, logistics, SKU data
-
-### Business Logic
-- `src/utils/logisticsUtils.js` - Zone calculation, rate estimation
-- `src/utils/commercialUtils.js` - GST, profitability calculations
-- `src/utils/labelGenerator.js` - PDF generation (placeholder)
-
-### Components
-- `src/components/Automation/UniversalImporter.jsx` - Multi-channel CSV import
-- `src/components/Logistics/CarrierSelection.jsx` - Carrier recommendations
-- `src/components/Commercial/SKUMaster.jsx` - Profitability analysis
-- `src/components/Orders/BarcodeDispatcher.jsx` - Camera scanning
-- `src/components/Dealers/DealerLookup.jsx` - CRM dealer search
-- `src/components/Dashboard/AnalyticsDashboard.jsx` - Charts
-- `src/components/Settings/SettingsPanel.jsx` - Configuration
+## System Services (Shared)
+- `src/services/activityLogger.js` - Audit trail for all actions
+- `src/services/notificationService.js` - Multi-channel alerts (WhatsApp/Push/Discord)
+- `src/services/searchService.js` - Global fuzzy search (Ctrl+K)
+- `src/services/keyboardShortcuts.js` - Global hotkeys manager
 
 ## Coding Standards
 
-### CSS Classes
-- Always use `glass` and `glass-hover` for cards
-- Use CSS variables: `--primary`, `--accent`, `--success`, `--danger`
-- Animate with `animate-fade` class
+### UI Components
+- **Glassmorphism**: Always use `glass` and `glass-hover` for cards.
+- **Theming**: Use CSS variables: `--primary`, `--accent`, `--success`, `--danger`, `--warning`.
+- **Animations**: Use `animate-fade`, `animate-slide-up`, or `animate-pulse` for alerts.
+- **Icons**: Use Emojis for quick visual reference or Lucide-React if installed.
 
-### Data Flow
-1. Check `DataContext` for existing data before fetching
-2. Use `setOrders`, `setLogistics`, `setSkuMaster` for updates
-3. Every order must have a `source` field
+### Logic Patters
+- **FIFO**: Inventory deduction must always use `src/services/supplyChainService.js` logic.
+- **Margin Protection**: Every order creation must trigger a margin check via `DataContext`.
+- **Audit Trail**: Every significant state change (Order update, Stock adjustment) MUST be logged via `logActivity`.
 
-### API Integration (Future)
-- Amazon SP-API: Orders, Labels
-- Flipkart Seller API: Orders, Labels
-- Delhivery API: AWB, Tracking
-- Zoho CRM API: Dealers, Accounts (READ-ONLY)
+### API Integration (Current/Future)
+- **Zoho Sync**: Manual and auto-sync triggers for SKU Master and Orders.
+- **Notification Webhooks**: Mocked for WhatsApp/Push, ready for production endpoints.
+- **Amazon Node**: Logic for Amazon IN order mapping and CSV transformation.
 
 ## Running Locally
 ```bash

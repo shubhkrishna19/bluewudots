@@ -49,6 +49,8 @@ export const FinancialProvider = ({ children }) => {
                     stats.totalCommissions += analysis.breakdown.commission;
                     stats.totalOverhead += analysis.breakdown.overhead;
                     stats.totalShipping += analysis.breakdown.shipping;
+                    stats.totalGateway = (stats.totalGateway || 0) + (analysis.breakdown.gateway || 0);
+                    stats.totalReturnProvision = (stats.totalReturnProvision || 0) + (analysis.breakdown.returnProvision || 0);
                     stats.totalBom += analysis.bomCost;
                     stats.netRevenue += analysis.netRevenue;
                     stats.netProfit += analysis.netProfit;

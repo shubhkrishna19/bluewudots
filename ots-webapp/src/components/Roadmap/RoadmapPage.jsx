@@ -31,7 +31,12 @@ const RoadmapPage = () => {
         { name: 'Smart Routing Node', desc: 'Multi-warehouse assignment logic based on destination pincode', status: 'live', module: 'Logistics' },
         { name: 'Production Hub', desc: 'Real-time GRN and vendor batch tracking with FIFO logic', status: 'live', module: 'Supply Chain' },
         { name: 'QA Mobile Gate', desc: '4-point mobile checklist for final quality control before dispatch', status: 'live', module: 'Supply Chain' },
-        { name: 'Shortage Analytics', desc: 'Predictive demand-aware material shortage warnings', status: 'live', module: 'Intelligence' }
+        { name: 'Shortage Analytics', desc: 'Predictive demand-aware material shortage warnings', status: 'live', module: 'Intelligence' },
+        { name: 'AI Margin Guard', desc: 'Real-time profitability protection with automated risk flagging', status: 'live', module: 'Finance' },
+        { name: 'Global Search (Ctrl+K)', desc: 'Instant fuzzy mapping across 1,000+ orders and customers', status: 'live', module: 'UX' },
+        { name: 'Consolidated Alerts', desc: 'Multi-channel notifications for WhatsApp, Push, and SMS', status: 'live', module: 'Notifications' },
+        { name: 'Global Ledger', desc: 'Multi-currency financial view for international operations', status: 'live', module: 'Finance' },
+        { name: 'Keyboard Shortcuts', desc: 'Power user hotkeys for rapid navigation (Ctrl+K, Ctrl+N)', status: 'live', module: 'UX' }
     ];
 
 
@@ -61,7 +66,8 @@ const RoadmapPage = () => {
         { phase: 'Phase 10: Real-time APIs', status: 'Complete', desc: 'Amazon SP-API & Flipkart API Integration' },
         { phase: 'Phase 11: Enterprise Control', status: 'Complete', desc: 'Advanced security, RBAC, and Customer LTV' },
         { phase: 'Phase 12: Supply Chain', status: 'Complete', desc: 'FIFO Batches, QA Gate, and Shortage Alerts' },
-        { phase: 'Phase 13: Finance AI', status: 'In Progress', desc: 'Dynamic Pricing and Fraud Detection' }
+        { phase: 'Phase 13: Finance AI', status: 'Complete', desc: 'AI Margin Protection and Multi-Channel Alerts' },
+        { phase: 'Phase 14: Global', status: 'In Progress', desc: 'Multi-Currency Ledger & International Zones' }
     ];
 
     const techStack = [

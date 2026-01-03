@@ -56,7 +56,11 @@ const QuickOrderForm = ({ onClose }) => {
                 onClose?.();
             }, 3000); // Wait a bit longer to show sync status
         } else {
-            setErrors(result.errors);
+            if (result.error === 'MARGIN_BLOCK') {
+                setErrors([result.message]);
+            } else {
+                setErrors(result.errors || ['Failed to create order']);
+            }
         }
     };
 

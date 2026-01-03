@@ -59,9 +59,11 @@ const fillTemplate = (template, data) => {
     return message;
 };
 
+const API_ENDPOINT = '/server/notifications/whatsapp';
+const API_KEY = import.meta.env.VITE_WHATSAPP_API_KEY || ''; // To be configured in Catalyst
+
 /**
- * Send WhatsApp message via API (Mockup)
- * In production, replace with actual API call
+ * Send WhatsApp message via API
  */
 const sendWhatsAppMessage = async (phone, templateId, data) => {
     const formattedPhone = formatPhoneNumber(phone);
@@ -74,20 +76,35 @@ const sendWhatsAppMessage = async (phone, templateId, data) => {
         return { success: false, error: 'Invalid template' };
     }
 
-    const message = fillTemplate(template.body, data);
-
-    // MOCK: Log the message (replace with actual API call in production)
-    console.log(`[WhatsApp] Sending to ${formattedPhone}:`);
-    console.log(message);
-
-    // Simulate API response
-    return {
-        success: true,
-        messageId: `wa_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+    const messageBody = {
         to: formattedPhone,
-        template: templateId,
-        timestamp: new Date().toISOString()
+        template: template.id,
+        params: data,
+        apiKey: API_KEY
     };
+
+    try {
+        // MOCK: In production, this would be a real API call to Catalyst or Meta
+        // const response = await fetch(API_ENDPOINT, {
+        //     method: 'POST',
+        //     headers: { 'Content-Type': 'application/json' },
+        //     body: JSON.stringify(messageBody)
+        // });
+        // const result = await response.json();
+
+        // Simulation for development
+        console.log(`[WhatsApp API] Request to ${formattedPhone}:`, messageBody);
+
+        return {
+            success: true,
+            messageId: `wa_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+            status: 'queued',
+            timestamp: new Date().toISOString()
+        };
+    } catch (error) {
+        console.error('[WhatsApp Service Error]:', error);
+        return { success: false, error: 'Failed to transmit message' };
+    }
 };
 
 // ============================================

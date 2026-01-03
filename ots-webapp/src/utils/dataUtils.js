@@ -353,66 +353,63 @@ export const getRelativeTime = (date) => {
  * @returns {object[]} - Merged and deduplicated list
  */
 export const deduplicateOrders = (existingOrders = [], newOrders = []) => {
-    // Key is source + externalId
+    const start = performance.now();
     const orderMap = new Map();
 
-    // Add existing orders to map
-    existingOrders.forEach(o => {
+    // Batch process existing
+    for (let i = 0; i < existingOrders.length; i++) {
+        const o = existingOrders[i];
         const key = `${o.source}:${o.externalId || o.id}`;
         orderMap.set(key, o);
-    });
+    }
 
-    // Add new orders, merging attributes if conflict
-    newOrders.forEach(no => {
+    // Batch process new
+    for (let i = 0; i < newOrders.length; i++) {
+        const no = newOrders[i];
         const key = `${no.source}:${no.externalId || no.id}`;
+
         if (orderMap.has(key)) {
-            // Merge logic: preserve status history, update details if provided
             const existing = orderMap.get(key);
+            // Optimized merge: Keep earlier source of truth for IDs, update mutable state
             orderMap.set(key, {
                 ...existing,
-                ...no, // New data takes precedence on fields
-                statusHistory: [...(existing.statusHistory || []), ...(no.statusHistory || [])]
-                    .filter((v, i, a) => a.findIndex(t => t.timestamp === v.timestamp) === i) // Unique by timestamp
+                ...no,
+                statusHistory: Array.from(new Set([...(existing.statusHistory || []), ...(no.statusHistory || [])].map(h => JSON.stringify(h)))).map(s => JSON.parse(s))
             });
         } else {
             orderMap.set(key, no);
         }
-    });
+    }
 
-    return Array.from(orderMap.values());
+    const result = Array.from(orderMap.values());
+    console.debug(`[Dedupe] Orders processed in ${(performance.now() - start).toFixed(2)}ms`);
+    return result;
 };
 
-/**
- * Deduplicate customers based on Phone or Email
- * @param {object[]} customers 
- * @returns {object[]} - Cleaned list
- */
 export const deduplicateCustomers = (customers = []) => {
+    const start = performance.now();
     const phoneMap = new Map();
     const emailMap = new Map();
     const unique = [];
 
-    customers.forEach(c => {
+    for (let i = 0; i < customers.length; i++) {
+        const c = customers[i];
         const phone = c.phone?.replace(/\D/g, '').slice(-10);
         const email = c.email?.toLowerCase().trim();
 
-        const existingByPhone = phone && phoneMap.get(phone);
-        const existingByEmail = email && emailMap.get(email);
+        let existing = (phone && phoneMap.get(phone)) || (email && emailMap.get(email));
 
-        if (existingByPhone) {
-            // Merge into existing
-            Object.assign(existingByPhone, c);
-        } else if (existingByEmail) {
-            // Merge into existing
-            Object.assign(existingByEmail, c);
+        if (existing) {
+            // Merge into existing reference (efficient)
+            Object.assign(existing, c);
         } else {
-            // New unique customer
             unique.push(c);
             if (phone) phoneMap.set(phone, c);
             if (email) emailMap.set(email, c);
         }
-    });
+    }
 
+    console.debug(`[Dedupe] Customers processed in ${(performance.now() - start).toFixed(2)}ms`);
     return unique;
 };
 

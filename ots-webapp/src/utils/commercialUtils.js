@@ -20,10 +20,11 @@ export const calculateProfitability = ({
     commissionPercent = 15,
     tmsLevel = 'TL1',
     gstRate = 18,
-    shippingCost = 0
+    shippingCost = 0,
+    gatewayFeePercent = 2.0, // New: Payment Gateway/PG Charges
+    returnRatePercent = 5.0  // New: Expected RTO/Return Provision
 }) => {
     // 1. GST Calculation (Inclusive)
-    // Base = SP / (1 + GST/100)
     const basePrice = sellingPrice / (1 + gstRate / 100);
     const gstAmount = sellingPrice - basePrice;
 
@@ -34,13 +35,21 @@ export const calculateProfitability = ({
     const overheadPercent = TMS_LEVELS[tmsLevel]?.overhead || 18;
     const overheadAmount = (basePrice * overheadPercent) / 100;
 
-    // 4. Shipping Estimate (If not provided, use a high-level average of 8% of SP)
+    // 4. Shipping Estimate
     const activeShipping = shippingCost || (sellingPrice * 0.08);
 
-    // 5. Net Revenue = Total - GST - Commission - Shipping - Overhead
-    const netRevenue = sellingPrice - gstAmount - commissionAmount - activeShipping - overheadAmount;
+    // 5. NEW: Gateway Fee
+    const gatewayFee = (sellingPrice * gatewayFeePercent) / 100;
 
-    // 6. Net Profit
+    // 6. NEW: Return/RTO Provision (Estimated cost of returns spread across all orders)
+    // Formula: (Shipping Cost * 2 [Round trip]) * Return Rate %
+    const returnProvision = (activeShipping * 2) * (returnRatePercent / 100);
+
+    // 7. Net Revenue
+    const totalCosts = gstAmount + commissionAmount + activeShipping + overheadAmount + gatewayFee + returnProvision;
+    const netRevenue = sellingPrice - totalCosts;
+
+    // 8. Net Profit
     const netProfit = netRevenue - bomCost;
     const marginPercent = basePrice > 0 ? (netProfit / basePrice) * 100 : 0;
 
@@ -51,7 +60,9 @@ export const calculateProfitability = ({
             tax: Math.round(gstAmount),
             commission: Math.round(commissionAmount),
             overhead: Math.round(overheadAmount),
-            shipping: Math.round(activeShipping)
+            shipping: Math.round(activeShipping),
+            gateway: Math.round(gatewayFee),
+            returnProvision: Math.round(returnProvision)
         },
         netRevenue: Math.round(netRevenue),
         netProfit: Math.round(netProfit),

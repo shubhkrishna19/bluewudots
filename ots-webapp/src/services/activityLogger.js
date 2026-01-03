@@ -1,3 +1,5 @@
+import { cacheData } from './offlineCacheService';
+
 /**
  * Activity Logger - Audit trail for all system actions
  * Integrates with UI components and will sync to backend
@@ -102,20 +104,17 @@ const getCurrentUser = () => {
 };
 
 /**
- * Sync activity to backend (placeholder)
+ * Sync activity to backend and local cache
  * @param {object} activity 
  */
 const syncToBackend = async (activity) => {
-    // Will be implemented when Catalyst backend is ready
+    // 1. Persist to high-speed local cache (IndexedDB)
+    cacheData('activityLog', activity);
+
+    // 2. Future: Sync with Zoho Catalyst
     // try {
-    //     await fetch('/server/activity', {
-    //         method: 'POST',
-    //         headers: { 'Content-Type': 'application/json' },
-    //         body: JSON.stringify(activity)
-    //     });
-    // } catch (error) {
-    //     console.warn('Activity sync failed:', error);
-    // }
+    //     await fetch('/server/activity', { ... });
+    // } catch (e) { ... }
 };
 
 /**
@@ -174,6 +173,13 @@ export const getEntityHistory = (entityType, entityId) => {
  */
 export const clearActivityLog = () => {
     activityLog = [];
+};
+
+/**
+ * Initialize activity log (used on app load)
+ */
+export const initializeActivityLog = (logs) => {
+    activityLog = logs || [];
 };
 
 // ============================================

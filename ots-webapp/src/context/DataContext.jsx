@@ -1,13 +1,16 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { transitionOrder, bulkTransition, ORDER_STATUSES, getValidNextStatuses } from '../services/orderStateMachine';
 import { getAllRates, getRecommendation } from '../services/carrierRateEngine';
-import { logOrderCreate, logOrderStatusChange, logBulkUpdate, logCarrierAssign, logImportComplete } from '../services/activityLogger';
-import { notifyOrderCreated, notifyOrderShipped, notifyBulkImport, notifyLowStock } from '../services/notificationService';
+import { logOrderCreate, logOrderStatusChange, logBulkUpdate, logCarrierAssign, logImportComplete, initializeActivityLog as loadActivityCache, getActivityLog, logActivity } from '../services/activityLogger';
+import { notifyOrderCreated, notifyOrderShipped, notifyOrderDelivered, notifyOrderRTO, notifyBulkImport, notifyLowStock } from '../services/notificationService';
 import { validateOrder, normalizeOrder, generateOrderId, deduplicateOrders, deduplicateCustomers, exportOrdersCSV, exportJSON } from '../utils/dataUtils';
 import { calculateSMAForecast, predictSKUDemand } from '../services/forecastService';
 import { getOrderTrend, projectRevenue, calculateSKUProfitability } from '../services/analyticsService';
 import { fetchSKUMaster, pushOrderToZoho } from '../services/zohoBridgeService';
 import marketplaceService from '../services/marketplaceService';
+import searchService from '../services/searchService';
+import marginProtectionService from '../services/marginProtectionService';
+import cacheService from '../services/offlineCacheService';
 
 import { SKU_MASTER, SKU_ALIASES } from '../data/skuMasterData';
 
@@ -23,6 +26,7 @@ export const DataProvider = ({ children }) => {
     const [customerMaster, setCustomerMaster] = useState([]);
     const [inventoryLevels, setInventoryLevels] = useState({}); // { skuId: { inStock, reserved, location } }
     const [batches, setBatches] = useState([]); // Array of { id, sku, vendor, quantity, allocated, receivedAt }
+    const [flaggedOrders, setFlaggedOrders] = useState([]); // Orders requiring financial review
 
 
     const [activityLog, setActivityLog] = useState([]);
@@ -39,90 +43,93 @@ export const DataProvider = ({ children }) => {
                 console.log('🔄 Synchronizing with Bluewud India Nodes...');
                 setSyncStatus('syncing');
 
-                console.log('🔄 Bluewud India Nodes: Operational');
-                setSyncStatus('online');
+                // 1. Load from Offline Cache first (Highest Priority for Speed)
+                const cachedOrders = await cacheService.retrieveCachedData('orders');
+                const cachedSkuMaster = await cacheService.retrieveCachedData('skuMaster');
+                const cachedCustomers = await cacheService.retrieveCachedData('customers');
+                const cachedActivityLog = await cacheService.retrieveCachedData('activityLog');
+                const cachedInventoryLevels = await cacheService.retrieveCachedData('metadata'); // Will find key='inventoryLevels'
+                const cachedBatches = await cacheService.retrieveCachedData('metadata'); // Will find key='batches'
 
-                // Initial states are empty, waiting for import/sync
-                setOrders([]);
-                setInventory([]);
-                setLogistics([]);
+                if (cachedOrders && cachedOrders.length > 0) {
+                    console.log(`📦 Loaded ${cachedOrders.length} orders from local cache`);
+                    setOrders(cachedOrders);
+                } else {
+                    // Seed Mock Orders only if cache is empty
+                    const mockOrders = [
+                        ...Array(6).fill(0).map((_, i) => ({
+                            id: `BWD-${1000 + i}`,
+                            customerName: 'Sameer Malhotra',
+                            phone: '9876543210',
+                            amount: 15000 + (i * 1000),
+                            status: 'Delivered',
+                            sku: 'SR-CLM-TM',
+                            createdAt: new Date(Date.now() - (i * 2) * 24 * 60 * 60 * 1000).toISOString()
+                        })),
+                        { id: 'BWD-2001', customerName: 'Anjali Sharma', phone: '9123456789', amount: 8500, status: 'In-Transit', sku: 'SR-CLM-TM', createdAt: new Date().toISOString() },
+                        { id: 'BWD-2002', customerName: 'Anjali Sharma', phone: '9123456789', amount: 3200, status: 'Delivered', sku: 'SR-CLM-TM', createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString() },
+                        { id: 'BWD-3001', customerName: 'Priya Verma', phone: '7766554433', amount: 12000, status: 'Delivered', sku: 'SR-CLM-TM', createdAt: new Date(Date.now() - 100 * 24 * 60 * 60 * 1000).toISOString() }
+                    ];
+                    setOrders(mockOrders);
+                }
 
+                if (cachedSkuMaster && cachedSkuMaster.length > 0) {
+                    setSkuMaster(cachedSkuMaster);
+                }
 
-                // SKU Master already initialized from seed data
+                if (cachedCustomers && cachedCustomers.length > 0) {
+                    setCustomerMaster(cachedCustomers);
+                } else {
+                    // Seed Mock Customers
+                    setCustomerMaster([
+                        { name: 'Sameer Malhotra', phone: '9876543210', email: 'sameer@example.com', city: 'Delhi', state: 'Delhi', address: 'GK-II', pincode: '110048' },
+                        { name: 'Anjali Sharma', phone: '9123456789', email: 'anjali@example.com', city: 'Mumbai', state: 'Maharashtra', address: 'Andheri West', pincode: '400053' },
+                        { name: 'Karthik Rao', phone: '8877665544', email: 'karthik@example.com', city: 'Bangalore', state: 'Karnataka', address: 'HSR Layout', pincode: '560102' },
+                        { name: 'Priya Verma', phone: '7766554433', email: 'priya@example.com', city: 'Chandigarh', state: 'Punjab', address: 'Sector 17', pincode: '160017' }
+                    ]);
+                }
 
-                // Initialize Warehouse Inventory Levels from Child SKUs
-                const initialInventory = {};
-                SKU_MASTER.filter(s => !s.isParent).forEach(child => {
-                    initialInventory[child.sku] = {
-                        inStock: child.initialStock || Math.floor(Math.random() * 50) + 10, // Default for seed
-                        reserved: 0,
-                        location: child.defaultLocation || `WH-A${Math.floor(Math.random() * 9) + 1}`
-                    };
-                });
-                // Seed Mock Customers & Orders for CRM/LTV Demo
-                const mockCustomers = [
-                    { name: 'Sameer Malhotra', phone: '9876543210', email: 'sameer@example.com', city: 'Delhi', state: 'Delhi', address: 'GK-II', pincode: '110048' },
-                    { name: 'Anjali Sharma', phone: '9123456789', email: 'anjali@example.com', city: 'Mumbai', state: 'Maharashtra', address: 'Andheri West', pincode: '400053' },
-                    { name: 'Karthik Rao', phone: '8877665544', email: 'karthik@example.com', city: 'Bangalore', state: 'Karnataka', address: 'HSR Layout', pincode: '560102' },
-                    { name: 'Priya Verma', phone: '7766554433', email: 'priya@example.com', city: 'Chandigarh', state: 'Punjab', address: 'Sector 17', pincode: '160017' }
-                ];
-                setCustomerMaster(mockCustomers);
+                if (cachedActivityLog && cachedActivityLog.length > 0) {
+                    loadActivityCache(cachedActivityLog);
+                    setActivityLog(cachedActivityLog);
+                }
 
-                const mockOrders = [
-                    // Sameer: VIP (5+ orders)
-                    ...Array(6).fill(0).map((_, i) => ({
-                        id: `BWD-${1000 + i}`,
-                        customerName: 'Sameer Malhotra',
-                        phone: '9876543210',
-                        amount: 15000 + (i * 1000),
-                        status: 'Delivered',
-                        sku: 'SR-CLM-TM',
-                        createdAt: new Date(Date.now() - (i * 2) * 24 * 60 * 60 * 1000).toISOString()
-                    })),
-                    // Anjali: Regular (2 orders)
-                    { id: 'BWD-2001', customerName: 'Anjali Sharma', phone: '9123456789', amount: 8500, status: 'In-Transit', sku: 'SR-CLM-TM', createdAt: new Date().toISOString() },
-                    { id: 'BWD-2002', customerName: 'Anjali Sharma', phone: '9123456789', amount: 3200, status: 'Delivered', sku: 'SR-CLM-TM', createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString() },
-                    // Priya: At Risk (Last order > 90 days ago)
-                    { id: 'BWD-3001', customerName: 'Priya Verma', phone: '7766554433', amount: 12000, status: 'Delivered', sku: 'SR-CLM-TM', createdAt: new Date(Date.now() - 100 * 24 * 60 * 60 * 1000).toISOString() }
-                ];
-                setOrders(mockOrders);
-
-                setInventoryLevels(initialInventory);
-
-                // Initialize Mock Batches for FIFO
-                const mockBatches = [];
-                SKU_MASTER.filter(s => !s.isParent).forEach(sku => {
-                    mockBatches.push({
-                        id: `BATCH-${sku.sku}-001`,
-                        sku: sku.sku,
-                        vendor: 'Elite Woods',
-                        quantity: 20,
-                        allocated: 0,
-                        receivedAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString()
+                const invEntry = cachedInventoryLevels?.find(m => m.key === 'inventoryLevels');
+                if (invEntry) {
+                    setInventoryLevels(invEntry.data);
+                } else {
+                    // Seed Mock Inventory
+                    const initialInventory = {};
+                    SKU_MASTER.filter(s => !s.isParent).forEach(child => {
+                        initialInventory[child.sku] = {
+                            inStock: child.initialStock || Math.floor(Math.random() * 50) + 10,
+                            reserved: 0,
+                            location: child.defaultLocation || `WH-A${Math.floor(Math.random() * 9) + 1}`
+                        };
                     });
-                    mockBatches.push({
-                        id: `BATCH-${sku.sku}-002`,
-                        sku: sku.sku,
-                        vendor: 'Eco-Fab Panels',
-                        quantity: 30,
-                        allocated: 0,
-                        receivedAt: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString()
+                    setInventoryLevels(initialInventory);
+                }
+
+                const batchEntry = cachedBatches?.find(m => m.key === 'batches');
+                if (batchEntry) {
+                    setBatches(batchEntry.data);
+                } else {
+                    // Seed Mock Batches
+                    const mockBatches = [];
+                    SKU_MASTER.filter(s => !s.isParent).forEach(sku => {
+                        mockBatches.push({
+                            id: `BATCH-${sku.sku}-001`,
+                            sku: sku.sku,
+                            vendor: 'Elite Woods',
+                            quantity: 20,
+                            allocated: 0,
+                            receivedAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString()
+                        });
                     });
-                });
-                setBatches(mockBatches);
+                    setBatches(mockBatches);
+                }
 
-
-                // Warehouse inventory initialized as empty
-                setInventory([]);
-
-
-                // Check for low stock and notify
-                inventory.forEach(item => {
-                    if (item.available <= item.reorderLevel) {
-                        notifyLowStock(item.sku, item.available, item.reorderLevel);
-                    }
-                });
-
+                // 2. Network Check / Remote Sync
                 setSyncStatus('online');
                 setLoading(false);
                 console.log('✅ Data sync complete');
@@ -134,6 +141,37 @@ export const DataProvider = ({ children }) => {
         };
         initializeData();
     }, []);
+
+    // --- AUTO-CACHE SYNC ---
+    useEffect(() => {
+        if (!loading && orders.length > 0) {
+            cacheService.cacheData('orders', orders);
+        }
+    }, [orders, loading]);
+
+    useEffect(() => {
+        if (!loading && skuMaster.length > 0) {
+            cacheService.cacheData('skuMaster', skuMaster);
+        }
+    }, [skuMaster, loading]);
+
+    useEffect(() => {
+        if (!loading && customerMaster.length > 0) {
+            cacheService.cacheData('customers', customerMaster);
+        }
+    }, [customerMaster, loading]);
+
+    useEffect(() => {
+        if (!loading) {
+            cacheService.cacheData('metadata', { key: 'inventoryLevels', data: inventoryLevels });
+        }
+    }, [inventoryLevels, loading]);
+
+    useEffect(() => {
+        if (!loading) {
+            cacheService.cacheData('metadata', { key: 'batches', data: batches });
+        }
+    }, [batches, loading]);
 
     // ============================================
     // ORDER MANAGEMENT
@@ -160,6 +198,25 @@ export const DataProvider = ({ children }) => {
             }],
             createdAt: new Date().toISOString()
         };
+
+        // --- MARGIN PROTECTION CHECK ---
+        const skuData = skuMaster.find(s => s.sku === newOrder.sku);
+        const marginCheck = marginProtectionService.validateMargin(newOrder, skuData);
+
+        if (marginCheck.shouldBlock) {
+            console.error('Order Blocked:', marginCheck.alert);
+            return {
+                success: false,
+                error: 'MARGIN_BLOCK',
+                message: marginCheck.alert
+            };
+        }
+
+        if (!marginCheck.isProtected) {
+            newOrder.financialFlag = true;
+            newOrder.marginAlert = marginCheck.alert;
+            setFlaggedOrders(prev => [...prev, newOrder]);
+        }
 
         setOrders(prev => deduplicateOrders(prev, [newOrder]));
 
@@ -236,6 +293,10 @@ export const DataProvider = ({ children }) => {
                     // Trigger notifications for key statuses
                     if (newStatus === ORDER_STATUSES.IN_TRANSIT || newStatus === ORDER_STATUSES.PICKED_UP) {
                         notifyOrderShipped(transitionResult.order);
+                    } else if (newStatus === ORDER_STATUSES.DELIVERED) {
+                        notifyOrderDelivered(transitionResult.order);
+                    } else if (newStatus.startsWith('RTO')) {
+                        notifyOrderRTO(transitionResult.order, metadata.reason || 'Shipment returned');
                     }
 
                     return transitionResult.order;
@@ -598,6 +659,18 @@ export const DataProvider = ({ children }) => {
         // Supply Chain
         batches,
         receiveStock,
+
+        // Search
+        universalSearch: (query) => searchService.universalSearch({ orders, skuMaster }, query),
+        quickLookup: (id) => searchService.quickLookup(orders, id),
+
+        // Activity Log
+        activityLog: getActivityLog(),
+        logActivity: logActivity,
+
+        // Phase 13: Financial Intelligence
+        flaggedOrders,
+        resolveFlag: (orderId) => setFlaggedOrders(prev => prev.filter(o => o.id !== orderId)),
 
         // Zoho Sync
         syncSKUMaster,

@@ -6,7 +6,7 @@ import { calculateProfitability, getEnhancedSKU } from '../../utils/commercialUt
 
 const FinancialCenter = () => {
     const { finStats } = useFinance();
-    const { orders } = useData();
+    const { orders, flaggedOrders } = useData();
     const [selectedView, setSelectedView] = useState('overview');
 
     const formatINR = (val) => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(val);
@@ -58,6 +58,14 @@ const FinancialCenter = () => {
                     <h2 style={{ marginTop: '8px' }}>{finStats.marginPercent}%</h2>
                     <p style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: '4px' }}>{formatINR(finStats.netProfit)} Total Profit</p>
                 </div>
+
+                {flaggedOrders.length > 0 && (
+                    <div className="stat-card glass animate-pulse" style={{ padding: '24px', borderTop: '4px solid var(--danger)', background: 'rgba(239, 68, 68, 0.05)' }}>
+                        <span className="text-muted" style={{ fontSize: '0.75rem' }}>RISK ALERT</span>
+                        <h2 style={{ marginTop: '8px', color: 'var(--danger)' }}>{flaggedOrders.length} Flags</h2>
+                        <p style={{ fontSize: '0.7rem', color: 'var(--danger)', marginTop: '4px' }}>Orders below margin threshold</p>
+                    </div>
+                )}
             </div>
 
             <div className="financial-layout" style={{ marginTop: '40px', display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '32px' }}>
@@ -163,6 +171,24 @@ const FinancialCenter = () => {
                                 </div>
                                 <div className="progress-bar glass" style={{ height: '8px', borderRadius: '4px', overflow: 'hidden' }}>
                                     <div style={{ width: '8%', height: '100%', background: 'var(--primary)' }}></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                                    <span style={{ fontSize: '0.8rem' }}>Payment Gateway (2%)</span>
+                                    <span style={{ fontWeight: '700' }}>{formatINR(finStats.totalGateway || 0)}</span>
+                                </div>
+                                <div className="progress-bar glass" style={{ height: '8px', borderRadius: '4px', overflow: 'hidden' }}>
+                                    <div style={{ width: '2%', height: '100%', background: 'var(--info)' }}></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                                    <span style={{ fontSize: '0.8rem' }}>RTO Provision (5%)</span>
+                                    <span style={{ fontWeight: '700' }}>{formatINR(finStats.totalReturnProvision || 0)}</span>
+                                </div>
+                                <div className="progress-bar glass" style={{ height: '8px', borderRadius: '4px', overflow: 'hidden' }}>
+                                    <div style={{ width: '5%', height: '100%', background: 'var(--danger)' }}></div>
                                 </div>
                             </div>
 

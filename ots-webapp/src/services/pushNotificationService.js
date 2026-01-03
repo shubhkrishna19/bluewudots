@@ -1,46 +1,84 @@
-// Push Notification Service Stub
-// This module provides functions to register for web push notifications and send notifications.
-// In production, integrate with a backend to store subscription info and send push messages.
+/**
+ * Web Push Notification Service
+ * 
+ * Handles VAPID registration and browser subscription for real-time alerts.
+ */
 
-export const registerPushSubscription = async () => {
-    if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
-        console.warn('[Push] Service Worker or Push API not supported');
-        return null;
-    }
-    try {
-        const registration = await navigator.serviceWorker.ready;
-        const subscription = await registration.pushManager.subscribe({
-            userVisibleOnly: true,
-            // VAPID public key placeholder – replace with real key in production
-            applicationServerKey: urlBase64ToUint8Array('BPLACEHOLDER_PUBLIC_KEY')
-        });
-        console.log('[Push] Subscription obtained', subscription);
-        // TODO: Send subscription to backend for storage
-        return subscription;
-    } catch (err) {
-        console.error('[Push] Subscription failed', err);
-        return null;
-    }
-};
+const VAPID_PUBLIC_KEY = import.meta.env.VITE_VAPID_PUBLIC_KEY || '';
 
-export const sendLocalNotification = (title, options = {}) => {
-    if (Notification.permission === 'granted') {
-        new Notification(title, options);
-    } else if (Notification.permission !== 'denied') {
-        Notification.requestPermission().then((perm) => {
-            if (perm === 'granted') new Notification(title, options);
-        });
-    }
-};
+/**
+ * Convert base64 string to Uint8Array for VAPID key
+ */
+const urlBase64ToUint8Array = (base64String) => {
+    const padding = '='.repeat((4 - base64String.length % 4) % 4);
+    const base64 = (base64String + padding)
+        .replace(/-/g, '+')
+        .replace(/_/g, '/');
 
-// Utility to convert VAPID key
-function urlBase64ToUint8Array(base64String) {
-    const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
-    const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
-    const rawData = atob(base64);
+    const rawData = window.atob(base64);
     const outputArray = new Uint8Array(rawData.length);
+
     for (let i = 0; i < rawData.length; ++i) {
         outputArray[i] = rawData.charCodeAt(i);
     }
     return outputArray;
-}
+};
+
+/**
+ * Register the browser for push notifications
+ * @returns {object|null} - Subscription object
+ */
+export const subscribeUser = async () => {
+    if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+        console.warn('Push messaging is not supported in this browser');
+        return null;
+    }
+
+    try {
+        const registration = await navigator.serviceWorker.ready;
+
+        // Check if subscription already exists
+        let subscription = await registration.pushManager.getSubscription();
+
+        if (!subscription && VAPID_PUBLIC_KEY) {
+            subscription = await registration.pushManager.subscribe({
+                userVisibleOnly: true,
+                applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
+            });
+            console.log('User subscribed for Push:', subscription);
+        }
+
+        return subscription;
+    } catch (error) {
+        console.error('Failed to subscribe user for push:', error);
+        return null;
+    }
+};
+
+/**
+ * Send a local push notification (Development/Testing)
+ * @param {string} title 
+ * @param {object} options 
+ */
+export const sendLocalNotification = async (title, options = {}) => {
+    if (!('serviceWorker' in navigator)) return;
+
+    try {
+        const registration = await navigator.serviceWorker.ready;
+        registration.showNotification(title, {
+            body: options.body || 'New update from Bluewud OTS',
+            icon: '/icons/icon-192x192.png',
+            badge: '/icons/badge-72x72.png',
+            vibrate: [100, 50, 100],
+            data: options.data || { dateOfArrival: Date.now() },
+            ...options
+        });
+    } catch (error) {
+        console.error('Local notification failed:', error);
+    }
+};
+
+export default {
+    subscribeUser,
+    sendLocalNotification
+};

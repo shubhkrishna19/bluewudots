@@ -3,7 +3,7 @@ import { useData } from '../../context/DataContext';
 import { routeOrderToWarehouse, getWarehouses } from '../../services/warehouseService';
 
 const WarehouseManager = () => {
-    const { skuMaster = [], inventoryLevels = [], adjustStock, setStockLocation } = useData();
+    const { skuMaster = [], inventoryLevels = [], batches = [], adjustStock, setStockLocation } = useData();
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('All');
     const [selectedWh, setSelectedWh] = useState(null);
@@ -174,6 +174,28 @@ const WarehouseManager = () => {
                         ))}
                     </tbody>
                 </table>
+            </div>
+            {/* FIFO Batch List */}
+            <div className="batch-inventory-section glass" style={{ marginTop: '32px', padding: '24px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                    <h3>🕒 FIFO Batch Inventory</h3>
+                    <span className="badge" style={{ background: 'var(--accent)' }}>{batches.length} Batches Active</span>
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '16px' }}>
+                    {batches.slice(-6).reverse().map(batch => (
+                        <div key={batch.id} className="glass glass-hover" style={{ padding: '16px', borderLeft: '4px solid var(--primary)' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                <span style={{ fontWeight: '800', color: 'var(--primary)' }}>{batch.sku}</span>
+                                <span className="badge" style={{ background: 'rgba(255,255,255,0.05)', fontSize: '0.65rem' }}>#{batch.id.slice(-6)}</span>
+                            </div>
+                            <p style={{ fontSize: '0.85rem', marginTop: '8px' }}>Vendor: {batch.vendor}</p>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '12px', alignItems: 'center' }}>
+                                <span style={{ fontSize: '1.2rem', fontWeight: '800' }}>{batch.quantity}</span>
+                                <span className="text-muted" style={{ fontSize: '0.7rem' }}>Received: {new Date(batch.receivedAt).toLocaleDateString()}</span>
+                            </div>
+                        </div>
+                    ))}
+                </div>
             </div>
         </div>
     );
