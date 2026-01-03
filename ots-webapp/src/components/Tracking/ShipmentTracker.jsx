@@ -4,39 +4,32 @@ import { useData } from '../../context/DataContext';
 const ShipmentTracker = () => {
     const { orders } = useData();
 
-    // Mock shipments with tracking events
-    const activeShipments = [
-        {
-            orderId: 'BW-9902',
-            customer: 'Priya Sharma',
-            origin: 'Bangalore Warehouse',
-            destination: 'Delhi',
-            carrier: 'Delhivery',
-            awb: 'DEL789456123',
-            eta: '2024-12-31',
-            currentLocation: 'Lucknow Hub',
-            events: [
-                { time: '2024-12-29 09:00', status: 'Picked Up', location: 'Bangalore Warehouse' },
-                { time: '2024-12-29 18:00', status: 'In Transit', location: 'Hyderabad Hub' },
-                { time: '2024-12-30 06:00', status: 'In Transit', location: 'Nagpur Hub' },
-                { time: '2024-12-30 16:00', status: 'In Transit', location: 'Lucknow Hub' }
-            ]
-        },
-        {
-            orderId: 'BW-9907',
-            customer: 'Arjun Nair',
-            origin: 'Bangalore Warehouse',
-            destination: 'Kochi',
-            carrier: 'BlueDart',
-            awb: 'BD456123789',
-            eta: '2025-01-01',
-            currentLocation: 'Chennai Hub',
-            events: [
-                { time: '2024-12-30 10:00', status: 'Picked Up', location: 'Bangalore Warehouse' },
-                { time: '2024-12-30 18:00', status: 'In Transit', location: 'Chennai Hub' }
-            ]
-        }
-    ];
+    // Dynamically filter for orders in transit
+    const transitStatuses = ['Picked-Up', 'In-Transit', 'Out-for-Delivery'];
+    const activeShipments = orders
+        .filter(order => transitStatuses.includes(order.status))
+        .map(order => {
+            // Map status history to event objects
+            const events = (order.statusHistory || []).map(h => ({
+                time: new Date(h.timestamp).toLocaleString('en-IN', {
+                    day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit'
+                }),
+                status: h.to,
+                location: h.location || (h.to === 'Picked-Up' ? 'Origin Warehouse' : 'Regional Hub')
+            }));
+
+            return {
+                orderId: order.id,
+                customer: order.customerName,
+                origin: 'Bluewud Warehouse',
+                destination: order.city || 'N/A',
+                carrier: order.carrier || 'Standard Carrier',
+                awb: order.awb || 'Pending...',
+                eta: order.deliveryDate ? new Date(order.deliveryDate).toDateString() : 'Calculating...',
+                currentLocation: events.length > 0 ? events[events.length - 1].location : 'Queued',
+                events: events
+            };
+        });
 
     return (
         <div className="shipment-tracker animate-fade">

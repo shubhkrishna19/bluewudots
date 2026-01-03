@@ -1,167 +1,331 @@
-// src/services/offlineCacheService.js
-
-const DB_NAME = 'bluewud_ots_cache';
-const DB_VERSION = 1;
-const STORE_NAME = 'cache';
-
-// Open (or upgrade) IndexedDB
-function openDB() {
-  return new Promise((resolve, reject) => {
-    if (!('indexedDB' in window)) {
-      return reject(new Error('IndexedDB not supported'));
-    }
-
-    const request = indexedDB.open(DB_NAME, DB_VERSION);
-
-    request.onupgradeneeded = (event) => {
-      const db = event.target.result;
-      if (!db.objectStoreNames.contains(STORE_NAME)) {
-        const store = db.createObjectStore(STORE_NAME, { keyPath: 'key' });
-        store.createIndex('namespace', 'namespace', { unique: false });
-        store.createIndex('expiresAt', 'expiresAt', { unique: false });
-      }
-    };
-
-    request.onsuccess = () => resolve(request.result);
-    request.onerror = () => reject(request.error);
-  });
-}
-
-function withStore(mode, fn) {
-  return openDB().then((db) => {
-    return new Promise((resolve, reject) => {
-      const tx = db.transaction(STORE_NAME, mode);
-      const store = tx.objectStore(STORE_NAME);
-      let requestResult;
-
-      try {
-        requestResult = fn(store, resolve, reject);
-      } catch (e) {
-        reject(e);
-      }
-
-      tx.oncomplete = () => {
-        if (requestResult instanceof Promise) {
-          requestResult.then(resolve).catch(reject);
-        }
-      };
-      tx.onerror = () => reject(tx.error);
-    });
-  });
-}
-
 /**
- * Parse "namespace:key" into { namespace, key }
+ * Offline Cache Service
+ * IndexedDB wrapper for offline-first data persistence
+ * 
+ * Features:
+ * - Simple key-value storage
+ * - Automatic schema initialization
+ * - TTL support for data expiration
+ * - Batch operations
+ * - Sync state tracking
  */
-function parseKey(rawKey) {
-  if (!rawKey) return { namespace: 'default', key: 'default' };
-  const [ns, ...rest] = rawKey.split(':');
-  if (rest.length === 0) {
-    return { namespace: 'default', key: ns };
+
+class OfflineCacheService {
+  constructor(dbName = 'bluewud_ots', version = 1) {
+    this.dbName = dbName;
+    this.version = version;
+    this.db = null;
+    this.stores = {
+      'orders': { keyPath: 'id', indexes: ['status', 'createdAt', 'syncStatus'] },
+      'customers': { keyPath: 'id', indexes: ['email', 'phone'] },
+      'products': { keyPath: 'id', indexes: ['category', 'sku'] },
+      'cache': { keyPath: 'key' },
+      'syncQueue': { keyPath: 'id', indexes: ['type', 'timestamp'] },
+      'whatsappMessages': { keyPath: 'id', indexes: ['orderId', 'status'] }
+    };
   }
-  return { namespace: ns, key: rest.join(':') };
-}
 
-/**
- * Cache data with optional TTL (ms)
- */
-export async function cacheData(rawKey, data, ttlMs = null) {
-  const { namespace, key } = parseKey(rawKey);
-  const now = Date.now();
-  const expiresAt = ttlMs ? now + ttlMs : null;
+  /**
+   * Initializes IndexedDB
+   * @returns {Promise<void>}
+   */
+  async initialize() {
+    return new Promise((resolve, reject) => {
+      const request = indexedDB.open(this.dbName, this.version);
 
-  const record = {
-    key: `${namespace}:${key}`,
-    namespace,
-    data,
-    createdAt: now,
-    updatedAt: now,
-    expiresAt
-  };
+      request.onerror = () => {
+        console.error('Failed to open IndexedDB:', request.error);
+        reject(request.error);
+      };
 
-  return withStore('readwrite', (store, resolve, reject) => {
-    const req = store.put(record);
-    req.onsuccess = () => resolve(record);
-    req.onerror = () => reject(req.error);
-  });
-}
+      request.onsuccess = () => {
+        this.db = request.result;
+        console.log(`IndexedDB initialized: ${this.dbName}`);
+        resolve();
+      };
 
-/**
- * Retrieve cached data, returning null if missing or expired
- */
-export async function retrieveCachedData(rawKey) {
-  const { namespace, key } = parseKey(rawKey);
-  const fullKey = `${namespace}:${key}`;
+      request.onupgradeneeded = (event) => {
+        const db = event.target.result;
+        
+        // Create object stores
+        Object.entries(this.stores).forEach(([storeName, config]) => {
+          if (!db.objectStoreNames.contains(storeName)) {
+            const store = db.createObjectStore(storeName, { keyPath: config.keyPath });
+            
+            // Create indexes
+            (config.indexes || []).forEach(indexName => {
+              store.createIndex(indexName, indexName, { unique: false });
+            });
+          }
+        });
+      };
+    });
+  }
 
-  return withStore('readonly', (store, resolve, reject) => {
-    const req = store.get(fullKey);
-    req.onsuccess = () => {
-      const record = req.result;
-      if (!record) {
-        return resolve(null);
+  /**
+   * Caches data in IndexedDB
+   * @param {string} storeName - Object store name
+   * @param {string} key - Data key
+   * @param {*} data - Data to cache
+   * @param {number} ttl - Time to live in milliseconds (optional)
+   * @returns {Promise<boolean>}
+   */
+  async cacheData(storeName, key, data, ttl = null) {
+    try {
+      if (!this.db) await this.initialize();
+
+      const tx = this.db.transaction([storeName], 'readwrite');
+      const store = tx.objectStore(storeName);
+
+      const cacheEntry = {
+        key,
+        data,
+        timestamp: Date.now(),
+        ttl,
+        expiresAt: ttl ? Date.now() + ttl : null
+      };
+
+      return new Promise((resolve, reject) => {
+        const request = store.put(cacheEntry);
+        request.onsuccess = () => resolve(true);
+        request.onerror = () => reject(request.error);
+      });
+    } catch (error) {
+      console.error('Cache data failed:', error);
+      return false;
+    }
+  }
+
+  /**
+   * Retrieves cached data
+   * @param {string} storeName - Object store name
+   * @param {string} key - Data key
+   * @returns {Promise<*|null>}
+   */
+  async retrieveCachedData(storeName, key) {
+    try {
+      if (!this.db) await this.initialize();
+
+      const tx = this.db.transaction([storeName], 'readonly');
+      const store = tx.objectStore(storeName);
+
+      return new Promise((resolve, reject) => {
+        const request = store.get(key);
+        request.onsuccess = () => {
+          const entry = request.result;
+          
+          if (!entry) {
+            resolve(null);
+            return;
+          }
+
+          // Check if expired
+          if (entry.expiresAt && Date.now() > entry.expiresAt) {
+            this.removeData(storeName, key);
+            resolve(null);
+            return;
+          }
+
+          resolve(entry.data);
+        };
+        request.onerror = () => reject(request.error);
+      });
+    } catch (error) {
+      console.error('Retrieve cached data failed:', error);
+      return null;
+    }
+  }
+
+  /**
+   * Retrieves all data from a store
+   * @param {string} storeName - Object store name
+   * @returns {Promise<array>}
+   */
+  async getAllData(storeName) {
+    try {
+      if (!this.db) await this.initialize();
+
+      const tx = this.db.transaction([storeName], 'readonly');
+      const store = tx.objectStore(storeName);
+
+      return new Promise((resolve, reject) => {
+        const request = store.getAll();
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+      });
+    } catch (error) {
+      console.error('Get all data failed:', error);
+      return [];
+    }
+  }
+
+  /**
+   * Removes cached data
+   * @param {string} storeName - Object store name
+   * @param {string} key - Data key
+   * @returns {Promise<boolean>}
+   */
+  async removeData(storeName, key) {
+    try {
+      if (!this.db) await this.initialize();
+
+      const tx = this.db.transaction([storeName], 'readwrite');
+      const store = tx.objectStore(storeName);
+
+      return new Promise((resolve, reject) => {
+        const request = store.delete(key);
+        request.onsuccess = () => resolve(true);
+        request.onerror = () => reject(request.error);
+      });
+    } catch (error) {
+      console.error('Remove data failed:', error);
+      return false;
+    }
+  }
+
+  /**
+   * Clears entire object store
+   * @param {string} storeName - Object store name
+   * @returns {Promise<boolean>}
+   */
+  async clearStore(storeName) {
+    try {
+      if (!this.db) await this.initialize();
+
+      const tx = this.db.transaction([storeName], 'readwrite');
+      const store = tx.objectStore(storeName);
+
+      return new Promise((resolve, reject) => {
+        const request = store.clear();
+        request.onsuccess = () => resolve(true);
+        request.onerror = () => reject(request.error);
+      });
+    } catch (error) {
+      console.error('Clear store failed:', error);
+      return false;
+    }
+  }
+
+  /**
+   * Gets data count in store
+   * @param {string} storeName - Object store name
+   * @returns {Promise<number>}
+   */
+  async getStoreSize(storeName) {
+    try {
+      if (!this.db) await this.initialize();
+
+      const tx = this.db.transaction([storeName], 'readonly');
+      const store = tx.objectStore(storeName);
+
+      return new Promise((resolve, reject) => {
+        const request = store.count();
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+      });
+    } catch (error) {
+      console.error('Get store size failed:', error);
+      return 0;
+    }
+  }
+
+  /**
+   * Syncs data with backend
+   * @param {string} storeName - Object store name
+   * @param {string} endpoint - API endpoint
+   * @returns {Promise<object>}
+   */
+  async syncWithBackend(storeName, endpoint) {
+    try {
+      const unsyncedData = await this.getAllData(storeName);
+      const syncResults = { success: 0, failed: 0, errors: [] };
+
+      for (const item of unsyncedData) {
+        if (item.syncStatus === 'pending' || !item.syncStatus) {
+          try {
+            const response = await fetch(endpoint, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(item.data)
+            });
+
+            if (response.ok) {
+              // Mark as synced
+              await this.cacheData(storeName, item.key, {
+                ...item.data,
+                syncStatus: 'synced',
+                syncedAt: Date.now()
+              });
+              syncResults.success++;
+            } else {
+              syncResults.failed++;
+              syncResults.errors.push({ key: item.key, error: response.statusText });
+            }
+          } catch (error) {
+            syncResults.failed++;
+            syncResults.errors.push({ key: item.key, error: error.message });
+          }
+        }
       }
-      if (record.expiresAt && record.expiresAt < Date.now()) {
-        // Expired – clean up asynchronously
-        withStore('readwrite', (s) => s.delete(fullKey));
-        return resolve(null);
+
+      return syncResults;
+    } catch (error) {
+      console.error('Sync failed:', error);
+      return { success: 0, failed: 0, errors: [{ error: error.message }] };
+    }
+  }
+
+  /**
+   * Clears expired data from all stores
+   * @returns {Promise<void>}
+   */
+  async clearExpiredData() {
+    try {
+      for (const storeName of Object.keys(this.stores)) {
+        const allData = await this.getAllData(storeName);
+        const now = Date.now();
+
+        for (const entry of allData) {
+          if (entry.expiresAt && now > entry.expiresAt) {
+            await this.removeData(storeName, entry.key);
+          }
+        }
       }
-      resolve(record.data);
-    };
-    req.onerror = () => reject(req.error);
-  });
+    } catch (error) {
+      console.error('Clear expired data failed:', error);
+    }
+  }
 }
 
-/**
- * Remove a single cached entry
- */
-export async function removeCachedData(rawKey) {
-  const { namespace, key } = parseKey(rawKey);
-  const fullKey = `${namespace}:${key}`;
+// Export as singleton
+let cacheInstance = null;
 
-  return withStore('readwrite', (store, resolve, reject) => {
-    const req = store.delete(fullKey);
-    req.onsuccess = () => resolve(true);
-    req.onerror = () => reject(req.error);
-  });
-}
-
-/**
- * Clear all cached data under a namespace (e.g. "orders", "sku")
- */
-export async function clearNamespace(namespace = 'default') {
-  return withStore('readwrite', (store, resolve, reject) => {
-    const index = store.index('namespace');
-    const range = IDBKeyRange.only(namespace);
-    const req = index.openCursor(range);
-
-    req.onsuccess = (event) => {
-      const cursor = event.target.result;
-      if (cursor) {
-        cursor.delete();
-        cursor.continue();
-      } else {
-        resolve(true);
-      }
-    };
-    req.onerror = () => reject(req.error);
-  });
-}
-
-/**
- * Clear *everything* (e.g. on logout or environment change)
- */
-export async function clearAllCache() {
-  return withStore('readwrite', (store, resolve, reject) => {
-    const req = store.clear();
-    req.onsuccess = () => resolve(true);
-    req.onerror = () => reject(req.error);
-  });
-}
-
-export default {
-  cacheData,
-  retrieveCachedData,
-  removeCachedData,
-  clearNamespace,
-  clearAllCache
+export const initOfflineCacheService = () => {
+  cacheInstance = new OfflineCacheService();
+  return cacheInstance;
 };
+
+export const getOfflineCacheService = () => {
+  if (!cacheInstance) {
+    throw new Error('Offline Cache Service not initialized. Call initOfflineCacheService first.');
+  }
+  return cacheInstance;
+};
+
+// Usage Examples:
+// ============
+// 1. Initialize
+// import { initOfflineCacheService } from './services/08_OfflineCacheService';
+// const cache = initOfflineCacheService();
+// await cache.initialize();
+
+// 2. Cache data
+// await cache.cacheData('orders', 'ORD-123', orderData, 3600000); // 1 hour TTL
+
+// 3. Retrieve data
+// const orderData = await cache.retrieveCachedData('orders', 'ORD-123');
+
+// 4. Sync with backend
+// const results = await cache.syncWithBackend('orders', '/api/orders/sync');
+
+export default OfflineCacheService;

@@ -106,16 +106,15 @@ const getCurrentUser = () => {
  * @param {object} activity 
  */
 const syncToBackend = async (activity) => {
-    // Will be implemented when Catalyst backend is ready
-    // try {
-    //     await fetch('/server/activity', {
-    //         method: 'POST',
-    //         headers: { 'Content-Type': 'application/json' },
-    //         body: JSON.stringify(activity)
-    //     });
-    // } catch (error) {
-    //     console.warn('Activity sync failed:', error);
-    // }
+    try {
+        await fetch('/server/activity', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(activity)
+        });
+    } catch (error) {
+        console.warn('Activity sync failed:', error);
+    }
 };
 
 /**

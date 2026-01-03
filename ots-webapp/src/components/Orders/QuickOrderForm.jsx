@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useData } from '../../context/DataContext';
 import { STATE_CODES } from '../../utils/dataUtils';
+import currencyService from '../../services/currencyService';
 
 const QuickOrderForm = ({ onClose }) => {
     const { addOrder, skuMaster, getCarrierRates, getCarrierRecommendation, syncOrderToZoho } = useData();
@@ -27,6 +28,13 @@ const QuickOrderForm = ({ onClose }) => {
     const [shippingRates, setShippingRates] = useState(null);
     const [zohoSyncing, setZohoSyncing] = useState(false);
     const [zohoStatus, setZohoStatus] = useState(null);
+    const [selectedCurrency, setSelectedCurrency] = useState('INR');
+
+    const currencies = useMemo(() => currencyService.getSupportedCurrencies(), []);
+    const convertedAmount = useMemo(() => {
+        if (!formData.amount || selectedCurrency === 'INR') return null;
+        return currencyService.convertPrice(parseFloat(formData.amount), 'INR', selectedCurrency);
+    }, [formData.amount, selectedCurrency]);
 
     const STATES = Object.keys(STATE_CODES);
 
@@ -301,6 +309,23 @@ const QuickOrderForm = ({ onClose }) => {
                                 placeholder="0"
                                 style={{ width: '100%', padding: '12px 16px', background: 'var(--bg-accent)', border: '1px solid var(--glass-border)', borderRadius: '8px', color: '#fff' }}
                             />
+                        </div>
+                        <div className="form-group">
+                            <label className="text-muted" style={{ fontSize: '0.75rem', display: 'block', marginBottom: '8px' }}>CURRENCY</label>
+                            <select
+                                value={selectedCurrency}
+                                onChange={(e) => setSelectedCurrency(e.target.value)}
+                                style={{ width: '100%', padding: '12px 16px', background: 'var(--bg-accent)', border: '1px solid var(--glass-border)', borderRadius: '8px', color: '#fff' }}
+                            >
+                                {currencies.map(c => (
+                                    <option key={c.code} value={c.code}>{c.symbol} {c.name}</option>
+                                ))}
+                            </select>
+                            {convertedAmount && (
+                                <p style={{ fontSize: '0.7rem', color: 'var(--success)', marginTop: '6px' }}>
+                                    ≈ {convertedAmount.formatted}
+                                </p>
+                            )}
                         </div>
                     </div>
                 </div>

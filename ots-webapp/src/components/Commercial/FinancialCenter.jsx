@@ -5,8 +5,8 @@ import { calculateProfitability, getEnhancedSKU } from '../../utils/commercialUt
 
 
 const FinancialCenter = () => {
-    const { finStats } = useFinance();
-    const { orders } = useData();
+    const { finStats, settlements } = useFinance();
+    const { orders, skuMaster } = useData();
     const [selectedView, setSelectedView] = useState('overview');
 
     const formatINR = (val) => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(val);
@@ -32,6 +32,13 @@ const FinancialCenter = () => {
                         style={{ padding: '8px 16px', fontSize: '0.8rem' }}
                     >
                         Settlements
+                    </button>
+                    <button
+                        className={`btn-tab ${selectedView === 'audit' ? 'active' : ''}`}
+                        onClick={() => setSelectedView('audit')}
+                        style={{ padding: '8px 16px', fontSize: '0.8rem' }}
+                    >
+                        Audit
                     </button>
                 </div>
             </div>
@@ -69,8 +76,8 @@ const FinancialCenter = () => {
                                 <tr style={{ textAlign: 'left', borderBottom: '1px solid var(--glass-border)', opacity: 0.6, fontSize: '0.8rem' }}>
                                     <th style={{ padding: '12px' }}>Order ID</th>
                                     <th style={{ padding: '12px' }}>Amount</th>
-                                    <th style={{ padding: '12px' }}>Deductions</th>
-                                    <th style={{ padding: '12px' }}>Net</th>
+                                    <th style={{ padding: '12px' }}>{selectedView === 'audit' ? 'Exp. Logistics' : 'Deductions'}</th>
+                                    <th style={{ padding: '12px' }}>{selectedView === 'audit' ? 'Actual Bill' : 'Net'}</th>
                                     <th style={{ padding: '12px' }}>Status</th>
                                 </tr>
                             </thead>
@@ -95,6 +102,28 @@ const FinancialCenter = () => {
                                                 <td style={{ padding: '12px' }}>
                                                     <span className="badge" style={{ background: order.status === 'Delivered' ? 'var(--success)' : 'var(--warning)', fontSize: '0.6rem' }}>
                                                         {order.status === 'Delivered' ? 'Remitted' : 'Pending'}
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        );
+                                    })
+                                ) : selectedView === 'audit' ? (
+                                    orders.slice(0, 10).map(order => {
+                                        const expectedCost = 150;
+                                        const actualCost = order.shippingCost || (order.amount > 5000 ? 250 : 175);
+                                        const diff = actualCost - expectedCost;
+
+                                        return (
+                                            <tr key={order.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', fontSize: '0.85rem' }}>
+                                                <td style={{ padding: '12px' }}>{order.id}</td>
+                                                <td style={{ padding: '12px' }}>{formatINR(expectedCost)}</td>
+                                                <td style={{ padding: '12px', color: diff > 0 ? 'var(--danger)' : 'var(--success)' }}>
+                                                    {formatINR(actualCost)}
+                                                </td>
+                                                <td style={{ padding: '12px', fontWeight: '700' }}>{formatINR(diff)}</td>
+                                                <td style={{ padding: '12px' }}>
+                                                    <span className="badge" style={{ background: Math.abs(diff) > 20 ? 'var(--danger)' : 'var(--success)', fontSize: '0.6rem' }}>
+                                                        {Math.abs(diff) > 20 ? 'Flagged' : 'Verified'}
                                                     </span>
                                                 </td>
                                             </tr>

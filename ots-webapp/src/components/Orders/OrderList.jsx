@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useData } from '../../context/DataContext';
 import OrderJourney from './OrderJourney';
+import labelPrintService from '../../services/labelPrintService';
+import { getOptimalCarrier } from '../../services/carrierOptimizer';
 
 const OrderList = () => {
     const { orders, updateOrderStatus } = useData();
@@ -8,6 +10,8 @@ const OrderList = () => {
     const [statusFilter, setStatusFilter] = useState('all');
     const [sourceFilter, setSourceFilter] = useState('all');
     const [selectedOrder, setSelectedOrder] = useState(null);
+    const [selectedOrders, setSelectedOrders] = useState([]);
+    const [isOptimizing, setIsOptimizing] = useState(false);
 
     const filteredOrders = orders.filter(order => {
         const matchesSearch = order.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -32,6 +36,44 @@ const OrderList = () => {
         }
     };
 
+    const toggleOrderSelection = (id) => {
+        setSelectedOrders(prev =>
+            prev.includes(id) ? prev.filter(oid => oid !== id) : [...prev, id]
+        );
+    };
+
+    const handleSmartAssign = async () => {
+        setIsOptimizing(true);
+        try {
+            for (const orderId of selectedOrders) {
+                const order = orders.find(o => o.id === orderId);
+                // In a real app, we'd fetch zone/weight details. Using defaults for demo.
+                const recommendation = await getOptimalCarrier({
+                    pincode: order.pincode || '400001',
+                    weight: order.weight || 0.5,
+                    amount: order.amount || 0,
+                    zone: order.state === 'Maharashtra' ? 'metro' : 'tier2',
+                    cod_required: order.paymentMethod === 'cod'
+                });
+
+                if (recommendation) {
+                    updateOrder(orderId, {
+                        carrier: recommendation.carrier.name,
+                        shippingCost: recommendation.cost
+                    });
+                    updateOrderStatus(orderId, 'Carrier-Assigned');
+                }
+            }
+            alert(`Successfully optimized ${selectedOrders.length} orders!`);
+            setSelectedOrders([]);
+        } catch (error) {
+            console.error('Optimization failed:', error);
+            alert('Carrier optimization failed. See logs.');
+        } finally {
+            setIsOptimizing(false);
+        }
+    };
+
     return (
         <div className="order-list-view animate-fade">
             <div className="section-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
@@ -42,6 +84,21 @@ const OrderList = () => {
                 <div style={{ display: 'flex', gap: '10px' }}>
                     <span className="badge" style={{ background: 'var(--primary)' }}>{orders.length} Total</span>
                     <span className="badge" style={{ background: 'var(--success)' }}>{orders.filter(o => o.status === 'Delivered').length} Delivered</span>
+                    <button
+                        className="btn-secondary glass-hover"
+                        style={{ padding: '6px 12px', fontSize: '0.75rem', display: 'flex', alignItems: 'center', gap: '4px' }}
+                        onClick={() => labelPrintService.printManifest(filteredOrders.filter(o => o.status === 'Ready-to-Ship'), 'Filtered Batch')}
+                    >
+                        📋 Batch Manifest
+                    </button>
+                    <button
+                        className="btn-primary glass-hover"
+                        style={{ padding: '6px 12px', fontSize: '0.75rem', display: 'flex', alignItems: 'center', gap: '4px' }}
+                        disabled={selectedOrders.length === 0 || isOptimizing}
+                        onClick={handleSmartAssign}
+                    >
+                        {isOptimizing ? '🤖 Optimizing...' : `🧠 Smart Assign (${selectedOrders.length})`}
+                    </button>
                 </div>
             </div>
 
@@ -79,7 +136,12 @@ const OrderList = () => {
 
             {/* Orders Table */}
             <div className="orders-table glass" style={{ marginTop: '24px', overflow: 'hidden', borderRadius: '12px' }}>
-                <div className="table-header" style={{ display: 'grid', gridTemplateColumns: '1.5fr 2fr 1fr 1fr 1fr 1fr', padding: '16px 20px', background: 'var(--bg-accent)', fontWeight: '700', fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase' }}>
+                <div className="table-header" style={{ display: 'grid', gridTemplateColumns: '40px 1.5fr 2fr 1fr 1fr 1fr 1fr', padding: '16px 20px', background: 'var(--bg-accent)', fontWeight: '700', fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase' }}>
+                    <input
+                        type="checkbox"
+                        onChange={(e) => setSelectedOrders(e.target.checked ? filteredOrders.map(o => o.id) : [])}
+                        checked={selectedOrders.length > 0 && selectedOrders.length === filteredOrders.length}
+                    />
                     <span>Order ID</span>
                     <span>Customer</span>
                     <span>SKU</span>
@@ -100,7 +162,7 @@ const OrderList = () => {
                                 className="table-row glass-hover"
                                 style={{
                                     display: 'grid',
-                                    gridTemplateColumns: '1.5fr 2fr 1fr 1fr 1fr 1fr',
+                                    gridTemplateColumns: '40px 1.5fr 2fr 1fr 1fr 1fr 1fr',
                                     padding: '16px 20px',
                                     alignItems: 'center',
                                     borderBottom: '1px solid var(--glass-border)',
@@ -108,6 +170,12 @@ const OrderList = () => {
                                 }}
                                 onClick={() => setSelectedOrder(order)}
                             >
+                                <input
+                                    type="checkbox"
+                                    checked={selectedOrders.includes(order.id)}
+                                    onClick={(e) => e.stopPropagation()}
+                                    onChange={() => toggleOrderSelection(order.id)}
+                                />
                                 <span style={{ fontWeight: '700', color: 'var(--primary)' }}>{order.id}</span>
                                 <span>{order.customer || 'N/A'}</span>
                                 <span style={{ fontSize: '0.85rem' }}>{order.sku || 'N/A'}</span>
@@ -181,6 +249,10 @@ const OrderList = () => {
                                 <p>{selectedOrder.source || 'Manual'}</p>
                             </div>
                             <div className="detail-item glass" style={{ padding: '16px' }}>
+                                <span className="text-muted" style={{ fontSize: '0.7rem' }}>WAREHOUSE</span>
+                                <p style={{ fontWeight: '700', color: 'var(--accent)' }}>{selectedOrder.warehouse || 'CENTRAL-WH'}</p>
+                            </div>
+                            <div className="detail-item glass" style={{ padding: '16px' }}>
                                 <span className="text-muted" style={{ fontSize: '0.7rem' }}>STATUS</span>
                                 <span className="badge" style={{ background: getStatusColor(selectedOrder.status) }}>{selectedOrder.status}</span>
                             </div>
@@ -188,8 +260,28 @@ const OrderList = () => {
 
                         <OrderJourney orderId={selectedOrder.id} />
 
-                        <div style={{ marginTop: '24px', display: 'flex', gap: '12px' }}>
+                        <div style={{ marginTop: '24px', display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
                             <button className="btn-primary glass-hover" style={{ flex: 1 }}>Process Order</button>
+                            <button
+                                className="btn-secondary glass-hover"
+                                style={{ flex: 1 }}
+                                onClick={() => labelPrintService.printLabel(selectedOrder)}
+                            >
+                                🏷️ Print Label
+                            </button>
+                            <button
+                                className="btn-secondary glass-hover"
+                                style={{ flex: 1 }}
+                                onClick={() => {
+                                    const html = labelPrintService.generatePackingSlipHTML(selectedOrder);
+                                    const printWindow = window.open('', '_blank');
+                                    printWindow.document.write(html);
+                                    printWindow.document.close();
+                                    printWindow.onload = () => printWindow.print();
+                                }}
+                            >
+                                📄 Packing Slip
+                            </button>
                             <button className="btn-secondary glass-hover" style={{ flex: 1 }} onClick={() => setSelectedOrder(null)}>Close</button>
                         </div>
                     </div>

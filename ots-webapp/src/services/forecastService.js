@@ -84,7 +84,30 @@ export const predictSKUDemand = (orders, sku, days = 30) => {
     return Math.ceil(dailyAvg * 30 * 1.1); // Add 10% buffer
 };
 
+/**
+ * Predict arrival date for a vendor shipment based on historical lead times
+ * @param {string} vendorId 
+ * @param {string} sku 
+ * @returns {Object} { predictedDate, riskLevel }
+ */
+export const predictVendorArrival = (vendorId, sku) => {
+    // Simulated: In production, this would look at historical lead times in IndexedDB/Zoho
+    const baseLeadTime = vendorId === 'V002' ? 12 : 40;
+    const variance = Math.floor(Math.random() * 7) - 2; // -2 to +4 days variance
+    const finalLeadTime = baseLeadTime + variance;
+
+    const predictedDate = new Date();
+    predictedDate.setDate(predictedDate.getDate() + finalLeadTime);
+
+    return {
+        date: predictedDate.toISOString().split('T')[0],
+        leadTime: finalLeadTime,
+        riskLevel: finalLeadTime > baseLeadTime + 3 ? 'HIGH' : 'LOW'
+    };
+};
+
 export default {
     calculateSMAForecast,
-    predictSKUDemand
+    predictSKUDemand,
+    predictVendorArrival
 };

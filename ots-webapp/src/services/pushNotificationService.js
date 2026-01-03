@@ -1,236 +1,321 @@
-// Push Notification Service
-// Complete web-push notification system with subscription management,
-// backend sync, and message queue handling for production use.
-
-import { cacheData, retrieveCachedData } from './offlineCacheService';
-
-const PUSH_CACHE_NS = 'push:subscriptions';
-const NOTIFICATION_QUEUE_NS = 'notifications:queue';
-
 /**
- * Register browser for web push notifications
- * @param {Object} options - Configuration options
- * @returns {Promise<Object>} - Subscription object
+ * Push Notification Service
+ * Manages web push notifications for real-time alerts
+ * 
+ * Features:
+ * - Service Worker integration
+ * - Subscription management
+ * - Notification persistence
+ * - Badge & icon management
+ * - Notification click handling
  */
-export const registerPushSubscription = async (options = {}) => {
-  try {
-    if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
-      console.warn('[Push] Service Worker or PushManager not supported');
-      return null;
+
+class PushNotificationService {
+  constructor(vapidPublicKey) {
+    this.vapidPublicKey = vapidPublicKey;
+    this.swRegistration = null;
+    this.subscriptions = new Map();
+    this.notificationSettings = {
+      badge: '/badge-icon.png',
+      icon: '/notification-icon.png',
+      vibrate: [100, 50, 100],
+      tag: 'bluewud-notification'
+    };
+  }
+
+  /**
+   * Initializes the Push Notification Service
+   * @returns {Promise<void>}
+   */
+  async initialize() {
+    try {
+      // Check browser support
+      if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+        console.warn('Push Notifications not supported in this browser');
+        return;
+      }
+
+      // Register Service Worker
+      this.swRegistration = await navigator.serviceWorker.register(
+        '/sw.js',
+        { scope: '/' }
+      );
+      console.log('Service Worker registered for Push Notifications');
+
+      // Check for existing subscription
+      const existingSubscription = await this.swRegistration.pushManager.getSubscription();
+      if (existingSubscription) {
+        this.subscriptions.set('default', existingSubscription);
+      }
+
+      // Listen for push messages
+      navigator.serviceWorker.addEventListener('message', (event) => {
+        if (event.data.type === 'PUSH_NOTIFICATION') {
+          this.handleNotificationClick(event.data);
+        }
+      });
+    } catch (error) {
+      console.error('Failed to initialize Push Notifications:', error);
     }
-
-    const registration = await navigator.serviceWorker.ready;
-    
-    const subscription = await registration.pushManager.subscribe({
-      userVisibleOnly: true,
-      applicationServerKey: urlBase64ToUint8Array(
-        options.vapidPublicKey || process.env.VITE_VAPID_PUBLIC_KEY
-      )
-    });
-
-    // Cache subscription locally
-    await cacheData(`${PUSH_CACHE_NS}:current`, subscription.toJSON(), null);
-    
-    // Send to backend for storage
-    await sendSubscriptionToBackend(subscription);
-    
-    console.log('[Push] Subscription registered:', subscription.endpoint);
-    return subscription.toJSON();
-  } catch (err) {
-    console.error('[Push] Registration failed:', err);
-    return null;
-  }
-};
-
-/**
- * Send local notification with custom action handlers
- * @param {String} title - Notification title
- * @param {Object} options - Notification options (body, icon, badge, tag, data)
- * @returns {Promise<Notification>}
- */
-export const sendLocalNotification = (title, options = {}) => {
-  if (!('Notification' in window)) {
-    console.warn('[Push] Notifications API not supported');
-    return Promise.resolve(null);
   }
 
-  if (Notification.permission === 'denied') {
-    console.warn('[Push] Notifications denied by user');
-    return Promise.resolve(null);
+  /**
+   * Requests and registers push subscription
+   * @param {string} userId - User ID
+   * @returns {Promise<object>} Subscription object
+   */
+  async registerPushSubscription(userId) {
+    try {
+      // Check permission
+      if (Notification.permission === 'denied') {
+        return {
+          success: false,
+          error: 'Notification permission denied',
+          userId
+        };
+      }
+
+      // Request permission if needed
+      if (Notification.permission !== 'granted') {
+        const permission = await Notification.requestPermission();
+        if (permission !== 'granted') {
+          return {
+            success: false,
+            error: 'User denied notification permission',
+            userId
+          };
+        }
+      }
+
+      // Subscribe to push
+      const subscription = await this.swRegistration.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: this.urlBase64ToUint8Array(this.vapidPublicKey)
+      });
+
+      // Store subscription
+      this.subscriptions.set(userId, subscription);
+
+      // Persist to backend
+      await this.persistSubscription(userId, subscription);
+
+      return {
+        success: true,
+        subscription: subscription.toJSON(),
+        userId,
+        timestamp: new Date().toISOString()
+      };
+    } catch (error) {
+      console.error('Failed to register push subscription:', error);
+      return {
+        success: false,
+        error: error.message,
+        userId
+      };
+    }
   }
 
-  if (Notification.permission === 'granted') {
-    const notification = new Notification(title, {
-      icon: '/bluewud-icon-192.png',
-      badge: '/bluewud-badge-72.png',
-      tag: options.tag || 'bluewud-notification',
-      ...options
-    });
+  /**
+   * Unsubscribes from push notifications
+   * @param {string} userId - User ID
+   * @returns {Promise<boolean>} Success status
+   */
+  async unregisterPushSubscription(userId) {
+    try {
+      const subscription = this.subscriptions.get(userId);
+      if (subscription) {
+        await subscription.unsubscribe();
+        this.subscriptions.delete(userId);
+        await this.removeSubscription(userId);
+        return true;
+      }
+      return false;
+    } catch (error) {
+      console.error('Failed to unregister push subscription:', error);
+      return false;
+    }
+  }
 
-    // Click handler
-    notification.onclick = () => {
-      window.focus();
-      if (options.url) window.location.href = options.url;
-      notification.close();
+  /**
+   * Sends notification to user
+   * @param {string} title - Notification title
+   * @param {object} options - Notification options
+   * @returns {Promise<void>}
+   */
+  async sendNotification(title, options = {}) {
+    try {
+      if (!this.swRegistration) {
+        throw new Error('Service Worker not registered');
+      }
+
+      const notificationOptions = {
+        ...this.notificationSettings,
+        ...options,
+        tag: options.tag || this.notificationSettings.tag,
+        requireInteraction: options.requireInteraction || false
+      };
+
+      await this.swRegistration.showNotification(title, notificationOptions);
+    } catch (error) {
+      console.error('Failed to send notification:', error);
+    }
+  }
+
+  /**
+   * Sends order status update notification
+   * @param {object} order - Order object
+   * @returns {Promise<void>}
+   */
+  async sendOrderStatusNotification(order) {
+    const title = `Order ${order.id} - ${order.status}`;
+    const options = {
+      body: order.message || `Your order status: ${order.status}`,
+      icon: '/order-icon.png',
+      badge: '/badge-icon.png',
+      tag: `order-${order.id}`,
+      data: {
+        orderId: order.id,
+        status: order.status,
+        timestamp: Date.now(),
+        url: `/orders/${order.id}`
+      },
+      actions: [
+        {
+          action: 'open',
+          title: 'View Order',
+          icon: '/icons/view.png'
+        },
+        {
+          action: 'close',
+          title: 'Dismiss',
+          icon: '/icons/close.png'
+        }
+      ]
     };
 
-    return Promise.resolve(notification);
+    await this.sendNotification(title, options);
   }
 
-  // Request permission if not yet determined
-  return Notification.requestPermission().then((permission) => {
-    if (permission === 'granted') {
-      return sendLocalNotification(title, options);
+  /**
+   * Handles notification click
+   * @param {object} data - Notification data
+   */
+  handleNotificationClick(data) {
+    if (data.action === 'open' && data.url) {
+      window.location.href = data.url;
     }
-    return null;
-  });
-};
+  }
 
-/**
- * Queue a notification for delivery (handles offline scenarios)
- * @param {Object} notification - Notification payload
- */
-export const queueNotification = async (notification) => {
-  const queue = (await retrieveCachedData(NOTIFICATION_QUEUE_NS)) || [];
-  queue.push({
-    ...notification,
-    timestamp: Date.now(),
-    id: `notif_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
-  });
-  await cacheData(NOTIFICATION_QUEUE_NS, queue);
-};
+  /**
+   * Gets current subscription status
+   * @param {string} userId - User ID
+   * @returns {object} Subscription status
+   */
+  getSubscriptionStatus(userId) {
+    const subscription = this.subscriptions.get(userId);
+    return {
+      userId,
+      isSubscribed: !!subscription,
+      subscription: subscription ? subscription.toJSON() : null,
+      permissionStatus: Notification.permission
+    };
+  }
 
-/**
- * Process queued notifications (call when coming online)
- */
-export const processQueuedNotifications = async () => {
-  const queue = (await retrieveCachedData(NOTIFICATION_QUEUE_NS)) || [];
-  
-  for (const notif of queue) {
+  /**
+   * Persists subscription to backend
+   * @param {string} userId - User ID
+   * @param {object} subscription - Subscription object
+   * @returns {Promise<boolean>}
+   */
+  async persistSubscription(userId, subscription) {
     try {
-      await sendLocalNotification(notif.title, notif.options);
-      // Remove from queue after successful delivery
-      const updated = queue.filter(n => n.id !== notif.id);
-      await cacheData(NOTIFICATION_QUEUE_NS, updated);
-    } catch (err) {
-      console.error('[Push] Failed to process queued notification:', err);
+      const response = await fetch('/api/push-subscriptions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userId,
+          subscription: subscription.toJSON()
+        })
+      });
+
+      return response.ok;
+    } catch (error) {
+      console.error('Failed to persist subscription:', error);
+      return false;
     }
   }
-};
 
-/**
- * Unsubscribe from push notifications
- */
-export const unsubscribePush = async () => {
-  try {
-    if (!('serviceWorker' in navigator)) return false;
-    
-    const registration = await navigator.serviceWorker.ready;
-    const subscription = await registration.pushManager.getSubscription();
-    
-    if (subscription) {
-      await subscription.unsubscribe();
-      await cacheData(`${PUSH_CACHE_NS}:current`, null);
-      console.log('[Push] Unsubscribed successfully');
-      return true;
+  /**
+   * Removes subscription from backend
+   * @param {string} userId - User ID
+   * @returns {Promise<boolean>}
+   */
+  async removeSubscription(userId) {
+    try {
+      const response = await fetch(`/api/push-subscriptions/${userId}`, {
+        method: 'DELETE'
+      });
+      return response.ok;
+    } catch (error) {
+      console.error('Failed to remove subscription:', error);
+      return false;
     }
-  } catch (err) {
-    console.error('[Push] Unsubscribe failed:', err);
   }
-  return false;
-};
 
-/**
- * Check if notifications are enabled
- */
-export const isPushEnabled = async () => {
-  if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
-    return false;
-  }
-  
-  try {
-    const registration = await navigator.serviceWorker.ready;
-    const subscription = await registration.pushManager.getSubscription();
-    return subscription !== null;
-  } catch (err) {
-    return false;
-  }
-};
+  /**
+   * Converts VAPID public key from base64 to Uint8Array
+   * @param {string} base64String - Base64 encoded key
+   * @returns {Uint8Array}
+   */
+  urlBase64ToUint8Array(base64String) {
+    const padding = '='.repeat((4 - base64String.length % 4) % 4);
+    const base64 = (base64String + padding)
+      .replace(/\-/g, '+')
+      .replace(/_/g, '/');
 
-/**
- * Get current push subscription
- */
-export const getCurrentSubscription = async () => {
-  try {
-    const cached = await retrieveCachedData(`${PUSH_CACHE_NS}:current`);
-    if (cached) return cached;
-    
-    const registration = await navigator.serviceWorker.ready;
-    const subscription = await registration.pushManager.getSubscription();
-    return subscription?.toJSON() || null;
-  } catch (err) {
-    return null;
-  }
-};
+    const rawData = window.atob(base64);
+    const outputArray = new Uint8Array(rawData.length);
 
-// ===== Private Helpers =====
-
-/**
- * Convert VAPID public key from base64 to Uint8Array
- */
-function urlBase64ToUint8Array(base64String) {
-  const padding = '='.repeat((4 - base64String.length % 4) % 4);
-  const base64 = (base64String + padding)
-    .replace(/\-/g, '+')
-    .replace(/_/g, '/');
-
-  const rawData = window.atob(base64);
-  const outputArray = new Uint8Array(rawData.length);
-
-  for (let i = 0; i < rawData.length; ++i) {
-    outputArray[i] = rawData.charCodeAt(i);
-  }
-  return outputArray;
-}
-
-/**
- * Send subscription to backend for storage
- */
-async function sendSubscriptionToBackend(subscription) {
-  try {
-    const response = await fetch('/api/push-subscriptions', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        subscription: subscription.toJSON(),
-        timestamp: new Date().toISOString()
-      })
-    });
-
-    if (!response.ok) {
-      throw new Error(`Backend error: ${response.status}`);
+    for (let i = 0; i < rawData.length; ++i) {
+      outputArray[i] = rawData.charCodeAt(i);
     }
 
-    console.log('[Push] Subscription sent to backend');
-  } catch (err) {
-    console.error('[Push] Failed to send subscription to backend:', err);
-    // Queue for retry
-    await queueNotification({
-      title: 'Sync Pending',
-      options: {
-        body: 'Push subscription will sync when online',
-        tag: 'sync-pending'
-      }
-    });
+    return outputArray;
   }
 }
 
-export default {
-  registerPushSubscription,
-  sendLocalNotification,
-  queueNotification,
-  processQueuedNotifications,
-  unsubscribePush,
-  isPushEnabled,
-  getCurrentSubscription
+// Export as singleton
+let pushNotificationInstance = null;
+
+export const initPushNotificationService = (vapidPublicKey) => {
+  pushNotificationInstance = new PushNotificationService(vapidPublicKey);
+  return pushNotificationInstance;
 };
+
+export const getPushNotificationService = () => {
+  if (!pushNotificationInstance) {
+    throw new Error('Push Notification Service not initialized. Call initPushNotificationService first.');
+  }
+  return pushNotificationInstance;
+};
+
+// Usage Examples:
+// ============
+// 1. Initialize (in main.jsx or App.jsx)
+// import { initPushNotificationService } from './services/07_PushNotificationService';
+// const pushService = initPushNotificationService(import.meta.env.VITE_VAPID_PUBLIC_KEY);
+// await pushService.initialize();
+
+// 2. Register subscription
+// const result = await pushService.registerPushSubscription('user-123');
+
+// 3. Send order notification
+// await pushService.sendOrderStatusNotification({
+//   id: 'ORD-12345',
+//   status: 'Shipped',
+//   message: 'Your order has been shipped!'
+// });
+
+export default PushNotificationService;

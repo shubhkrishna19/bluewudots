@@ -5,53 +5,33 @@ const CODReconciliation = () => {
     const { orders } = useData();
     const [filter, setFilter] = useState('all');
 
-    // Mock COD data - in production from carrier remittance APIs
-    const codRemittances = [
-        {
-            id: 'COD-001',
-            orderId: 'BW-9909',
-            customer: 'Local Customer',
-            carrier: 'Delhivery',
-            codAmount: 3500,
-            collectedDate: '2024-12-29',
-            remittanceDate: '2024-12-31',
-            status: 'Pending',
-            daysElapsed: 2
-        },
-        {
-            id: 'COD-002',
-            orderId: 'BW-9905',
-            customer: 'Vikram Singh',
-            carrier: 'XpressBees',
-            codAmount: 8200,
-            collectedDate: '2024-12-28',
-            remittanceDate: null,
-            status: 'Collected',
-            daysElapsed: 3
-        },
-        {
-            id: 'COD-003',
-            orderId: 'BW-9903',
-            customer: 'Amit Patel',
-            carrier: 'BlueDart',
-            codAmount: 15000,
-            collectedDate: '2024-12-27',
-            remittanceDate: '2024-12-29',
-            status: 'Remitted',
-            daysElapsed: 0
-        },
-        {
-            id: 'COD-004',
-            orderId: 'BW-9908',
-            customer: 'Furniture World',
-            carrier: 'Delhivery',
-            codAmount: 45000,
-            collectedDate: '2024-12-25',
-            remittanceDate: null,
-            status: 'Overdue',
-            daysElapsed: 6
-        }
-    ];
+    // Deriving COD Remittances from live orders
+    const codRemittances = orders
+        .filter(order => order.amount > 0) // Simplified filter for COD orders (in reality would check payment_mode)
+        .map(order => {
+            const isDelivered = order.status === 'Delivered';
+            const isRTO = order.status.startsWith('RTO');
+
+            let status = 'Pending';
+            if (isDelivered) status = 'Collected';
+            if (isRTO) status = 'Overdue'; // RTOs are considered overhead/overdue for cash reconciliation
+
+            // Simulating days elapsed from createdAt
+            const daysElapsed = Math.floor((new Date() - new Date(order.createdAt)) / (1000 * 60 * 60 * 24));
+            if (daysElapsed > 5 && status !== 'Remitted') status = 'Overdue';
+
+            return {
+                id: `COD-${order.id}`,
+                orderId: order.id,
+                customer: order.customerName,
+                carrier: order.carrier || 'Pending',
+                codAmount: parseFloat(order.amount) || 0,
+                collectedDate: isDelivered ? new Date(order.lastUpdated || order.createdAt).toLocaleDateString() : null,
+                remittanceDate: null,
+                status: status,
+                daysElapsed: daysElapsed
+            };
+        });
 
     const totalCollected = codRemittances.reduce((sum, c) => sum + c.codAmount, 0);
     const pendingAmount = codRemittances.filter(c => c.status !== 'Remitted').reduce((sum, c) => sum + c.codAmount, 0);

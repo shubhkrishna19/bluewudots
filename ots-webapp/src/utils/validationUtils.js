@@ -1,186 +1,247 @@
 /**
- * Validation Utilities
- * Comprehensive validation functions for order data, addresses, contact info, etc.
+ * ValidationUtils - Core validation functions for the app
+ * Used for orders, users, addresses, and field-level validation
+ * India-first: handles GST, state codes, phone numbers
  */
 
-/**
- * Validates email format
- * @param {string} email - Email to validate
- * @returns {boolean} - True if valid email
- */
-export const validateEmail = (email) => {
+// Phone number validation (India: 10 digits)
+export const isValidIndianPhoneNumber = (phone) => {
+  if (!phone) return false;
+  const cleaned = String(phone).replace(/\D/g, '');
+  return cleaned.length === 10 && /^[6-9]/.test(cleaned);
+};
+
+// Email validation
+export const isValidEmail = (email) => {
+  if (!email) return false;
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return emailRegex.test(email);
+  return emailRegex.test(String(email).toLowerCase());
 };
 
-/**
- * Validates phone number (10-15 digits with optional +)
- * @param {string} phone - Phone number to validate
- * @returns {boolean} - True if valid phone
- */
-export const validatePhone = (phone) => {
-  const phoneRegex = /^\+?[1-9]\d{1,14}$/;
-  return phoneRegex.test(phone.replace(/[\s\-()]/g, ''));
+// GST validation (15-character alphanumeric)
+export const isValidGST = (gst) => {
+  if (!gst) return false;
+  const gstRegex = /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/;
+  return gstRegex.test(String(gst).toUpperCase());
 };
 
-/**
- * Validates Indian postal code (6 digits)
- * @param {string} pincode - Pincode to validate
- * @returns {boolean} - True if valid pincode
- */
-export const validatePincode = (pincode) => {
-  return /^[1-9]{1}[0-9]{5}$/.test(pincode);
+// PAN validation (10 characters)
+export const isValidPAN = (pan) => {
+  if (!pan) return false;
+  const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
+  return panRegex.test(String(pan).toUpperCase());
 };
 
-/**
- * Validates order data structure
- * @param {object} order - Order object to validate
- * @returns {object} - Validation result { valid: boolean, errors: [] }
- */
+// Pincode validation (6 digits)
+export const isValidIndianPincode = (pincode) => {
+  if (!pincode) return false;
+  const cleaned = String(pincode).replace(/\D/g, '');
+  return cleaned.length === 6;
+};
+
+// AADHAR validation (12 digits)
+export const isValidAadhar = (aadhar) => {
+  if (!aadhar) return false;
+  const cleaned = String(aadhar).replace(/\D/g, '');
+  return cleaned.length === 12;
+};
+
+// Address validation
+export const isValidAddress = (address) => {
+  if (!address) return false;
+  const { street, city, state, pincode } = address;
+  return (
+    street && street.trim().length >= 3 &&
+    city && city.trim().length >= 2 &&
+    state && state.length === 2 &&
+    isValidIndianPincode(pincode)
+  );
+};
+
+// Order ID validation format
+export const isValidOrderId = (orderId) => {
+  if (!orderId) return false;
+  // Order IDs typically follow pattern: BW-YYYYMMDD-XXXXX
+  const orderRegex = /^[A-Z]{2}-\d{8}-\d{5}$/;
+  return orderRegex.test(String(orderId));
+};
+
+// SKU validation
+export const isValidSKU = (sku) => {
+  if (!sku) return false;
+  // SKU: alphanumeric, 3-20 characters
+  const skuRegex = /^[A-Z0-9]{3,20}$/;
+  return skuRegex.test(String(sku).toUpperCase());
+};
+
+// Amount validation (non-negative number, up to 2 decimals)
+export const isValidAmount = (amount) => {
+  if (amount === null || amount === undefined || amount === '') return false;
+  const num = parseFloat(amount);
+  return !isNaN(num) && num >= 0 && num <= 9999999.99;
+};
+
+// Quantity validation (positive integer)
+export const isValidQuantity = (qty) => {
+  if (qty === null || qty === undefined || qty === '') return false;
+  const num = parseInt(qty, 10);
+  return !isNaN(num) && num > 0 && num <= 999999;
+};
+
+// Weight validation in KG
+export const isValidWeight = (weight) => {
+  if (weight === null || weight === undefined || weight === '') return false;
+  const num = parseFloat(weight);
+  return !isNaN(num) && num > 0 && num <= 100;
+};
+
+// Dimension validation (L x W x H in cm)
+export const isValidDimensions = (length, width, height) => {
+  const isValid = (dim) => {
+    const num = parseFloat(dim);
+    return !isNaN(num) && num > 0 && num <= 300;
+  };
+  return isValid(length) && isValid(width) && isValid(height);
+};
+
+// Order status validation
+export const isValidOrderStatus = (status) => {
+  const validStatuses = [
+    'PENDING', 'CONFIRMED', 'PROCESSING',
+    'READY_TO_SHIP', 'SHIPPED', 'IN_TRANSIT',
+    'OUT_FOR_DELIVERY', 'DELIVERED',
+    'CANCELLED', 'RETURNED', 'FAILED'
+  ];
+  return validStatuses.includes(String(status).toUpperCase());
+};
+
+// Payment method validation
+export const isValidPaymentMethod = (method) => {
+  const validMethods = [
+    'COD', 'PREPAID', 'UPI', 'CREDIT_CARD',
+    'DEBIT_CARD', 'NETBANKING', 'WALLET'
+  ];
+  return validMethods.includes(String(method).toUpperCase());
+};
+
+// Shipping carrier validation
+export const isValidCarrier = (carrier) => {
+  const validCarriers = [
+    'DELHIVERY', 'BLUEDART', 'XPRESSBEES',
+    'FEDEX', 'ARAMEX', 'INDIA_POST'
+  ];
+  return validCarriers.includes(String(carrier).toUpperCase());
+};
+
+// Source channel validation
+export const isValidOrderSource = (source) => {
+  const validSources = [
+    'AMAZON', 'FLIPKART', 'MYNTRA', 'MEESHO',
+    'WEBSITE', 'INSTAGRAM', 'WHATSAPP', 'MANUAL'
+  ];
+  return validSources.includes(String(source).toUpperCase());
+};
+
+// State code validation (2-letter Indian state codes)
+export const isValidStateCode = (stateCode) => {
+  const validStates = [
+    'AP', 'AR', 'AS', 'BR', 'CG', 'CH', 'CT', 'DD', 'DL', 'DN',
+    'GA', 'GJ', 'HR', 'HP', 'JK', 'JH', 'KA', 'KL', 'LD', 'LA',
+    'MP', 'MH', 'MN', 'ML', 'MZ', 'NL', 'OR', 'OD', 'PB', 'PY',
+    'RJ', 'SK', 'TG', 'TR', 'TN', 'UP', 'UT', 'WB', 'TS'
+  ];
+  return validStates.includes(String(stateCode).toUpperCase());
+};
+
+// Comprehensive order validation
 export const validateOrder = (order) => {
-  const errors = [];
-
-  if (!order.id) errors.push('Order ID is required');
-  if (!order.customerName) errors.push('Customer name is required');
-  if (!validateEmail(order.customerEmail)) errors.push('Valid email is required');
-  if (!validatePhone(order.customerPhone)) errors.push('Valid phone number is required');
-  if (!order.items || order.items.length === 0) errors.push('At least one item is required');
-  if (!order.shippingAddress) errors.push('Shipping address is required');
-  if (!order.deliveryDate) errors.push('Delivery date is required');
-  if (order.totalAmount <= 0) errors.push('Total amount must be greater than 0');
-
-  return {
-    valid: errors.length === 0,
-    errors
-  };
-};
-
-/**
- * Validates shipping address
- * @param {object} address - Address object
- * @returns {object} - Validation result { valid: boolean, errors: [] }
- */
-export const validateAddress = (address) => {
-  const errors = [];
-
-  if (!address.street) errors.push('Street address is required');
-  if (!address.city) errors.push('City is required');
-  if (!address.state) errors.push('State is required');
-  if (!validatePincode(address.pincode)) errors.push('Valid 6-digit pincode is required');
-  if (!address.country) errors.push('Country is required');
-
-  return {
-    valid: errors.length === 0,
-    errors
-  };
-};
-
-/**
- * Validates order item
- * @param {object} item - Item object
- * @returns {object} - Validation result { valid: boolean, errors: [] }
- */
-export const validateOrderItem = (item) => {
-  const errors = [];
-
-  if (!item.productId) errors.push('Product ID is required');
-  if (!item.productName) errors.push('Product name is required');
-  if (item.quantity <= 0) errors.push('Quantity must be greater than 0');
-  if (item.price <= 0) errors.push('Price must be greater than 0');
-  if (!item.sku) errors.push('SKU is required');
-
-  return {
-    valid: errors.length === 0,
-    errors
-  };
-};
-
-/**
- * Validates payment details
- * @param {object} payment - Payment object
- * @returns {object} - Validation result { valid: boolean, errors: [] }
- */
-export const validatePayment = (payment) => {
-  const errors = [];
-
-  if (!payment.method) errors.push('Payment method is required');
-  if (payment.amount <= 0) errors.push('Payment amount must be greater than 0');
-  if (payment.method === 'card') {
-    if (!payment.cardNumber || !/^\d{13,19}$/.test(payment.cardNumber.replace(/\s/g, ''))) {
-      errors.push('Valid card number is required (13-19 digits)');
-    }
-    if (!payment.cardHolder) errors.push('Card holder name is required');
-  } else if (payment.method === 'upi') {
-    if (!payment.upiId || !/^[a-zA-Z0-9._-]+@[a-zA-Z]{2,}$/.test(payment.upiId)) {
-      errors.push('Valid UPI ID is required');
-    }
-  } else if (payment.method === 'netbanking') {
-    if (!payment.bankName) errors.push('Bank name is required');
+  const errors = {};
+  
+  if (!order.orderId || !isValidOrderId(order.orderId)) {
+    errors.orderId = 'Invalid order ID format';
   }
-
-  return {
-    valid: errors.length === 0,
-    errors
-  };
+  
+  if (!order.source || !isValidOrderSource(order.source)) {
+    errors.source = 'Invalid order source';
+  }
+  
+  if (!order.status || !isValidOrderStatus(order.status)) {
+    errors.status = 'Invalid order status';
+  }
+  
+  if (!order.shippingAddress || !isValidAddress(order.shippingAddress)) {
+    errors.shippingAddress = 'Invalid shipping address';
+  }
+  
+  if (!order.billingAddress || !isValidAddress(order.billingAddress)) {
+    errors.billingAddress = 'Invalid billing address';
+  }
+  
+  if (!order.items || !Array.isArray(order.items) || order.items.length === 0) {
+    errors.items = 'Order must have at least one item';
+  } else {
+    order.items.forEach((item, idx) => {
+      if (!isValidSKU(item.sku)) {
+        errors[`items[${idx}].sku`] = 'Invalid SKU';
+      }
+      if (!isValidQuantity(item.quantity)) {
+        errors[`items[${idx}].quantity`] = 'Invalid quantity';
+      }
+      if (!isValidAmount(item.price)) {
+        errors[`items[${idx}].price`] = 'Invalid price';
+      }
+    });
+  }
+  
+  if (!isValidAmount(order.totalAmount)) {
+    errors.totalAmount = 'Invalid total amount';
+  }
+  
+  if (!isValidPaymentMethod(order.paymentMethod)) {
+    errors.paymentMethod = 'Invalid payment method';
+  }
+  
+  return Object.keys(errors).length === 0 ? { valid: true } : { valid: false, errors };
 };
 
-/**
- * Validates date range
- * @param {Date} startDate - Start date
- * @param {Date} endDate - End date
- * @returns {boolean} - True if valid range
- */
-export const validateDateRange = (startDate, endDate) => {
-  if (!startDate || !endDate) return false;
-  return new Date(startDate) < new Date(endDate);
+// Email batch validation
+export const validateBatchEmails = (emails) => {
+  return emails.map((email, idx) => ({
+    email,
+    valid: isValidEmail(email),
+    index: idx
+  }));
 };
 
-/**
- * Validates order status transition
- * @param {string} currentStatus - Current status
- * @param {string} newStatus - New status
- * @returns {boolean} - True if valid transition
- */
-export const validateStatusTransition = (currentStatus, newStatus) => {
-  const validTransitions = {
-    'pending': ['confirmed', 'cancelled'],
-    'confirmed': ['processing', 'cancelled'],
-    'processing': ['packed', 'cancelled'],
-    'packed': ['shipped', 'cancelled'],
-    'shipped': ['delivered', 'returned'],
-    'delivered': ['returned'],
-    'cancelled': [],
-    'returned': []
-  };
-
-  return validTransitions[currentStatus]?.includes(newStatus) || false;
-};
-
-/**
- * Sanitizes user input to prevent XSS
- * @param {string} input - Input to sanitize
- * @returns {string} - Sanitized input
- */
-export const sanitizeInput = (input) => {
-  if (typeof input !== 'string') return input;
-  return input
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#x27;')
-    .replace(/\//g, '&#x2F;');
+// Phone batch validation
+export const validateBatchPhones = (phones) => {
+  return phones.map((phone, idx) => ({
+    phone,
+    valid: isValidIndianPhoneNumber(phone),
+    index: idx
+  }));
 };
 
 export default {
-  validateEmail,
-  validatePhone,
-  validatePincode,
+  isValidIndianPhoneNumber,
+  isValidEmail,
+  isValidGST,
+  isValidPAN,
+  isValidIndianPincode,
+  isValidAadhar,
+  isValidAddress,
+  isValidOrderId,
+  isValidSKU,
+  isValidAmount,
+  isValidQuantity,
+  isValidWeight,
+  isValidDimensions,
+  isValidOrderStatus,
+  isValidPaymentMethod,
+  isValidCarrier,
+  isValidOrderSource,
+  isValidStateCode,
   validateOrder,
-  validateAddress,
-  validateOrderItem,
-  validatePayment,
-  validateDateRange,
-  validateStatusTransition,
-  sanitizeInput
+  validateBatchEmails,
+  validateBatchPhones
 };

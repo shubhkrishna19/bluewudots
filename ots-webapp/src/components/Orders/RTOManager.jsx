@@ -2,45 +2,11 @@ import React, { useState } from 'react';
 import { useData } from '../../context/DataContext';
 
 const RTOManager = () => {
-    const { orders, setOrders } = useData();
+    const { orders, updateOrderStatus } = useData();
     const [selectedRTO, setSelectedRTO] = useState(null);
 
-    // Mock RTO data - in production this would come from carrier APIs
-    const rtoOrders = [
-        {
-            id: 'BW-8801',
-            customer: 'Ramesh Gupta',
-            city: 'Patna',
-            state: 'Bihar',
-            reason: 'Customer Refused',
-            attemptCount: 3,
-            carrierNotes: 'Customer not available at address multiple times',
-            rtoDate: '2024-12-28',
-            originalValue: 4500
-        },
-        {
-            id: 'BW-8802',
-            customer: 'Unknown Customer',
-            city: 'Imphal',
-            state: 'Manipur',
-            reason: 'Incorrect Address',
-            attemptCount: 1,
-            carrierNotes: 'Address does not exist - landmark not found',
-            rtoDate: '2024-12-30',
-            originalValue: 8200
-        },
-        {
-            id: 'BW-8803',
-            customer: 'Shipment Damaged',
-            city: 'Kolkata',
-            state: 'West Bengal',
-            reason: 'Damaged in Transit',
-            attemptCount: 0,
-            carrierNotes: 'Package damaged - customer rejected',
-            rtoDate: '2024-12-29',
-            originalValue: 12000
-        }
-    ];
+    // Filter live orders for RTO statuses
+    const rtoOrders = orders.filter(o => o.status.startsWith('RTO'));
 
     const getReasonColor = (reason) => {
         switch (reason) {
@@ -51,11 +17,17 @@ const RTOManager = () => {
         }
     };
 
-    const totalRTOValue = rtoOrders.reduce((sum, o) => sum + o.originalValue, 0);
+    const totalRTOValue = rtoOrders.reduce((sum, o) => sum + (parseFloat(o.amount) || 0), 0);
 
     const handleAction = (orderId, action) => {
-        console.log(`Action "${action}" for order ${orderId}`);
-        // In production: trigger re-attempt, refund, or write-off
+        if (action === 'reattempt') {
+            updateOrderStatus(orderId, 'Pending', { reason: 'Customer Re-attempt Requested' });
+        } else if (action === 'refund') {
+            updateOrderStatus(orderId, 'Cancelled', { reason: 'Refund Processed' });
+        } else if (action === 'writeoff') {
+            updateOrderStatus(orderId, 'Cancelled', { reason: 'RTO Write-off' });
+        }
+        setSelectedRTO(null);
     };
 
     return (
@@ -127,8 +99,8 @@ const RTOManager = () => {
                                 <p className="text-muted" style={{ fontSize: '0.85rem' }}>{rto.city}, {rto.state}</p>
                             </div>
                             <div style={{ textAlign: 'right' }}>
-                                <p style={{ fontWeight: '700', fontSize: '1.2rem' }}>₹{rto.originalValue.toLocaleString('en-IN')}</p>
-                                <p className="text-muted" style={{ fontSize: '0.75rem' }}>RTO: {rto.rtoDate}</p>
+                                <p style={{ fontWeight: '700', fontSize: '1.2rem' }}>₹{parseFloat(rto.amount || 0).toLocaleString('en-IN')}</p>
+                                <p className="text-muted" style={{ fontSize: '0.75rem' }}>RTO: {rto.lastUpdated ? new Date(rto.lastUpdated).toLocaleDateString() : 'N/A'}</p>
                             </div>
                         </div>
 

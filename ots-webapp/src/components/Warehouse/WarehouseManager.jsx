@@ -35,6 +35,18 @@ const WarehouseManager = () => {
     const totalUnits = inventory.reduce((sum, i) => sum + i.inStock, 0);
     const lowStockItems = inventory.filter(i => i.available <= (i.reorderLevel || 15));
 
+    const [transferModal, setTransferModal] = useState({ show: false, sku: null });
+    const { transferStock } = useData();
+
+    const handleTransfer = (skuId) => {
+        setTransferModal({ show: true, sku: skuId });
+    };
+
+    const confirmTransfer = (from, to, qty) => {
+        transferStock(transferModal.sku, from, to, qty);
+        setTransferModal({ show: false, sku: null });
+    };
+
     return (
         <div className="warehouse-manager animate-fade">
             <div className="section-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
@@ -156,6 +168,13 @@ const WarehouseManager = () => {
                                     <div style={{ display: 'flex', gap: '8px' }}>
                                         <button
                                             className="btn-pill"
+                                            style={{ padding: '4px 8px', background: 'var(--primary)', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '0.7rem' }}
+                                            onClick={() => handleTransfer(item.sku)}
+                                        >
+                                            📦 Transfer
+                                        </button>
+                                        <button
+                                            className="btn-pill"
                                             onClick={() => adjustStock(item.sku, 1)}
                                             style={{ padding: '4px 10px', background: 'var(--success)', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
                                         >
@@ -175,6 +194,50 @@ const WarehouseManager = () => {
                     </tbody>
                 </table>
             </div>
+
+            {/* Transfer Modal */}
+            {transferModal.show && (
+                <div className="modal-overlay glass" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
+                    <div className="modal-content glass" style={{ padding: '32px', width: '400px', border: '1px solid var(--glass-border)' }}>
+                        <h3>Stock Transfer: {transferModal.sku}</h3>
+                        <p className="text-muted" style={{ fontSize: '0.8rem', marginBottom: '20px' }}>Select destination hub and quantity.</p>
+
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                            <div>
+                                <label style={{ fontSize: '0.75rem', display: 'block', marginBottom: '4px' }}>Destination Hub</label>
+                                <select id="dest-hub" className="glass" style={{ width: '100%', padding: '10px' }}>
+                                    {warehouses.map(w => <option key={w.id} value={w.id}>{w.name}</option>)}
+                                </select>
+                            </div>
+                            <div>
+                                <label style={{ fontSize: '0.75rem', display: 'block', marginBottom: '4px' }}>Quantity</label>
+                                <input id="transfer-qty" type="number" defaultValue="1" className="glass" style={{ width: '100%', padding: '10px' }} />
+                            </div>
+
+                            <div style={{ display: 'flex', gap: '12px', marginTop: '12px' }}>
+                                <button
+                                    className="btn-primary"
+                                    style={{ flex: 1 }}
+                                    onClick={() => confirmTransfer(
+                                        'SOURCE',
+                                        document.getElementById('dest-hub').value,
+                                        document.getElementById('transfer-qty').value
+                                    )}
+                                >
+                                    Confirm Transfer
+                                </button>
+                                <button
+                                    className="btn-secondary"
+                                    style={{ flex: 1 }}
+                                    onClick={() => setTransferModal({ show: false, sku: null })}
+                                >
+                                    Cancel
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

@@ -1,21 +1,46 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useData } from '../../context/DataContext';
+import churnService from '../../services/churnService';
+import { getWhatsAppService } from '../../services/whatsappServiceEnhanced';
 
 const CustomerLookup = () => {
-    const { orders, customerMaster } = useData();
+    const { orders, customerMaster, getCustomerMetrics } = useData();
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedCustomer, setSelectedCustomer] = useState(null);
+    const [showAtRiskOnly, setShowAtRiskOnly] = useState(false);
 
-    // Filter unified customer master
-    const filteredCustomers = customerMaster?.filter(c =>
-        c.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        c.city?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        c.phone?.includes(searchTerm)
-    ) || [];
+    // Filter unified customer master with churn risk
+    const filteredCustomers = useMemo(() => {
+        let customers = customerMaster?.map(c => ({
+            ...c,
+            churn: churnService.calculateChurnRisk(c, orders)
+        })) || [];
 
-    // Use centralized customer metrics from context
-    const { getCustomerMetrics } = useData();
+        if (showAtRiskOnly) {
+            customers = customers.filter(c => c.churn.riskLevel === 'HIGH' || c.churn.riskLevel === 'CRITICAL');
+        }
 
+        if (searchTerm) {
+            customers = customers.filter(c =>
+                c.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                c.city?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                c.phone?.includes(searchTerm)
+            );
+        }
+
+        return customers;
+    }, [customerMaster, orders, showAtRiskOnly, searchTerm]);
+
+    const sendReactivationMessage = async (customer) => {
+        const message = churnService.generateOutreachMessage(customer);
+        try {
+            await getWhatsAppService().sendWhatsAppMessage(customer.phone, message, 'reactivation');
+            alert(`Reactivation message sent to ${customer.name || customer.phone}! 🫡`);
+        } catch (error) {
+            console.error('Outreach failed:', error);
+            alert('Failed to send message. Please check API credentials.');
+        }
+    };
 
     return (
         <div className="customer-lookup animate-fade">
@@ -24,14 +49,21 @@ const CustomerLookup = () => {
                 <p className="text-muted">Order history by customer</p>
             </div>
 
-            <div className="search-bar glass" style={{ padding: '16px', marginTop: '24px' }}>
+            <div className="glass" style={{ padding: '16px', marginTop: '24px', display: 'flex', gap: '16px', alignItems: 'center' }}>
                 <input
                     type="text"
                     placeholder="🔍 Search customers by name or city..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    style={{ width: '100%', padding: '14px 20px', background: 'var(--bg-accent)', border: '1px solid var(--glass-border)', borderRadius: '10px', color: '#fff', fontSize: '1rem' }}
+                    style={{ flex: 1, padding: '14px 20px', background: 'var(--bg-accent)', border: '1px solid var(--glass-border)', borderRadius: '10px', color: '#fff', fontSize: '1rem' }}
                 />
+                <button
+                    className={`btn-secondary glass-hover ${showAtRiskOnly ? 'active' : ''}`}
+                    style={{ padding: '12px 20px', background: showAtRiskOnly ? 'var(--danger)' : 'var(--bg-accent)' }}
+                    onClick={() => setShowAtRiskOnly(!showAtRiskOnly)}
+                >
+                    ⚠️ At Risk Only
+                </button>
             </div>
 
             <div className="customer-grid" style={{ display: 'grid', gridTemplateColumns: selectedCustomer ? '1fr 1fr' : '1fr', gap: '24px', marginTop: '24px' }}>
@@ -53,7 +85,13 @@ const CustomerLookup = () => {
                                     <div>
                                         <h4>{customer.name}</h4>
                                         <p className="text-muted" style={{ fontSize: '0.85rem' }}>{customer.city}, {customer.state}</p>
-                                        <div style={{ marginTop: '8px', display: 'flex', gap: '6px' }}>
+                                        <div style={{ marginTop: '8px', display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                                            <span className="badge" style={{
+                                                background: customer.churn.riskLevel === 'CRITICAL' ? 'var(--danger)' :
+                                                    customer.churn.riskLevel === 'HIGH' ? 'var(--warning)' :
+                                                        customer.churn.riskLevel === 'MEDIUM' ? 'var(--accent)' : 'var(--success)',
+                                                fontSize: '0.6rem'
+                                            }}>{customer.churn.riskLevel}</span>
                                             <span className="badge" style={{
                                                 background: metrics.segment === 'VIP' ? 'var(--warning)' :
                                                     metrics.segment === 'At Risk' ? 'var(--danger)' : 'var(--primary)',
@@ -61,6 +99,15 @@ const CustomerLookup = () => {
                                             }}>{metrics.segment}</span>
                                             <span style={{ fontSize: '0.75rem', fontWeight: '700' }}>₹{metrics.totalSpend.toLocaleString()}</span>
                                         </div>
+                                        {(customer.churn.riskLevel === 'HIGH' || customer.churn.riskLevel === 'CRITICAL') && (
+                                            <button
+                                                className="btn-secondary glass-hover"
+                                                style={{ marginTop: '10px', padding: '6px 12px', fontSize: '0.7rem', background: 'var(--accent)' }}
+                                                onClick={(e) => { e.stopPropagation(); sendReactivationMessage(customer); }}
+                                            >
+                                                📨 Reactivate
+                                            </button>
+                                        )}
                                     </div>
                                     <span style={{ fontSize: '0.75rem', opacity: 0.6 }}>{metrics.orderCount} orders</span>
                                 </div>
