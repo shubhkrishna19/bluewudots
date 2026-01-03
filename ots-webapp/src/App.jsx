@@ -35,6 +35,7 @@ import MobileBottomNav from './components/Navigation/MobileBottomNav'
 import CommercialHub from './components/Commercial/CommercialHub'
 import MarketingCenter from './components/Marketing/MarketingCenter'
 import WhatsAppTemplateManager from './components/Marketing/WhatsAppTemplateManager'
+import LabelTemplateManager from './components/Logistics/LabelTemplateManager'
 import CustomerAnalytics from './components/Customers/CustomerAnalytics'
 import GlobalLedger from './components/Commercial/GlobalLedger'
 import ProductionTracker from './components/SupplyChain/ProductionTracker'
@@ -234,6 +235,7 @@ function App() {
                       <li className={activeTab === 'logistics' ? 'active' : ''} onClick={() => { setActiveTab('logistics'); setIsMobileMenuOpen(false); }}>🚚 Carriers</li>
                       <li className={activeTab === 'intlship' ? 'active' : ''} onClick={() => { setActiveTab('intlship'); setIsMobileMenuOpen(false); }}>🌐 Int'l Shipping</li>
                       <li className={activeTab === 'carrierperf' ? 'active' : ''} onClick={() => { setActiveTab('carrierperf'); setIsMobileMenuOpen(false); }}>🏆 Performance</li>
+                      <li className={activeTab === 'label-templates' ? 'active' : ''} onClick={() => { setActiveTab('label-templates'); setIsMobileMenuOpen(false); }}>🏷️ Label Templates</li>
                       <li className={activeTab === 'zones' ? 'active' : ''} onClick={() => { setActiveTab('zones'); setIsMobileMenuOpen(false); }}>🗺️ Zones</li>
                     </ul>
                   </div>
@@ -395,6 +397,7 @@ function App() {
                 {activeTab === 'logistics' && <CarrierSelection />}
                 {activeTab === 'intlship' && <InternationalShipping />}
                 {activeTab === 'carrierperf' && <CarrierPerformance />}
+                {activeTab === 'label-templates' && <LabelTemplateManager />}
                 {activeTab === 'zones' && <ZoneMap />}
               </Guard>
 

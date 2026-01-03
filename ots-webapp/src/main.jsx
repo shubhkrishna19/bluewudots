@@ -7,7 +7,7 @@ import { subscribeUser } from './services/pushNotificationService'
 import { AuthProvider } from './context/AuthContext'
 import { FinancialProvider } from './context/FinancialContext'
 import { NotificationProvider } from './context/NotificationContext'
-import ErrorBoundary from './components/ErrorBoundary'
+import ErrorBoundary from './components/Shared/ErrorBoundary'
 import { SecurityProvider } from './context/SecurityContext'
 
 ReactDOM.createRoot(document.getElementById('root')).render(

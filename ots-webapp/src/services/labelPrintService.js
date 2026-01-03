@@ -109,6 +109,81 @@ class LabelPrintService {
             return { success: false, error: e.message };
         }
     }
+
+    async printManifest(orders, title = 'Manifest') {
+        const date = new Date().toISOString().split('T')[0];
+        console.log(`Generating Manifest: ${title} for ${orders.length} orders`);
+
+        // In a real ZPL scenario, this would loop and print summary labels or a report
+        // For simulation, we alert or log
+        alert(`🖨️ Printing ${title} for ${orders.length} orders... (Simulated)`);
+        return true;
+    }
+
+    generatePackingSlipHTML(order) {
+        return `
+            <html>
+            <head>
+                <title>Packing Slip - ${order.id}</title>
+                <style>
+                    body { font-family: sans-serif; padding: 20px; }
+                    .header { display: flex; justify-content: space-between; margin-bottom: 20px; border-bottom: 1px solid #ccc; padding-bottom: 10px; }
+                    .address { margin-bottom: 20px; }
+                    table { width: 100%; border-collapse: collapse; }
+                    th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+                    th { background-color: #f2f2f2; }
+                </style>
+            </head>
+            <body>
+                <div class="header">
+                    <div>
+                        <h1>Bluewud Furniture</h1>
+                        <p>Packing Slip</p>
+                    </div>
+                     <div>
+                        <h2>${order.id}</h2>
+                        <p>Date: ${new Date().toLocaleDateString()}</p>
+                    </div>
+                </div>
+                <div class="address">
+                    <strong>Ship To:</strong><br>
+                    ${order.customerName}<br>
+                    ${order.shippingAddress?.street || ''}<br>
+                    ${order.shippingAddress?.city || ''}, ${order.shippingAddress?.state || ''} - ${order.shippingAddress?.pincode || ''}<br>
+                    Ph: ${order.phoneNumber}
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Item</th>
+                            <th>SKU</th>
+                            <th>Qty</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${(order.items || []).map(item => `
+                            <tr>
+                                <td>${item.name}</td>
+                                <td>${item.sku || '-'}</td>
+                                <td>${item.quantity}</td>
+                            </tr>
+                        `).join('')}
+                        ${(!order.items || order.items.length === 0) ? `
+                            <tr>
+                                <td>${order.productName || 'Furniture Item'}</td>
+                                <td>${order.sku || '-'}</td>
+                                <td>1</td>
+                            </tr>
+                        ` : ''}
+                    </tbody>
+                </table>
+                 <div style="margin-top: 30px; font-size: 12px; text-align: center;">
+                    Thank you for your business!
+                </div>
+            </body>
+            </html>
+        `;
+    }
 }
 
 // Singleton

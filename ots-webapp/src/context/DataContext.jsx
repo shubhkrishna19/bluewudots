@@ -17,7 +17,6 @@ import cacheService, { initOfflineCacheService } from '../services/offlineCacheS
 import warehouseOptimizer from '../services/warehouseOptimizer';
 import mlForecastService from '../services/mlForecastService';
 import dealerService from '../services/dealerService';
-import dealerService from '../services/dealerService';
 import rtoService from '../services/rtoService';
 import reverseLogisticsService from '../services/reverseLogisticsService';
 import visionService from '../services/visionService';

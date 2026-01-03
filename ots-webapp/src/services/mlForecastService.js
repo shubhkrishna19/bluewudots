@@ -1,7 +1,19 @@
 /**
  * ML Forecast Service
  * Advanced demand forecasting using additive trend-seasonal decomposition.
+ * Enhanced with Prophet-inspired holiday detection and changepoint analysis.
  */
+
+// Indian E-commerce Holiday Calendar (Prophet-style)
+const HOLIDAYS = [
+    { name: 'Republic Day', month: 1, day: 26, impact: 1.3 },
+    { name: 'Holi', month: 3, day: 15, impact: 1.2 }, // Approximate
+    { name: 'Diwali', month: 10, day: 24, impact: 2.5 }, // Approximate, varies yearly
+    { name: 'Christmas', month: 12, day: 25, impact: 1.8 },
+    { name: 'New Year', month: 1, day: 1, impact: 1.5 },
+    { name: 'Amazon Prime Day', month: 7, day: 15, impact: 2.0 }, // Mid-July
+    { name: 'Flipkart Big Billion Days', month: 10, day: 1, impact: 2.2 } // Early Oct
+];
 
 class MLForecastService {
     /**
