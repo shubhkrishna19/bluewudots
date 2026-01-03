@@ -3,9 +3,11 @@ import { useData } from '../../context/DataContext';
 import OrderJourney from './OrderJourney';
 import labelPrintService from '../../services/labelPrintService';
 import { getOptimalCarrier } from '../../services/carrierOptimizer';
+import { getWhatsAppService } from '../../services/whatsappService';
+import shipmentService from '../../services/shipmentService';
 import rtoService from '../../services/rtoService';
 import reverseLogisticsService from '../../services/reverseLogisticsService';
-import { AlertTriangle, RotateCcw, ShieldCheck, CheckCircle } from 'lucide-react';
+import { AlertTriangle, RotateCcw, ShieldCheck, CheckCircle, MessageSquare } from 'lucide-react';
 
 const OrderList = () => {
     const { orders, updateOrderStatus } = useData();
@@ -20,7 +22,16 @@ const OrderList = () => {
         const matchesSearch = order.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
             order.customer?.toLowerCase().includes(searchTerm.toLowerCase()) ||
             order.sku?.toLowerCase().includes(searchTerm.toLowerCase());
-        const matchesStatus = statusFilter === 'all' || order.status === statusFilter;
+
+        // Special logic for High Risk filter
+        let matchesStatus = true;
+        if (statusFilter === 'HIGH_RISK') {
+            const risk = rtoService.predictRisk(order);
+            matchesStatus = risk.level === 'HIGH' || risk.level === 'CRITICAL';
+        } else {
+            matchesStatus = statusFilter === 'all' || order.status === statusFilter;
+        }
+
         const matchesSource = sourceFilter === 'all' || order.source === sourceFilter;
         return matchesSearch && matchesStatus && matchesSource;
     });
@@ -43,6 +54,85 @@ const OrderList = () => {
         setSelectedOrders(prev =>
             prev.includes(id) ? prev.filter(oid => oid !== id) : [...prev, id]
         );
+    };
+
+    const handleWhatsAppNotify = async () => {
+        if (selectedOrders.length === 0) return;
+        const whatsapp = getWhatsAppService();
+        let notifiedCount = 0;
+        let simulatedCount = 0;
+
+        for (const orderId of selectedOrders) {
+            const order = orders.find(o => o.id === orderId);
+            if (!order) continue;
+
+            // Send generic update template
+            const result = await whatsapp.sendWhatsAppMessage(
+                order.id,
+                'order_update_v1',
+                order.phone || '919999999999',
+                { orderId: order.id, status: order.status }
+            );
+
+            if (result.success) {
+                notifiedCount++;
+                if (result.mode === 'simulation') simulatedCount++;
+            }
+        }
+
+        if (simulatedCount > 0) {
+            alert(`✅ ${notifiedCount} Notifications Processed (SIMULATION MODE)\nCheck console for payload details.`);
+        } else {
+            alert(`✅ ${notifiedCount} WhatsApp Messages Sent successfully!`);
+        }
+        setSelectedOrders([]);
+    };
+
+    const handleBatchManifest = async () => {
+        const ordersToProcess = filteredOrders.filter(o => o.status === 'Ready-to-Ship' || selectedOrders.includes(o.id));
+
+        if (ordersToProcess.length === 0) {
+            alert('No orders ready for manifest.');
+            return;
+        }
+
+        const confirm = window.confirm(`Generate Manifest for ${ordersToProcess.length} orders? Unbooked orders will be booked automatically.`);
+        if (!confirm) return;
+
+        let bookedCount = 0;
+        const processedOrders = [];
+
+        for (const order of ordersToProcess) {
+            let updatedOrder = { ...order };
+
+            // Auto-book if not yet booked (missing AWB)
+            if (!order.awb || order.status !== 'Ready-to-Ship') {
+                try {
+                    const booking = await shipmentService.createForwardShipment(order);
+                    if (booking.success) {
+                        updatedOrder = {
+                            ...order,
+                            awb: booking.awb,
+                            status: 'Ready-to-Ship',
+                            shippingLabel: booking.labelUrl
+                        };
+                        // Update globally
+                        updateOrder(order.id, { awb: booking.awb, status: 'Ready-to-Ship', shippingLabel: booking.labelUrl });
+                        bookedCount++;
+                    }
+                } catch (err) {
+                    console.error('Booking failed for', order.id, err);
+                }
+            }
+            processedOrders.push(updatedOrder);
+        }
+
+        if (bookedCount > 0) {
+            alert(`✅ ${bookedCount} Orders Booked Successfully!`);
+        }
+
+        // Generate Manifest
+        labelPrintService.printManifest(processedOrders, 'Batch Manifest');
     };
 
     const handleSmartAssign = async () => {
@@ -90,9 +180,17 @@ const OrderList = () => {
                     <button
                         className="btn-secondary glass-hover"
                         style={{ padding: '6px 12px', fontSize: '0.75rem', display: 'flex', alignItems: 'center', gap: '4px' }}
-                        onClick={() => labelPrintService.printManifest(filteredOrders.filter(o => o.status === 'Ready-to-Ship'), 'Filtered Batch')}
+                        onClick={handleBatchManifest}
                     >
                         📋 Batch Manifest
+                    </button>
+                    <button
+                        className="btn-secondary glass-hover"
+                        style={{ padding: '6px 12px', fontSize: '0.75rem', display: 'flex', alignItems: 'center', gap: '4px', background: 'var(--success)', color: '#fff', border: 'none' }}
+                        disabled={selectedOrders.length === 0}
+                        onClick={handleWhatsAppNotify}
+                    >
+                        <MessageSquare className="w-3 h-3" /> Notify
                     </button>
                     <button
                         className="btn-primary glass-hover"
@@ -122,6 +220,7 @@ const OrderList = () => {
                     style={{ padding: '12px 16px', background: 'var(--bg-accent)', border: '1px solid var(--glass-border)', borderRadius: '8px', color: '#fff', minWidth: '150px' }}
                 >
                     <option value="all">All Statuses</option>
+                    <option value="HIGH_RISK">⚠️ High Risk</option>
                     {uniqueStatuses.map(s => <option key={s} value={s}>{s}</option>)}
                 </select>
                 <select

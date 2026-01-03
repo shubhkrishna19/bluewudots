@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useData } from '../../context/DataContext';
 import { generatePackingSlip, generateShippingLabel } from '../../utils/labelGenerator';
+import shipmentService from '../../services/shipmentService';
 
 const STAGES = [
     { key: 'Imported', label: 'IMPORTED', color: 'var(--text-muted)' },
@@ -26,6 +27,24 @@ const OrderJourney = ({ orderId }) => {
             generateShippingLabel(order);
         }
         setShowLabelMenu(false);
+    };
+
+    const handleTrack = async () => {
+        if (!order.awb) {
+            alert('Order not shipped yet (No AWB)');
+            return;
+        }
+        try {
+            const status = await shipmentService.trackShipment(order.awb, order.carrier);
+            const historyStr = status.history.map(h =>
+                `📍 ${h.status} - ${h.location} (${new Date(h.timestamp).toLocaleDateString()})`
+            ).join('\n');
+
+            alert(`🚚 Live Tracking (${order.carrier})\nStatus: ${status.currentStatus}\nETA: ${new Date(status.estimatedDelivery).toDateString()}\n\n${historyStr}`);
+        } catch (err) {
+            console.error(err);
+            alert('Tracking unavailable');
+        }
     };
 
     return (
@@ -98,7 +117,14 @@ const OrderJourney = ({ orderId }) => {
             </div>
 
             <div className="journey-actions" style={{ marginTop: '32px', display: 'flex', gap: '12px', position: 'relative' }}>
-                <button className="btn-secondary glass-hover" style={{ flex: 1, fontSize: '0.8rem' }}>View Log</button>
+                <button
+                    className="btn-secondary glass-hover"
+                    style={{ flex: 1, fontSize: '0.8rem', display: 'flex', justifyContent: 'center', gap: '5px' }}
+                    onClick={handleTrack}
+                    disabled={!order.awb}
+                >
+                    🛰️ Track Live
+                </button>
                 <div style={{ flex: 1, position: 'relative' }}>
                     <button
                         className="btn-primary glass-hover"
