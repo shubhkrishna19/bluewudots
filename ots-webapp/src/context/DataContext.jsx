@@ -337,7 +337,6 @@ export const DataProvider = ({ children }) => {
                 user: 'system'
             }],
             createdAt: new Date().toISOString(),
-            createdAt: new Date().toISOString(),
             warehouse: smartRouteOrder(orderData.pincode, orderData.state)
         };
 
@@ -386,6 +385,29 @@ export const DataProvider = ({ children }) => {
                 ...prev,
                 [dealer.id]: (prev[dealer.id] || 0) + newOrder.amount
             }));
+        }
+
+        // --- 🤖 RTO AUTO-BLOCKER ---
+        // Automatically hold high-risk COD orders (Risk Score > 60)
+        if (newOrder.paymentMethod === 'COD' || newOrder.paymentMode === 'COD') {
+            const risk = rtoService.predictRisk(newOrder);
+            newOrder.rtoRiskScore = risk.score;
+            newOrder.rtoRiskLevel = risk.riskLevel;
+            newOrder.rtoReasons = risk.reasons;
+
+            if (risk.score >= 60) {
+                newOrder.status = ORDER_STATUSES.ON_HOLD;
+                newOrder.holdReason = `High RTO Risk (${risk.score}%): ${risk.reasons.join(', ')}`;
+
+                // Add blocking entry to history
+                newOrder.statusHistory.push({
+                    from: ORDER_STATUSES.PENDING,
+                    to: ORDER_STATUSES.ON_HOLD,
+                    timestamp: new Date().toISOString(),
+                    user: 'RTO_BOT',
+                    reason: newOrder.holdReason
+                });
+            }
         }
 
         // --- MARGIN PROTECTION CHECK ---

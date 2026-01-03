@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { useData } from '../../context/DataContext';
 import { toCSV, downloadFile, formatDateIN, calculateGST } from '../../utils/dataUtils';
-import { logExport } from '../../services/activityLogger';
+import { toCSV, downloadFile, formatDateIN, calculateGST } from '../../utils/dataUtils';
+import { useSecurity } from '../../context/SecurityContext'; // Use new security context
 
 const ExportTools = () => {
     const { orders, skuMaster, inventory, getOrderStats } = useData();
+    const { logActivity } = useSecurity();
     const [exportStatus, setExportStatus] = useState(null);
     const [dateRange, setDateRange] = useState({ start: '', end: '' });
 
@@ -19,7 +21,9 @@ const ExportTools = () => {
         const csv = toCSV(data, columns);
         downloadFile(csv, `${filename}_${new Date().toISOString().split('T')[0]}.csv`, 'text/csv');
 
-        logExport('CSV', data.length);
+        downloadFile(csv, `${filename}_${new Date().toISOString().split('T')[0]}.csv`, 'text/csv');
+
+        logActivity('EXPORT', `CSV: ${filename}`, { count: data.length });
         setExportStatus({ type: 'success', message: `Exported ${data.length} records to CSV` });
         setTimeout(() => setExportStatus(null), 3000);
     };
@@ -32,7 +36,9 @@ const ExportTools = () => {
 
         downloadFile(JSON.stringify(data, null, 2), `${filename}_${new Date().toISOString().split('T')[0]}.json`, 'application/json');
 
-        logExport('JSON', data.length);
+        downloadFile(JSON.stringify(data, null, 2), `${filename}_${new Date().toISOString().split('T')[0]}.json`, 'application/json');
+
+        logActivity('EXPORT', `JSON: ${filename}`, { count: data.length });
         setExportStatus({ type: 'success', message: `Exported ${data.length} records to JSON` });
         setTimeout(() => setExportStatus(null), 3000);
     };

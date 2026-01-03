@@ -50,7 +50,7 @@ import pushNotificationService from './services/pushNotificationService'
 import ResponsiveLayout from './components/Shared/ResponsiveLayout'
 import ErrorBoundary from './components/Shared/ErrorBoundary'
 import keyboardShortcuts from './services/keyboardShortcutsEnhanced'
-import { initWhatsAppService } from './services/whatsappServiceEnhanced'
+import { initWhatsAppService } from './services/whatsappService'
 import { Guard, ROLES, PERMISSIONS } from './services/rbacMiddleware'
 import DealerPortal from './components/Dealers/DealerPortal'
 // import { PERMISSIONS } from './utils/permissionUtils' // Deprecated/Duplicate
