@@ -1,0 +1,376 @@
+
+[1m[46m RUN [49m[22m [36mv4.0.16 [39m[90m/Users/anandinisingh/Downloads/webdev2/ots-webapp[39m
+      [2mCoverage enabled with [22m[33mv8[39m
+
+[90mstdout[2m | src/__tests__/dataUtils.test.js[2m > [22m[2mdeduplicateOrders[2m > [22m[2mshould deduplicate orders by source and externalId
+[22m[39m[Dedupe] Orders processed in 0.11ms
+
+[90mstdout[2m | src/__tests__/dataUtils.test.js[2m > [22m[2mdeduplicateOrders[2m > [22m[2mshould merge status history correctly
+[22m[39m[Dedupe] Orders processed in 0.25ms
+
+[90mstdout[2m | src/__tests__/dataUtils.test.js[2m > [22m[2mdeduplicateOrders[2m > [22m[2mshould handle large batch deduplication efficiently
+[22m[39m[Dedupe] Orders processed in 12.33ms
+
+[90mstdout[2m | src/__tests__/dataUtils.test.js[2m > [22m[2mdeduplicateOrders[2m > [22m[2mshould handle empty arrays
+[22m[39m[Dedupe] Orders processed in 0.00ms
+[Dedupe] Orders processed in 0.01ms
+[Dedupe] Orders processed in 0.00ms
+
+[90mstdout[2m | src/__tests__/dataUtils.test.js[2m > [22m[2mdeduplicateCustomers[2m > [22m[2mshould deduplicate customers by phone number
+[22m[39m[Dedupe] Customers processed in 0.13ms
+
+[90mstdout[2m | src/__tests__/dataUtils.test.js[2m > [22m[2mdeduplicateCustomers[2m > [22m[2mshould deduplicate customers by email
+[22m[39m[Dedupe] Customers processed in 0.01ms
+
+[90mstdout[2m | src/__tests__/dataUtils.test.js[2m > [22m[2mdeduplicateCustomers[2m > [22m[2mshould handle customers without phone or email
+[22m[39m[Dedupe] Customers processed in 0.00ms
+
+[90mstdout[2m | src/__tests__/dataUtils.test.js[2m > [22m[2mPerformance Benchmarks[2m > [22m[2mdeduplicateOrders with 50k records should complete in < 200ms
+[22m[39m[Dedupe] Orders processed in 44.73ms
+✓ Deduplication of 50k records: 44.94ms
+
+[90mstdout[2m | src/__tests__/dataUtils.test.js[2m > [22m[2mPerformance Benchmarks[2m > [22m[2mvalidateOrder should complete in < 1ms
+[22m[39m✓ 1000 validations: 0.002ms each
+
+ [32m✓[39m src/__tests__/dataUtils.test.js [2m([22m[2m20 tests[22m[2m)[22m[32m 264[2mms[22m[39m
+[90mstdout[2m | src/services/__tests__/marketplaceService.test.js[2m > [22m[2mMarketplaceService[2m > [22m[2mshould fetch orders in simulation mode when keys are missing
+[22m[39mFetching from Amazon SP-API...
+
+[90mstdout[2m | src/services/__tests__/internationalShipping.test.js[2m > [22m[2minternationalShippingService[2m > [22m[2mshould generate customs paperwork with required fields
+[22m[39m[Customs] Generating paperwork for Order ORD-INT-TEST to USA
+
+[90mstdout[2m | src/services/__tests__/internationalShipping.test.js[2m > [22m[2minternationalShippingService[2m > [22m[2mshould create international shipment and return tracking
+[22m[39m[Int'l Shipping] Validating customs for ORD-INT-TEST...
+[Customs] Generating paperwork for Order ORD-INT-TEST to USA
+
+[90mstdout[2m | src/services/__tests__/marketplaceService.test.js[2m > [22m[2mMarketplaceService[2m > [22m[2mshould handle inventory sync in simulation mode
+[22m[39m[Marketplace] Syncing SKU-123 to amazon: Qty 50
+
+ [32m✓[39m src/services/__tests__/visionService.test.js [2m([22m[2m3 tests[22m[2m)[22m[33m 4738[2mms[22m[39m
+     [33m[2m✓[22m[39m should detect objects with simulated latency [33m 1608[2mms[22m[39m
+     [33m[2m✓[22m[39m should verify packing against ordered items [33m 1010[2mms[22m[39m
+     [33m[2m✓[22m[39m should extract text via OCR simulation [33m 2102[2mms[22m[39m
+ [32m✓[39m src/services/__tests__/marketplaceService.test.js [2m([22m[2m4 tests[22m[2m)[22m[33m 1033[2mms[22m[39m
+     [33m[2m✓[22m[39m should fetch returns in simulation mode [33m 1008[2mms[22m[39m
+ [32m✓[39m src/services/__tests__/internationalShipping.test.js [2m([22m[2m4 tests[22m[2m)[22m[33m 1045[2mms[22m[39m
+     [33m[2m✓[22m[39m should create international shipment and return tracking [33m 1010[2mms[22m[39m
+[90mstderr[2m | src/services/__tests__/CarrierStrategy.test.js[2m > [22m[2mCarrier Strategy Pattern[2m > [22m[2mshould use simulation if token is missing (Delhivery)
+[22m[39m[Delhivery] No Token - Using Simulation logic
+
+ [32m✓[39m src/services/__tests__/CarrierStrategy.test.js [2m([22m[2m4 tests[22m[2m)[22m[33m 593[2mms[22m[39m
+     [33m[2m✓[22m[39m should mark as live if API effectively mocked [33m 512[2mms[22m[39m
+ [32m✓[39m src/services/__tests__/carrierRateEngine.test.js [2m([22m[2m3 tests[22m[2m)[22m[33m 1101[2mms[22m[39m
+     [33m[2m✓[22m[39m should recommend smartest carrier [33m 515[2mms[22m[39m
+     [33m[2m✓[22m[39m should merge live rates if credentials exist [33m 518[2mms[22m[39m
+[90mstdout[2m | src/services/__tests__/shipmentService.test.js[2m > [22m[2mshipmentService[2m > [22m[2mshould create a forward shipment (Simulation Fallback)
+[22m[39m[ShipmentService] Booking order ORD-123 with delhivery...
+
+[90mstderr[2m | src/services/__tests__/shipmentService.test.js[2m > [22m[2mshipmentService[2m > [22m[2mshould create a forward shipment (Simulation Fallback)
+[22m[39m[ShipmentService] No API keys for delhivery. Using Simulation.
+
+[90mstdout[2m | src/services/__tests__/shipmentService.test.js[2m > [22m[2mshipmentService[2m > [22m[2mshould create a BlueDart shipment with correct prefix
+[22m[39m[ShipmentService] Booking order ORD-123 with bluedart...
+
+[90mstderr[2m | src/services/__tests__/shipmentService.test.js[2m > [22m[2mshipmentService[2m > [22m[2mshould create a BlueDart shipment with correct prefix
+[22m[39m[ShipmentService] No API keys for bluedart. Using Simulation.
+
+ [32m✓[39m src/services/__tests__/shipmentService.test.js [2m([22m[2m4 tests[22m[2m)[22m[33m 5924[2mms[22m[39m
+     [33m[2m✓[22m[39m should create a forward shipment (Simulation Fallback) [33m 1668[2mms[22m[39m
+     [33m[2m✓[22m[39m should create a BlueDart shipment with correct prefix [33m 1706[2mms[22m[39m
+     [33m[2m✓[22m[39m should track a shipment successfully [33m 1685[2mms[22m[39m
+     [33m[2m✓[22m[39m should handle manifest generation [33m 838[2mms[22m[39m
+ [32m✓[39m src/services/__tests__/mlForecast.test.js [2m([22m[2m5 tests[22m[2m)[22m[32m 62[2mms[22m[39m
+[90mstderr[2m | src/services/__tests__/whatsappService.test.js[2m > [22m[2mWhatsAppService[2m > [22m[2mshould initialize in simulation mode without credentials
+[22m[39m⚠️ WhatsApp Service running in SIMULATION MODE (Missing Credentials)
+
+[90mstdout[2m | src/services/__tests__/whatsappService.test.js[2m > [22m[2mWhatsAppService[2m > [22m[2mshould send message via API in real mode
+[22m[39m[WhatsApp API] Payload: {
+  "messaging_product": "whatsapp",
+  "to": "919876543210",
+  "type": "template",
+  "template": {
+    "name": "confirmed",
+    "language": {
+      "code": "en_US"
+    },
+    "components": [
+      {
+        "type": "body",
+        "parameters": [
+          {
+            "type": "text",
+            "text": "100"
+          }
+        ]
+      }
+    ]
+  }
+}
+
+[90mstdout[2m | src/services/__tests__/whatsappService.test.js[2m > [22m[2mWhatsAppService[2m > [22m[2mshould fall back to simulation if credentials missing
+[22m[39m[SIMULATION] Sending WhatsApp to 919876543210 (Template: confirmed) {}
+
+[90mstderr[2m | src/services/__tests__/whatsappService.test.js[2m > [22m[2mWhatsAppService[2m > [22m[2mshould fall back to simulation if credentials missing
+[22m[39m⚠️ WhatsApp Service running in SIMULATION MODE (Missing Credentials)
+
+ [32m✓[39m src/services/__tests__/whatsappService.test.js [2m([22m[2m5 tests[22m[2m)[22m[32m 50[2mms[22m[39m
+ [32m✓[39m src/services/__tests__/rtoService.test.js [2m([22m[2m7 tests[22m[2m)[22m[32m 38[2mms[22m[39m
+[90mstdout[2m | src/tests/utils.test.js[2m > [22m[2mData Utils[2m > [22m[2mdeduplicateOrders[2m > [22m[2mshould merge duplicate orders
+[22m[39m[Dedupe] Orders processed in 0.69ms
+
+ [32m✓[39m src/tests/utils.test.js [2m([22m[2m23 tests[22m[2m)[22m[32m 207[2mms[22m[39m
+[90mstderr[2m | src/tests/integration.test.js
+[22m[39m⚠️ Zoho CRM running in OFFLINE MODE (missing credentials)
+
+[90mstderr[2m | src/services/__tests__/rto_automation.test.jsx
+[22m[39m⚠️ Zoho CRM running in OFFLINE MODE (missing credentials)
+
+[90mstdout[2m | src/tests/integration.test.js[2m > [22m[2mOrder Flow Integration[2m > [22m[2mOrder Deduplication[2m > [22m[2mshould merge orders with same external ID
+[22m[39m[Dedupe] Orders processed in 0.02ms
+
+[90mstdout[2m | src/tests/integration.test.js[2m > [22m[2mOrder Flow Integration[2m > [22m[2mOrder Deduplication[2m > [22m[2mshould preserve unique orders
+[22m[39m[Dedupe] Orders processed in 0.01ms
+
+[90mstdout[2m | src/services/__tests__/whatsappIntegration.test.js[2m > [22m[2mWhatsApp Integration (Meta Graph API)[2m > [22m[2mshould build correct payload for Graph API
+[22m[39m[WhatsApp API] Payload: {
+  "messaging_product": "whatsapp",
+  "to": "919876543210",
+  "type": "template",
+  "template": {
+    "name": "hello_world",
+    "language": {
+      "code": "en_US"
+    },
+    "components": []
+  }
+}
+
+[90mstdout[2m | src/services/__tests__/whatsappIntegration.test.js[2m > [22m[2mWhatsApp Integration (Meta Graph API)[2m > [22m[2mshould handle complex template parameters
+[22m[39m[WhatsApp API] Payload: {
+  "messaging_product": "whatsapp",
+  "to": "919876543210",
+  "type": "template",
+  "template": {
+    "name": "order_update",
+    "language": {
+      "code": "en_US"
+    },
+    "components": [
+      {
+        "type": "header",
+        "parameters": [
+          {
+            "type": "text",
+            "text": "Invoice #123"
+          }
+        ]
+      },
+      {
+        "type": "body",
+        "parameters": [
+          {
+            "type": "text",
+            "text": "John Doe"
+          },
+          {
+            "type": "text",
+            "text": "Rs. 500"
+          }
+        ]
+      }
+    ]
+  }
+}
+
+[90mstdout[2m | src/services/__tests__/whatsappIntegration.test.js[2m > [22m[2mWhatsApp Integration (Meta Graph API)[2m > [22m[2mshould throw specific error for invalid token (Code 190)
+[22m[39m[WhatsApp API] Payload: {
+  "messaging_product": "whatsapp",
+  "to": "919876543210",
+  "type": "template",
+  "template": {
+    "name": "test",
+    "language": {
+      "code": "en_US"
+    },
+    "components": []
+  }
+}
+
+[90mstderr[2m | src/services/__tests__/whatsappIntegration.test.js[2m > [22m[2mWhatsApp Integration (Meta Graph API)[2m > [22m[2mshould throw specific error for invalid token (Code 190)
+[22m[39mWhatsApp API Error (401): Invalid OAuth access token.
+WhatsApp send failed: Error: Authentication Failed: Invalid or expired access token.
+    at WhatsAppService.sendWhatsAppMessage [90m(/Users/anandinisingh/Downloads/webdev2/ots-webapp/[39msrc/services/whatsappService.js:121:17[90m)[39m
+[90m    at processTicksAndRejections (node:internal/process/task_queues:103:5)[39m
+    at [90m/Users/anandinisingh/Downloads/webdev2/ots-webapp/[39msrc/services/__tests__/whatsappIntegration.test.js:66:20
+    at [90mfile:///Users/anandinisingh/Downloads/webdev2/ots-webapp/[39mnode_modules/[4m@vitest/runner[24m/dist/index.js:915:20
+
+[90mstdout[2m | src/services/__tests__/whatsappIntegration.test.js[2m > [22m[2mWhatsApp Integration (Meta Graph API)[2m > [22m[2mshould handle 24-hour window policy (Code 131030)
+[22m[39m[WhatsApp API] Payload: {
+  "messaging_product": "whatsapp",
+  "to": "919876543210",
+  "type": "template",
+  "template": {
+    "name": "test",
+    "language": {
+      "code": "en_US"
+    },
+    "components": []
+  }
+}
+
+[90mstderr[2m | src/services/__tests__/whatsappIntegration.test.js[2m > [22m[2mWhatsApp Integration (Meta Graph API)[2m > [22m[2mshould handle 24-hour window policy (Code 131030)
+[22m[39mWhatsApp API Error (400): Message failed to send.
+24-hour window closed. Fallback recommended.
+WhatsApp send failed: Error: Message failed: 24-hour customer service window is closed.
+    at WhatsAppService.sendWhatsAppMessage [90m(/Users/anandinisingh/Downloads/webdev2/ots-webapp/[39msrc/services/whatsappService.js:125:17[90m)[39m
+[90m    at processTicksAndRejections (node:internal/process/task_queues:103:5)[39m
+    at [90m/Users/anandinisingh/Downloads/webdev2/ots-webapp/[39msrc/services/__tests__/whatsappIntegration.test.js:80:20
+    at [90mfile:///Users/anandinisingh/Downloads/webdev2/ots-webapp/[39mnode_modules/[4m@vitest/runner[24m/dist/index.js:915:20
+
+ [32m✓[39m src/tests/integration.test.js [2m([22m[2m13 tests[22m[2m)[22m[32m 47[2mms[22m[39m
+ [32m✓[39m src/services/__tests__/whatsappIntegration.test.js [2m([22m[2m4 tests[22m[2m)[22m[32m 107[2mms[22m[39m
+ [32m✓[39m src/services/__tests__/reverseLogisticsService.test.js [2m([22m[2m5 tests[22m[2m)[22m[32m 58[2mms[22m[39m
+[90mstdout[2m | src/services/__tests__/carrierOptimizer.test.js[2m > [22m[2mcarrierOptimizer AI Scoring (Phase 35)[2m > [22m[2mshould select the cheapest carrier for standard orders with same SLA
+[22m[39m[Optimizer] Hub Route Selected: XpressBees (Score: 60.7)
+
+[90mstdout[2m | src/services/__tests__/carrierOptimizer.test.js[2m > [22m[2mcarrierOptimizer AI Scoring (Phase 35)[2m > [22m[2mshould penalize degraded carriers (AI Safety Net)
+[22m[39m[Optimizer] Hub Route Selected: Delhivery (Score: 88)
+
+[90mstdout[2m | src/services/__tests__/carrierOptimizer.test.js[2m > [22m[2mcarrierOptimizer AI Scoring (Phase 35)[2m > [22m[2mshould favor BlueDart for fast SLA in metro zones
+[22m[39m[Optimizer] Hub Route Selected: BlueDart (Score: 100)
+
+ [32m✓[39m src/services/__tests__/carrierOptimizer.test.js [2m([22m[2m4 tests[22m[2m)[22m[32m 114[2mms[22m[39m
+ [32m✓[39m src/services/__tests__/pickingRoute.test.js [2m([22m[2m3 tests[22m[2m)[22m[33m 352[2mms[22m[39m
+     [33m[2m✓[22m[39m should calculate a Snake Path correctly (even aisles reversed) [33m 332[2mms[22m[39m
+ [32m✓[39m src/services/rtoService.test.js [2m([22m[2m4 tests[22m[2m)[22m[32m 66[2mms[22m[39m
+ [32m✓[39m src/services/__tests__/reverseLogistics.test.js [2m([22m[2m4 tests[22m[2m)[22m[32m 46[2mms[22m[39m
+ [32m✓[39m src/services/__tests__/InventoryOptimizer.test.js [2m([22m[2m3 tests[22m[2m)[22m[32m 35[2mms[22m[39m
+ [32m✓[39m src/services/__tests__/warehouseOptimizer.test.js [2m([22m[2m5 tests[22m[2m)[22m[32m 31[2mms[22m[39m
+ [32m✓[39m src/services/__tests__/vrpSolver.test.js [2m([22m[2m3 tests[22m[2m)[22m[32m 37[2mms[22m[39m
+ [32m✓[39m src/services/__tests__/orderStateMachine.test.js [2m([22m[2m8 tests[22m[2m)[22m[32m 58[2mms[22m[39m
+ [32m✓[39m src/services/__tests__/returnsAggregatorService.test.js [2m([22m[2m2 tests[22m[2m)[22m[32m 140[2mms[22m[39m
+ [32m✓[39m src/services/__tests__/rbac_wholesale.test.js [2m([22m[2m6 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+[90mstdout[2m | src/services/__tests__/rto_automation.test.jsx[2m > [22m[2mRTO Automation & Webhooks[2m > [22m[2mshould auto-hold HIGH risk COD orders
+[22m[39m[Bluewud-AI] 🔄 Synchronizing with Global Nodes...
+[Zoho] 🔄 Fetching SKU Master from CRM...
+[Push] Notification service initialized
+[Push] Notification service initialized
+
+[90mstderr[2m | src/services/__tests__/rto_automation.test.jsx[2m > [22m[2mRTO Automation & Webhooks[2m > [22m[2mshould auto-hold HIGH risk COD orders
+[22m[39m[OfflineCache] indexedDB not available. Falling back to in-memory storage.
+[Zoho] ⚠️ Offline mode - using seed data
+Push Notifications not supported in this browser
+Push Notifications not supported in this browser
+
+[90mstdout[2m | src/services/__tests__/rto_automation.test.jsx[2m > [22m[2mRTO Automation & Webhooks[2m > [22m[2mshould auto-hold HIGH risk COD orders
+[22m[39m[Bluewud-AI] ✅ Core systems ready
+
+[90mstdout[2m | src/services/__tests__/rto_automation.test.jsx[2m > [22m[2mRTO Automation & Webhooks[2m > [22m[2mshould auto-hold HIGH risk COD orders
+[22m[39mLazy initializing WhatsApp Service...
+[SIMULATION] Sending WhatsApp to 919888888888 (Template: order_confirmation) { orderId: [32m'BW-MJYX5PF0IRPI'[39m, customer: [32m'Risk User'[39m }
+[SIMULATION] Sending WhatsApp to 919888888888 (Template: order_confirmation) { orderId: [32m'BW-MJYX5PF0IRPI'[39m, customer: [32m'Risk User'[39m }
+
+[90mstderr[2m | src/services/__tests__/rto_automation.test.jsx[2m > [22m[2mRTO Automation & Webhooks[2m > [22m[2mshould auto-hold HIGH risk COD orders
+[22m[39m⚠️ WhatsApp Service running in SIMULATION MODE (Missing Credentials)
+Push Notifications not supported in this environment
+
+[90mstdout[2m | src/services/__tests__/rto_automation.test.jsx[2m > [22m[2mRTO Automation & Webhooks[2m > [22m[2mshould auto-hold HIGH risk COD orders
+[22m[39m[AddOrder] Adding order BW-MJYX5PF0IRPI for Risk User
+[Dedupe] Orders processed in 3.23ms
+[Dedupe] Customers processed in 0.03ms
+
+[90mstdout[2m | src/services/__tests__/rto_automation.test.jsx[2m > [22m[2mRTO Automation & Webhooks[2m > [22m[2mshould allow LOW risk COD orders to be Pending
+[22m[39m[Bluewud-AI] 🔄 Synchronizing with Global Nodes...
+[Zoho] 🔄 Fetching SKU Master from CRM...
+[Push] Notification service initialized
+[Push] Notification service initialized
+
+[90mstderr[2m | src/services/__tests__/rto_automation.test.jsx[2m > [22m[2mRTO Automation & Webhooks[2m > [22m[2mshould allow LOW risk COD orders to be Pending
+[22m[39m[OfflineCache] indexedDB not available. Falling back to in-memory storage.
+[Zoho] ⚠️ Offline mode - using seed data
+Push Notifications not supported in this browser
+Push Notifications not supported in this browser
+
+[90mstdout[2m | src/services/__tests__/rto_automation.test.jsx[2m > [22m[2mRTO Automation & Webhooks[2m > [22m[2mshould allow LOW risk COD orders to be Pending
+[22m[39m[Bluewud-AI] ✅ Core systems ready
+
+[90mstdout[2m | src/services/__tests__/rto_automation.test.jsx[2m > [22m[2mRTO Automation & Webhooks[2m > [22m[2mshould allow LOW risk COD orders to be Pending
+[22m[39m[SIMULATION] Sending WhatsApp to 919777777777 (Template: order_confirmation) { orderId: [32m'BW-MJYX5PHVGFAX'[39m, customer: [32m'Safe User'[39m }
+[SIMULATION] Sending WhatsApp to 919777777777 (Template: order_confirmation) { orderId: [32m'BW-MJYX5PHVGFAX'[39m, customer: [32m'Safe User'[39m }
+
+[90mstderr[2m | src/services/__tests__/rto_automation.test.jsx[2m > [22m[2mRTO Automation & Webhooks[2m > [22m[2mshould allow LOW risk COD orders to be Pending
+[22m[39mPush Notifications not supported in this environment
+
+[90mstdout[2m | src/services/__tests__/rto_automation.test.jsx[2m > [22m[2mRTO Automation & Webhooks[2m > [22m[2mshould allow LOW risk COD orders to be Pending
+[22m[39m[AddOrder] Adding order BW-MJYX5PHVGFAX for Safe User
+[Dedupe] Orders processed in 0.04ms
+[Dedupe] Customers processed in 0.00ms
+
+[90mstdout[2m | src/services/__tests__/rto_automation.test.jsx[2m > [22m[2mRTO Automation & Webhooks[2m > [22m[2mshould map external RTO webhook events correctly
+[22m[39m[Zoho Webhook] update on shipment: {
+  status: [32m'undelivered'[39m,
+  reason: [32m'Customer cancelled order at doorstep'[39m
+}
+
+ [32m✓[39m src/services/__tests__/rto_automation.test.jsx [2m([22m[2m3 tests[22m[2m)[22m[33m 947[2mms[22m[39m
+     [33m[2m✓[22m[39m should auto-hold HIGH risk COD orders [33m 843[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m25 passed[39m[22m[90m (25)[39m
+[2m      Tests [22m [1m[32m149 passed[39m[22m[90m (149)[39m
+[2m   Start at [22m 04:42:34
+[2m   Duration [22m 69.51s[2m (transform 161.80s, setup 21.26s, import 211.74s, tests 17.10s, environment 41.81s)[22m
+
+[34m % [39m[2mCoverage report from [22m[33mv8[39m
+-------------------|---------|----------|---------|---------|-------------------
+File               | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
+-------------------|---------|----------|---------|---------|-------------------
+All files          |   50.79 |    43.13 |   42.99 |   52.54 |                   
+ context           |   42.97 |    36.08 |   28.26 |   45.93 |                   
+  DataContext.jsx  |   42.97 |    36.08 |   28.26 |   45.93 | ...1217-1271,1295 
+ data              |     100 |      100 |     100 |     100 |                   
+  skuMasterData.js |     100 |      100 |     100 |     100 |                   
+  warehouseData.js |     100 |      100 |     100 |     100 |                   
+ services          |   50.68 |    41.95 |   46.02 |   52.03 |                   
+  ...yOptimizer.js |   88.88 |    72.72 |   66.66 |     100 | 21-26,41          
+  ...icsService.js |    8.95 |        0 |       0 |   10.43 | ...29-236,243-266 
+  ...artAdapter.js |   33.33 |      100 |       0 |   33.33 | 17-35,52          
+  ...rOptimizer.js |   65.75 |     65.3 |      70 |   66.15 | ...06,152-188,204 
+  ...RateEngine.js |   79.86 |    61.05 |   83.33 |   80.15 | ...58-459,479-484 
+  dealerService.js |   52.94 |       30 |      50 |   64.28 | 52-62             
+  ...eryAdapter.js |   12.12 |        0 |       0 |   13.33 | ...41-100,110-128 
+  ...astService.js |    6.12 |        0 |       0 |    7.31 | ...7,78-84,95-102 
+  ...nalService.js |      50 |    28.57 |   33.33 |      50 | 41-50,60-70       
+  ...ingService.js |   77.77 |    77.77 |      80 |   78.12 | ...-46,93,108-110 
+  ...intService.js |    7.35 |        0 |    8.33 |    7.57 | 21-228            
+  ...ionService.js |   33.33 |    10.52 |    12.5 |      36 | ...35,149-150,162 
+  ...ionService.js |   60.86 |       75 |   33.33 |   66.66 | 42,51,69-79       
+  ...aceService.js |   68.75 |    64.86 |   72.72 |   73.17 | ...,73-79,144-145 
+  ...astService.js |   85.21 |    61.36 |   88.46 |      86 | ...32-242,258-265 
+  ...ionService.js |   36.98 |    23.52 |    8.69 |    40.9 | ...65,269,278,287 
+  ...cheService.js |   24.62 |    42.42 |   22.22 |   25.86 | ...31-154,166-224 
+  ...ateMachine.js |   77.77 |    72.41 |     100 |   77.96 | ...67,197,238,244 
+  ...uteService.js |   79.06 |    65.71 |   77.77 |   82.92 | 17,82-89          
+  ...ionService.js |   21.59 |    21.95 |   23.52 |   21.17 | ...80-303,316-317 
+  ...Middleware.js |      75 |    66.66 |      50 |   72.72 | 80-83             
+  ...torService.js |   83.33 |      100 |   83.33 |      85 | 76-79             
+  ...icsService.js |   41.81 |       56 |    87.5 |   40.74 | 108-159           
+  rtoService.js    |   73.56 |    59.42 |   53.33 |   77.33 | ...73,115-122,143 
+  searchService.js |   11.82 |        0 |       0 |   14.28 | ...06-217,227-231 
+  ...entService.js |   76.19 |       75 |    87.5 |    75.6 | ...,77-78,143-144 
+  ...intService.js |   15.38 |     2.32 |   16.66 |   15.38 | 21-141            
+  visionService.js |      88 |       50 |    87.5 |   85.71 | 35,72,109         
+  ...verService.js |   92.85 |    78.94 |     100 |   93.75 | 69-71             
+  ...eOptimizer.js |   76.92 |    69.69 |   83.33 |   76.92 | 18-35,51,63       
+  ...appService.js |   83.83 |    74.54 |      75 |   86.36 | ...76,242,250-251 
+  ...aleService.js |      50 |       20 |      50 |      50 | 35-54             
+  ...dgeService.js |   20.25 |    14.28 |      20 |   20.54 | 32-69,85-219      
+  ...ookService.js |   75.75 |    66.66 |      75 |   75.75 | 47-50,84-104      
+ services/carriers |   79.48 |    76.92 |   66.66 |   78.37 |                   
+  ...erStrategy.js |   33.33 |       40 |   16.66 |   33.33 | 8,20-59           
+  ...ierFactory.js |     100 |    83.33 |     100 |     100 | 28,31             
+  ...ryStrategy.js |    87.5 |    88.88 |     100 |   86.66 | 42-43             
+ utils             |   61.36 |    51.15 |   51.06 |   63.67 |                   
+  ...rcialUtils.js |   56.66 |    33.33 |   16.66 |   65.38 | 82-100,110-111    
+  dataUtils.js     |   78.62 |     61.9 |    62.5 |   80.91 | ...62-364,450-452 
+  securityUtils.js |   34.83 |    14.63 |   47.05 |   33.76 | ...36,147-160,167 
+-------------------|---------|----------|---------|---------|-------------------

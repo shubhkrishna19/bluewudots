@@ -179,27 +179,35 @@ export const transitionOrder = async (order, newStatus, metadata = {}) => {
  * @param {object[]} orders - Array of orders
  * @param {string} newStatus - Target status
  * @param {object} metadata - Additional metadata
- * @returns {object} - Results with success/failure counts
+ * @returns {Promise<object>} - Results with success/failure counts
  */
-export const bulkTransition = (orders, newStatus, metadata = {}) => {
+export const bulkTransition = async (orders, newStatus, metadata = {}) => {
   const results = {
     successful: [],
     failed: [],
     totalAttempted: orders.length,
   }
 
-  orders.forEach((order) => {
-    const result = transitionOrder(order, newStatus, metadata)
-    if (result.success) {
-      results.successful.push(result.order)
-    } else {
+  const promises = orders.map(async (order) => {
+    try {
+      const result = await transitionOrder(order, newStatus, metadata)
+      if (result.success) {
+        results.successful.push(result.order)
+      } else {
+        results.failed.push({
+          orderId: order.id,
+          error: result.error,
+        })
+      }
+    } catch (error) {
       results.failed.push({
         orderId: order.id,
-        error: result.error,
-        validOptions: result.validOptions,
+        error: error.message,
       })
     }
   })
+
+  await Promise.all(promises)
 
   return results
 }

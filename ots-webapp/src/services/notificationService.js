@@ -1,4 +1,4 @@
-import whatsappService from './whatsappService'
+import { getWhatsAppService } from './whatsappService'
 import pushNotificationService from './pushNotificationService'
 
 /**
@@ -190,7 +190,10 @@ export const notifyOrderCreated = (order) => {
   })
 
   // Send WhatsApp Confirmation
-  whatsappService.sendOrderConfirmation(order)
+  getWhatsAppService().sendWhatsAppMessage(order.id, 'order_confirmation', order.phone, {
+    orderId: order.id,
+    customer: order.customerName,
+  })
 
   // Browser Push
   pushNotificationService.sendNotification(`New Order: ${order.id}`, {
@@ -209,7 +212,10 @@ export const notifyOrderShipped = (order) => {
   })
 
   // WhatsApp Update
-  whatsappService.sendShippingUpdate(order)
+  getWhatsAppService().sendWhatsAppMessage(order.id, 'shipping_update', order.phone, {
+    orderId: order.id,
+    status: 'Shipped',
+  })
 
   // Browser Push
   pushNotificationService.sendNotification(`Order Shipped: ${order.id}`, {
@@ -228,7 +234,9 @@ export const notifyOrderDelivered = (order) => {
   })
 
   // WhatsApp Update
-  whatsappService.sendDeliveryConfirmation(order)
+  getWhatsAppService().sendWhatsAppMessage(order.id, 'delivery_confirmation', order.phone, {
+    orderId: order.id,
+  })
 
   // Browser Push
   pushNotificationService.sendNotification(`Order Delivered: ${order.id}`, {
@@ -247,7 +255,9 @@ export const notifyOrderRTO = (order, reason) => {
   })
 
   // WhatsApp Update
-  whatsappService.sendRTOAlert(order)
+  getWhatsAppService().sendWhatsAppMessage(order.id, 'rto_alert', order.phone, {
+    orderId: order.id,
+  })
 
   // Browser Push
   pushNotificationService.sendNotification(`RTO Alert: ${order.id}`, { body: `Reason: ${reason}` })

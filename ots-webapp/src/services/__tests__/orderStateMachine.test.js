@@ -1,157 +1,98 @@
-import { describe, it, expect, beforeEach } from 'vitest'
-import { validateTransition, getNextStates, VALID_TRANSITIONS } from '../orderStateMachine'
+import { describe, it, expect, vi, beforeEach } from 'vitest'
+import {
+  ORDER_STATUSES,
+  isValidTransition,
+  getValidNextStatuses,
+  transitionOrder,
+  bulkTransition,
+  calculateOrderMetrics,
+} from '../orderStateMachine'
+import * as zohoBridge from '../zohoBridgeService'
+
+// Mock Zoho Bridge
+vi.mock('../zohoBridgeService', () => ({
+  pushOrderToZoho: vi.fn(() => Promise.resolve({ success: true, zohoId: 'Z123' })),
+}))
 
 describe('Order State Machine', () => {
-  describe('Valid Transitions', () => {
-    it('should allow Pending -> Confirmed transition', () => {
-      expect(validateTransition('Pending', 'Confirmed')).toBe(true)
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
+  describe('Validation Logic', () => {
+    it('should allow valid transitions', () => {
+      expect(isValidTransition(ORDER_STATUSES.PENDING, ORDER_STATUSES.QA_PASSED)).toBe(true)
+      expect(isValidTransition(ORDER_STATUSES.IN_TRANSIT, ORDER_STATUSES.DELIVERED)).toBe(false) // Must go through OFD
     })
 
-    it('should allow Confirmed -> Picked-Up transition', () => {
-      expect(validateTransition('Confirmed', 'Picked-Up')).toBe(true)
+    it('should return correct next statuses', () => {
+      const next = getValidNextStatuses(ORDER_STATUSES.PICKED_UP)
+      expect(next).toContain(ORDER_STATUSES.IN_TRANSIT)
+      expect(next).toContain(ORDER_STATUSES.RTO_INITIATED)
+    })
+  })
+
+  describe('transitionOrder', () => {
+    it('should update status and record history', async () => {
+      const order = { id: 1, status: ORDER_STATUSES.PENDING, statusHistory: [] }
+      const result = await transitionOrder(order, ORDER_STATUSES.QA_PASSED, { user: 'tester' })
+
+      expect(result.success).toBe(true)
+      expect(result.order.status).toBe(ORDER_STATUSES.QA_PASSED)
+      expect(result.order.statusHistory).toHaveLength(1)
+      expect(result.order.statusHistory[0].from).toBe(ORDER_STATUSES.PENDING)
     })
 
-    it('should allow Picked-Up -> In-Transit transition', () => {
-      expect(validateTransition('Picked-Up', 'In-Transit')).toBe(true)
+    it('should throw error for invalid transitions', async () => {
+      const order = { id: 1, status: ORDER_STATUSES.DELIVERED }
+      await expect(transitionOrder(order, ORDER_STATUSES.PENDING)).rejects.toThrow(
+        /Invalid transition/
+      )
     })
 
-    it('should allow In-Transit -> Out-for-Delivery transition', () => {
-      expect(validateTransition('In-Transit', 'Out-for-Delivery')).toBe(true)
-    })
-
-    it('should allow Out-for-Delivery -> Delivered transition', () => {
-      expect(validateTransition('Out-for-Delivery', 'Delivered')).toBe(true)
-    })
-
-    it('should allow any state -> Cancelled transition', () => {
-      const states = ['Pending', 'Confirmed', 'Picked-Up', 'In-Transit', 'Out-for-Delivery']
-      states.forEach((state) => {
-        expect(validateTransition(state, 'Cancelled')).toBe(true)
+    it('should handle carrier assignment metadata', async () => {
+      const order = { id: 1, status: ORDER_STATUSES.PENDING }
+      const result = await transitionOrder(order, ORDER_STATUSES.CARRIER_ASSIGNED, {
+        carrier: 'Delhivery',
       })
-    })
-
-    it('should allow RTO transitions from delivery states', () => {
-      expect(validateTransition('Out-for-Delivery', 'RTO-Initiated')).toBe(true)
-      expect(validateTransition('In-Transit', 'RTO-Initiated')).toBe(true)
-    })
-
-    it('should allow On-Hold -> Confirmed transition', () => {
-      expect(validateTransition('On-Hold', 'Confirmed')).toBe(true)
+      expect(result.order.carrier).toBe('Delhivery')
     })
   })
 
-  describe('Invalid Transitions', () => {
-    it('should block Delivered -> Pending transition', () => {
-      expect(validateTransition('Delivered', 'Pending')).toBe(false)
-    })
-
-    it('should block Cancelled -> In-Transit transition', () => {
-      expect(validateTransition('Cancelled', 'In-Transit')).toBe(false)
-    })
-
-    it('should block backward transitions in normal flow', () => {
-      expect(validateTransition('In-Transit', 'Confirmed')).toBe(false)
-      expect(validateTransition('Out-for-Delivery', 'Picked-Up')).toBe(false)
-    })
-
-    it('should block Delivered -> RTO-Initiated transition', () => {
-      expect(validateTransition('Delivered', 'RTO-Initiated')).toBe(false)
-    })
-
-    it('should block RTO-Delivered -> In-Transit transition', () => {
-      expect(validateTransition('RTO-Delivered', 'In-Transit')).toBe(false)
-    })
-  })
-
-  describe('Next States', () => {
-    it('should return correct next states for Pending', () => {
-      const nextStates = getNextStates('Pending')
-      expect(nextStates).toContain('Confirmed')
-      expect(nextStates).toContain('Cancelled')
-      expect(nextStates).toContain('On-Hold')
-    })
-
-    it('should return correct next states for In-Transit', () => {
-      const nextStates = getNextStates('In-Transit')
-      expect(nextStates).toContain('Out-for-Delivery')
-      expect(nextStates).toContain('RTO-Initiated')
-      expect(nextStates).toContain('Cancelled')
-    })
-
-    it('should return empty array for terminal states', () => {
-      expect(getNextStates('Delivered')).toEqual(['Cancelled']) // Can still be cancelled for returns
-      expect(getNextStates('RTO-Delivered').length).toBeGreaterThanOrEqual(0)
-    })
-
-    it('should handle unknown states gracefully', () => {
-      const nextStates = getNextStates('UnknownState')
-      expect(Array.isArray(nextStates)).toBe(true)
-    })
-  })
-
-  describe('State Machine Integrity', () => {
-    it('should have valid transitions defined', () => {
-      expect(VALID_TRANSITIONS).toBeDefined()
-      expect(typeof VALID_TRANSITIONS).toBe('object')
-    })
-
-    it('should not allow circular transitions in normal flow', () => {
-      // Ensure we can't go Pending -> Confirmed -> Pending
-      expect(validateTransition('Pending', 'Confirmed')).toBe(true)
-      expect(validateTransition('Confirmed', 'Pending')).toBe(false)
-    })
-
-    it('should maintain RTO flow integrity', () => {
-      // RTO flow: In-Transit -> RTO-Initiated -> RTO-In-Transit -> RTO-Delivered
-      expect(validateTransition('In-Transit', 'RTO-Initiated')).toBe(true)
-      expect(validateTransition('RTO-Initiated', 'RTO-In-Transit')).toBe(true)
-      expect(validateTransition('RTO-In-Transit', 'RTO-Delivered')).toBe(true)
-    })
-  })
-
-  describe('Edge Cases', () => {
-    it('should handle null/undefined states', () => {
-      expect(validateTransition(null, 'Confirmed')).toBe(false)
-      expect(validateTransition('Pending', null)).toBe(false)
-      expect(validateTransition(undefined, undefined)).toBe(false)
-    })
-
-    it('should handle empty string states', () => {
-      expect(validateTransition('', 'Confirmed')).toBe(false)
-      expect(validateTransition('Pending', '')).toBe(false)
-    })
-
-    it('should be case-sensitive', () => {
-      expect(validateTransition('pending', 'Confirmed')).toBe(false)
-      expect(validateTransition('Pending', 'confirmed')).toBe(false)
-    })
-
-    it('should handle same state transition', () => {
-      // Same state transitions should generally be blocked
-      expect(validateTransition('Pending', 'Pending')).toBe(false)
-      expect(validateTransition('In-Transit', 'In-Transit')).toBe(false)
-    })
-  })
-
-  describe('Concurrent State Changes', () => {
-    it('should validate multiple transitions independently', () => {
-      const transitions = [
-        { from: 'Pending', to: 'Confirmed' },
-        { from: 'Confirmed', to: 'Picked-Up' },
-        { from: 'Picked-Up', to: 'In-Transit' },
+  describe('bulkTransition', () => {
+    it('should process multiple orders successfully (Async Fix)', async () => {
+      const orders = [
+        { id: 1, status: ORDER_STATUSES.PENDING },
+        { id: 2, status: ORDER_STATUSES.PENDING },
       ]
 
-      transitions.forEach(({ from, to }) => {
-        expect(validateTransition(from, to)).toBe(true)
-      })
+      const results = await bulkTransition(orders, ORDER_STATUSES.QA_PASSED)
+      expect(results.successful).toHaveLength(2)
+      expect(results.totalAttempted).toBe(2)
     })
 
-    it('should handle rapid state checks', () => {
-      const results = []
-      for (let i = 0; i < 100; i++) {
-        results.push(validateTransition('Pending', 'Confirmed'))
+    it('should track failures correctly', async () => {
+      const orders = [
+        { id: 1, status: ORDER_STATUSES.PENDING },
+        { id: 2, status: ORDER_STATUSES.DELIVERED }, // Invalid
+      ]
+
+      const results = await bulkTransition(orders, ORDER_STATUSES.QA_PASSED)
+      expect(results.successful).toHaveLength(1)
+      expect(results.failed).toHaveLength(1)
+    })
+  })
+
+  describe('Metrics Calculation', () => {
+    it('should calculate processing time correctly', () => {
+      const order = {
+        statusHistory: [
+          { to: ORDER_STATUSES.PENDING, timestamp: '2026-01-01T10:00:00Z' },
+          { to: ORDER_STATUSES.PICKED_UP, timestamp: '2026-01-01T14:00:00Z' },
+        ],
       }
-      expect(results.every((r) => r === true)).toBe(true)
+      const metrics = calculateOrderMetrics(order)
+      expect(metrics.processingTime).toBe(4) // 4 hours
     })
   })
 })

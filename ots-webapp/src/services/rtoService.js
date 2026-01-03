@@ -1,33 +1,7 @@
 /**
- * RTO Service
- * Intelligence layer for predicting Return-to-Origin (RTO) risk.
- * Analysis based on payment method, pincode history, and customer behavior.
+ * RTO Risk Prediction Service
+ * Analyzes order patterns to predict Return-To-Origin (RTO) probability
  */
-
-// Enhanced Risk Database
-const RISK_FACTORS = {
-  PINCODES: {
-    110001: { risk: 0.15, zone: 'Delhi' },
-    400001: { risk: 0.12, zone: 'Mumbai' },
-    560001: { risk: 0.1, zone: 'Bangalore' },
-    800001: { risk: 0.65, zone: 'Patna' }, // High Risk
-    700001: { risk: 0.55, zone: 'Kolkata' }, // High Risk
-    600001: { risk: 0.2, zone: 'Chennai' },
-    201301: { risk: 0.45, zone: 'Noida' }, // Med Risk
-    122001: { risk: 0.4, zone: 'Gurgaon' }, // Med Risk
-    248001: { risk: 0.6, zone: 'Dehradun (Remote)' },
-  },
-  PAYMENT_METHODS: {
-    cod: 40,
-    prepaid: 0,
-    upi: 5,
-    credit_card: 2,
-  },
-  ORDER_VALUE_THRESHOLDS: {
-    HIGH: 15000,
-    CRITICAL: 50000,
-  },
-}
 
 export const RTORiskLevels = {
   LOW: 'LOW',
@@ -36,207 +10,155 @@ export const RTORiskLevels = {
   CRITICAL: 'CRITICAL',
 }
 
+const HIGH_RISK_PINCODES = ['800001', '800002']
+const SAFE_PINCODES = ['560001', '110001']
+const HIGH_RISK_STATES = ['Bihar', 'Uttar Pradesh', 'Jharkhand']
+
 class RTOService {
-  /**
-   * Predicts RTO risk score (0 to 100)
-   * @param {Object} order - Order object
-   * @param {Object} history - Customer history (optional)
-   * @returns {Object} { score, riskLevel, reasons, financialImpact }
-   */
-  predictRisk(order, history = null) {
+  predictRisk(order, history = []) {
     let score = 0
     const reasons = []
 
-    // 1. Payment Method Risk
-    const paymentMethod = order.paymentMethod?.toLowerCase() || 'cod'
-    const paymentRisk = RISK_FACTORS.PAYMENT_METHODS[paymentMethod] || 40
-    if (paymentMethod === 'cod') {
+    // 1. Payment Method
+    if (order.paymentMethod === 'COD' || order.paymentMode === 'COD') {
       score += 40
       reasons.push('COD Payment Factor')
     }
 
-    // 2. Location Analysis (Pincode & State Risk)
-    const pincodeData =
-      RISK_FACTORS.PINCODES[order.pincode] || RISK_FACTORS.PINCODES[order.shippingAddress?.pincode]
-
-    // Check State if pincode not found directly
-    const state = order.state || order.shippingAddress?.state
-    if (state === 'Uttar Pradesh' || state === 'Bihar' || state === 'West Bengal') {
-      score += 15
-      reasons.push(`High-risk State: ${state}`)
-    }
-
-    if (pincodeData) {
-      if (pincodeData.risk > 0.5) {
-        score += 30
-        reasons.push(`High-risk zone: ${pincodeData.zone}`)
-      } else if (pincodeData.risk < 0.2) {
-        score -= 10
-      }
-    } else {
-      // Tier 3 logic approximation
-      if (!pincodeData && (state === 'Uttar Pradesh' || state === 'Bihar')) {
-        score += 10
-        reasons.push('Tier 3/Remote Location')
-      }
-    }
-
-    // 3. Order Value Risk
-    const amount = parseFloat(order.amount || order.totalAmount || 0)
-    if (amount > RISK_FACTORS.ORDER_VALUE_THRESHOLDS.CRITICAL) {
+    // 2. Location Analysis
+    if (HIGH_RISK_PINCODES.includes(order.pincode)) {
+      score += 30
+      reasons.push('High-risk zone: Patna')
+    } else if (SAFE_PINCODES.includes(order.pincode)) {
+      score -= 10 // Safe zone deduction
+    } else if (order.state && HIGH_RISK_STATES.includes(order.state)) {
       score += 25
-      reasons.push('Critical Order Value (>50k)')
-    } else if (amount > RISK_FACTORS.ORDER_VALUE_THRESHOLDS.HIGH) {
-      score += 20
-      reasons.push('High value COD order (+20)')
+      reasons.push(`High-risk State: ${order.state}`)
+    } else if (order.shippingAddress?.state && HIGH_RISK_STATES.includes(order.shippingAddress.state)) {
+      score += 25
+      reasons.push(`High-risk State: ${order.shippingAddress.state}`)
     }
 
-    // 4. Customer History (Simulated or Passed)
-    if (history) {
-      const rtoRate = history.rtoCount / history.totalOrders
-      if (rtoRate > 0.3) {
-        score += 30
-        reasons.push(`High Customer RTO rate (${(rtoRate * 100).toFixed(0)}%)`)
-      }
-    } else if (order.customerType === 'NEW') {
+    // 3. Customer History
+    if (order.customerType === 'NEW') {
       score += 15
-      reasons.push('First-time customer')
+      reasons.push('New Customer')
     } else if (order.customerType === 'RETURNING') {
       score -= 20
     }
 
-    // 5. Duplicate Order Check (Simulated)
+    const customerReturns = history.filter((h) => h.status === 'RTO').length
+    if (customerReturns > 0) {
+      score += 20
+      reasons.push(`${customerReturns} Previous RTOs`)
+    }
+
+    // 4. Order Value
+    if (order.amount > 50000) {
+      score += 25
+      reasons.push('Critical Order Value (>50k)')
+    } else if (order.amount > 15000 || order.totalAmount > 15000) {
+      score += 20
+      reasons.push('High Ticket Value (>10k)')
+    }
+
+    // 5. Short Address / Keywords
+    if (order.address && typeof order.address === 'string') {
+      if (order.address.length > 0 && order.address.length < 10) {
+        score += 15
+        reasons.push('Incomplete or short address')
+      }
+      if (order.address.toLowerCase().includes('test') || order.address.toLowerCase().includes('fake')) {
+        score += 40
+        reasons.push('Suspicious address keywords')
+      }
+    }
+
+    // 6. Duplicate Detection
     if (order.isDuplicateCandidate) {
       score += 50
       reasons.push('Potential Duplicate Order')
     }
 
-    // Clamp score
-    score = Math.max(0, Math.min(100, score))
-
-    let riskLevel = RTORiskLevels.LOW
-    if (score >= 70) riskLevel = RTORiskLevels.CRITICAL
-    else if (score >= 50) riskLevel = RTORiskLevels.HIGH
-    else if (score >= 30) riskLevel = RTORiskLevels.MEDIUM
+    // Final clamping
+    score = Math.max(0, Math.min(score, 100))
 
     return {
       score,
-      riskLevel,
-      level: riskLevel, // Alias for component compatibility
+      riskLevel: this.getRiskLevel(score),
       reasons,
-      potentialLoss: this.calculatePotentialLoss(order, score),
-      timestamp: new Date().toISOString(),
     }
   }
 
-  /**
-   * Calculates potential financial loss if RTO occurs
-   * Formula: Shipping Cost (Forward + Reverse) + Packaging + Inventory Holding Cost
-   */
-  calculatePotentialLoss(order, riskScore) {
-    const amount = parseFloat(order.amount || order.totalAmount || 0)
-
-    // Est. Shipping (Avg 2% of value or min 200)
-    let shippingCost = Math.max(200, amount * 0.02)
-
-    // Reverse Logistics is usually 1.5x Forward
-    let reverseCost = shippingCost * 1.5
-
-    // Packaging & Handling
-    let handlingCost = 50
-
-    // Inventory Opportunity Cost (Risk-adjusted)
-    // High risk items block inventory for ~15 days
-    let opportunityCost = amount * 0.015 // 1.5% interest/holding cost
-
-    return Math.round(shippingCost + reverseCost + handlingCost + opportunityCost)
+  getRiskLevel(score) {
+    if (score >= 80) return RTORiskLevels.CRITICAL
+    if (score >= 55) return RTORiskLevels.HIGH
+    if (score >= 30) return RTORiskLevels.MEDIUM
+    return RTORiskLevels.LOW
   }
 
-  /**
-   * Identifies if an order requires manual verification
-   */
+  calculatePotentialLoss(order, riskScore) {
+    const amount = order.amount || 10000
+    const shipping = Math.max(200, amount * 0.02)
+    const reverse = shipping * 1.5
+    const handling = 50
+    const oppCost = amount * 0.015
+    return Math.round(shipping + reverse + handling + oppCost)
+  }
+
   requiresVerification(order) {
     const risk = this.predictRisk(order)
     return risk.score >= 55
   }
 
-  /**
-   * Get comparative metrics for dashboard
-   */
-  getRiskMetrics(orders = []) {
-    const rtoOrders = orders.filter((o) => o.status && o.status.includes('RTO'))
-    const totalOrders = Math.max(1, orders.length)
+  getRiskMetrics(orders) {
+    const total = (orders || []).length
+    if (total === 0) return { avgRiskScore: 0, rtoRate: '0%' }
+
+    const risks = orders.map((o) => this.predictRisk(o))
+    const highRiskCount = risks.filter((r) => r.score >= 55).length
+    const avgScore = risks.reduce((sum, r) => sum + r.score, 0) / total
 
     return {
-      avgRiskScore: 32,
-      rtoRate: ((rtoOrders.length / totalOrders) * 100).toFixed(1) + '%',
-      topRiskZones: ['Patna', 'North East', 'Interior UP'],
-      preventionRate: '24%',
-      capitalAtRisk: this._calculateTotalRisk(orders),
+      avgRiskScore: Math.round(avgScore),
+      rtoRate: ((highRiskCount / total) * 100).toFixed(1) + '%',
+      highRiskCount,
     }
-  }
-
-  _calculateTotalRisk(orders) {
-    return orders
-      .filter((o) => {
-        const risk = this.predictRisk(o)
-        return risk.riskLevel === RTORiskLevels.HIGH || risk.riskLevel === RTORiskLevels.CRITICAL
-      })
-      .reduce((sum, o) => sum + this.calculatePotentialLoss(o, 0), 0)
   }
 }
 
-export const rtoService = new RTOService()
-// User's tests expect 'calculateRtoRisk' (camelCase 'to') and 'analyzeRiskFactors'
-export const calculateRtoRisk = (order, history) => {
-  // Adapter to map test fields to service logic if needed, or update service logic directly.
-  // The tests send: paymentMode, amount, address, quantity.
-  // The service uses: paymentMethod, amount, shippingAddress/pincode.
+const rtoServiceInstance = new RTOService()
 
-  const adaptedOrder = {
-    ...order,
-    paymentMethod: order.paymentMode || order.paymentMethod, // Adapt paymentMode -> paymentMethod
-    amount: order.amount || order.totalAmount, // Adapt amount
-    shippingAddress:
-      typeof order.address === 'string'
-        ? { addressLine1: order.address, state: '', pincode: '' }
-        : order.address, // Adapt address string
+export const calculateRtoRisk = (order, history = []) => {
+  const analysis = rtoServiceInstance.predictRisk(order, history)
+  return {
+    ...analysis,
+    isHighRisk: analysis.score >= 55,
+    recommendation: analysis.score >= 70 ? 'HOLD' : analysis.score >= 40 ? 'VERIFY' : 'PROCEED',
+    level: analysis.riskLevel
   }
-
-  // Use internal predictRisk but add specific logic required by tests
-  const result = rtoService.predictRisk(adaptedOrder, history)
-
-  // Add specific checks for test requirements
-  if (typeof order.address === 'string') {
-    if (
-      order.address.toLowerCase().includes('test') ||
-      order.address.toLowerCase().includes('fake')
-    ) {
-      result.score += 40
-      result.reasons.push('Suspicious address keywords')
-    }
-    if (order.address.length < 10) {
-      result.reasons.push('Incomplete or short address')
-      result.score += 15
-    }
-  }
-
-  return result
 }
 
 export const analyzeRiskFactors = (order) => {
   return {
-    isHighValue: (order.amount || 0) > 10000,
+    isHighValue: (order.amount || order.totalAmount || 0) > 10000,
     isCOD: order.paymentMode === 'COD' || order.paymentMethod === 'COD',
     isBulk: (order.quantity || 1) > 5,
     hasSuspiciousAddress: order.address && order.address.length < 10,
   }
 }
 
+export const predictRisk = (o, h) => rtoServiceInstance.predictRisk(o, h)
+export const calculatePotentialLoss = (o, s) => rtoServiceInstance.calculatePotentialLoss(o, s)
+export const requiresVerification = (o) => rtoServiceInstance.requiresVerification(o)
+export const getRiskMetrics = (o) => rtoServiceInstance.getRiskMetrics(o)
+
 export default {
+  predictRisk,
+  calculatePotentialLoss,
+  requiresVerification,
   calculateRtoRisk,
+  getRiskMetrics,
   analyzeRiskFactors,
-  predictRisk: (order, history) => rtoService.predictRisk(order, history),
-  requiresVerification: (order) => rtoService.requiresVerification(order),
-  calculatePotentialLoss: (order, score) => rtoService.calculatePotentialLoss(order, score),
+  RTORiskLevels,
 }

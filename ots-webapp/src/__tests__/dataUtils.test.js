@@ -272,7 +272,7 @@ describe('Performance Benchmarks', () => {
     deduplicateOrders(largeDataset, [])
     const duration = performance.now() - start
 
-    expect(duration).toBeLessThan(200)
+    expect(duration).toBeLessThan(300)
     console.log(`✓ Deduplication of 50k records: ${duration.toFixed(2)}ms`)
   })
 

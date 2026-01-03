@@ -677,36 +677,60 @@ button,
     display: flex !important;
     flex-direction: column;
     align-items: flex-start !important;
-    gap: 8px;
-    padding: 16px !important;
-    background: rgba(255, 255, 255, 0.03);
+    gap: 12px;
+    padding: 20px !important;
+    background: rgba(255, 255, 255, 0.02);
     border: 1px solid var(--glass-border);
-    border-radius: 12px;
+    border-radius: 16px;
+    margin-bottom: 8px;
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
   }
 
-  /* Transform row items to labelled pairs */
+  .orders-table .table-row:active {
+    transform: scale(0.98);
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  /* Transform row items to labelled pairs with improved styling */
   .orders-table .table-row span {
     width: 100%;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: 0.85rem !important;
+    font-size: 0.9rem !important;
+    padding: 4px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+  }
+
+  .orders-table .table-row span:last-of-type {
+    border-bottom: none;
   }
 
   .orders-table .table-row span::before {
     content: attr(data-label);
-    font-weight: 700;
+    font-weight: 800;
     color: var(--text-muted);
-    font-size: 0.7rem;
+    font-size: 0.65rem;
     text-transform: uppercase;
-    margin-right: 10px;
+    letter-spacing: 0.05em;
   }
 
   /* Specific tweaks for Order Items in Card View */
   .orders-table .table-row input[type='checkbox'] {
-    align-self: flex-end;
-    margin-bottom: -20px;
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    margin: 0;
     z-index: 10;
+    width: 18px;
+    height: 18px;
+  }
+
+  .orders-table .table-row .risk-indicator {
+    width: auto;
+    display: inline-flex;
   }
 }
 

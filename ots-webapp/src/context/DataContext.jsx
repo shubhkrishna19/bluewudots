@@ -54,6 +54,7 @@ import rtoService from '../services/rtoService'
 import reverseLogisticsService from '../services/reverseLogisticsService'
 import visionService from '../services/visionService'
 import { ROLES, PERMISSIONS, can } from '../services/rbacMiddleware'
+import { getPushNotificationService } from '../services/pushNotificationService'
 
 import { SKU_MASTER, SKU_ALIASES } from '../data/skuMasterData'
 
@@ -109,7 +110,7 @@ export const DataProvider = ({ children }) => {
 
     // Persist orders to cache
     if (orders.length > 0) {
-      orders.forEach((o) => cacheService.cacheData('orders', o.id, o))
+      orders.filter(o => o && o.id).forEach((o) => cacheService.cacheData('orders', o.id, o))
     }
 
     const syncInterval = setInterval(() => {
@@ -123,6 +124,8 @@ export const DataProvider = ({ children }) => {
       clearInterval(syncInterval)
     }
   }, [orders.length])
+
+  // --- LANGUAGE HANDLING --- (Removed, used LocalizationContext)
   const [syncStatus, setSyncStatus] = useState('offline') // offline | online | syncing | error
   const [lastSyncTime, setLastSyncTime] = useState(null)
   const [pushEnabled, setPushEnabled] = useState(false)
@@ -267,7 +270,7 @@ export const DataProvider = ({ children }) => {
           setInventoryLevels(initialInventory)
         }
 
-        const batchEntry = cachedBatches?.find((m) => m.key === 'batches')
+        const batchEntry = cachedMetadata?.find((m) => m.key === 'batches')
         if (batchEntry) {
           setBatches(batchEntry.data)
         } else {
@@ -410,8 +413,8 @@ export const DataProvider = ({ children }) => {
   // Update warehouse loads when orders change
   useEffect(() => {
     const loads = {}
-    orders.forEach((o) => {
-      if (o.warehouse && !['Delivered', 'Cancelled', 'RTO-Delivered'].includes(o.status)) {
+    orders.filter(o => o && o.warehouse).forEach((o) => {
+      if (!['Delivered', 'Cancelled', 'RTO-Delivered'].includes(o.status)) {
         loads[o.warehouse] = (loads[o.warehouse] || 0) + 1
       }
     })
@@ -433,9 +436,8 @@ export const DataProvider = ({ children }) => {
 
     const newOrder = {
       ...orderData,
-      id: generateOrderId(),
-      status: ORDER_STATUSES.PENDING,
-      statusHistory: [
+      id: orderData.id || generateOrderId(),
+      statusHistory: orderData.statusHistory || [
         {
           from: null,
           to: ORDER_STATUSES.PENDING,
@@ -443,15 +445,42 @@ export const DataProvider = ({ children }) => {
           user: 'system',
         },
       ],
-      createdAt: new Date().toISOString(),
+      createdAt: orderData.createdAt || new Date().toISOString(),
       warehouse: smartRouteOrder(orderData.pincode, orderData.state),
+      source: 'manual',
     }
 
     // --- RTO PREDICTION ---
-    const rtoAnalysis = rtoService.calculateRtoRisk(newOrder, getCustomerMetrics(newOrder.phone))
+    const rtoAnalysis = rtoService.calculateRtoRisk(newOrder, getCustomerMetrics(newOrder.phone || ''))
     newOrder.rtoScore = rtoAnalysis.score
     newOrder.rtoRisk = rtoAnalysis.riskLevel
-    newOrder.rtoReasons = rtoAnalysis.reasons
+
+    newOrder.statusHistory = newOrder.statusHistory || []
+
+    if (newOrder.paymentMethod === 'COD' && newOrder.rtoRisk === 'HIGH') {
+      newOrder.status = 'On-Hold'
+      newOrder.holdReason = 'High RTO Risk'
+      newOrder.rtoRiskScore = rtoAnalysis.score
+    } else {
+      newOrder.status = newOrder.status || 'Pending'
+    }
+
+    // Add initial status history if missing
+    if (newOrder.statusHistory.length === 0) {
+      newOrder.statusHistory.push({
+        from: null,
+        to: newOrder.status,
+        timestamp: new Date().toISOString(),
+        user: agentMetadata?.lastAgent || 'system',
+      })
+    }
+
+    setOrders((prev) => {
+      console.log(`[AddOrder] Adding order ${newOrder.id} for ${newOrder.customerName}`)
+      return [...prev, newOrder]
+    })
+    setAgentMetadata((m) => ({ ...m, mutations: m.mutations + 1 }))
+    logOrderCreate(newOrder.id, agentMetadata?.lastAgent)
 
     // --- B2B DEALER LOGIC ---
     if (orderData.dealerId) {
@@ -569,16 +598,16 @@ export const DataProvider = ({ children }) => {
     }
     setCustomerMaster((prev) => deduplicateCustomers([...prev, customer]))
 
-    logOrderCreate(newOrder)
-    notifyOrderCreated(newOrder)
     try {
+      logOrderCreate(newOrder)
+      notifyOrderCreated(newOrder)
       const whatsapp = getWhatsAppService()
       whatsapp.sendWhatsAppMessage(newOrder.id, 'order_confirmation', newOrder.phone, {
         orderId: newOrder.id,
         customer: newOrder.customerName,
       })
     } catch (e) {
-      console.warn('WhatsApp not initialized')
+      console.warn('Side effects failed (notifications/logging):', e)
     }
 
     return { success: true, order: newOrder }
@@ -588,35 +617,32 @@ export const DataProvider = ({ children }) => {
    * Update order status with state machine validation
    */
   const updateOrderStatus = useCallback(async (orderId, newStatus, metadata = {}) => {
-    let result = { success: false }
+    try {
+      // 1. Find Current Order
+      const currentOrder = orders.find((o) => o.id === orderId)
+      if (!currentOrder) return { success: false, error: 'Order not found' }
 
-    setOrders((prev) => {
-      const orderIndex = prev.findIndex((o) => o.id === orderId)
-      if (orderIndex === -1) return prev
-
-      const currentOrder = prev[orderIndex]
-
-      // 1. Validate Transition
-      const transitionResult = transitionOrder(currentOrder, newStatus, {
+      // 2. Perform Async Transition
+      const transitionResult = await transitionOrder(currentOrder, newStatus, {
         ...metadata,
-        user: agentMetadata.lastAgent,
+        user: agentMetadata?.lastAgent || 'system',
       })
 
       if (!transitionResult.success) {
         console.warn(`Invalid transition for ${orderId}: ${currentOrder.status} -> ${newStatus}`)
-        result = { success: false, error: transitionResult.error }
-        return prev
+        return { success: false, error: transitionResult.error }
       }
 
       const updatedOrder = transitionResult.order
-      const newOrders = [...prev]
-      newOrders[orderIndex] = updatedOrder
 
-      // 2. Log Activity
-      logOrderStatusChange(orderId, currentOrder.status, newStatus, agentMetadata.lastAgent)
+      // 3. Update State
+      setOrders((prev) => prev.map((o) => (o.id === orderId ? updatedOrder : o)))
       setAgentMetadata((m) => ({ ...m, mutations: m.mutations + 1 }))
 
-      // 3. Inventory Updates
+      // 4. Log Activity
+      logOrderStatusChange(orderId, currentOrder.status, newStatus, agentMetadata?.lastAgent)
+
+      // 5. Inventory Updates
       if (newStatus === 'Delivered' || newStatus === 'In-Transit') {
         setInventoryLevels((p) => ({
           ...p,
@@ -636,7 +662,7 @@ export const DataProvider = ({ children }) => {
         }))
       }
 
-      // 4. Notifications (Async Handlers)
+      // 6. Notifications (Async Handlers)
       try {
         const whatsapp = getWhatsAppService()
         if (newStatus === 'In-Transit' || newStatus === 'Picked Up') {
@@ -662,19 +688,19 @@ export const DataProvider = ({ children }) => {
         console.warn('Notification error:', e)
       }
 
-      result = { success: true, order: updatedOrder }
-      return newOrders
-    })
-
-    return result
-  }, [])
+      return { success: true, order: updatedOrder }
+    } catch (err) {
+      console.error('Status Update Failed:', err)
+      return { success: false, error: err.message }
+    }
+  }, [orders, agentMetadata, logOrderStatusChange])
   /**
    * Bulk update order statuses
    */
   const bulkUpdateStatus = useCallback(
-    (orderIds, newStatus, metadata = {}) => {
+    async (orderIds, newStatus, metadata = {}) => {
       const ordersToUpdate = orders.filter((o) => orderIds.includes(o.id))
-      const results = bulkTransition(ordersToUpdate, newStatus, metadata)
+      const results = await bulkTransition(ordersToUpdate, newStatus, metadata)
 
       if (results.successful.length > 0) {
         setOrders((prev) => {
@@ -694,6 +720,22 @@ export const DataProvider = ({ children }) => {
     },
     [orders]
   )
+
+  /**
+   * Update order details (generic)
+   */
+  const updateOrder = useCallback((orderId, updates) => {
+    setOrders((prev) =>
+      prev.map((order) => {
+        if (order.id === orderId) {
+          const updated = { ...order, ...updates, lastUpdated: new Date().toISOString() }
+          logActivity('UPDATE_ORDER', orderId, `Manual update: ${Object.keys(updates).join(', ')}`)
+          return updated
+        }
+        return order
+      })
+    )
+  }, [])
 
   /**
    * Assign carrier to order
@@ -1067,6 +1109,67 @@ export const DataProvider = ({ children }) => {
   // CONTEXT VALUE
   // ============================================
 
+  // ============================================
+  // PUSH NOTIFICATIONS & OFFLINE SUPPORT
+  // ============================================
+  const initializePushNotifications = useCallback(async () => {
+    try {
+      const pushService = getPushNotificationService()
+      await pushService.initialize()
+      if (typeof Notification !== 'undefined') {
+        setPushEnabled(Notification.permission === 'granted')
+      }
+      console.log('[Push] Notification service initialized')
+    } catch (err) {
+      console.error('[Push] Initialization failed:', err)
+    }
+  }, [])
+
+  const enablePushNotifications = useCallback(async () => {
+    try {
+      const { registerPushSubscription } = await import('../services/notificationService')
+      const subscription = await registerPushSubscription()
+      if (subscription) {
+        setPushEnabled(true)
+        return { success: true, subscription }
+      }
+      return { success: false, error: 'Push registration returned null' }
+    } catch (err) {
+      return { success: false, error: err.message }
+    }
+  }, [])
+
+  const queueOrderOffline = useCallback(
+    (order) => {
+      setOfflineQueue((prev) => [...prev, { ...order, queuedAt: new Date().toISOString() }])
+      cacheData('orders:offline-queue', offlineQueue)
+    },
+    [offlineQueue]
+  )
+
+  const syncOfflineOrders = useCallback(async () => {
+    if (offlineQueue.length === 0) return { success: true, synced: 0 }
+    try {
+      const results = await Promise.all(
+        offlineQueue.map((order) => importOrders([order], 'offline-sync'))
+      )
+      const synced = results.reduce((sum, r) => sum + (r.count || 0), 0)
+      setOfflineQueue([])
+      const { removeCachedData } = await import('../services/offlineCacheService')
+      await removeCachedData('orders:offline-queue')
+      return { success: true, synced }
+    } catch (err) {
+      return { success: false, error: err.message }
+    }
+  }, [offlineQueue, importOrders])
+
+  useEffect(() => {
+    initializePushNotifications()
+  }, [initializePushNotifications])
+
+  // ============================================
+  // CONTEXT VALUE
+  // ============================================
   const value = {
     // State
     orders,
@@ -1134,6 +1237,7 @@ export const DataProvider = ({ children }) => {
     // Vision AI Packing
     packingSessions,
     updatePackingStatus,
+    setAgentMetadata,
 
     // Search
     universalSearch: (query) => searchService.universalSearch({ orders, skuMaster }, query),
@@ -1164,75 +1268,14 @@ export const DataProvider = ({ children }) => {
     syncOfflineOrders,
   }
 
-  // ============================================
-  // PUSH NOTIFICATIONS & OFFLINE SUPPORT
-  // ============================================
-  /**
-   * Initialize push notifications on app load
-   */
-  const initializePushNotifications = useCallback(async () => {
-    try {
-      const enabled = await isPushEnabled()
-      setPushEnabled(enabled)
-      if (enabled) {
-        // Process any queued notifications
-        await processQueuedNotifications()
-        console.log('[Push] Notifications enabled and initialized')
-      }
-    } catch (err) {
-      console.error('[Push] Initialization failed:', err)
-    }
-  }, [])
-
-  /**
-   * Register for push notifications
-   */
-  const enablePushNotifications = useCallback(async () => {
-    try {
-      const subscription = await registerPushSubscription()
-      if (subscription) {
-        setPushEnabled(true)
-        return { success: true, subscription }
-      }
-      return { success: false, error: 'Push registration returned null' }
-    } catch (err) {
-      return { success: false, error: err.message }
-    }
-  }, [])
-
-  /**
-   * Add order to offline queue
-   */
-  const queueOrderOffline = useCallback(
-    (order) => {
-      setOfflineQueue((prev) => [...prev, { ...order, queuedAt: new Date().toISOString() }])
-      cacheData('orders:offline-queue', offlineQueue)
-    },
-    [offlineQueue]
-  )
-
-  /**
-   * Sync offline orders when coming online
-   */
-  const syncOfflineOrders = useCallback(async () => {
-    if (offlineQueue.length === 0) return { success: true, synced: 0 }
-    try {
-      const results = await Promise.all(
-        offlineQueue.map((order) => importOrders([order], 'offline-sync'))
-      )
-      const synced = results.reduce((sum, r) => sum + (r.count || 0), 0)
-      setOfflineQueue([])
-      await removeCachedData('orders:offline-queue')
-      return { success: true, synced }
-    } catch (err) {
-      return { success: false, error: err.message }
-    }
-  }, [offlineQueue, importOrders])
-
   // Initialize push notifications on mount
   useEffect(() => {
     initializePushNotifications()
   }, [initializePushNotifications])
+
+  // ============================================
+  // CONTEXT VALUE
+  // ============================================
 
   return <DataContext.Provider value={value}>{children}</DataContext.Provider>
 }

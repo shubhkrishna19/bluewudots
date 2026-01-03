@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { useData } from '../../context/DataContext'
+import { useLocalization } from '../../context/LocalizationContext'
 import OrderJourney from './OrderJourney'
 import labelPrintService from '../../services/labelPrintService'
 import { getOptimalCarrier } from '../../services/carrierOptimizer'
@@ -7,6 +8,7 @@ import { getWhatsAppService } from '../../services/whatsappService'
 import shipmentService from '../../services/shipmentService'
 import rtoService from '../../services/rtoService'
 import reverseLogisticsService from '../../services/reverseLogisticsService'
+import internationalShippingService from '../../services/internationalShippingService'
 import {
   AlertTriangle,
   RotateCcw,
@@ -19,7 +21,16 @@ import {
 import ReturnsDashboard from '../Commercial/ReturnsDashboard'
 
 const OrderList = () => {
-  const { orders, updateOrderStatus } = useData()
+  const { t } = useLocalization()
+  const {
+    orders,
+    updateOrderStatus,
+    updateOrder, // Assuming updateOrder is available from useData
+    updateOrderCarrier, // Assuming updateOrderCarrier is available from useData
+    deleteOrder, // Assuming deleteOrder is available from useData
+    calculateRtoRisk, // Assuming calculateRtoRisk is available from useData
+    addActivity, // Assuming addActivity is available from useData
+  } = useData()
   const [searchTerm, setSearchTerm] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
   const [sourceFilter, setSourceFilter] = useState('all')
@@ -167,14 +178,32 @@ const OrderList = () => {
     try {
       for (const orderId of selectedOrders) {
         const order = orders.find((o) => o.id === orderId)
-        // In a real app, we'd fetch zone/weight details. Using defaults for demo.
-        const recommendation = await getOptimalCarrier({
-          pincode: order.pincode || '400001',
-          weight: order.weight || 0.5,
-          amount: order.amount || 0,
-          zone: order.state === 'Maharashtra' ? 'metro' : 'tier2',
-          cod_required: order.paymentMethod === 'cod',
-        })
+        if (!order) continue
+
+        const isInternational = order.country && order.country !== 'India'
+        let recommendation
+
+        if (isInternational) {
+          const rates = internationalShippingService.compareInternationalRates(
+            order.country,
+            order.weight || 2.0
+          )
+          if (rates.length > 0) {
+            recommendation = {
+              carrier: { name: rates[0].carrier },
+              cost: rates[0].total,
+            }
+          }
+        } else {
+          recommendation = await getOptimalCarrier({
+            pincode: order.pincode || '400001',
+            weight: order.weight || 0.5,
+            amount: order.amount || 0,
+            zone: order.state === 'Maharashtra' ? 'metro' : 'tier2',
+            cod_required: order.paymentMethod === 'cod',
+            priority: order.priority || 'standard',
+          })
+        }
 
         if (recommendation) {
           updateOrder(orderId, {
@@ -182,9 +211,10 @@ const OrderList = () => {
             shippingCost: recommendation.cost,
           })
           updateOrderStatus(orderId, 'Carrier-Assigned')
+          addActivity(`AI: Smart Assigned ${recommendation.carrier.name} to ${order.id}`, 'system')
         }
       }
-      alert(`Successfully optimized ${selectedOrders.length} orders!`)
+      alert(`${t('orders.smart_assign_success', { count: selectedOrders.length })}`)
       setSelectedOrders([])
     } catch (error) {
       console.error('Optimization failed:', error)
@@ -201,8 +231,8 @@ const OrderList = () => {
         style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}
       >
         <div>
-          <h2>Order Management</h2>
-          <p className="text-muted">Track, Search & Manage All Orders</p>
+          <h2>{t('orders.title')}</h2>
+          <p className="text-muted">{t('orders.subtitle')}</p>
         </div>
 
         {/* Tab Switcher */}
@@ -213,7 +243,7 @@ const OrderList = () => {
             aria-label="View Orders"
             aria-pressed={activeTab === 'orders'}
           >
-            <LayoutList className="w-4 h-4" /> Orders
+            <LayoutList className="w-4 h-4" /> {t('orders.tab_orders')}
           </button>
           <button
             onClick={() => setActiveTab('returns')}
@@ -221,16 +251,16 @@ const OrderList = () => {
             aria-label="View Returns"
             aria-pressed={activeTab === 'returns'}
           >
-            <RefreshCcw className="w-4 h-4" /> Returns
+            <RefreshCcw className="w-4 h-4" /> {t('orders.tab_returns')}
           </button>
         </div>
 
         <div style={{ display: 'flex', gap: '10px' }}>
           <span className="badge" style={{ background: 'var(--primary)' }}>
-            {orders.length} Total
+            {orders.length} {t('orders.total')}
           </span>
           <span className="badge" style={{ background: 'var(--success)' }}>
-            {orders.filter((o) => o.status === 'Delivered').length} Delivered
+            {orders.filter((o) => o.status === 'Delivered').length} {t('orders.delivered')}
           </span>
           {activeTab === 'orders' && (
             <>
@@ -246,7 +276,7 @@ const OrderList = () => {
                 onClick={handleBatchManifest}
                 aria-label="Generate Batch Manifest"
               >
-                📋 Batch Manifest
+                📋 {t('orders.batch_manifest_button')}
               </button>
               <button
                 className="btn-secondary glass-hover"
@@ -264,7 +294,7 @@ const OrderList = () => {
                 onClick={handleWhatsAppNotify}
                 aria-label={`Notify ${selectedOrders.length} customers via WhatsApp`}
               >
-                <MessageSquare className="w-3 h-3" /> Notify
+                <MessageSquare className="w-3 h-3" /> {t('orders.notify_button')}
               </button>
               <button
                 className="btn-primary glass-hover"
@@ -279,7 +309,7 @@ const OrderList = () => {
                 onClick={handleSmartAssign}
                 aria-label="Process Smart Carrier Assignment"
               >
-                {isOptimizing ? '🤖 Optimizing...' : `🧠 Smart Assign (${selectedOrders.length})`}
+                {isOptimizing ? t('orders.optimizing_button') : t('orders.smart_assign_button', { count: selectedOrders.length })}
               </button>
             </>
           )}
@@ -307,7 +337,7 @@ const OrderList = () => {
             <div style={{ flex: 2, minWidth: '250px' }}>
               <input
                 type="text"
-                placeholder="🔍 Search by Order ID, Customer, or SKU..."
+                placeholder={t('orders.search_placeholder')}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 style={{
@@ -332,8 +362,8 @@ const OrderList = () => {
                 minWidth: '150px',
               }}
             >
-              <option value="all">All Statuses</option>
-              <option value="HIGH_RISK">⚠️ High Risk</option>
+              <option value="all">{t('orders.filter_all_statuses')}</option>
+              <option value="HIGH_RISK">⚠️ {t('orders.filter_high_risk')}</option>
               {uniqueStatuses.map((s) => (
                 <option key={s} value={s}>
                   {s}
@@ -352,7 +382,7 @@ const OrderList = () => {
                 minWidth: '150px',
               }}
             >
-              <option value="all">All Channels</option>
+              <option value="all">{t('orders.filter_all_channels')}</option>
               {uniqueSources.map((s) => (
                 <option key={s} value={s}>
                   {s}
@@ -368,7 +398,7 @@ const OrderList = () => {
                 setSourceFilter('all')
               }}
             >
-              Clear
+              {t('orders.clear_filters_button')}
             </button>
           </div>
 
@@ -381,7 +411,7 @@ const OrderList = () => {
               className="table-header"
               style={{
                 display: 'grid',
-                gridTemplateColumns: '40px 1.5fr 2fr 1fr 1fr 1fr 0.8fr 1fr',
+                gridTemplateColumns: '40px 1.5fr 2fr 1fr 1fr 1fr 0.8fr 1fr', // Adjusted for new columns
                 padding: '16px 20px',
                 background: 'var(--bg-accent)',
                 fontWeight: '700',
@@ -399,19 +429,19 @@ const OrderList = () => {
                   selectedOrders.length > 0 && selectedOrders.length === filteredOrders.length
                 }
               />
-              <span className="hidden md:block">Order ID</span>
-              <span className="hidden md:block">Customer</span>
-              <span className="hidden md:block">SKU</span>
-              <span className="hidden md:block">Source</span>
-              <span className="hidden md:block">Status</span>
-              <span className="hidden md:block">Risk</span>
-              <span className="hidden md:block">Actions</span>
+              <span className="hidden md:block">{t('orders.id')}</span>
+              <span className="hidden md:block">{t('orders.customer')}</span>
+              <span className="hidden md:block">{t('orders.items')}</span>
+              <span className="hidden md:block">{t('orders.status')}</span>
+              <span className="hidden md:block">{t('orders.source')}</span>
+              <span className="hidden md:block">{t('orders.risk')}</span>
+              <span className="hidden md:block">{t('orders.actions')}</span>
             </div>
 
             <div className="table-body" style={{ maxHeight: '65vh', overflowY: 'auto' }}>
               {filteredOrders.length === 0 ? (
                 <div style={{ padding: '40px', textAlign: 'center' }}>
-                  <p className="text-muted">No orders found matching your criteria</p>
+                  <p className="text-muted">{t('orders.no_orders_found')}</p>
                 </div>
               ) : (
                 filteredOrders.map((order, idx) => (
@@ -420,7 +450,7 @@ const OrderList = () => {
                     className="table-row glass-hover"
                     style={{
                       display: 'grid',
-                      gridTemplateColumns: '40px 1.5fr 2fr 1fr 1fr 1fr 0.8fr 1fr',
+                      gridTemplateColumns: '40px 1.5fr 2fr 1fr 1fr 1fr 0.8fr 1fr', // Adjusted for new columns
                       padding: '16px 20px',
                       alignItems: 'center',
                       borderBottom: '1px solid var(--glass-border)',
@@ -435,28 +465,17 @@ const OrderList = () => {
                       onChange={() => toggleOrderSelection(order.id)}
                     />
                     <span
-                      data-label="Order ID"
+                      data-label={t('orders.id')}
                       style={{ fontWeight: '700', color: 'var(--primary)' }}
                     >
                       {order.id}
                     </span>
-                    <span data-label="Customer">{order.customer || 'N/A'}</span>
-                    <span data-label="SKU" style={{ fontSize: '0.85rem' }}>
+                    <span data-label={t('orders.customer')}>{order.customer || 'N/A'}</span>
+                    <span data-label={t('orders.items')} style={{ fontSize: '0.85rem' }}>
                       {order.sku || 'N/A'}
                     </span>
                     <span
-                      data-label="Source"
-                      className="badge"
-                      style={{
-                        background: 'var(--glass-border)',
-                        fontSize: '0.65rem',
-                        justifySelf: 'start',
-                      }}
-                    >
-                      {order.source || 'Manual'}
-                    </span>
-                    <span
-                      data-label="Status"
+                      data-label={t('orders.status')}
                       className="badge"
                       style={{
                         background: getStatusColor(order.status),
@@ -467,33 +486,28 @@ const OrderList = () => {
                       {order.status}
                     </span>
                     <span
+                      data-label={t('orders.source')}
+                      className="badge"
+                      style={{
+                        background: 'var(--glass-border)',
+                        fontSize: '0.65rem',
+                        justifySelf: 'start',
+                      }}
+                    >
+                      {order.source || 'Manual'}
+                    </span>
+                    <span
                       className="risk-indicator"
                       style={{ justifySelf: 'start' }}
-                      data-label="Risk"
+                      data-label={t('orders.risk')}
                     >
                       {order.status === 'Pending' &&
-                      order.paymentMethod?.toLowerCase() === 'cod' ? (
+                        order.paymentMethod?.toLowerCase() === 'cod' ? (
                         (() => {
                           const risk = rtoService.predictRisk(order)
                           return (
                             <span
-                              className={`badge ${risk.riskLevel.toLowerCase()}`}
-                              style={{
-                                background:
-                                  risk.riskLevel === 'CRITICAL'
-                                    ? 'rgba(239, 68, 68, 0.2)'
-                                    : risk.riskLevel === 'HIGH'
-                                      ? 'rgba(245, 158, 11, 0.2)'
-                                      : 'rgba(16, 185, 129, 0.1)',
-                                color:
-                                  risk.riskLevel === 'CRITICAL'
-                                    ? '#ef4444'
-                                    : risk.riskLevel === 'HIGH'
-                                      ? '#f59e0b'
-                                      : '#10b981',
-                                fontSize: '0.6rem',
-                                border: '1px solid currentColor',
-                              }}
+                              className={`risk-badge ${risk.level.toLowerCase()}`}
                               title={risk.reasons.join(', ')}
                             >
                               {risk.level}
@@ -514,7 +528,7 @@ const OrderList = () => {
                         setSelectedOrder(order)
                       }}
                     >
-                      View Details
+                      {t('orders.view_details_button')}
                     </button>
                   </div>
                 ))
@@ -564,7 +578,7 @@ const OrderList = () => {
             >
               <div>
                 <span className="text-muted" style={{ fontSize: '0.7rem' }}>
-                  ORDER DETAILS
+                  {t('orders.details_title')}
                 </span>
                 <h2>{selectedOrder.id}</h2>
               </div>
@@ -593,13 +607,13 @@ const OrderList = () => {
             >
               <div className="detail-item glass" style={{ padding: '16px' }}>
                 <span className="text-muted" style={{ fontSize: '0.7rem' }}>
-                  CUSTOMER
+                  {t('orders.customer_label')}
                 </span>
                 <p style={{ fontWeight: '700' }}>{selectedOrder.customer || 'N/A'}</p>
               </div>
               <div className="detail-item glass" style={{ padding: '16px' }}>
                 <span className="text-muted" style={{ fontSize: '0.7rem' }}>
-                  LOCATION
+                  {t('orders.location_label')}
                 </span>
                 <p>
                   {selectedOrder.city}, {selectedOrder.state}
@@ -607,25 +621,25 @@ const OrderList = () => {
               </div>
               <div className="detail-item glass" style={{ padding: '16px' }}>
                 <span className="text-muted" style={{ fontSize: '0.7rem' }}>
-                  SKU
+                  {t('orders.sku_label')}
                 </span>
                 <p style={{ fontWeight: '700' }}>{selectedOrder.sku || 'N/A'}</p>
               </div>
               <div className="detail-item glass" style={{ padding: '16px' }}>
                 <span className="text-muted" style={{ fontSize: '0.7rem' }}>
-                  WEIGHT
+                  {t('orders.weight_label')}
                 </span>
                 <p>{selectedOrder.weight || '2.0'} kg</p>
               </div>
               <div className="detail-item glass" style={{ padding: '16px' }}>
                 <span className="text-muted" style={{ fontSize: '0.7rem' }}>
-                  SOURCE
+                  {t('orders.source_label')}
                 </span>
                 <p>{selectedOrder.source || 'Manual'}</p>
               </div>
               <div className="detail-item glass" style={{ padding: '16px' }}>
                 <span className="text-muted" style={{ fontSize: '0.7rem' }}>
-                  WAREHOUSE
+                  {t('orders.warehouse_label')}
                 </span>
                 <p style={{ fontWeight: '700', color: 'var(--accent)' }}>
                   {selectedOrder.warehouse || 'CENTRAL-WH'}
@@ -633,7 +647,7 @@ const OrderList = () => {
               </div>
               <div className="detail-item glass" style={{ padding: '16px' }}>
                 <span className="text-muted" style={{ fontSize: '0.7rem' }}>
-                  STATUS
+                  {t('orders.status_label')}
                 </span>
                 <span
                   className="badge"
@@ -723,14 +737,14 @@ const OrderList = () => {
 
             <div style={{ marginTop: '24px', display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
               <button className="btn-primary glass-hover" style={{ flex: 1 }}>
-                Process Order
+                {t('orders.process_button')}
               </button>
               <button
                 className="btn-secondary glass-hover"
                 style={{ flex: 1 }}
                 onClick={() => labelPrintService.printLabel(selectedOrder)}
               >
-                🏷️ Print Label
+                🏷️ {t('orders.print_label_button')}
               </button>
               <button
                 className="btn-secondary glass-hover"
@@ -743,14 +757,14 @@ const OrderList = () => {
                   printWindow.onload = () => printWindow.print()
                 }}
               >
-                📄 Packing Slip
+                📄 {t('orders.packing_slip_button')}
               </button>
               <button
                 className="btn-secondary glass-hover"
                 style={{ flex: 1 }}
                 onClick={() => setSelectedOrder(null)}
               >
-                Close
+                {t('orders.close_button')}
               </button>
             </div>
           </div>

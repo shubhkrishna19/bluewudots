@@ -2,8 +2,10 @@ import React, { useState } from 'react'
 import TwoFactorAuth from './TwoFactorAuth'
 import IPWhitelistManager from './IPWhitelistManager'
 import SecurityFortress from './SecurityFortress'
+import { useTranslation } from '../../context/LocalizationContext'
 
 const SettingsPanel = () => {
+  const { t, locale, setLocale, availableLocales } = useTranslation()
   const [settings, setSettings] = useState({
     companyName: 'Bluewud',
     defaultCarrier: 'delhivery',
@@ -275,6 +277,39 @@ const SettingsPanel = () => {
                 }}
               ></div>
             </div>
+          </div>
+        </div>
+
+        {/* Localization Settings */}
+        <div className="settings-card glass" style={{ padding: '24px' }}>
+          <h3 style={{ marginBottom: '20px' }}>🌐 Language & Region</h3>
+
+          <div className="setting-item">
+            <label
+              className="text-muted"
+              style={{ fontSize: '0.75rem', display: 'block', marginBottom: '6px' }}
+            >
+              APPLICATION LANGUAGE
+            </label>
+            <select
+              value={locale}
+              onChange={(e) => setLocale(e.target.value)}
+              style={{
+                width: '100%',
+                padding: '12px',
+                background: 'var(--bg-accent)',
+                border: '1px solid var(--glass-border)',
+                borderRadius: '8px',
+                color: '#fff',
+                fontWeight: '600',
+              }}
+            >
+              {availableLocales.map((loc) => (
+                <option key={loc.code} value={loc.code}>
+                  {loc.name}
+                </option>
+              ))}
+            </select>
           </div>
         </div>
 

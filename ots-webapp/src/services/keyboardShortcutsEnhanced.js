@@ -211,4 +211,19 @@ class KeyboardShortcutsEnhanced {
 
 // Export singleton instance
 const keyboardShortcuts = new KeyboardShortcutsEnhanced()
+
+// Compatibility layer for legacy API
+export const initShortcuts = () => {
+  console.log('[Shortcuts] Initialized (Enhanced)')
+}
+export const registerDefaultShortcuts = (actionsMap) => {
+  Object.entries(actionsMap).forEach(([action, handler]) => {
+    keyboardShortcuts.on(action, handler)
+  })
+}
+export const destroyShortcuts = () => {
+  console.log('[Shortcuts] Destroyed (Enhanced)')
+}
+
+export { keyboardShortcuts }
 export default keyboardShortcuts

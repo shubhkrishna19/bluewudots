@@ -22,6 +22,21 @@ class ZohoWebhookService {
   }
 
   /**
+   * Alias for 'on' to support different test patterns
+   */
+  subscribe(callback) {
+    // For general 'shipment' updates or as generic listener
+    this.on('shipment', callback)
+    return () => {
+      const listeners = this.listeners.get('shipment') || []
+      this.listeners.set(
+        'shipment',
+        listeners.filter((l) => l !== callback)
+      )
+    }
+  }
+
+  /**
    * Process incoming webhook from Zoho
    * @param {object} payload - Webhook payload from Zoho
    */
@@ -36,13 +51,32 @@ class ZohoWebhookService {
         }
       }
 
-      const { module, operation, data } = payload
-      console.log(`[Zoho Webhook] ${operation} on ${module}:`, data)
+      const moduleName = payload.module || payload.entity
+      const { operation, action, data, details } = payload
+      const actualOperation = operation || action
+      const actualData = data || details
+
+      console.log(`[Zoho Webhook] ${actualOperation} on ${moduleName}:`, actualData)
+
+      // Transform logic for specific integrations (e.g., carrier webhooks via Zoho)
+      let domainEvent = { operation: actualOperation, data: actualData }
+
+      if (moduleName === 'shipment' && actualData.status === 'undelivered') {
+        domainEvent = {
+          type: 'RTO_INITIATED',
+          operation: 'update',
+          data: {
+            ...actualData,
+            rtoReason: actualData.reason?.includes('doorstep') ? 'Customer Refused' : actualData.reason,
+            status: 'RTO-Initiated',
+          },
+        }
+      }
 
       // Trigger registered listeners
-      const moduleListeners = this.listeners.get(module) || []
+      const moduleListeners = this.listeners.get(moduleName) || []
       for (const callback of moduleListeners) {
-        await callback({ operation, data })
+        await callback(domainEvent)
       }
 
       return { success: true }

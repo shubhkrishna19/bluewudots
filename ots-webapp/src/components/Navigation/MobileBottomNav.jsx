@@ -1,15 +1,17 @@
 import React from 'react'
 import './MobileBottomNav.css'
+import { useTranslation } from '../../context/LocalizationContext'
 
 const navItems = [
-  { id: 'dashboard', label: 'Home', icon: '🏠', activeIcon: '🏡' },
-  { id: 'orderlist', label: 'Orders', icon: '📦', activeIcon: '📬' },
-  { id: 'orders', label: 'Import', icon: '📥', activeIcon: '⬇️' },
-  { id: 'finance', label: 'P&L', icon: '💹', activeIcon: '📈' },
-  { id: 'settings', label: 'More', icon: '⚙️', activeIcon: '🔧' },
+  { id: 'dashboard', label_key: 'nav_home', icon: '🏠', activeIcon: '🏡' },
+  { id: 'orderlist', label_key: 'nav_orders', icon: '📦', activeIcon: '📬' },
+  { id: 'orders', label_key: 'nav_import', icon: '📥', activeIcon: '⬇️' },
+  { id: 'finance', label_key: 'nav_finance', icon: '💹', activeIcon: '📈' },
+  { id: 'settings', label_key: 'nav_more', icon: '⚙️', activeIcon: '🔧' },
 ]
 
 const MobileBottomNav = ({ activeTab, onTabChange, notificationCount = 0 }) => {
+  const { t } = useTranslation()
   const handleTap = (id) => {
     // Haptic feedback for supported devices
     if (navigator.vibrate) {
@@ -29,7 +31,7 @@ const MobileBottomNav = ({ activeTab, onTabChange, notificationCount = 0 }) => {
             onClick={() => handleTap(item.id)}
             role="button"
             tabIndex={0}
-            aria-label={item.label}
+            aria-label={t(item.label_key)}
             aria-pressed={activeTab === item.id}
           >
             <div className={`nav-icon-wrapper ${activeTab === item.id ? 'bounce' : ''}`}>
@@ -42,7 +44,7 @@ const MobileBottomNav = ({ activeTab, onTabChange, notificationCount = 0 }) => {
                 </span>
               )}
             </div>
-            <span className="nav-label">{item.label}</span>
+            <span className="nav-label">{t(item.label_key)}</span>
             {activeTab === item.id && <div className="active-indicator"></div>}
           </div>
         ))}

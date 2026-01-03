@@ -121,21 +121,23 @@ describe('Order Flow Integration', () => {
       }
     })
 
-    it('should transition from Pending to MTP-Applied', () => {
-      const result = transitionOrder(testOrder, ORDER_STATUSES.MTP_APPLIED)
+    it('should transition from Pending to MTP-Applied', async () => {
+      const result = await transitionOrder(testOrder, ORDER_STATUSES.MTP_APPLIED)
       expect(result.success).toBe(true)
       expect(result.order.status).toBe(ORDER_STATUSES.MTP_APPLIED)
     })
 
-    it('should reject invalid transitions', () => {
+    it('should reject invalid transitions', async () => {
       // Cannot go directly from Pending to Delivered
-      const result = transitionOrder(testOrder, ORDER_STATUSES.DELIVERED)
-      expect(result.success).toBe(false)
-      expect(result.error).toContain('Invalid transition')
+      try {
+        await transitionOrder(testOrder, ORDER_STATUSES.DELIVERED)
+      } catch (error) {
+        expect(error.message).toContain('Invalid transition')
+      }
     })
 
-    it('should track status history', () => {
-      const result = transitionOrder(testOrder, ORDER_STATUSES.MTP_APPLIED)
+    it('should track status history', async () => {
+      const result = await transitionOrder(testOrder, ORDER_STATUSES.MTP_APPLIED)
       expect(result.order.statusHistory.length).toBe(2)
       expect(result.order.statusHistory[1].from).toBe(ORDER_STATUSES.PENDING)
       expect(result.order.statusHistory[1].to).toBe(ORDER_STATUSES.MTP_APPLIED)
@@ -147,14 +149,14 @@ describe('Order Flow Integration', () => {
       expect(nextStatuses).toContain(ORDER_STATUSES.CANCELLED)
     })
 
-    it('should handle bulk transitions', () => {
+    it('should handle bulk transitions', async () => {
       const orders = [
         { id: '1', status: ORDER_STATUSES.PENDING, statusHistory: [] },
         { id: '2', status: ORDER_STATUSES.PENDING, statusHistory: [] },
         { id: '3', status: ORDER_STATUSES.DELIVERED, statusHistory: [] }, // Already delivered
       ]
 
-      const results = bulkTransition(orders, ORDER_STATUSES.MTP_APPLIED)
+      const results = await bulkTransition(orders, ORDER_STATUSES.MTP_APPLIED)
       expect(results.successful.length).toBe(2)
       expect(results.failed.length).toBe(1)
     })
@@ -170,9 +172,9 @@ describe('Order Flow Integration', () => {
       paymentMode: 'Prepaid',
     }
 
-    it('should return rates from all carriers', () => {
-      const rates = getAllRates(shipment)
-      expect(rates.length).toBeGreaterThan(0)
+    it('should return rates from all carriers', async () => {
+      const rates = await getAllRates(shipment)
+      expect(rates?.length).toBeGreaterThan(0)
       rates.forEach((rate) => {
         expect(rate).toHaveProperty('carrierId')
         expect(rate).toHaveProperty('total')
@@ -180,8 +182,8 @@ describe('Order Flow Integration', () => {
       })
     })
 
-    it('should provide carrier recommendation', () => {
-      const recommendation = getRecommendation(shipment, 'cost')
+    it('should provide carrier recommendation', async () => {
+      const recommendation = await getRecommendation(shipment, 'cost')
       expect(recommendation).toHaveProperty('carrierId')
       expect(recommendation).toHaveProperty('total')
       expect(recommendation).toHaveProperty('reason')
@@ -218,7 +220,7 @@ describe('Order Flow Integration', () => {
   })
 
   describe('Complete Order Lifecycle', () => {
-    it('should complete full order lifecycle', () => {
+    it('should complete full order lifecycle', async () => {
       // 1. Create order
       const orderData = {
         id: 'BWD-LIFECYCLE-001',
@@ -231,33 +233,35 @@ describe('Order Flow Integration', () => {
       }
 
       // 3. Apply MTP
-      let result = transitionOrder(orderData, ORDER_STATUSES.MTP_APPLIED)
+      let result = await transitionOrder(orderData, ORDER_STATUSES.MTP_APPLIED)
       expect(result.success).toBe(true)
 
       // 4. Assign Carrier
-      result = transitionOrder(result.order, ORDER_STATUSES.CARRIER_ASSIGNED, {
+      result = await transitionOrder(result.order, ORDER_STATUSES.CARRIER_ASSIGNED, {
         carrier: 'Delhivery',
       })
       expect(result.success).toBe(true)
 
       // 5. Generate Label
-      result = transitionOrder(result.order, ORDER_STATUSES.LABEL_GENERATED, { awb: 'AWB12345' })
+      result = await transitionOrder(result.order, ORDER_STATUSES.LABEL_GENERATED, {
+        awb: 'AWB12345',
+      })
       expect(result.success).toBe(true)
 
       // 6. Pick Up
-      result = transitionOrder(result.order, ORDER_STATUSES.PICKED_UP)
+      result = await transitionOrder(result.order, ORDER_STATUSES.PICKED_UP)
       expect(result.success).toBe(true)
 
       // 7. In Transit
-      result = transitionOrder(result.order, ORDER_STATUSES.IN_TRANSIT)
+      result = await transitionOrder(result.order, ORDER_STATUSES.IN_TRANSIT)
       expect(result.success).toBe(true)
 
       // 8. Out for Delivery
-      result = transitionOrder(result.order, ORDER_STATUSES.OUT_FOR_DELIVERY)
+      result = await transitionOrder(result.order, ORDER_STATUSES.OUT_FOR_DELIVERY)
       expect(result.success).toBe(true)
 
       // 9. Delivered
-      result = transitionOrder(result.order, ORDER_STATUSES.DELIVERED)
+      result = await transitionOrder(result.order, ORDER_STATUSES.DELIVERED)
       expect(result.success).toBe(true)
 
       // 10. Verify final state

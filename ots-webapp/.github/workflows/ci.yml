@@ -1,0 +1,34 @@
+name: BlueWud OTS CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+          cache: 'npm'
+          cache-dependency-path: ots-webapp/package-lock.json
+      - name: Install dependencies
+        run: cd ots-webapp && npm ci
+      - name: Run Environment Validation
+        run: cd ots-webapp && node scripts/validate-env.js
+        env:
+          VITE_AMAZON_SELLER_ID: mock_id
+          VITE_AMAZON_ACCESS_TOKEN: mock_token
+          VITE_FLIPKART_APP_ID: mock_id
+          VITE_FLIPKART_ACCESS_TOKEN: mock_token
+          VITE_WHATSAPP_API_TOKEN: mock_id
+          VITE_ZOHO_CLIENT_ID: mock_id
+      - name: Run Tests
+        run: cd ots-webapp && npm test -- --run
+      - name: Build Project
+        run: cd ots-webapp && npm run build

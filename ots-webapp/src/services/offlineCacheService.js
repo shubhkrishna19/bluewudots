@@ -8,6 +8,7 @@
  * - TTL support for data expiration
  * - Batch operations
  * - Sync state tracking
+ * - In-memory fallback for test/non-supported environments
  */
 
 const DB_NAME = 'BluewudOTSCache'
@@ -18,6 +19,8 @@ class OfflineCacheService {
     this.dbName = dbName
     this.version = version
     this.db = null
+    this.isAvailable = true
+    this.memoryStorage = {}
     this.stores = {
       orders: { keyPath: 'id', indexes: ['status', 'createdAt', 'syncStatus'] },
       customers: { keyPath: 'id', indexes: ['email', 'phone'] },
@@ -36,12 +39,19 @@ class OfflineCacheService {
    * @returns {Promise<void>}
    */
   async initialize() {
+    if (typeof indexedDB === 'undefined') {
+      console.warn('[OfflineCache] indexedDB not available. Falling back to in-memory storage.')
+      this.isAvailable = false
+      return true
+    }
+
     return new Promise((resolve, reject) => {
       const request = indexedDB.open(this.dbName, this.version)
 
       request.onerror = () => {
         console.error('Failed to open IndexedDB:', request.error)
-        reject(request.error)
+        this.isAvailable = false
+        resolve() // Resolve anyway to allow fallback
       }
 
       request.onsuccess = () => {
@@ -52,16 +62,12 @@ class OfflineCacheService {
 
       request.onupgradeneeded = (event) => {
         const db = event.target.result
-
-        // Create object stores
         Object.entries(this.stores).forEach(([storeName, config]) => {
           if (!db.objectStoreNames.contains(storeName)) {
             const store = db.createObjectStore(storeName, { keyPath: config.keyPath })
-
-            // Create indexes
-            ;(config.indexes || []).forEach((indexName) => {
-              store.createIndex(indexName, indexName, { unique: false })
-            })
+              ; (config.indexes || []).forEach((indexName) => {
+                store.createIndex(indexName, indexName, { unique: false })
+              })
           }
         })
       }
@@ -69,17 +75,15 @@ class OfflineCacheService {
   }
 
   /**
-   * Caches data in IndexedDB
-   * @param {string} storeName - Object store name
-   * @param {string} key - Data key (optional for auto-increment or keyPath based)
-   * @param {*} data - Data to cache
-   * @param {number} ttl - Time to live in milliseconds (optional)
-   * @returns {Promise<boolean>}
+   * Caches data
    */
   async cacheData(storeName, key, data, ttl = null) {
-    // Overload handling: if data is null, assume key is data (legacy support if needed, but strict here)
-    // Actually, if store has keyPath, 'key' arg might be ignored or used as index.
-    // But let's support flexible usage.
+    if (!this.isAvailable || !this.db) {
+      if (!this.memoryStorage[storeName]) this.memoryStorage[storeName] = {}
+      const actualKey = typeof key === 'string' || typeof key === 'number' ? key : data?.id || data?.key || 'default'
+      this.memoryStorage[storeName][actualKey] = data || key
+      return true
+    }
 
     let actualData = data
     if (data === undefined && typeof key === 'object') {
@@ -87,29 +91,26 @@ class OfflineCacheService {
     }
 
     try {
-      if (!this.db) await this.initialize()
-
       const tx = this.db.transaction([storeName], 'readwrite')
       const store = tx.objectStore(storeName)
 
-      const cacheEntry = {
-        ...actualData,
-        // If the store is 'cache' (key/value), we wrap it. If it's 'orders', we store as is.
-        // But the class logic below wraps everything?
-        // Let's adapt. If it's a generic store, we might not want wrapper.
-        // HACK: for 'cache' store, wrap. For others, store direct.
-      }
-
       if (storeName === 'cache') {
-        cacheEntry.key = key
-        cacheEntry.data = data
-        cacheEntry.timestamp = Date.now()
-        cacheEntry.ttl = ttl
-        cacheEntry.expiresAt = ttl ? Date.now() + ttl : null
+        const cacheEntry = {
+          key,
+          data: actualData,
+          timestamp: Date.now(),
+          ttl,
+          expiresAt: ttl ? Date.now() + ttl : null,
+        }
+        return new Promise((resolve, reject) => {
+          const request = store.put(cacheEntry)
+          request.onsuccess = () => resolve(true)
+          request.onerror = () => reject(request.error)
+        })
       }
 
       return new Promise((resolve, reject) => {
-        const request = store.put(storeName === 'cache' ? cacheEntry : actualData)
+        const request = store.put(actualData)
         request.onsuccess = () => resolve(true)
         request.onerror = () => reject(request.error)
       })
@@ -123,9 +124,11 @@ class OfflineCacheService {
    * Retrieves cached data
    */
   async retrieveCachedData(storeName, key) {
-    try {
-      if (!this.db) await this.initialize()
+    if (!this.isAvailable || !this.db) {
+      return this.memoryStorage[storeName]?.[key] || null
+    }
 
+    try {
       const tx = this.db.transaction([storeName], 'readonly')
       const store = tx.objectStore(storeName)
 
@@ -133,23 +136,16 @@ class OfflineCacheService {
         const request = store.get(key)
         request.onsuccess = () => {
           const entry = request.result
-
-          if (!entry) {
-            resolve(null)
-            return
-          }
+          if (!entry) return resolve(null)
 
           if (storeName === 'cache') {
-            // Check if expired
             if (entry.expiresAt && Date.now() > entry.expiresAt) {
               this.removeData(storeName, key)
-              resolve(null)
-              return
+              return resolve(null)
             }
-            resolve(entry.data)
-          } else {
-            resolve(entry)
+            return resolve(entry.data)
           }
+          resolve(entry)
         }
         request.onerror = () => reject(request.error)
       })
@@ -159,9 +155,15 @@ class OfflineCacheService {
     }
   }
 
+  /**
+   * Gets all data from a store
+   */
   async getAllData(storeName) {
+    if (!this.isAvailable || !this.db) {
+      return Object.values(this.memoryStorage[storeName] || {})
+    }
+
     try {
-      if (!this.db) await this.initialize()
       const tx = this.db.transaction([storeName], 'readonly')
       const store = tx.objectStore(storeName)
       return new Promise((resolve, reject) => {
@@ -171,13 +173,22 @@ class OfflineCacheService {
       })
     } catch (error) {
       console.error('Get all data failed:', error)
-      return []
+      return Object.values(this.memoryStorage[storeName] || {})
     }
   }
 
+  /**
+   * Removes data
+   */
   async removeData(storeName, key) {
+    if (!this.isAvailable || !this.db) {
+      if (this.memoryStorage[storeName]) {
+        delete this.memoryStorage[storeName][key]
+      }
+      return true
+    }
+
     try {
-      if (!this.db) await this.initialize()
       const tx = this.db.transaction([storeName], 'readwrite')
       const store = tx.objectStore(storeName)
       return new Promise((resolve, reject) => {
@@ -191,9 +202,16 @@ class OfflineCacheService {
     }
   }
 
+  /**
+   * Clears a store
+   */
   async clearStore(storeName) {
+    if (!this.isAvailable || !this.db) {
+      this.memoryStorage[storeName] = {}
+      return true
+    }
+
     try {
-      if (!this.db) await this.initialize()
       const tx = this.db.transaction([storeName], 'readwrite')
       const store = tx.objectStore(storeName)
       return new Promise((resolve, reject) => {

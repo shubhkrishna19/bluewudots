@@ -1,8 +1,10 @@
 import React from 'react'
 import { useAuth } from '../../context/AuthContext'
+import { useTranslation } from '../../context/LocalizationContext'
 
 const UserProfile = ({ onClose }) => {
   const { user, logout } = useAuth()
+  const { locale, changeLocale, availableLocales } = useTranslation()
 
   if (!user) return null
 
@@ -105,6 +107,34 @@ const UserProfile = ({ onClose }) => {
           <p style={{ marginTop: '8px', fontSize: '0.9rem' }}>
             Logged in: {new Date(user.loginTime).toLocaleString('en-IN')}
           </p>
+        </div>
+
+        {/* Language Preference */}
+        <div className="glass" style={{ padding: '16px', marginBottom: '20px' }}>
+          <p className="text-muted" style={{ fontSize: '0.75rem', marginBottom: '12px' }}>
+            LANGUAGE PREFERENCE
+          </p>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+            {availableLocales.map((l) => (
+              <button
+                key={l.code}
+                onClick={() => changeLocale(l.code)}
+                style={{
+                  padding: '8px',
+                  background: locale === l.code ? 'var(--primary)' : 'rgba(255,255,255,0.05)',
+                  border: locale === l.code ? 'none' : '1px solid var(--glass-border)',
+                  borderRadius: '6px',
+                  color: '#fff',
+                  cursor: 'pointer',
+                  fontSize: '0.85rem',
+                  transition: 'all 0.2s',
+                  textAlign: 'center'
+                }}
+              >
+                {l.name}
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* Permissions */}

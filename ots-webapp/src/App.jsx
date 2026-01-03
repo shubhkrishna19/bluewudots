@@ -2,11 +2,14 @@ import React, { useState, useEffect } from 'react'
 import './App.css'
 import { useData } from '@/context/DataContext'
 import { useAuth } from '@/context/AuthContext'
+import { useLocalization } from '@/context/LocalizationContext'
 import LoginPage from '@/components/Auth/LoginPage'
 import ErrorBoundary from '@/components/Shared/ErrorBoundary'
 import { Guard, ROLES, PERMISSIONS } from '@/services/rbacMiddleware'
 import ResponsiveLayout from '@/components/Shared/ResponsiveLayout'
 import MobileBottomNav from '@/components/Navigation/MobileBottomNav'
+import SkeletonLoader from '@/components/Common/SkeletonLoader'
+import NotificationCenter from '@/components/Notifications/NotificationCenter'
 
 // Service & Utility Imports
 import {
@@ -46,6 +49,7 @@ const LabelTemplateManager = React.lazy(() => import('@/components/Logistics/Lab
 const InternationalShipping = React.lazy(
   () => import('@/components/Logistics/InternationalShipping')
 )
+const LogisticsHQ = React.lazy(() => import('@/components/Logistics/LogisticsHQ'))
 
 // Inventory & Warehouse
 const SKUMaster = React.lazy(() => import('@/components/Commercial/SKUMaster'))
@@ -83,7 +87,6 @@ const QualityGate = React.lazy(() => import('@/components/SupplyChain/QualityGat
 const SettingsPanel = React.lazy(() => import('@/components/Settings/SettingsPanel'))
 const HelpCenter = React.lazy(() => import('@/components/Help/HelpCenter'))
 const ShortcutsModal = React.lazy(() => import('@/components/Help/ShortcutsModal'))
-const NotificationCenter = React.lazy(() => import('@/components/Notifications/NotificationCenter'))
 
 // Reuseable Loading Component
 const PageLoader = () => (
@@ -97,6 +100,7 @@ const PageLoader = () => (
 
 function App() {
   const { isAuthenticated, isLoading, user, hasPermission } = useAuth()
+  const { t, locale, changeLocale, availableLocales } = useLocalization()
   const [activeTab, setActiveTab] = useState('dashboard')
 
   // Set default tab based on role
@@ -107,7 +111,15 @@ function App() {
       setActiveTab('dashboard')
     }
   }, [user?.role])
-  const { syncSKUMaster, syncStatus, universalSearch, orders, skuMaster } = useData()
+
+  const {
+    syncSKUMaster,
+    syncStatus,
+    universalSearch,
+    orders,
+    skuMaster,
+  } = useData()
+
   const [searchQuery, setSearchQuery] = useState('')
   const [searchResults, setSearchResults] = useState(null)
   const [isSearchActive, setIsSearchActive] = useState(false)
@@ -123,7 +135,6 @@ function App() {
   useEffect(() => {
     if (isAuthenticated) {
       syncSKUMaster()
-
       initShortcuts()
 
       // Subscribe to Push Notifications
@@ -158,11 +169,9 @@ function App() {
   // Initialize enhanced keyboard shortcuts
   useEffect(() => {
     if (isAuthenticated) {
-      // Example: Ctrl+K opens search
       keyboardShortcuts.on('commandPalette', () => {
         document.querySelector('.search-bar input')?.focus()
       })
-      // Ctrl+N for new order
       keyboardShortcuts.on('newOrder', () => setShowQuickOrder(true))
 
       return () => {
@@ -177,15 +186,6 @@ function App() {
     setSearchQuery(query)
 
     if (query.length >= 2) {
-      // Use universalSearch from useData if available, otherwise fallback or implementation dependent
-      // The original code used searchService.universalSearch OR universalSearch from context.
-      // HEAD used universalSearch context function. Incoming used searchService directly.
-      // We will prefer the Context one if it exists to respect current architecture,
-      // but HEAD's universalSearch function signature might differ.
-      // HEAD: setSearchResults(universalSearch(e.target.value));
-      // Incoming: const results = searchService.universalSearch({ orders, skuMaster }, query);
-
-      // Let's try to use the one that seems most robust. 'universalSearch' from context likely wraps logic.
       if (typeof universalSearch === 'function') {
         setSearchResults(universalSearch(query))
       } else {
@@ -199,46 +199,67 @@ function App() {
     }
   }
 
-  // Show loading spinner while checking auth
   if (isLoading) {
     return (
-      <div
-        style={{
-          minHeight: '100vh',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          background: 'var(--bg-main)',
-        }}
-      >
-        <div style={{ textAlign: 'center' }}>
-          <div
-            className="logo-icon"
-            style={{
-              width: '80px',
-              height: '80px',
-              borderRadius: '20px',
-              background: 'linear-gradient(135deg, #6366F1, #8B5CF6)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              margin: '0 auto 20px',
-              fontSize: '2.5rem',
-              fontWeight: '800',
-              color: '#fff',
-            }}
-          >
+      <div className="flex h-screen items-center justify-center bg-slate-950">
+        <div className="text-center">
+          <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 text-4xl font-extrabold text-white shadow-xl shadow-indigo-500/20">
             B
           </div>
-          <p style={{ color: 'var(--text-muted)' }}>Loading...</p>
+          <p className="text-slate-400 font-medium">Loading...</p>
         </div>
       </div>
     )
   }
 
-  // Show login if not authenticated
   if (!isAuthenticated) {
     return <LoginPage />
+  }
+
+  const renderView = () => {
+    switch (activeTab) {
+      case 'dashboard': return <AnalyticsDashboard />
+      case 'metrics': return <PerformanceMetrics />
+      case 'orderlist': return <OrderList />
+      case 'bulk': return <BulkActions />
+      case 'rto': return <RTOManager />
+      case 'returns': return <ReturnsManager />
+      case 'logistics': return <CarrierSelection />
+      case 'intlship': return <InternationalShipping />
+      case 'logisticshq': return <LogisticsHQ />
+      case 'carrierperf': return <CarrierPerformance />
+      case 'label-templates': return <LabelTemplateManager />
+      case 'zones': return <ZoneMap />
+      case 'tracking': return <ShipmentTracker />
+      case 'orders': return <UniversalImporter />
+      case 'warehouse': return <WarehouseManager />
+      case 'inventory': return <SKUMaster />
+      case 'stockoptix': return <StockOptix />
+      case 'dispatcher': return <BarcodeDispatcher />
+      case 'automation': return <AmazonMapper />
+      case 'invoice': return <InvoiceGenerator />
+      case 'finance': return <FinancialCenter />
+      case 'commhub': return <CommercialHub />
+      case 'guards': return <MarginGuard />
+      case 'reconciliation': return <MarketplaceReconciliation />
+      case 'globalledger': return <GlobalLedger />
+      case 'cod': return <CODReconciliation />
+      case 'dealer-portal': return <DealerPortal />
+      case 'dealers': return <DealerLookup />
+      case 'customers': return <CustomerLookup />
+      case 'custintel': return <CustomerAnalytics />
+      case 'marketing': return <MarketingCenter />
+      case 'whatsapp-templates': return <WhatsAppTemplateManager />
+      case 'production': return <ProductionTracker />
+      case 'qa': return <QualityGate />
+      case 'marketplace-recon': return <MarketplaceReconciliation />
+      case 'activity': return <ActivityLog />
+      case 'ml-forecast': return <DemandForecast />
+      case 'settings': return <SettingsPanel />
+      case 'help': return <HelpCenter />
+      case 'performance': return <PerformanceMetrics />
+      default: return <AnalyticsDashboard />
+    }
   }
 
   return (
@@ -249,124 +270,61 @@ function App() {
             <nav className={`sidebar glass ${isMobileMenuOpen ? 'open' : ''}`}>
               <div className="logo-section">
                 <div className="logo-icon">B</div>
-                <h2>
-                  Bluewud<span>OTS</span>
-                </h2>
-                <button className="mobile-close" onClick={() => setIsMobileMenuOpen(false)}>
-                  ✕
-                </button>
+                <h2>Bluewud<span>OTS</span></h2>
+                <button className="mobile-close" onClick={() => setIsMobileMenuOpen(false)}>×</button>
               </div>
 
               <div className="nav-items">
                 <div className="nav-group">
-                  <label>OPERATIONS</label>
+                  <label>{t('nav.ops', 'OPERATIONS')}</label>
                   <ul className="nav-links">
-                    <li
-                      className={activeTab === 'dashboard' ? 'active' : ''}
-                      onClick={() => {
-                        setActiveTab('dashboard')
-                        setIsMobileMenuOpen(false)
-                      }}
-                    >
-                      📊 Analytics
-                    </li>
-
-                    <Guard user={user} permission={PERMISSIONS.VIEW_FINANCE}>
-                      <li
-                        className={activeTab === 'marketplace-recon' ? 'active' : ''}
-                        onClick={() => {
-                          setActiveTab('marketplace-recon')
-                          setIsMobileMenuOpen(false)
-                        }}
-                      >
-                        📊 Marketplace Recon
+                    <Guard user={user} permission={PERMISSIONS.VIEW_ANALYTICS}>
+                      <li className={activeTab === 'dashboard' ? 'active' : ''} onClick={() => { setActiveTab('dashboard'); setIsMobileMenuOpen(false); }}>
+                        📊 {t('nav.analytics', 'Analytics')}
                       </li>
                     </Guard>
-                    <li
-                      className={activeTab === 'returns' ? 'active' : ''}
-                      onClick={() => {
-                        setActiveTab('returns')
-                        setIsMobileMenuOpen(false)
-                      }}
-                    >
-                      🔄 Returns
+
+                    <Guard user={user} permission={PERMISSIONS.VIEW_FINANCE}>
+                      <li className={activeTab === 'marketplace-recon' ? 'active' : ''} onClick={() => { setActiveTab('marketplace-recon'); setIsMobileMenuOpen(false); }}>
+                        📊 {t('nav.audit', 'Marketplace Audit')}
+                      </li>
+                    </Guard>
+
+                    <li className={activeTab === 'returns' ? 'active' : ''} onClick={() => { setActiveTab('returns'); setIsMobileMenuOpen(false); }}>
+                      🔄 {t('nav.returns', 'Returns')}
                     </li>
+
                     <Guard user={user} permission={PERMISSIONS.VIEW_REPORTS}>
-                      <li
-                        className={activeTab === 'metrics' ? 'active' : ''}
-                        onClick={() => {
-                          setActiveTab('metrics')
-                          setIsMobileMenuOpen(false)
-                        }}
-                      >
-                        📈 KPIs
+                      <li className={activeTab === 'metrics' ? 'active' : ''} onClick={() => { setActiveTab('metrics'); setIsMobileMenuOpen(false); }}>
+                        📈 {t('nav.kpis', 'KPIs')}
                       </li>
                     </Guard>
 
                     <Guard user={user} permission={PERMISSIONS.MANAGE_ORDERS}>
-                      <li
-                        className={activeTab === 'orderlist' ? 'active' : ''}
-                        onClick={() => {
-                          setActiveTab('orderlist')
-                          setIsMobileMenuOpen(false)
-                        }}
-                      >
-                        📋 Orders
+                      <li className={activeTab === 'orderlist' ? 'active' : ''} onClick={() => { setActiveTab('orderlist'); setIsMobileMenuOpen(false); }}>
+                        📋 {t('nav.orders', 'Orders')}
                       </li>
                     </Guard>
 
                     <Guard user={user} permission={PERMISSIONS.PLACE_WHOLESALE_ORDER}>
-                      <li
-                        className={activeTab === 'dealer-portal' ? 'active' : ''}
-                        onClick={() => {
-                          setActiveTab('dealer-portal')
-                          setIsMobileMenuOpen(false)
-                        }}
-                      >
-                        🛒 Partner Portal
+                      <li className={activeTab === 'dealer-portal' ? 'active' : ''} onClick={() => { setActiveTab('dealer-portal'); setIsMobileMenuOpen(false); }}>
+                        🛒 {t('nav.partner_portal', 'Partner Portal')}
                       </li>
                     </Guard>
 
                     <Guard user={user} permission={PERMISSIONS.MANAGE_ORDERS}>
-                      <li
-                        className={activeTab === 'bulk' ? 'active' : ''}
-                        onClick={() => {
-                          setActiveTab('bulk')
-                          setIsMobileMenuOpen(false)
-                        }}
-                      >
-                        ⚡ Bulk
+                      <li className={activeTab === 'bulk' ? 'active' : ''} onClick={() => { setActiveTab('bulk'); setIsMobileMenuOpen(false); }}>
+                        ⚡ {t('nav.bulk', 'Bulk Actions')}
                       </li>
                     </Guard>
 
-                    <li
-                      className={activeTab === 'tracking' ? 'active' : ''}
-                      onClick={() => {
-                        setActiveTab('tracking')
-                        setIsMobileMenuOpen(false)
-                      }}
-                    >
-                      📡 Tracking
+                    <li className={activeTab === 'tracking' ? 'active' : ''} onClick={() => { setActiveTab('tracking'); setIsMobileMenuOpen(false); }}>
+                      📡 {t('nav.tracking', 'Tracking')}
                     </li>
 
                     <Guard user={user} permission={PERMISSIONS.MANAGE_ORDERS}>
-                      <li
-                        className={activeTab === 'rto' ? 'active' : ''}
-                        onClick={() => {
-                          setActiveTab('rto')
-                          setIsMobileMenuOpen(false)
-                        }}
-                      >
-                        ↩️ RTO
-                      </li>
-                      <li
-                        className={activeTab === 'returns' ? 'active' : ''}
-                        onClick={() => {
-                          setActiveTab('returns')
-                          setIsMobileMenuOpen(false)
-                        }}
-                      >
-                        🔄 Returns (RMA)
+                      <li className={activeTab === 'rto' ? 'active' : ''} onClick={() => { setActiveTab('rto'); setIsMobileMenuOpen(false); }}>
+                        ↩️ {t('nav.rto', 'RTO')}
                       </li>
                     </Guard>
                   </ul>
@@ -374,61 +332,25 @@ function App() {
 
                 <Guard user={user} permission={PERMISSIONS.MANAGE_INVENTORY}>
                   <div className="nav-group">
-                    <label>INVENTORY & IMPORT</label>
+                    <label>{t('nav.fulfillment', 'FULFILLMENT')}</label>
                     <ul className="nav-links">
-                      <li
-                        className={activeTab === 'inventory' ? 'active' : ''}
-                        onClick={() => {
-                          setActiveTab('inventory')
-                          setIsMobileMenuOpen(false)
-                        }}
-                      >
-                        🏷️ SKU Master
+                      <li className={activeTab === 'inventory' ? 'active' : ''} onClick={() => { setActiveTab('inventory'); setIsMobileMenuOpen(false); }}>
+                        🏷️ {t('nav.sku_master', 'Inventory')}
                       </li>
-                      <li
-                        className={activeTab === 'stockoptix' ? 'active' : ''}
-                        onClick={() => {
-                          setActiveTab('stockoptix')
-                          setIsMobileMenuOpen(false)
-                        }}
-                      >
-                        🧠 StockOptix™
+                      <li className={activeTab === 'stockoptix' ? 'active' : ''} onClick={() => { setActiveTab('stockoptix'); setIsMobileMenuOpen(false); }}>
+                        🧠 {t('nav.stockoptix', 'StockOptix')}
                       </li>
-                      <li
-                        className={activeTab === 'warehouse' ? 'active' : ''}
-                        onClick={() => {
-                          setActiveTab('warehouse')
-                          setIsMobileMenuOpen(false)
-                        }}
-                      >
-                        🏭 Warehouse
+                      <li className={activeTab === 'warehouse' ? 'active' : ''} onClick={() => { setActiveTab('warehouse'); setIsMobileMenuOpen(false); }}>
+                        🏭 {t('nav.warehouse', 'Warehouse')}
                       </li>
-                      <li
-                        className={activeTab === 'dispatcher' ? 'active' : ''}
-                        onClick={() => {
-                          setActiveTab('dispatcher')
-                          setIsMobileMenuOpen(false)
-                        }}
-                      >
-                        📷 Dispatch
+                      <li className={activeTab === 'dispatcher' ? 'active' : ''} onClick={() => { setActiveTab('dispatcher'); setIsMobileMenuOpen(false); }}>
+                        📷 {t('nav.dispatch', 'Dispatch')}
                       </li>
-                      <li
-                        className={activeTab === 'orders' ? 'active' : ''}
-                        onClick={() => {
-                          setActiveTab('orders')
-                          setIsMobileMenuOpen(false)
-                        }}
-                      >
-                        📤 Universal Import
+                      <li className={activeTab === 'orders' ? 'active' : ''} onClick={() => { setActiveTab('orders'); setIsMobileMenuOpen(false); }}>
+                        📤 {t('nav.importer', 'Import')}
                       </li>
-                      <li
-                        className={activeTab === 'automation' ? 'active' : ''}
-                        onClick={() => {
-                          setActiveTab('automation')
-                          setIsMobileMenuOpen(false)
-                        }}
-                      >
-                        🤖 Amazon Mapper
+                      <li className={activeTab === 'automation' ? 'active' : ''} onClick={() => { setActiveTab('automation'); setIsMobileMenuOpen(false); }}>
+                        🤖 {t('nav.amazon_mapper', 'Amazon Mapper')}
                       </li>
                     </ul>
                   </div>
@@ -436,52 +358,19 @@ function App() {
 
                 <Guard user={user} permission={PERMISSIONS.MANAGE_CARRIERS}>
                   <div className="nav-group">
-                    <label>LOGISTICS</label>
+                    <label>{t('nav.logistics', 'LOGISTICS')}</label>
                     <ul className="nav-links">
-                      <li
-                        className={activeTab === 'logistics' ? 'active' : ''}
-                        onClick={() => {
-                          setActiveTab('logistics')
-                          setIsMobileMenuOpen(false)
-                        }}
-                      >
-                        🚚 Carriers
+                      <li className={activeTab === 'logistics' ? 'active' : ''} onClick={() => { setActiveTab('logistics'); setIsMobileMenuOpen(false); }}>
+                        🚚 {t('nav.logistics', 'Carriers')}
                       </li>
-                      <li
-                        className={activeTab === 'intlship' ? 'active' : ''}
-                        onClick={() => {
-                          setActiveTab('intlship')
-                          setIsMobileMenuOpen(false)
-                        }}
-                      >
-                        🌐 Int'l Shipping
+                      <li className={activeTab === 'logisticshq' ? 'active' : ''} onClick={() => { setActiveTab('logisticshq'); setIsMobileMenuOpen(false); }}>
+                        🎯 {t('nav.logistics_hq', 'Logistics HQ')}
                       </li>
-                      <li
-                        className={activeTab === 'carrierperf' ? 'active' : ''}
-                        onClick={() => {
-                          setActiveTab('carrierperf')
-                          setIsMobileMenuOpen(false)
-                        }}
-                      >
-                        🏆 Performance
+                      <li className={activeTab === 'intlship' ? 'active' : ''} onClick={() => { setActiveTab('intlship'); setIsMobileMenuOpen(false); }}>
+                        🌐 {t('nav.intl_shipping', 'Intl Shipping')}
                       </li>
-                      <li
-                        className={activeTab === 'label-templates' ? 'active' : ''}
-                        onClick={() => {
-                          setActiveTab('label-templates')
-                          setIsMobileMenuOpen(false)
-                        }}
-                      >
-                        🏷️ Label Templates
-                      </li>
-                      <li
-                        className={activeTab === 'zones' ? 'active' : ''}
-                        onClick={() => {
-                          setActiveTab('zones')
-                          setIsMobileMenuOpen(false)
-                        }}
-                      >
-                        🗺️ Zones
+                      <li className={activeTab === 'carrierperf' ? 'active' : ''} onClick={() => { setActiveTab('carrierperf'); setIsMobileMenuOpen(false); }}>
+                        🏆 {t('nav.performance', 'Carrier Perf')}
                       </li>
                     </ul>
                   </div>
@@ -489,242 +378,58 @@ function App() {
 
                 <Guard user={user} permission={PERMISSIONS.PROCESS_PAYMENTS}>
                   <div className="nav-group">
-                    <label>FINANCE</label>
+                    <label>{t('nav.finance', 'FINANCE')}</label>
                     <ul className="nav-links">
-                      <li
-                        className={activeTab === 'finance' ? 'active' : ''}
-                        onClick={() => {
-                          setActiveTab('finance')
-                          setIsMobileMenuOpen(false)
-                        }}
-                      >
-                        💹 Financials
+                      <li className={activeTab === 'finance' ? 'active' : ''} onClick={() => { setActiveTab('finance'); setIsMobileMenuOpen(false); }}>
+                        💹 {t('nav.finance', 'Financials')}
                       </li>
-                      <li
-                        className={activeTab === 'commhub' ? 'active' : ''}
-                        onClick={() => {
-                          setActiveTab('commhub')
-                          setIsMobileMenuOpen(false)
-                        }}
-                      >
-                        💎 Comm. Hub
+                      <li className={activeTab === 'commhub' ? 'active' : ''} onClick={() => { setActiveTab('commhub'); setIsMobileMenuOpen(false); }}>
+                        💎 {t('nav.commhub', 'Comm. Hub')}
                       </li>
-                      <li
-                        className={activeTab === 'guards' ? 'active' : ''}
-                        onClick={() => {
-                          setActiveTab('guards')
-                          setIsMobileMenuOpen(false)
-                        }}
-                      >
-                        🛡️ Margin Guard
-                      </li>
-                      <li
-                        className={activeTab === 'globalledger' ? 'active' : ''}
-                        onClick={() => {
-                          setActiveTab('globalledger')
-                          setIsMobileMenuOpen(false)
-                        }}
-                      >
-                        🌍 Global Ledger
-                      </li>
-                      <li
-                        className={activeTab === 'reconciliation' ? 'active' : ''}
-                        onClick={() => {
-                          setActiveTab('reconciliation')
-                          setIsMobileMenuOpen(false)
-                        }}
-                      >
-                        ⚖️ Marketplace Audit
-                      </li>
-                      <li
-                        className={activeTab === 'invoice' ? 'active' : ''}
-                        onClick={() => {
-                          setActiveTab('invoice')
-                          setIsMobileMenuOpen(false)
-                        }}
-                      >
-                        🧾 Invoicing
-                      </li>
-                      <li
-                        className={activeTab === 'cod' ? 'active' : ''}
-                        onClick={() => {
-                          setActiveTab('cod')
-                          setIsMobileMenuOpen(false)
-                        }}
-                      >
-                        💰 COD Recon
+                      <li className={activeTab === 'globalledger' ? 'active' : ''} onClick={() => { setActiveTab('globalledger'); setIsMobileMenuOpen(false); }}>
+                        🌍 {t('nav.ledger', 'Global Ledger')}
                       </li>
                     </ul>
                   </div>
                 </Guard>
 
-                <Guard user={user} permission={PERMISSIONS.VIEW_REPORTS}>
-                  <div className="nav-group">
-                    <label>CRM & MARKETING</label>
-                    <ul className="nav-links">
-                      <li
-                        className={activeTab === 'customers' ? 'active' : ''}
-                        onClick={() => {
-                          setActiveTab('customers')
-                          setIsMobileMenuOpen(false)
-                        }}
-                      >
-                        👥 Customers
-                      </li>
-                      <li
-                        className={activeTab === 'custintel' ? 'active' : ''}
-                        onClick={() => {
-                          setActiveTab('custintel')
-                          setIsMobileMenuOpen(false)
-                        }}
-                      >
-                        💎 Customer Intel
-                      </li>
-                      <li
-                        className={activeTab === 'marketing' ? 'active' : ''}
-                        onClick={() => {
-                          setActiveTab('marketing')
-                          setIsMobileMenuOpen(false)
-                        }}
-                      >
-                        🎯 Marketing
-                      </li>
-                      <li
-                        className={activeTab === 'whatsapp-templates' ? 'active' : ''}
-                        onClick={() => {
-                          setActiveTab('whatsapp-templates')
-                          setIsMobileMenuOpen(false)
-                        }}
-                      >
-                        💬 WhatsApp
-                      </li>
-                      <li
-                        className={activeTab === 'dealers' ? 'active' : ''}
-                        onClick={() => {
-                          setActiveTab('dealers')
-                          setIsMobileMenuOpen(false)
-                        }}
-                      >
-                        🤝 Dealers
-                      </li>
-                    </ul>
+                <div className="nav-group mb-6 mt-auto border-t border-slate-800 pt-4">
+                  <label>{t('common.language', 'LANGUAGE')}</label>
+                  <div className="px-4 py-2">
+                    <select
+                      className="glass w-full p-2 text-xs border-none outline-none appearance-none cursor-pointer text-slate-300"
+                      value={locale}
+                      onChange={(e) => changeLocale(e.target.value)}
+                    >
+                      {availableLocales.map((l) => (
+                        <option key={l.code} value={l.code} className="bg-slate-900">
+                          {l.name}
+                        </option>
+                      ))}
+                    </select>
                   </div>
-                </Guard>
-
-                <Guard user={user} permission={PERMISSIONS.PROCESS_QC}>
-                  <div className="nav-group">
-                    <label>SUPPLY CHAIN</label>
-                    <ul className="nav-links">
-                      <li
-                        className={activeTab === 'production' ? 'active' : ''}
-                        onClick={() => {
-                          setActiveTab('production')
-                          setIsMobileMenuOpen(false)
-                        }}
-                      >
-                        🏭 Production
-                      </li>
-                      <li
-                        className={activeTab === 'qa' ? 'active' : ''}
-                        onClick={() => {
-                          setActiveTab('qa')
-                          setIsMobileMenuOpen(false)
-                        }}
-                      >
-                        💎 Quality Gate
-                      </li>
-                    </ul>
-                  </div>
-                </Guard>
+                </div>
 
                 <div className="nav-group">
-                  <label>ADMIN & SUPPORT</label>
                   <ul className="nav-links">
-                    <Guard user={user} permission={PERMISSIONS.VIEW_ACTIVITY_LOG}>
-                      <li
-                        className={activeTab === 'activity' ? 'active' : ''}
-                        onClick={() => {
-                          setActiveTab('activity')
-                          setIsMobileMenuOpen(false)
-                        }}
-                      >
-                        📜 Activity Log
-                      </li>
-                    </Guard>
-                    <Guard user={user} permission={PERMISSIONS.VIEW_REPORTS}>
-                      <li
-                        className={activeTab === 'reports' ? 'active' : ''}
-                        onClick={() => {
-                          setActiveTab('reports')
-                          setIsMobileMenuOpen(false)
-                        }}
-                      >
-                        📄 Export
-                      </li>
-                    </Guard>
-                    <li
-                      className={activeTab === 'performance' ? 'active' : ''}
-                      onClick={() => {
-                        setActiveTab('performance')
-                        setIsMobileMenuOpen(false)
-                      }}
-                    >
-                      📈 Performance Score
-                    </li>
-                    <li
-                      className={activeTab === 'ml-forecast' ? 'active' : ''}
-                      onClick={() => {
-                        setActiveTab('ml-forecast')
-                        setIsMobileMenuOpen(false)
-                      }}
-                    >
-                      🧠 Demand Forecast
-                    </li>
-                    <li
-                      className={activeTab === 'roadmap' ? 'active' : ''}
-                      onClick={() => {
-                        setActiveTab('roadmap')
-                        setIsMobileMenuOpen(false)
-                      }}
-                    >
-                      🛣️ Product Roadmap
-                    </li>
-                    <li
-                      className={activeTab === 'help' ? 'active' : ''}
-                      onClick={() => {
-                        setActiveTab('help')
-                        setIsMobileMenuOpen(false)
-                      }}
-                    >
-                      ❓ Help
-                    </li>
                     <Guard user={user} permission={PERMISSIONS.MANAGE_SETTINGS}>
-                      <li
-                        className={activeTab === 'settings' ? 'active' : ''}
-                        onClick={() => {
-                          setActiveTab('settings')
-                          setIsMobileMenuOpen(false)
-                        }}
-                      >
-                        ⚙️ Settings
+                      <li className={activeTab === 'settings' ? 'active' : ''} onClick={() => { setActiveTab('settings'); setIsMobileMenuOpen(false); }}>
+                        ⚙️ {t('nav.settings', 'Settings')}
                       </li>
                     </Guard>
+                    <li className={activeTab === 'help' ? 'active' : ''} onClick={() => { setActiveTab('help'); setIsMobileMenuOpen(false); }}>
+                      ❓ {t('nav.help', 'Help')}
+                    </li>
                   </ul>
                 </div>
               </div>
 
               <div className="nav-footer glass">
-                <div
-                  className="user-profile"
-                  style={{ cursor: 'pointer' }}
-                  onClick={() => setShowProfile(true)}
-                >
+                <div className="user-profile" style={{ cursor: 'pointer' }} onClick={() => setShowProfile(true)}>
                   <div className="avatar">{user?.avatar || 'U'}</div>
                   <div className="user-info">
                     <p className="username">{user?.name || 'User'}</p>
-                    <p className="role">
-                      {user?.role?.charAt(0).toUpperCase() + user?.role?.slice(1) || 'Role'}
-                    </p>
+                    <p className="role">{user?.role?.charAt(0).toUpperCase() + user?.role?.slice(1) || 'Role'}</p>
                   </div>
                 </div>
               </div>
@@ -733,71 +438,36 @@ function App() {
         >
           <main className="main-content">
             <header className="top-bar">
-              <button className="hamburger" onClick={() => setIsMobileMenuOpen(true)}>
-                ☰
-              </button>
-              <div className="search-container">
+              <button className="hamburger" onClick={() => setIsMobileMenuOpen(true)}>☰</button>
+              <div className="header-actions">
                 <div className="search-bar glass">
                   <span className="search-icon">🔍</span>
                   <input
                     type="text"
-                    placeholder="Search orders, customers, or SKUs (Fuzzy)..."
+                    placeholder={t('common.search', 'Search orders, customers, or SKUs...')}
                     value={searchQuery}
                     onChange={handleSearch}
                     onFocus={() => searchQuery.length >= 2 && setIsSearchActive(true)}
                   />
                 </div>
-
-                {/* Using the search dropdown from incoming which supports 'searchResults' state structure */}
                 {isSearchActive && searchResults && (
                   <div className="search-dropdown glass animate-fade">
                     <div className="search-results-header">
                       <span>Fuzzy Match Results ({searchResults.totalResults})</span>
-                      <button onClick={() => setIsSearchActive(false)} className="close-search">
-                        ×
-                      </button>
+                      <button onClick={() => setIsSearchActive(false)} className="close-search">×</button>
                     </div>
                     <div className="search-scroll">
-                      {searchResults.orders && searchResults.orders.length > 0 && (
+                      {searchResults.orders?.length > 0 && (
                         <div className="result-group">
                           <label>Orders</label>
                           {searchResults.orders.map((order) => (
-                            <div
-                              key={order.id}
-                              className="result-item"
-                              onClick={() => {
-                                setActiveTab('orderlist')
-                                setIsSearchActive(false)
-                              }}
-                            >
+                            <div key={order.id} className="result-item" onClick={() => { setActiveTab('orderlist'); setIsSearchActive(false); }}>
                               <span className="id">{order.id}</span>
-                              <span className="meta">
-                                {order.customerName} • {order.status}
-                              </span>
+                              <span className="meta">{order.customerName} • {order.status}</span>
                             </div>
                           ))}
                         </div>
                       )}
-
-                      {searchResults.skus && searchResults.skus.length > 0 && (
-                        <div className="result-group">
-                          <label>SKU Catalog</label>
-                          {searchResults.skus.map((sku) => (
-                            <div
-                              key={sku.code}
-                              className="result-item"
-                              onClick={() => {
-                                setActiveTab('inventory')
-                                setIsSearchActive(false)
-                              }}
-                            >
-                              <span className="id">{sku.code}</span>
-                              <span className="meta">{sku.name}</span>
-                            </div>
-                          ))}
-                        </div>
-                      )}
-
                       {searchResults.totalResults === 0 && (
                         <div className="no-results">No matches found for "{searchQuery}"</div>
                       )}
@@ -808,166 +478,37 @@ function App() {
               <div className="actions">
                 <div className={`sync-indicator ${syncStatus}`} title={`Status: ${syncStatus}`}>
                   <span className="dot"></span>
-                  <span className="sync-text">
-                    {syncStatus ? syncStatus.toUpperCase() : 'SYNC'}
-                  </span>
+                  <span className="sync-text">{syncStatus?.toUpperCase() || 'SYNC'}</span>
                 </div>
                 <button className="btn-primary glass-hover" onClick={() => setShowQuickOrder(true)}>
-                  + New Order
+                  + {t('dashboard.new_order', 'New Order')}
                 </button>
-                <div
-                  className="notifications glass"
-                  style={{ cursor: 'pointer', position: 'relative' }}
-                  onClick={() => setShowNotifications(true)}
-                >
+                <div className="notifications glass" style={{ cursor: 'pointer', position: 'relative' }} onClick={() => setShowNotifications(true)}>
                   🔔
-                  <span
-                    style={{
-                      position: 'absolute',
-                      top: '-4px',
-                      right: '-4px',
-                      width: '10px',
-                      height: '10px',
-                      background: 'var(--danger)',
-                      borderRadius: '50%',
-                    }}
-                  ></span>
+                  <span style={{ position: 'absolute', top: '-4px', right: '-4px', width: '10px', height: '10px', background: 'var(--danger)', borderRadius: '50%' }}></span>
                 </div>
               </div>
             </header>
 
             <section className="view-container">
               <React.Suspense fallback={<PageLoader />}>
-                <Guard
-                  user={user}
-                  permission={PERMISSIONS.VIEW_ANALYTICS}
-                  fallback={
-                    <div className="glass p-20 text-center">Please contact admin for access.</div>
-                  }
-                >
-                  {activeTab === 'dashboard' && <AnalyticsDashboard />}
-                </Guard>
-
-                <Guard
-                  user={user}
-                  permission={PERMISSIONS.VIEW_REPORTS}
-                  fallback={<div className="glass p-20 text-center">🚫 Restricted View</div>}
-                >
-                  {activeTab === 'metrics' && <PerformanceMetrics />}
-                </Guard>
-
-                <Guard
-                  user={user}
-                  permission={PERMISSIONS.MANAGE_ORDERS}
-                  fallback={<div className="glass p-20 text-center">🚫 Access Denied</div>}
-                >
-                  {activeTab === 'orderlist' && <OrderList />}
-                  {activeTab === 'bulk' && <BulkActions />}
-                  {activeTab === 'rto' && <RTOManager />}
-                  {activeTab === 'returns' && <ReturnsManager />}
-                </Guard>
-
-                <Guard user={user} permission={PERMISSIONS.MANAGE_CARRIERS}>
-                  {activeTab === 'logistics' && <CarrierSelection />}
-                  {activeTab === 'intlship' && <InternationalShipping />}
-                  {activeTab === 'carrierperf' && <CarrierPerformance />}
-                  {activeTab === 'label-templates' && <LabelTemplateManager />}
-                  {activeTab === 'zones' && <ZoneMap />}
-                </Guard>
-
-                {activeTab === 'tracking' && <ShipmentTracker />}
-
-                <Guard user={user} permission={PERMISSIONS.MANAGE_INVENTORY}>
-                  {activeTab === 'orders' && <UniversalImporter />}
-                  {activeTab === 'warehouse' && <WarehouseManager />}
-                  {activeTab === 'inventory' && <SKUMaster />}
-                  {activeTab === 'stockoptix' && <StockOptix />}
-                  {activeTab === 'dispatcher' && <BarcodeDispatcher />}
-                  {activeTab === 'automation' && <AmazonMapper />}
-                </Guard>
-
-                <Guard user={user} permission={PERMISSIONS.PROCESS_PAYMENTS}>
-                  {activeTab === 'invoice' && <InvoiceGenerator />}
-                  {activeTab === 'finance' && <FinancialCenter />}
-                  {activeTab === 'commhub' && <CommercialHub />}
-                  {activeTab === 'guards' && <MarginGuard />}
-                  {activeTab === 'reconciliation' && <MarketplaceReconciliation />}
-                  {activeTab === 'globalledger' && <GlobalLedger />}
-                  {activeTab === 'cod' && <CODReconciliation />}
-                </Guard>
-
-                <Guard user={user} permission={PERMISSIONS.PLACE_WHOLESALE_ORDER}>
-                  {activeTab === 'dealer-portal' && <DealerPortal />}
-                </Guard>
-
-                <Guard user={user} permission={PERMISSIONS.VIEW_REPORTS}>
-                  {activeTab === 'dealers' && <DealerLookup />}
-                  {activeTab === 'customers' && <CustomerLookup />}
-                  {activeTab === 'custintel' && <CustomerAnalytics />}
-                  {activeTab === 'marketing' && <MarketingCenter />}
-                  {activeTab === 'whatsapp-templates' && <WhatsAppTemplateManager />}
-                  {activeTab === 'reports' && <ExportTools />}
-                </Guard>
-
-                <Guard user={user} permission={PERMISSIONS.PROCESS_QC}>
-                  {activeTab === 'production' && <ProductionTracker />}
-                  {activeTab === 'qa' && <QualityGate />}
-                </Guard>
-
-                <Guard user={user} permission={PERMISSIONS.VIEW_FINANCE}>
-                  {activeTab === 'marketplace-recon' && <MarketplaceReconciliation />}
-                </Guard>
-
-                {activeTab === 'returns' && <ReturnsDashboard />}
-
-                <Guard user={user} permission={PERMISSIONS.VIEW_ACTIVITY_LOG}>
-                  {activeTab === 'activity' && <ActivityLog />}
-                </Guard>
-
-                <Guard user={user} permission={PERMISSIONS.VIEW_ANALYTICS}>
-                  {activeTab === 'ml-forecast' && <DemandForecast />}
-                </Guard>
-
-                {activeTab === 'performance' && <PerformanceMetrics />}
-                {activeTab === 'roadmap' && <RoadmapPage />}
-                {activeTab === 'help' && <HelpCenter />}
-
-                <Guard user={user} permission={PERMISSIONS.MANAGE_SETTINGS}>
-                  {activeTab === 'settings' && <SettingsPanel />}
-                </Guard>
+                <div key={activeTab} className="page-transition">
+                  {renderView()}
+                </div>
               </React.Suspense>
             </section>
           </main>
         </ResponsiveLayout>
 
-        {/* Overlays/Modals */}
         {showQuickOrder && (
-          <div
-            className="modal-overlay"
-            style={{
-              position: 'fixed',
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              background: 'rgba(0,0,0,0.8)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              zIndex: 1000,
-            }}
-            onClick={() => setShowQuickOrder(false)}
-          >
+          <div className="modal-overlay" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }} onClick={() => setShowQuickOrder(false)}>
             <div style={{ maxWidth: '700px', width: '90%' }} onClick={(e) => e.stopPropagation()}>
               <QuickOrderForm onClose={() => setShowQuickOrder(false)} />
             </div>
           </div>
         )}
 
-        <NotificationCenter
-          isOpen={showNotifications}
-          onClose={() => setShowNotifications(false)}
-        />
+        <NotificationCenter isOpen={showNotifications} onClose={() => setShowNotifications(false)} />
         {showProfile && <UserProfile onClose={() => setShowProfile(false)} />}
         {showShortcuts && <ShortcutsModal onClose={() => setShowShortcuts(false)} />}
         <MobileBottomNav activeTab={activeTab} onTabChange={setActiveTab} />

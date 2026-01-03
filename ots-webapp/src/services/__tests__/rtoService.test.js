@@ -1,5 +1,4 @@
-import { describe, it, expect } from 'vitest'
-import { rtoService } from '../rtoService'
+import rtoService from '../rtoService'
 
 describe('RTOService', () => {
   describe('predictRisk', () => {

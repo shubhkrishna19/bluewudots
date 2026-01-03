@@ -154,6 +154,11 @@ class PushNotificationService {
    */
   async sendNotification(title, options = {}) {
     try {
+      if (typeof navigator === 'undefined' || !navigator.serviceWorker) {
+        console.warn('Push Notifications not supported in this environment')
+        return
+      }
+
       if (!this.swRegistration) {
         // Try to get registration if missing
         this.swRegistration = await navigator.serviceWorker.ready
@@ -303,6 +308,8 @@ class PushNotificationService {
 // This ensures 'import pushNotificationService from ...' works as expected in App.jsx
 const vapidKey = import.meta.env.VITE_VAPID_PUBLIC_KEY || ''
 const pushNotificationInstance = new PushNotificationService(vapidKey)
+
+export const subscribeUser = (userId) => pushNotificationInstance.subscribeUser(userId)
 
 export const initPushNotificationService = (key) => {
   // Re-initialize if needed with specific key, though typically env var is enough

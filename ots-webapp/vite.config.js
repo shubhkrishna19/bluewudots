@@ -62,4 +62,9 @@ export default defineConfig({
   optimizeDeps: {
     include: ['react', 'react-dom', 'recharts', 'lucide-react'],
   },
+  test: {
+    globals: true,
+    environment: 'jsdom',
+    setupFiles: ['./src/tests/setup.js'],
+  },
 })

@@ -7,6 +7,16 @@ import { generateOrderId } from '../utils/dataUtils'
 
 import { jsPDF } from 'jspdf'
 
+export const ReturnStatus = {
+  REQUESTED: 'REQUESTED',
+  APPROVED: 'APPROVED',
+  PICKUP_SCHEDULED: 'PICKUP_SCHEDULED',
+  PICKED_UP: 'PICKED_UP',
+  RECEIVED: 'RECEIVED',
+  REFUNDED: 'REFUNDED',
+  REJECTED: 'REJECTED',
+}
+
 export class ReverseLogisticsService {
   constructor() {
     this.RETURN_REASONS = [

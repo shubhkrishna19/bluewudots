@@ -1,4 +1,4 @@
-// Carrier Optimizer Service
+// Carrier Optimizer Service v2
 // Intelligent carrier selection based on cost, delivery time, service rates,
 // and historical performance data for optimal logistics routing.
 
@@ -14,12 +14,21 @@ const CARRIER_CONFIG = {
     zones: ['metro', 'tier1', 'tier2', 'tier3'],
     sla_days: { metro: 1, tier1: 2, tier2: 3, tier3: 5 },
   },
+  bluedart: {
+    id: 'bluedart',
+    name: 'BlueDart',
+    weight_limit: 40,
+    cod_enabled: true,
+    base_rate: 65,
+    zones: ['metro', 'tier1', 'tier2'],
+    sla_days: { metro: 1, tier1: 1, tier2: 2 },
+  },
   xpressbees: {
     id: 'xpressbees',
     name: 'XpressBees',
     weight_limit: 25,
     cod_enabled: true,
-    base_rate: 50,
+    base_rate: 40,
     zones: ['metro', 'tier1', 'tier2', 'tier3'],
     sla_days: { metro: 2, tier1: 2, tier2: 3, tier3: 5 },
   },
@@ -34,22 +43,25 @@ const CARRIER_CONFIG = {
   },
 }
 
+const PERFORMANCE_WEIGHTS = {
+  COST: 0.4,
+  SLA: 0.3,
+  RELIABILITY: 0.3,
+}
+
 /**
- * Get optimal carrier for an order
+ * Get optimal carrier for an order using dynamic weighted scoring
  * @param {Object} order - Order data {pincode, weight, amount, zone, delivery_type}
  * @returns {Promise<Object>} - Recommended carrier with cost details
  */
 export const getOptimalCarrier = async (order) => {
   try {
-    // Validate order
     if (!order.pincode || !order.weight || !order.zone) {
       throw new Error('Missing required fields: pincode, weight, zone')
     }
 
-    // Get historical performance data
     const historicalData = (await retrieveCachedData(`carrier:history:${order.zone}`)) || {}
 
-    // Filter carriers based on constraints
     const eligibleCarriers = Object.values(CARRIER_CONFIG).filter((carrier) => {
       return (
         carrier.weight_limit >= order.weight &&
@@ -62,40 +74,79 @@ export const getOptimalCarrier = async (order) => {
       throw new Error('No eligible carriers for this order')
     }
 
-    // Score each carrier
     const scoredCarriers = eligibleCarriers.map((carrier) => {
       const score = calculateCarrierScore(carrier, order, historicalData[carrier.id])
       return { carrier, score }
     })
 
-    // Sort by score and return best option
-    const best = scoredCarriers.sort((a, b) => b.score - a.score)[0]
+    // Sort by score descending (using raw precision)
+    scoredCarriers.sort((a, b) => b.score - a.score)
+
+    const best = scoredCarriers[0]
     const cost = calculateShippingCost(best.carrier, order)
 
     const result = {
       carrier: best.carrier,
       cost,
       sla_days: best.carrier.sla_days[order.zone],
-      score: best.score,
+      score: Math.min(100, Math.round(best.score * 10) / 10), // Keep 1 decimal for result
       alternates: scoredCarriers.slice(1, 3).map((sc) => ({
         carrier: sc.carrier,
         cost: calculateShippingCost(sc.carrier, order),
         sla_days: sc.carrier.sla_days[order.zone],
+        score: Math.min(100, Math.round(sc.score * 10) / 10)
       })),
+      timestamp: new Date().toISOString(),
     }
 
-    console.log('[Optimizer] Selected carrier:', result.carrier.name, 'Cost: ₹' + cost)
+    console.log(`[Optimizer] Hub Route Selected: ${result.carrier.name} (Score: ${result.score})`)
     return result
   } catch (err) {
-    console.error('[Optimizer] Error:', err)
+    console.error('[Optimizer] AI Route Calculation Error:', err)
     return null
   }
 }
 
 /**
+ * Dynamic Scoring Engine (P32 Extension)
+ */
+function calculateCarrierScore(carrier, order, historicalData) {
+  let score = 0
+
+  // 1. Cost Score (0-100, Normalized)
+  const cost = calculateShippingCost(carrier, order)
+  const maxExpectedCost = 300
+  const costScore = Math.max(0, 100 - (cost / maxExpectedCost) * 100)
+
+  // 2. SLA Score (0-100)
+  const sla = carrier.sla_days[order.zone] || 5
+  const slaScore = Math.max(0, 100 - (sla - 1) * 20) // 1 day = 100, 5 days = 20
+
+  // 3. Reliability Score (0-100)
+  let reliabilityScore = 80 // Base reliability for carriers with no history
+  if (historicalData && historicalData.total_shipments > 5) {
+    const successRate = (historicalData.successful / historicalData.total_shipments) * 100
+    reliabilityScore = successRate
+  }
+
+  // 4. Weighted Calculation
+  score = (costScore * PERFORMANCE_WEIGHTS.COST) +
+    (slaScore * PERFORMANCE_WEIGHTS.SLA) +
+    (reliabilityScore * PERFORMANCE_WEIGHTS.RELIABILITY)
+
+  // 5. Contextual Modifiers
+  if (order.priority === 'express') {
+    if (sla <= 1) score += 15 // Increased boost for super-fast carriers
+    if (carrier.id === 'bluedart' || carrier.id === 'fedex') score += 10 // Premium Carrier Trust Boost
+  }
+
+  if (historicalData && historicalData.is_degraded) score -= 50
+
+  return score
+}
+
+/**
  * Record carrier performance for future optimization
- * @param {String} carrierId - Carrier ID
- * @param {Object} performance - {zone, delivery_time_days, success, cost, weight}
  */
 export const recordCarrierPerformance = async (carrierId, performance) => {
   try {
@@ -109,6 +160,7 @@ export const recordCarrierPerformance = async (carrierId, performance) => {
         failed: 0,
         avg_delivery_days: 0,
         avg_cost: 0,
+        is_degraded: false,
       }
     }
 
@@ -117,77 +169,39 @@ export const recordCarrierPerformance = async (carrierId, performance) => {
     if (performance.success) stats.successful += 1
     else stats.failed += 1
 
-    // Update averages
     stats.avg_delivery_days =
       (stats.avg_delivery_days * (stats.total_shipments - 1) + performance.delivery_time_days) /
       stats.total_shipments
     stats.avg_cost =
       (stats.avg_cost * (stats.total_shipments - 1) + performance.cost) / stats.total_shipments
-    stats.success_rate = ((stats.successful / stats.total_shipments) * 100).toFixed(2)
 
-    await cacheData(key, history, 90 * 24 * 60 * 60 * 1000) // 90 days
-    console.log(`[Optimizer] Recorded ${carrierId} performance`)
+    // Auto-degradation logic: If last 3 shipments failed or success rate < 60% with enough volume
+    if (stats.total_shipments > 10 && stats.successful / stats.total_shipments < 0.6) {
+      stats.is_degraded = true
+    } else {
+      stats.is_degraded = false
+    }
+
+    await cacheData(key, history, 90 * 24 * 60 * 60 * 1000)
+    console.log(`[Optimizer] Performance Updated for ${carrierId}`)
   } catch (err) {
     console.error('[Optimizer] Performance record failed:', err)
   }
 }
 
-/**
- * Get all carriers matching zone
- */
-export const getCarriersByZone = (zone) => {
-  return Object.values(CARRIER_CONFIG).filter((c) => c.zones.includes(zone))
-}
-
-// ===== Private Helpers =====
-
-function calculateCarrierScore(carrier, order, historicalData) {
-  let score = 100
-
-  // Cost factor (lower is better)
-  const cost = calculateShippingCost(carrier, order)
-  score -= (cost / 200) * 20 // Max 20 point deduction
-
-  // SLA factor (faster is better)
-  const sla = carrier.sla_days[order.zone]
-  score -= sla * 2 // 2 points per day
-
-  // Historical performance (if available)
-  if (historicalData && historicalData.success_rate) {
-    score += (historicalData.success_rate / 100) * 30 // Max 30 points
-  }
-
-  // COD convenience
-  if (order.cod_required && carrier.cod_enabled) {
-    score += 10
-  }
-
-  return Math.max(0, score)
-}
-
 function calculateShippingCost(carrier, order) {
   let cost = carrier.base_rate
+  if (order.weight > 0.5) cost += (order.weight - 0.5) * 15
+  if (order.cod_required && order.amount > 0) cost += Math.ceil(order.amount * 0.01)
 
-  // Weight surcharge (if over base)
-  if (order.weight > 0.5) {
-    cost += (order.weight - 0.5) * 15 // ₹15 per additional 100g
-  }
-
-  // COD surcharge
-  if (order.cod_required && order.amount > 0) {
-    cost += Math.ceil(order.amount * 0.01) // 1% of order value
-  }
-
-  // Zone premium
-  const zonePremium = {
-    metro: 0,
-    tier1: 10,
-    tier2: 20,
-    tier3: 30,
-  }
+  const zonePremium = { metro: 0, tier1: 10, tier2: 20, tier3: 30 }
   cost += zonePremium[order.zone] || 0
 
-  return Math.round(cost * 100) / 100 // Round to 2 decimals
+  return Math.round(cost * 100) / 100
+}
+
+export const getCarriersByZone = (zone) => {
+  return Object.values(CARRIER_CONFIG).filter((c) => c.zones.includes(zone))
 }
 
 export default {

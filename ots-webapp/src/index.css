@@ -29,6 +29,11 @@
   --text-muted: #94a3b8;
   --font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
 
+  /* Transition / Motion */
+  --transition-fast: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-base: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+
   font-family: var(--font-family);
   line-height: 1.6;
   font-weight: 400;
@@ -40,6 +45,28 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  /* Custom Scrollbar */
+  scrollbar-width: thin;
+  scrollbar-color: var(--glass-border) transparent;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--glass-border);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
 }
 
 * {
@@ -91,8 +118,53 @@ body {
   }
 }
 
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
 .animate-fade {
-  animation: fadeIn 0.6s ease-out forwards;
+  animation: fadeIn 0.6s var(--transition-base) forwards;
+}
+
+.animate-slide-up {
+  animation: slideUp 0.5s var(--transition-base) forwards;
+}
+
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.page-transition {
+  animation: fadeIn 0.4s var(--transition-base) forwards;
 }
 
 /* Typography Adjustments */

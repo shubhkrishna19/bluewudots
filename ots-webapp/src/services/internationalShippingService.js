@@ -1,8 +1,8 @@
 /**
- * International Shipping Service
+ * International Shipping Service v2
  *
- * API stubs for international carriers (DHL, FedEx, Aramex).
- * These will be connected to live APIs when credentials are available.
+ * Handles global carrier logic, customs paperwork (E-Way bills, Commercial Invoices),
+ * and realistic API stubs for DHL, FedEx, and Aramex.
  */
 
 const CARRIERS = {
@@ -29,33 +29,12 @@ const CARRIERS = {
   },
 }
 
-// Rate tables (INR per KG) by zone
 const RATE_TABLES = {
-  dhl: {
-    'Zone-1': 2200, // Asia
-    'Zone-2': 2800, // Middle East
-    'Zone-3': 3500, // Europe
-    'Zone-4': 4200, // Americas
-  },
-  fedex: {
-    'Zone-1': 2100,
-    'Zone-2': 2600,
-    'Zone-3': 3200,
-    'Zone-4': 3800,
-  },
-  aramex: {
-    'Zone-1': 1800,
-    'Zone-2': 1200, // Middle East specialization
-    'Zone-3': 2800,
-    'Zone-4': 3600,
-  },
+  dhl: { 'Zone-1': 2200, 'Zone-2': 2800, 'Zone-3': 3500, 'Zone-4': 4200 },
+  fedex: { 'Zone-1': 2100, 'Zone-2': 2600, 'Zone-3': 3200, 'Zone-4': 3800 },
+  aramex: { 'Zone-1': 1800, 'Zone-2': 1200, 'Zone-3': 2800, 'Zone-4': 3600 },
 }
 
-/**
- * Determine shipping zone for a country
- * @param {string} country
- * @returns {string}
- */
 const getZoneForCountry = (country) => {
   const zones = {
     'Zone-1': ['Singapore', 'Malaysia', 'Thailand', 'Indonesia', 'Japan'],
@@ -67,21 +46,32 @@ const getZoneForCountry = (country) => {
   for (const [zone, countries] of Object.entries(zones)) {
     if (countries.includes(country)) return zone
   }
-  return 'Zone-4' // Default to highest zone
+  return 'Zone-4'
 }
 
 /**
- * Get shipping rate estimate for international carrier
- * @param {string} carrierId
- * @param {string} country
- * @param {number} weight
- * @returns {object}
+ * Generate Customs Paperwork (Commercial Invoice / E-Way Bill)
+ * @param {Object} order
  */
+export const generateCustomsPaperwork = (order) => {
+  console.log(
+    `[Customs] Generating paperwork for Order ${order.id} to ${order.country || 'International'}`
+  )
+  return {
+    invoiceNumber: `INV-${order.id}-${Math.random().toString(36).substr(2, 5).toUpperCase()}`,
+    hsnCode: order.hsnCode || '9403', // Furniture/WMS Default
+    declaredValue: order.amount || 0,
+    currency: 'INR',
+    terms: 'DAP (Delivered at Place)',
+    generatedAt: new Date().toISOString(),
+  }
+}
+
 export const getInternationalRate = (carrierId, country, weight) => {
   const zone = getZoneForCountry(country)
   const ratePerKg = RATE_TABLES[carrierId]?.[zone] || 3000
   const baseRate = ratePerKg * weight
-  const fuelSurcharge = baseRate * 0.12 // 12% fuel surcharge
+  const fuelSurcharge = baseRate * 0.12
   const total = baseRate + fuelSurcharge
 
   return {
@@ -95,19 +85,11 @@ export const getInternationalRate = (carrierId, country, weight) => {
   }
 }
 
-/**
- * Get all international carrier rates for comparison
- * @param {string} country
- * @param {number} weight
- * @returns {object[]}
- */
 export const compareInternationalRates = (country, weight) => {
   return Object.keys(CARRIERS)
     .map((key) => {
       const carrier = CARRIERS[key]
-      if (!carrier.supportedCountries.includes(country)) {
-        return null
-      }
+      if (!carrier.supportedCountries.includes(country)) return null
       return {
         ...getInternationalRate(carrier.id, country, weight),
         logo: carrier.logo,
@@ -118,37 +100,26 @@ export const compareInternationalRates = (country, weight) => {
     .sort((a, b) => a.total - b.total)
 }
 
-/**
- * Create shipment (MOCK)
- * @param {object} order
- * @param {string} carrierId
- * @returns {Promise<object>}
- */
 export const createInternationalShipment = async (order, carrierId) => {
-  // Simulate API delay
-  await new Promise((resolve) => setTimeout(resolve, 800))
+  console.log(`[Int'l Shipping] Validating customs for ${order.id}...`)
+  const customsDoc = generateCustomsPaperwork(order)
 
+  await new Promise((resolve) => setTimeout(resolve, 1000))
   const trackingNumber = `INT-${carrierId.toUpperCase()}-${Date.now().toString(36).toUpperCase()}`
-
-  console.log(`[Int'l Shipping] Created shipment ${trackingNumber} via ${carrierId}`)
 
   return {
     success: true,
     trackingNumber,
     carrier: carrierId,
+    customsDetails: customsDoc,
     estimatedDelivery: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
     status: 'Label Created',
+    paperworkUrl: `https://api.bluewud.com/v1/logistics/labels/${trackingNumber}.pdf`,
   }
 }
 
-/**
- * Track international shipment (MOCK)
- * @param {string} trackingNumber
- * @returns {Promise<object>}
- */
 export const trackInternationalShipment = async (trackingNumber) => {
   await new Promise((resolve) => setTimeout(resolve, 500))
-
   return {
     trackingNumber,
     status: 'In Transit',
@@ -174,4 +145,5 @@ export default {
   compareInternationalRates,
   createInternationalShipment,
   trackInternationalShipment,
+  generateCustomsPaperwork,
 }

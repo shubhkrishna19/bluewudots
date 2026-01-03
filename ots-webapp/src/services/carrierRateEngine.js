@@ -293,7 +293,11 @@ export const getAllRates = async (shipment) => {
   // 2. Calculate Static Rates (Always run as fallback/baseline)
   const staticRates = Object.keys(CARRIER_RATES).map((carrierId) => {
     const rate = calculateRate(carrierId, shipment)
-    return { ...rate, carrierId, type: 'STATIC' }
+
+    // Inject AI Delay Prediction
+    const aiDelay = predictTransitDelay(carrierId, shipment)
+
+    return { ...rate, carrierId, type: 'STATIC', aiDelay }
   })
 
   // 3. Merge: Prefer Live over Static for same carrier
@@ -305,6 +309,33 @@ export const getAllRates = async (shipment) => {
 
   // Sort by total (cheapest first)
   return mergedRates.filter((r) => !r.error).sort((a, b) => a.total - b.total)
+}
+
+/**
+ * AI-Driven Transit Delay Prediction
+ * Simulates high-latency zones or carrier backlogs based on historic patterns
+ */
+const predictTransitDelay = (carrierId, shipment) => {
+  let extraDays = 0
+  const zone = getZone(shipment.state, shipment.city)
+
+  // Northeast is historically slower for budget carriers
+  if (zone === 'NE' && (carrierId === 'xpressbees' || carrierId === 'ecomexpress')) {
+    extraDays += 1.5
+  }
+
+  // Heavy rains / Festive season simulation for specific states
+  const monsoonStates = ['Maharashtra', 'Kerala', 'Karnataka']
+  if (monsoonStates.includes(shipment.state)) {
+    extraDays += 0.5
+  }
+
+  // Specific carrier backlog simulator
+  if (carrierId === 'delhivery' && Math.random() > 0.8) {
+    extraDays += 1 // 20% chance of random backlog
+  }
+
+  return extraDays
 }
 
 /**
@@ -401,10 +432,14 @@ export const getRecommendation = async (shipment, priority = 'smart') => {
 
     case 'smart':
     default:
-      // Weighted average: 40% Cost, 30% Speed, 30% Reliability
+      // Weighted average: 30% Cost, 40% Speed (including AI Delay), 30% Reliability
       options.sort((a, b) => {
-        const scoreA = a.scores.cost * 0.4 + a.scores.speed * 0.3 + a.scores.reliability * 0.3
-        const scoreB = b.scores.cost * 0.4 + b.scores.speed * 0.3 + b.scores.reliability * 0.3
+        const speedScoreWithAI = a.scores.speed + (a.aiDelay || 0) * 20 // Weigh AI delay heavily
+        const scoreA = a.scores.cost * 0.3 + speedScoreWithAI * 0.4 + a.scores.reliability * 0.3
+
+        const speedScoreWithAI_B = b.scores.speed + (b.aiDelay || 0) * 20
+        const scoreB = b.scores.cost * 0.3 + speedScoreWithAI_B * 0.4 + b.scores.reliability * 0.3
+
         return scoreA - scoreB
       })
       winner = options[0]
@@ -420,8 +455,11 @@ export const getRecommendation = async (shipment, priority = 'smart') => {
         winner.recommendation = 'Business Rule Match'
         winner.reason = `Preferred partner for ${shipment.state || winner.zone}`
       } else {
-        winner.recommendation = 'AI Optimized'
-        winner.reason = 'Best balance of cost, speed, and reliability'
+        winner.recommendation = 'AI Optimized (Delay Aware)'
+        winner.reason =
+          winner.aiDelay > 0
+            ? `Calculated lowest risk despite ${winner.aiDelay}d predicted regional delay`
+            : 'Best balance of cost, speed, and reliability'
       }
       break
   }

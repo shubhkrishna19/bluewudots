@@ -222,7 +222,14 @@ class LabelPrintService {
             </html>
         `
   }
+
+  // Compatibility for shipmentService
+  generateLabelHTML(order) {
+    return this.generatePackingSlipHTML(order)
+  }
 }
+
+export const generateLabelHTML = (order) => labelPrintService.generateLabelHTML(order)
 
 // Singleton
 export const labelPrintService = new LabelPrintService()
