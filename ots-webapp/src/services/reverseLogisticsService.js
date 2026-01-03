@@ -151,6 +151,65 @@ export class ReverseLogisticsService {
         // Simplified: assuming full refund for now
         return parseFloat(originalOrder.amount) || 0;
     }
+
+    /**
+     * Initiate RMA (Return Merchandise Authorization)
+     * @param {Object} order - Order object
+     * @param {Object} options - RMA options (type, reason, etc.)
+     * @returns {Object} RMA result
+     */
+    initiateRMA(order, options = {}) {
+        // Validate order status
+        if (order.status !== 'Delivered') {
+            return {
+                success: false,
+                message: 'Only delivered orders can be returned'
+            };
+        }
+
+        // Check return window (7 days)
+        const deliveryDate = new Date(order.deliveryDate);
+        const now = new Date();
+        const daysSinceDelivery = Math.floor((now - deliveryDate) / (1000 * 60 * 60 * 24));
+
+        if (daysSinceDelivery > 7) {
+            return {
+                success: false,
+                message: 'Return window has expired (7 days from delivery)'
+            };
+        }
+
+        // Create RMA
+        const rmaId = `RMA-${Date.now().toString().slice(-6)}`;
+        return {
+            success: true,
+            rmaId,
+            status: 'RMA_INITIATED',
+            orderId: order.id,
+            type: options.type || 'Return',
+            createdAt: new Date().toISOString()
+        };
+    }
+
+    /**
+     * Update RMA status
+     * @param {string} rmaId - RMA ID
+     * @param {string} newStatus - New status
+     * @returns {Object} Updated RMA
+     */
+    updateRMAStatus(rmaId, newStatus) {
+        const validStatuses = ['Pending', 'Approved', 'Rejected', 'Completed'];
+
+        if (!validStatuses.includes(newStatus)) {
+            throw new Error(`Invalid RMA status: ${newStatus}`);
+        }
+
+        return {
+            rmaId,
+            status: newStatus,
+            updatedAt: new Date().toISOString()
+        };
+    }
 }
 
 const reverseLogisticsService = new ReverseLogisticsService();
