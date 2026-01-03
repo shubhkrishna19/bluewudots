@@ -1,334 +1,131 @@
-import React, { useState, useEffect } from 'react';
-import { useData } from '../../context/DataContext';
-import { getActivityLog, ACTIVITY_TYPES, clearActivityLog } from '../../services/activityLogger';
-import { getRelativeTime, formatDateTimeIN } from '../../utils/dataUtils';
+import React, { useState } from 'react';
+import { useSecurity } from '../../context/SecurityContext';
+import { Shield, Download, Filter, Search, AlertTriangle } from 'lucide-react';
 
 const ActivityLog = () => {
-    const { orders } = useData();
-    const [filter, setFilter] = useState('all');
-    const [searchQuery, setSearchQuery] = useState('');
-    const [dateRange, setDateRange] = useState({ start: '', end: '' });
-    const [activities, setActivities] = useState([]);
+    const { activityLog, securityAlerts } = useSecurity();
+    const [filter, setFilter] = useState('');
+    const [roleFilter, setRoleFilter] = useState('ALL');
 
-    // Fetch activities on mount and when filters change
-    useEffect(() => {
-        const fetchActivities = () => {
-            let log = getActivityLog({
-                type: filter !== 'all' ? filter : undefined,
-                search: searchQuery || undefined,
-                startDate: dateRange.start || undefined,
-                endDate: dateRange.end || undefined,
-                limit: 100
-            });
-
-            // If no logged activities, generate from orders for demo
-            if (log.length === 0) {
-                log = generateFromOrders();
-            }
-
-            setActivities(log);
-        };
-
-        fetchActivities();
-    }, [filter, searchQuery, dateRange, orders]);
-
-    // Generate activity from orders (fallback for demo)
-    const generateFromOrders = () => {
-        const generated = [];
-        orders.forEach(order => {
-            generated.push({
-                id: `gen-${order.id}-create`,
-                type: ACTIVITY_TYPES.ORDER_CREATE,
-                action: `Created order ${order.id}`,
-                entityType: 'order',
-                entityId: order.id,
-                details: { source: order.source, customer: order.customerName },
-                user: { name: 'System', role: 'system' },
-                timestamp: order.createdAt || new Date(Date.now() - Math.random() * 604800000).toISOString()
-            });
-
-            if (['Carrier-Assigned', 'In-Transit', 'Delivered'].includes(order.status) && order.carrier) {
-                generated.push({
-                    id: `gen-${order.id}-carrier`,
-                    type: ACTIVITY_TYPES.CARRIER_ASSIGN,
-                    action: `Assigned ${order.carrier} to ${order.id}`,
-                    entityType: 'order',
-                    entityId: order.id,
-                    details: { carrier: order.carrier },
-                    user: { name: 'Auto-Assign', role: 'system' },
-                    timestamp: new Date(new Date(order.createdAt).getTime() + 3600000).toISOString()
-                });
-            }
-
-            if (['In-Transit', 'Delivered'].includes(order.status) && order.awb) {
-                generated.push({
-                    id: `gen-${order.id}-label`,
-                    type: ACTIVITY_TYPES.LABEL_GENERATE,
-                    action: `Generated label for ${order.id}. AWB: ${order.awb}`,
-                    entityType: 'order',
-                    entityId: order.id,
-                    details: { awb: order.awb },
-                    user: { name: 'Warehouse', role: 'operator' },
-                    timestamp: new Date(new Date(order.createdAt).getTime() + 7200000).toISOString()
-                });
-            }
-
-            if (order.status === 'Delivered') {
-                generated.push({
-                    id: `gen-${order.id}-deliver`,
-                    type: ACTIVITY_TYPES.ORDER_STATUS_CHANGE,
-                    action: `Order ${order.id} delivered to ${order.city}`,
-                    entityType: 'order',
-                    entityId: order.id,
-                    details: { status: 'Delivered' },
-                    user: { name: 'Carrier', role: 'carrier' },
-                    timestamp: new Date(new Date(order.createdAt).getTime() + 259200000).toISOString()
-                });
-            }
-        });
-
-        return generated.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-    };
-
-    const getActivityIcon = (type) => {
-        const icons = {
-            [ACTIVITY_TYPES.ORDER_CREATE]: '📦',
-            [ACTIVITY_TYPES.ORDER_UPDATE]: '✏️',
-            [ACTIVITY_TYPES.ORDER_STATUS_CHANGE]: '🔄',
-            [ACTIVITY_TYPES.ORDER_BULK_UPDATE]: '📋',
-            [ACTIVITY_TYPES.CARRIER_ASSIGN]: '🚚',
-            [ACTIVITY_TYPES.LABEL_GENERATE]: '🏷️',
-            [ACTIVITY_TYPES.AWB_CREATE]: '📄',
-            [ACTIVITY_TYPES.IMPORT_COMPLETE]: '📥',
-            [ACTIVITY_TYPES.EXPORT_DATA]: '📤',
-            [ACTIVITY_TYPES.USER_LOGIN]: '👤',
-            [ACTIVITY_TYPES.USER_LOGOUT]: '🚪',
-            [ACTIVITY_TYPES.STOCK_UPDATE]: '📊',
-            [ACTIVITY_TYPES.STOCK_ALERT]: '⚠️',
-            [ACTIVITY_TYPES.SYSTEM_ERROR]: '❌'
-        };
-        return icons[type] || '📝';
-    };
-
-    const getActivityColor = (type) => {
-        if (type?.includes('error')) return 'var(--danger)';
-        if (type?.includes('create') || type?.includes('import')) return 'var(--success)';
-        if (type?.includes('carrier') || type?.includes('label')) return 'var(--primary)';
-        if (type?.includes('status')) return 'var(--info)';
-        return 'var(--glass-border)';
-    };
-
-    const filterOptions = [
-        { key: 'all', label: 'All Activities', icon: '📋' },
-        { key: ACTIVITY_TYPES.ORDER_CREATE, label: 'Created', icon: '📦' },
-        { key: ACTIVITY_TYPES.CARRIER_ASSIGN, label: 'Carrier', icon: '🚚' },
-        { key: ACTIVITY_TYPES.LABEL_GENERATE, label: 'Labels', icon: '🏷️' },
-        { key: ACTIVITY_TYPES.ORDER_STATUS_CHANGE, label: 'Status', icon: '🔄' },
-        { key: ACTIVITY_TYPES.IMPORT_COMPLETE, label: 'Imports', icon: '📥' },
-        { key: ACTIVITY_TYPES.EXPORT_DATA, label: 'Exports', icon: '📤' }
-    ];
+    const filteredLogs = activityLog.filter(log => {
+        const matchesText = log.user.toLowerCase().includes(filter.toLowerCase()) ||
+            log.action.toLowerCase().includes(filter.toLowerCase()) ||
+            log.resource.toLowerCase().includes(filter.toLowerCase());
+        const matchesRole = roleFilter === 'ALL' || log.role === roleFilter;
+        return matchesText && matchesRole;
+    });
 
     return (
-        <div className="activity-log animate-fade">
-            <div className="section-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+        <div className="activity-log-container animate-fade">
+            <div className="section-header">
                 <div>
-                    <h2>Activity Log</h2>
-                    <p className="text-muted">Complete audit trail of all system actions</p>
+                    <h2>Forensic Activity Ledger</h2>
+                    <p className="text-muted">Immutable record of system actions</p>
                 </div>
-                <span className="badge" style={{ background: 'var(--primary)', padding: '8px 16px' }}>
-                    {activities.length} events
-                </span>
-            </div>
-
-            {/* Search and Filters */}
-            <div className="activity-controls glass" style={{ padding: '20px', marginTop: '24px' }}>
-                <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', alignItems: 'flex-end' }}>
-                    {/* Search */}
-                    <div style={{ flex: '1', minWidth: '200px' }}>
-                        <label className="text-muted" style={{ fontSize: '0.75rem', display: 'block', marginBottom: '6px' }}>SEARCH</label>
-                        <input
-                            type="text"
-                            placeholder="Search orders, users, actions..."
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            style={{ width: '100%', padding: '10px 14px', background: 'var(--bg-accent)', border: '1px solid var(--glass-border)', borderRadius: '6px', color: '#fff' }}
-                        />
-                    </div>
-
-                    {/* Date Range */}
-                    <div>
-                        <label className="text-muted" style={{ fontSize: '0.75rem', display: 'block', marginBottom: '6px' }}>FROM</label>
-                        <input
-                            type="date"
-                            value={dateRange.start}
-                            onChange={(e) => setDateRange(prev => ({ ...prev, start: e.target.value }))}
-                            style={{ padding: '10px', background: 'var(--bg-accent)', border: '1px solid var(--glass-border)', borderRadius: '6px', color: '#fff' }}
-                        />
-                    </div>
-                    <div>
-                        <label className="text-muted" style={{ fontSize: '0.75rem', display: 'block', marginBottom: '6px' }}>TO</label>
-                        <input
-                            type="date"
-                            value={dateRange.end}
-                            onChange={(e) => setDateRange(prev => ({ ...prev, end: e.target.value }))}
-                            style={{ padding: '10px', background: 'var(--bg-accent)', border: '1px solid var(--glass-border)', borderRadius: '6px', color: '#fff' }}
-                        />
-                    </div>
-
-                    {/* Clear Button */}
-                    <button
-                        className="btn-secondary"
-                        style={{ padding: '10px 16px' }}
-                        onClick={() => {
-                            setSearchQuery('');
-                            setDateRange({ start: '', end: '' });
-                            setFilter('all');
-                        }}
-                    >
-                        Clear
+                <div className="flex gap-2">
+                    <button className="btn-secondary flex items-center gap-2">
+                        <Download className="w-4 h-4" /> Export CSV
                     </button>
                 </div>
+            </div>
 
-                {/* Type Filters */}
-                <div style={{ display: 'flex', gap: '8px', marginTop: '16px', flexWrap: 'wrap' }}>
-                    {filterOptions.map(f => (
-                        <button
-                            key={f.key}
-                            className="btn-secondary glass-hover"
-                            style={{
-                                padding: '8px 14px',
-                                fontSize: '0.8rem',
-                                background: filter === f.key ? 'var(--primary)' : 'transparent',
-                                borderColor: filter === f.key ? 'var(--primary)' : 'var(--glass-border)'
-                            }}
-                            onClick={() => setFilter(f.key)}
-                        >
-                            {f.icon} {f.label}
-                        </button>
+            {/* Security Alerts Banner */}
+            {securityAlerts.length > 0 && (
+                <div className="mb-6 space-y-2">
+                    {securityAlerts.map(alert => (
+                        <div key={alert.id} className="bg-red-500/10 border border-red-500/50 p-4 rounded-lg flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                                <AlertTriangle className="text-red-500 w-5 h-5" />
+                                <div>
+                                    <h4 className="text-red-400 font-bold text-sm">SECURITY ALERT: {alert.severity}</h4>
+                                    <p className="text-slate-300 text-sm">{alert.message}</p>
+                                </div>
+                            </div>
+                            <span className="text-xs text-slate-500 font-mono">{new Date(alert.timestamp).toLocaleTimeString()}</span>
+                        </div>
                     ))}
                 </div>
-            </div>
+            )}
 
-            {/* Activity Timeline */}
-            <div className="activity-timeline glass" style={{ marginTop: '24px', padding: '24px' }}>
-                {activities.length === 0 ? (
-                    <div style={{ padding: '60px', textAlign: 'center' }}>
-                        <p style={{ fontSize: '2rem', marginBottom: '12px' }}>📋</p>
-                        <p className="text-muted">No activities found matching your criteria</p>
-                    </div>
-                ) : (
-                    <div className="timeline" style={{ position: 'relative', paddingLeft: '50px' }}>
-                        {/* Timeline Line */}
-                        <div style={{
-                            position: 'absolute',
-                            left: '20px',
-                            top: '30px',
-                            bottom: '30px',
-                            width: '2px',
-                            background: 'linear-gradient(to bottom, var(--primary), var(--glass-border))'
-                        }}></div>
-
-                        {activities.slice(0, 50).map((activity, idx) => (
-                            <div
-                                key={activity.id}
-                                className="timeline-item glass-hover"
-                                style={{
-                                    position: 'relative',
-                                    padding: '16px 20px',
-                                    marginBottom: '16px',
-                                    borderRadius: '10px',
-                                    borderLeft: `3px solid ${getActivityColor(activity.type)}`,
-                                    transition: 'all 0.2s ease'
-                                }}
-                            >
-                                {/* Timeline Dot */}
-                                <div style={{
-                                    position: 'absolute',
-                                    left: '-42px',
-                                    top: '20px',
-                                    width: '28px',
-                                    height: '28px',
-                                    background: 'var(--bg-main)',
-                                    border: `2px solid ${getActivityColor(activity.type)}`,
-                                    borderRadius: '50%',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    fontSize: '0.9rem'
-                                }}>
-                                    {getActivityIcon(activity.type)}
-                                </div>
-
-                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '12px' }}>
-                                    <div style={{ flex: 1 }}>
-                                        <p style={{ fontWeight: '700', marginBottom: '4px' }}>{activity.action}</p>
-                                        {activity.entityId && (
-                                            <span className="badge" style={{ background: 'var(--bg-accent)', fontSize: '0.7rem', marginRight: '8px' }}>
-                                                {activity.entityType}: {activity.entityId}
-                                            </span>
-                                        )}
-                                        {activity.details && Object.keys(activity.details).length > 0 && (
-                                            <div style={{ marginTop: '8px' }}>
-                                                {Object.entries(activity.details).slice(0, 3).map(([key, value]) => (
-                                                    <span key={key} className="text-muted" style={{ fontSize: '0.8rem', marginRight: '12px' }}>
-                                                        {key}: <strong>{String(value)}</strong>
-                                                    </span>
-                                                ))}
-                                            </div>
-                                        )}
-                                        <p style={{ fontSize: '0.75rem', color: 'var(--primary)', marginTop: '8px' }}>
-                                            👤 {activity.user?.name || 'System'} ({activity.user?.role || 'system'})
-                                        </p>
-                                    </div>
-                                    <div style={{ textAlign: 'right', minWidth: '120px' }}>
-                                        <span className="text-muted" style={{ fontSize: '0.8rem' }}>
-                                            {getRelativeTime(activity.timestamp)}
-                                        </span>
-                                        <p className="text-muted" style={{ fontSize: '0.7rem', marginTop: '4px' }}>
-                                            {formatDateTimeIN(activity.timestamp)}
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                        ))}
-
-                        {activities.length > 50 && (
-                            <div style={{ textAlign: 'center', padding: '20px' }}>
-                                <p className="text-muted">Showing 50 of {activities.length} activities</p>
-                            </div>
-                        )}
-                    </div>
-                )}
-            </div>
-
-            {/* Stats Summary */}
-            <div className="activity-stats glass" style={{ marginTop: '24px', padding: '20px' }}>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: '20px', textAlign: 'center' }}>
-                    <div>
-                        <p style={{ fontSize: '1.8rem', fontWeight: '800', color: 'var(--success)' }}>
-                            {activities.filter(a => a.type === ACTIVITY_TYPES.ORDER_CREATE).length}
-                        </p>
-                        <span className="text-muted" style={{ fontSize: '0.8rem' }}>Orders Created</span>
-                    </div>
-                    <div>
-                        <p style={{ fontSize: '1.8rem', fontWeight: '800', color: 'var(--primary)' }}>
-                            {activities.filter(a => a.type === ACTIVITY_TYPES.CARRIER_ASSIGN).length}
-                        </p>
-                        <span className="text-muted" style={{ fontSize: '0.8rem' }}>Carriers Assigned</span>
-                    </div>
-                    <div>
-                        <p style={{ fontSize: '1.8rem', fontWeight: '800', color: 'var(--info)' }}>
-                            {activities.filter(a => a.type === ACTIVITY_TYPES.LABEL_GENERATE).length}
-                        </p>
-                        <span className="text-muted" style={{ fontSize: '0.8rem' }}>Labels Generated</span>
-                    </div>
-                    <div>
-                        <p style={{ fontSize: '1.8rem', fontWeight: '800', color: 'var(--accent)' }}>
-                            {activities.filter(a => a.type === ACTIVITY_TYPES.ORDER_STATUS_CHANGE).length}
-                        </p>
-                        <span className="text-muted" style={{ fontSize: '0.8rem' }}>Status Changes</span>
-                    </div>
+            {/* Controls */}
+            <div className="glass p-4 mb-6 flex justify-between items-center flex-wrap gap-4">
+                <div className="search-bar glass glass-hover w-72 flex items-center px-3 py-2 rounded-lg">
+                    <Search className="w-4 h-4 text-slate-400 mr-2" />
+                    <input
+                        type="text"
+                        placeholder="Search logs..."
+                        className="bg-transparent border-none text-white focus:outline-none w-full text-sm"
+                        value={filter}
+                        onChange={(e) => setFilter(e.target.value)}
+                    />
                 </div>
+
+                <div className="flex gap-2 items-center">
+                    <Filter className="w-4 h-4 text-slate-400" />
+                    <select
+                        className="bg-slate-800 border border-slate-700 rounded px-2 py-1 text-sm text-white focus:outline-none"
+                        value={roleFilter}
+                        onChange={(e) => setRoleFilter(e.target.value)}
+                    >
+                        <option value="ALL">All Roles</option>
+                        <option value="admin">Admin</option>
+                        <option value="manager">Manager</option>
+                        <option value="viewer">Viewer</option>
+                    </select>
+                </div>
+            </div>
+
+            {/* Log Table */}
+            <div className="glass overflow-hidden">
+                <table className="w-full text-left border-collapse">
+                    <thead>
+                        <tr className="bg-slate-800/50 text-xs text-slate-400 uppercase">
+                            <th className="p-4">Timestamp</th>
+                            <th className="p-4">User Identity</th>
+                            <th className="p-4">Action</th>
+                            <th className="p-4">Resource Target</th>
+                            <th className="p-4">IP Address</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {filteredLogs.length > 0 ? filteredLogs.map(log => (
+                            <tr key={log.id} className="border-b border-white/5 hover:bg-white/5 transition-colors">
+                                <td className="p-4 font-mono text-xs text-slate-500">
+                                    {new Date(log.timestamp).toLocaleString()}
+                                </td>
+                                <td className="p-4">
+                                    <div className="flex items-center gap-2">
+                                        <div className={`w-2 h-2 rounded-full ${log.role === 'admin' ? 'bg-purple-500' : 'bg-blue-500'}`} />
+                                        <div>
+                                            <p className="text-sm font-bold text-white">{log.user}</p>
+                                            <p className="text-xs text-slate-400">{log.role.toUpperCase()}</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td className="p-4">
+                                    <span className={`badge ${log.action === 'LOGIN' ? 'success' :
+                                            log.action === 'DELETE' ? 'danger' :
+                                                log.action === 'EXPORT' ? 'warning' : 'info'
+                                        }`}>
+                                        {log.action}
+                                    </span>
+                                </td>
+                                <td className="p-4 text-sm text-slate-300">
+                                    {log.resource}
+                                </td>
+                                <td className="p-4 font-mono text-xs text-slate-500">
+                                    {log.ip}
+                                </td>
+                            </tr>
+                        )) : (
+                            <tr>
+                                <td colSpan="5" className="p-8 text-center text-slate-500 italic">
+                                    No activity logs found matching criteria.
+                                </td>
+                            </tr>
+                        )}
+                    </tbody>
+                </table>
             </div>
         </div>
     );

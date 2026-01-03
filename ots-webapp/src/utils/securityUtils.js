@@ -128,7 +128,39 @@ export const checkRateLimit = (key, maxAttempts = 5, windowMs = 60000) => {
     return { allowed: false, retryAfter };
   }
   record.attempts++;
+  record.attempts++;
   return { allowed: true, remaining: maxAttempts - record.attempts };
+};
+
+// --- DATA PRIVACY ---
+
+/**
+ * Redact PII for non-privileged roles
+ * @param {string} data - Email or Phone
+ * @param {string} role - User role
+ */
+export const redactPII = (data, role) => {
+  if (!data || ['admin', 'manager'].includes(role?.toLowerCase())) return data;
+
+  // Email Redaction
+  if (data.includes('@')) {
+    const [local, domain] = data.split('@');
+    return `${local.charAt(0)}***@${domain}`;
+  }
+
+  // Phone Redaction
+  if (/^\d+$/.test(data.replace(/\D/g, ''))) {
+    return `${data.slice(0, 2)}******${data.slice(-2)}`;
+  }
+
+  return '****';
+};
+
+/**
+ * Validate IP Address (IPv4)
+ */
+export const validateIP = (ip) => {
+  return /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/.test(ip);
 };
 
 export default {
@@ -145,5 +177,7 @@ export default {
   hashPassword,
   encryptData,
   decryptData,
-  checkRateLimit
+  checkRateLimit,
+  redactPII,
+  validateIP
 };

@@ -20,6 +20,7 @@ import dealerService from '../services/dealerService';
 import dealerService from '../services/dealerService';
 import rtoService from '../services/rtoService';
 import reverseLogisticsService from '../services/reverseLogisticsService';
+import visionService from '../services/visionService';
 import { ROLES, PERMISSIONS, can } from '../services/rbacMiddleware';
 
 import { SKU_MASTER, SKU_ALIASES } from '../data/skuMasterData';
@@ -40,6 +41,7 @@ export const DataProvider = ({ children }) => {
     const [warehouseLoads, setWarehouseLoads] = useState({}); // { warehouseId: currentOrderCount }
     const [dealerCredits, setDealerCredits] = useState({}); // { dealerId: usedCredit }
     const [returns, setReturns] = useState([]); // Active return requests
+    const [packingSessions, setPackingSessions] = useState({}); // { orderId: { status, verifiedItems: [] } }
 
 
     const [activityLog, setActivityLog] = useState([]);
@@ -271,6 +273,21 @@ export const DataProvider = ({ children }) => {
             }));
         }, 30000); // Check every 30s
         return () => clearInterval(interval);
+    }, []);
+
+    // ============================================
+    // VISION AI PACKING
+    // ============================================
+
+    const updatePackingStatus = useCallback((orderId, itemsPacked) => {
+        setPackingSessions(prev => ({
+            ...prev,
+            [orderId]: {
+                status: itemsPacked.length > 0 ? 'Packing' : 'Pending',
+                verifiedItems: itemsPacked,
+                lastUpdated: new Date().toISOString()
+            }
+        }));
     }, []);
 
     // ============================================
@@ -932,6 +949,10 @@ export const DataProvider = ({ children }) => {
         returns,
         initiateReturn,
         updateReturnStatus,
+
+        // Vision AI Packing
+        packingSessions,
+        updatePackingStatus,
 
         // Search
         universalSearch: (query) => searchService.universalSearch({ orders, skuMaster }, query),

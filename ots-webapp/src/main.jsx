@@ -8,6 +8,7 @@ import { AuthProvider } from './context/AuthContext'
 import { FinancialProvider } from './context/FinancialContext'
 import { NotificationProvider } from './context/NotificationContext'
 import ErrorBoundary from './components/ErrorBoundary'
+import { SecurityProvider } from './context/SecurityContext'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
@@ -16,7 +17,9 @@ ReactDOM.createRoot(document.getElementById('root')).render(
         <DataProvider>
           <FinancialProvider>
             <NotificationProvider>
-              <App />
+              <SecurityProvider>
+                <App />
+              </SecurityProvider>
             </NotificationProvider>
           </FinancialProvider>
         </DataProvider>
