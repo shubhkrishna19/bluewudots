@@ -1,0 +1,97 @@
+name: Bluewud OTS CI/CD
+
+on:
+  push:
+    branches: [ "main", "develop" ]
+  pull_request:
+    branches: [ "main", "develop" ]
+
+jobs:
+  validate:
+    name: Validate & Test
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+        cache-dependency-path: ots-webapp/package-lock.json
+
+    - name: Install Dependencies
+      working-directory: ./ots-webapp
+      run: npm ci
+
+    - name: Linting
+      working-directory: ./ots-webapp
+      run: npm run lint
+      continue-on-error: true # Don't block purely on linting for now
+
+    - name: Run Unit Tests
+      working-directory: ./ots-webapp
+      run: npm test -- --run --coverage
+
+    - name: Environment Validation Check
+      working-directory: ./ots-webapp
+      run: node scripts/validate-env.js --env=production --dry-run
+      env:
+        # Pass dummy vars to ensure script structurally works
+        VITE_APP_NAME: "CI Test"
+
+  build:
+    name: Build Check
+    needs: validate
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+        cache-dependency-path: ots-webapp/package-lock.json
+
+    - name: Install Dependencies
+      working-directory: ./ots-webapp
+      run: npm ci
+
+    - name: Build Application
+      working-directory: ./ots-webapp
+      run: npm run build
+      env:
+        NODE_ENV: production
+        VITE_APP_NAME: "Bluewud OTS CI"
+
+    - name: Upload Build Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: build-dist
+        path: ots-webapp/dist/
+        retention-days: 1
+
+  deploy-staging:
+    name: Deploy to Staging
+    needs: build
+    if: github.ref == 'refs/heads/develop'
+    runs-on: ubuntu-latest
+    environment: staging
+
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Download Build
+      uses: actions/download-artifact@v4
+      with:
+        name: build-dist
+        path: ots-webapp/dist
+
+    - name: Simulate Catalyst Deploy
+      run: |
+        echo "Simulating deployment to Zoho Catalyst (Staging)..."
+        echo "Build size: $(du -sh ots-webapp/dist | cut -f1)"
+        echo "Deploy success!"

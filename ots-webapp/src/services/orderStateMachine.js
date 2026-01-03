@@ -117,23 +117,21 @@ export const getValidNextStatuses = (currentStatus) => {
     return VALID_TRANSITIONS[currentStatus] || [];
 };
 
+import { pushOrderToZoho } from './zohoBridgeService';
+
 /**
- * Transition an order to a new status with validation
+ * Transition order to a new status if valid
  * @param {object} order - Current order object
  * @param {string} newStatus - Target status
- * @param {object} metadata - Additional metadata (reason, user, etc.)
- * @returns {object} - Updated order or error
+ * @param {object} metadata - Additional data (e.g. AWB, timestamps)
+ * @returns {object} Updated order object or throws error
  */
-export const transitionOrder = (order, newStatus, metadata = {}) => {
+export const transitionOrder = async (order, newStatus, metadata = {}) => {
     const currentStatus = order.status;
 
-    // Validate transition
+    // 1. Validate Transition
     if (!isValidTransition(currentStatus, newStatus)) {
-        return {
-            success: false,
-            error: `Invalid transition from ${currentStatus} to ${newStatus}`,
-            validOptions: getValidNextStatuses(currentStatus)
-        };
+        throw new Error(`Invalid transition from ${currentStatus} to ${newStatus}. Valid options: ${getValidNextStatuses(currentStatus).join(', ')}`);
     }
 
     // Create transition record
@@ -160,6 +158,20 @@ export const transitionOrder = (order, newStatus, metadata = {}) => {
     }
     if (newStatus === ORDER_STATUSES.LABEL_GENERATED && metadata.awb) {
         updatedOrder.awb = metadata.awb;
+        if (newStatus === ORDER_STATUSES.APPROVED) { // Assuming APPROVED is a status where Zoho sync happens
+            try {
+                // Sync with Zoho CRM as Deal/Sales Order
+                // NOTE: pushOrderToZoho needs to be defined elsewhere or imported
+                const zohoResult = await pushOrderToZoho(order);
+                if (zohoResult.success) {
+                    updatedOrder.zohoId = zohoResult.zohoId;
+                    updatedOrder.zohoSyncStatus = 'synced';
+                }
+            } catch (err) {
+                console.warn('Zoho Sync Warning:', err);
+                updatedOrder.zohoSyncStatus = 'failed';
+            }
+        }
     }
     if (newStatus === ORDER_STATUSES.DELIVERED && metadata.deliveryDate) {
         updatedOrder.deliveryDate = metadata.deliveryDate;

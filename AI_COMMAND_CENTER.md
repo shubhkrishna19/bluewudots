@@ -30,11 +30,12 @@
 |---------|-------------|-------------|--------|--------------|
 | **P16.1** | Real WhatsApp Business API | Antigravity AI | ✅ Complete | 2026-01-04 |
 | **P16.2** | Carrier API Live Integration | Antigravity AI | ✅ Complete | 2026-01-04 |
-| **P16.3** | Marketplace Sync (Amazon/Flipkart) | Antigravity AI | ✅ Complete | 2026-01-04 |
+| **P16.3** | Marketplace Sync (Amazon/Flipkart) | Antigravity AI | 🔵 In Progress | 2026-01-04 |
 | **P16.4** | Thermal Printer Integration | Antigravity AI | ✅ Complete | 2026-01-04 |
 | **P14.2** | Global Financial Ledger | Antigravity AI | 2026-01-04 | `GlobalLedger.jsx` |
 | **P14.3** | International Shipping Stubs (DHL/FedEx) | Antigravity AI | 2026-01-04 | `internationalShippingService.js` |
 | **P15.1** | BUG-001 | White Page Error Fix (imports) | Antigravity AI | 2026-01-04 | `main.jsx`, `internationalService.js`, `DataContext.jsx` |
+| P29 | ML Demand Forecasting | Antigravity | 2026-01-04 | `mlForecastService.js`, `InventoryOptimizer.js` |
 | P16.4 | Thermal Printer Integration | Antigravity | ✅ Complete | 2026-01-04 | `labelPrintService.js`, `LabelTemplateManager.jsx` |
 | P16.1 | Real WhatsApp API Integration | Antigravity AI | 2026-01-04 | `whatsappService.js`, `WhatsAppTemplateManager.jsx`, `App.jsx` |
 | **P15.2** | Global Error Boundaries | Antigravity AI | 2026-01-04 | `ErrorBoundary.jsx` |
@@ -51,9 +52,9 @@
 ### Phase 29: ML-Powered Demand Forecasting
 | Task ID | Priority | Description | Est. Time | Dependencies |
 |---------|----------|-------------|-----------|--------------|
-| **P29.1** | HIGH | Prophet Model Integration (Python Bridge) | 3 hrs | `forecastService.js` |
-| **P29.2** | MEDIUM | Forecast Visualization (Recharts) | 2 hrs | `DemandForecast.jsx` |
-| **P29.3** | LOW | Inventory Reorder Alerts | 1 hr | `InventoryOptimizer.js` |
+| **P29.1** | HIGH | Prophet Model Integration (JS Based) | Antigravity | ✅ Complete |
+| **P29.2** | MEDIUM | Forecast Visualization (Recharts) | Antigravity | ✅ Complete |
+| **P29.3** | LOW | Inventory Reorder Alerts | Antigravity | ✅ Complete |
 
 ---
 

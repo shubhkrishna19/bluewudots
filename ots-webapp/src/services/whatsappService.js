@@ -54,7 +54,7 @@ class WhatsAppService {
 
       const timestamp = new Date().toISOString();
 
-      // 3. SIMULATION MODE
+      // 3. SIMULATION MODE (Check this FIRST to allow fallback)
       if (this.isSimulationMode) {
         console.log(`[SIMULATION] Sending WhatsApp to ${validPhone} (Template: ${templateId})`, parameters);
         this.trackMessage({
@@ -74,7 +74,15 @@ class WhatsAppService {
         };
       }
 
-      // 4. REAL API SEND
+      // 4. REAL API VALIDATION (Only strictly validate if NOT in simulation mode)
+      if (!this.apiToken) throw new Error('Missing API Token');
+      if (!this.businessAccountId) throw new Error('Missing Business Account ID');
+      if (!this.phoneNumberId) throw new Error('Missing Phone Number ID');
+
+
+      // 5. REAL API SEND
+      const components = this.buildTemplateComponents(parameters);
+
       const payload = {
         messaging_product: 'whatsapp',
         to: validPhone,
@@ -82,9 +90,11 @@ class WhatsAppService {
         template: {
           name: templateId,
           language: { code: 'en_US' },
-          components: this.buildTemplateComponents(parameters)
+          components: components
         }
       };
+
+      console.log('[WhatsApp API] Payload:', JSON.stringify(payload, null, 2));
 
       const response = await fetch(
         `${this.baseUrl}/${this.phoneNumberId}/messages`,
@@ -100,15 +110,26 @@ class WhatsAppService {
 
       if (!response.ok) {
         const error = await response.json();
-        // Check for specific error codes (e.g., 1004 = user blocked, 131030 = 24hr window closed)
-        const errorMessage = error.error?.message || response.statusText;
+        const errorDetails = error.error || {};
+        const errorCode = errorDetails.code;
+        const errorMessage = errorDetails.message || response.statusText;
+
         console.error(`WhatsApp API Error (${response.status}):`, errorMessage);
+
+        // Specific Error Handling
+        if (errorCode === 190) { // Invalid Token
+          throw new Error('Authentication Failed: Invalid or expired access token.');
+        } else if (errorCode === 131030) { // 24hr Window
+          console.warn('24-hour window closed. Fallback recommended.');
+          throw new Error('Message failed: 24-hour customer service window is closed.');
+        }
+
         throw new Error(`WhatsApp API Error: ${errorMessage}`);
       }
 
       const result = await response.json();
 
-      // 5. Track Success
+      // 6. Track Success
       this.trackMessage({
         orderId,
         messageId: result.messages?.[0]?.id || `real_${Date.now()}`,
@@ -128,8 +149,6 @@ class WhatsAppService {
 
     } catch (error) {
       console.error('WhatsApp send failed:', error);
-      // Queue for offline retry if network error?
-      // For now just return error
       return {
         success: false,
         error: error.message,

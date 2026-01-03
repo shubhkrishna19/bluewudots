@@ -209,6 +209,14 @@ export const DataProvider = ({ children }) => {
             }
         };
         initializeData();
+
+        // Initial Load from Zoho SSOT
+        fetchSKUMaster().then(skus => {
+            if (skus && skus.length > 0) {
+                setSkuMaster(skus);
+            }
+        });
+
     }, []);
 
     // --- AUTO-CACHE SYNC ---
@@ -471,44 +479,86 @@ export const DataProvider = ({ children }) => {
      */
     const updateOrder = useCallback((orderId, updates) => {
         setOrders(prev => prev.map(order =>
-            order.id === orderId ? { ...order, ...updates, lastUpdated: new Date().toISOString() } : order
-        ));
-    }, []);
+            ```
+    // --- ORDER ACTIONS ---
+    const updateStatus = async (orderId, newStatus, metadata = {}) => {
+        try {
+            // Find order
+            const orderIndex = orders.findIndex(o => o.id === orderId);
+            if (orderIndex === -1) throw new Error("Order not found");
 
-    const updateOrderStatus = useCallback((orderId, newStatus, metadata = {}) => {
-        let result = null;
+            const currentOrder = orders[orderIndex];
 
-        setOrders(prev => prev.map(order => {
-            if (order.id === orderId) {
-                const oldStatus = order.status;
-                const transitionResult = transitionOrder(order, newStatus, metadata);
-                result = transitionResult;
+            // Execute Transition (Now Async)
+            const updatedOrder = await transitionOrder(currentOrder, newStatus, {
+                ...metadata,
+                user: agentMetadata.lastAgent
+            });
 
-                if (transitionResult.success) {
-                    logOrderStatusChange(order, oldStatus, newStatus, metadata.reason);
+            // Update State
+            setOrders(prev => {
+                const newOrders = [...prev];
+                newOrders[orderIndex] = updatedOrder;
+                return newOrders;
+            });
 
-                    // --- GLOBAL SYNC: Inventory Deduction / Restock ---
-                    if (newStatus === 'Delivered' || newStatus === 'In-Transit') {
-                        // Deduct from Stock when Shipped/Delivered (for demo, we deduct 1 from inStock and 1 from reserved)
-                        setInventoryLevels(p => ({
-                            ...p,
-                            [order.sku]: {
-                                ...p[order.sku],
-                                inStock: Math.max(0, (p[order.sku]?.inStock || 0) - 1),
-                                reserved: Math.max(0, (p[order.sku]?.reserved || 0) - 1)
-                            }
-                        }));
-                    } else if (newStatus === 'Cancelled' || newStatus === 'RTO-Delivered') {
-                        // Return to stock if cancelled before delivery
-                        setInventoryLevels(p => ({
-                            ...p,
-                            [order.sku]: {
-                                ...p[order.sku],
-                                reserved: Math.max(0, (p[order.sku]?.reserved || 0) - 1)
-                                // Note: In a real system, RTO-Delivered would involve a QA step before adding back to inStock
-                            }
-                        }));
+            // Log Activity
+            logOrderStatusChange(orderId, currentOrder.status, newStatus, agentMetadata.lastAgent);
+            setAgentMetadata(m => ({ ...m, mutations: m.mutations + 1 }));
+
+            // --- GLOBAL SYNC: Inventory Deduction / Restock ---
+            if (newStatus === 'Delivered' || newStatus === 'In-Transit') {
+                // Deduct from Stock when Shipped/Delivered (for demo, we deduct 1 from inStock and 1 from reserved)
+                setInventoryLevels(p => ({
+                    ...p,
+                    [updatedOrder.sku]: {
+                        ...p[updatedOrder.sku],
+                        inStock: Math.max(0, (p[updatedOrder.sku]?.inStock || 0) - 1),
+                        reserved: Math.max(0, (p[updatedOrder.sku]?.reserved || 0) - 1)
                     }
+                }));
+            } else if (newStatus === 'Cancelled' || newStatus === 'RTO-Delivered') {
+                // Return to stock if cancelled before delivery
+                setInventoryLevels(p => ({
+                    ...p,
+                    [updatedOrder.sku]: {
+                        ...p[updatedOrder.sku],
+                        reserved: Math.max(0, (p[updatedOrder.sku]?.reserved || 0) - 1)
+                        // Note: In a real system, RTO-Delivered would involve a QA step before adding back to inStock
+                    }
+                }));
+            }
+
+            // Notifications
+            try {
+                const whatsapp = getWhatsAppService();
+                if (newStatus === ORDER_STATUSES.IN_TRANSIT || newStatus === ORDER_STATUSES.PICKED_UP) {
+                    notifyOrderShipped(updatedOrder);
+                    whatsapp.sendWhatsAppMessage(orderId, 'shipping_update', updatedOrder.phone, { orderId, status: newStatus });
+                } else if (newStatus === ORDER_STATUSES.DELIVERED) {
+                    notifyOrderDelivered(updatedOrder);
+                    whatsapp.sendWhatsAppMessage(orderId, 'delivery_confirmation', updatedOrder.phone, { orderId });
+                } else if (newStatus.startsWith('RTO')) {
+                    const reason = metadata.reason || 'Shipment returned';
+                    notifyOrderRTO(updatedOrder, reason);
+                    whatsapp.sendWhatsAppMessage(orderId, 'rto_alert', updatedOrder.phone, { orderId, reason });
+                }
+            } catch (e) {
+                console.warn('Notification service error during transitions:', e.message);
+                // Fallback to basic notifications
+                if (newStatus === ORDER_STATUSES.IN_TRANSIT || newStatus === ORDER_STATUSES.PICKED_UP) {
+                    notifyOrderShipped(updatedOrder);
+                } else if (newStatus === ORDER_STATUSES.DELIVERED) {
+                    notifyOrderDelivered(updatedOrder);
+                }
+            }
+
+            return { success: true };
+        } catch (err) {
+            console.error("Status Update Failed:", err);
+            return { success: false, error: err.message };
+        }
+    };
 
                     // Trigger notifications for key statuses
                     try {
@@ -561,7 +611,7 @@ export const DataProvider = ({ children }) => {
             });
 
             logBulkUpdate(orderIds, newStatus);
-            notifyBulkImport(results.successful.length, `Bulk ${newStatus}`);
+            notifyBulkImport(results.successful.length, `Bulk ${ newStatus }`);
         }
 
         return results;
@@ -688,7 +738,7 @@ export const DataProvider = ({ children }) => {
      * Warehouse: Transfer stock between locations/bins
      */
     const transferStock = useCallback((sku, fromBin, toBin, qty) => {
-        console.log(`📦 Transferring ${qty} of ${sku} from ${fromBin} to ${toBin}`);
+        console.log(`📦 Transferring ${ qty } of ${ sku } from ${ fromBin } to ${ toBin }`);
         setInventoryLevels(prev => {
             const current = prev[sku] || { inStock: 0, reserved: 0, location: 'UNKNOWN' };
             return {
@@ -704,7 +754,7 @@ export const DataProvider = ({ children }) => {
             id: Date.now(),
             action: 'STOCK_TRANSFER',
             sku,
-            details: `${qty} units moved: ${fromBin} -> ${toBin}`,
+            details: `${ qty } units moved: ${ fromBin } -> ${ toBin }`,
             timestamp: new Date().toISOString()
         }, ...prev]);
     }, []);
@@ -714,7 +764,7 @@ export const DataProvider = ({ children }) => {
      */
     const receiveStock = useCallback((skuId, vendor, quantity) => {
         const newBatch = {
-            id: `BATCH-${skuId}-${Date.now()}`,
+            id: `BATCH - ${ skuId } - ${ Date.now() }`,
             sku: skuId,
             vendor,
             quantity,
@@ -837,9 +887,9 @@ export const DataProvider = ({ children }) => {
         }
 
         if (format === 'csv') {
-            exportOrdersCSV(data, `orders_export_${Date.now()}.csv`);
+            exportOrdersCSV(data, `orders_export_${ Date.now() }.csv`);
         } else {
-            exportJSON(data, `orders_export_${Date.now()}.json`);
+            exportJSON(data, `orders_export_${ Date.now() }.json`);
         }
 
         return { success: true, count: data.length };

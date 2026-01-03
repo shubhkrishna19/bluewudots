@@ -2,12 +2,14 @@ import React, { useState } from 'react';
 import { useData } from '../../context/DataContext';
 import { calculateProfitability, TMS_LEVELS, getEnhancedSKU } from '../../utils/commercialUtils';
 import mlForecastService from '../../services/mlForecastService';
-import { Zap, AlertOctagon, TrendingUp, RefreshCcw } from 'lucide-react';
+import { Zap, AlertOctagon, TrendingUp, RefreshCcw, RefreshCw, Search, Filter, Download, Plus } from 'lucide-react';
+import zohoService from '../../services/zohoBridgeService';
 
 
 const SKUMaster = () => {
     const { skuMaster } = useData();
     const [searchTerm, setSearchTerm] = useState('');
+    const [isSyncing, setIsSyncing] = useState(false);
     const [selectedSKU, setSelectedSKU] = useState(null);
 
     const filteredSKUs = skuMaster
@@ -25,8 +27,43 @@ const SKUMaster = () => {
         </div>
     );
 
+    const handleSync = async () => {
+        setIsSyncing(true);
+        try {
+            // Force refresh from Zoho
+            const latestSkus = await zohoService.fetchSKUMaster();
+            setSkuMaster(latestSkus); // Update global context
+        } catch (error) {
+            console.error("Failed to sync SKU master from Zoho:", error);
+            // Optionally show an error message to the user
+        } finally {
+            setIsSyncing(false);
+        }
+    };
+
     return (
-        <div className="sku-master-view animate-fade">
+        <div className="sku-master-container animate-fade">
+            <div className="section-header flex justify-between items-center">
+                <div>
+                    <h2>SKU Master Registry</h2>
+                    <p className="text-muted">Centralized Product Database (SSOT)</p>
+                </div>
+                <div className="flex gap-3">
+                    <button
+                        onClick={handleSync}
+                        disabled={isSyncing}
+                        className="btn-secondary glass-hover flex items-center gap-2"
+                    >
+                        <RefreshCw className={`w-4 h-4 ${isSyncing ? 'animate-spin' : ''}`} />
+                        {isSyncing ? 'Syncing...' : 'Sync from Zoho'}
+                    </button>
+                    <span className="badge glass text-green-400 flex items-center gap-1">
+                        <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                        Zoho CRM Connected
+                    </span>
+                </div>
+            </div>
+
             <div className="section-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div>
                     <h2>MTP / SKU Master</h2>

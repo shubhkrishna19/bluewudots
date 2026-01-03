@@ -45,7 +45,7 @@ import AmazonMapper from './components/Automation/AmazonMapper'
 import ShortcutsModal from './components/Help/ShortcutsModal'
 import InternationalShipping from './components/Logistics/InternationalShipping'
 import MarketplaceReconciliation from './components/Commercial/MarketplaceReconciliation'
-import MLAnalyticsDashboard from './components/Dashboard/MLAnalyticsDashboard'
+import DemandForecast from './components/Analytics/DemandForecast'
 import { initShortcuts, registerDefaultShortcuts, destroyShortcuts } from './services/keyboardShortcuts'
 import searchService from './services/searchService'
 import pushNotificationService from './services/pushNotificationService'
@@ -289,7 +289,7 @@ function App() {
                       <li className={activeTab === 'reports' ? 'active' : ''} onClick={() => { setActiveTab('reports'); setIsMobileMenuOpen(false); }}>📄 Export</li>
                     </Guard>
                     <li className={activeTab === 'performance' ? 'active' : ''} onClick={() => { setActiveTab('performance'); setIsMobileMenuOpen(false); }}>📈 Performance Score</li>
-                    <li className={activeTab === 'ml-forecast' ? 'active' : ''} onClick={() => { setActiveTab('ml-forecast'); setIsMobileMenuOpen(false); }}>🧠 ML Forecast</li>
+                    <li className={activeTab === 'ml-forecast' ? 'active' : ''} onClick={() => { setActiveTab('ml-forecast'); setIsMobileMenuOpen(false); }}>🧠 Demand Forecast</li>
                     <li className={activeTab === 'roadmap' ? 'active' : ''} onClick={() => { setActiveTab('roadmap'); setIsMobileMenuOpen(false); }}>🛣️ Product Roadmap</li>
                     <li className={activeTab === 'help' ? 'active' : ''} onClick={() => { setActiveTab('help'); setIsMobileMenuOpen(false); }}>❓ Help</li>
                     <Guard user={user} permission={PERMISSIONS.MANAGE_SETTINGS}>
@@ -445,7 +445,7 @@ function App() {
               </Guard>
 
               <Guard user={user} permission={PERMISSIONS.VIEW_ANALYTICS}>
-                {activeTab === 'ml-forecast' && <MLAnalyticsDashboard />}
+                {activeTab === 'ml-forecast' && <DemandForecast />}
               </Guard>
 
               {activeTab === 'performance' && <PerformanceMetrics />}
