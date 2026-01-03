@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { transitionOrder, bulkTransition, ORDER_STATUSES, getValidNextStatuses } from '../services/orderStateMachine';
 import { getAllRates, getRecommendation } from '../services/carrierRateEngine';
-import { logOrderCreate, logOrderStatusChange, logBulkUpdate, logCarrierAssign, logImportComplete, initializeActivityLog as loadActivityCache, logActivity } from '../services/activityLogger';
+import { logOrderCreate, logOrderStatusChange, logBulkUpdate, logCarrierAssign, logImportComplete, logActivity } from '../services/activityLogger';
 import { notifyOrderCreated, notifyOrderShipped, notifyOrderDelivered, notifyOrderRTO, notifyBulkImport } from '../services/notificationService';
 import { validateOrder, normalizeOrder, generateOrderId, deduplicateOrders, deduplicateCustomers, exportOrdersCSV, exportJSON } from '../utils/dataUtils';
 import { fetchSKUMaster, pushOrderToZoho, syncDeltaOrders } from '../services/zohoBridgeService';
@@ -9,7 +9,7 @@ import marketplaceService from '../services/marketplaceService';
 import searchService from '../services/searchService';
 import marginProtectionService from '../services/marginProtectionService';
 import { initOfflineCacheService, getOfflineCacheService } from '../services/offlineCacheService';
-import { getWhatsAppService, initWhatsAppService } from '../services/whatsappServiceEnhanced';
+import { sendWhatsAppMessage } from '../services/whatsappService';
 import warehouseOptimizer from '../services/warehouseOptimizer';
 import webhookService from '../services/zohoWebhookService';
 
@@ -24,6 +24,7 @@ export const DataProvider = ({ children }) => {
     const [inventoryLevels, setInventoryLevels] = useState({});
     const [customerMaster, setCustomerMaster] = useState([]);
     const [batches, setBatches] = useState([]);
+    const [flaggedOrders, setFlaggedOrders] = useState([]);
     const [loading, setLoading] = useState(true);
     const [syncStatus, setSyncStatus] = useState('offline');
 
@@ -35,10 +36,10 @@ export const DataProvider = ({ children }) => {
             await cache.initialize();
 
             const cachedOrders = await cache.getAllData('orders');
-            if (cachedOrders?.length > 0) setOrders(cachedOrders.map(c => c.data));
+            if (cachedOrders?.length > 0) setOrders(cachedOrders.map(c => c.data || c));
 
             const cachedSkus = await cache.getAllData('skuMaster');
-            if (cachedSkus?.length > 0) setSkuMaster(cachedSkus.map(c => c.data));
+            if (cachedSkus?.length > 0) setSkuMaster(cachedSkus.map(c => c.data || c));
 
             setLoading(false);
             setSyncStatus('online');
@@ -46,7 +47,15 @@ export const DataProvider = ({ children }) => {
         initialize();
     }, []);
 
-    // Zoho Sync Logic
+    // Auto-save orders to cache
+    useEffect(() => {
+        if (!loading) {
+            const cache = getOfflineCacheService();
+            orders.forEach(order => cache.cacheData('orders', order.id, order));
+        }
+    }, [orders, loading]);
+
+    // Zoho Sync Logic (Delta)
     useEffect(() => {
         if (!loading && orders.length > 0) {
             const syncInterval = setInterval(() => {
@@ -62,29 +71,29 @@ export const DataProvider = ({ children }) => {
 
         const newOrder = {
             ...orderData,
-            id: generateOrderId(),
-            status: ORDER_STATUSES.PENDING,
-            createdAt: new Date().toISOString(),
-            warehouse: warehouseOptimizer.selectOptimalWarehouse({ pincode: orderData.pincode, state: orderData.state }).warehouse.id
+            id: orderData.id || generateOrderId(),
+            status: orderData.status || ORDER_STATUSES.PENDING,
+            createdAt: orderData.createdAt || new Date().toISOString(),
+            warehouse: orderData.warehouse || warehouseOptimizer.selectOptimalWarehouse({ pincode: orderData.pincode, state: orderData.state }).warehouse.id
         };
 
         const marginCheck = marginProtectionService.validateMargin(newOrder, skuMaster.find(s => s.sku === newOrder.sku));
-        if (marginCheck.shouldBlock) return { success: false, error: 'MARGIN_BLOCK', message: marginCheck.alert };
+        if (marginCheck.shouldBlock) {
+            setFlaggedOrders(prev => [...prev, newOrder]);
+            return { success: false, error: 'MARGIN_BLOCK', message: marginCheck.alert };
+        }
 
         setOrders(prev => [...prev, newOrder]);
-
-        // Persistence
-        const cache = getOfflineCacheService();
-        cache.cacheData('orders', newOrder.id, newOrder);
-
-        // Notifications
         notifyOrderCreated(newOrder);
-        try {
-            getWhatsAppService().sendWhatsAppMessage(newOrder.id, 'order_confirmation', newOrder.phone, { orderId: newOrder.id });
-        } catch (e) { }
+
+        sendWhatsAppMessage(newOrder.phone, 'ORDER_CONFIRMED', { orderId: newOrder.id, amount: newOrder.amount });
 
         return { success: true, order: newOrder };
     }, [skuMaster]);
+
+    const updateOrder = useCallback((orderId, updates) => {
+        setOrders(prev => prev.map(o => o.id === orderId ? { ...o, ...updates } : o));
+    }, []);
 
     const updateOrderStatus = useCallback((orderId, newStatus, metadata = {}) => {
         let result = null;
@@ -95,15 +104,12 @@ export const DataProvider = ({ children }) => {
                     result = transitionResult;
                     logOrderStatusChange(order, order.status, newStatus, metadata.reason);
 
-                    // WhatsApp Integration
-                    try {
-                        const whatsapp = getWhatsAppService();
-                        if (newStatus === ORDER_STATUSES.DELIVERED) {
-                            whatsapp.sendWhatsAppMessage(orderId, 'delivery_confirmation', order.phone, { orderId });
-                        } else if (newStatus.startsWith('RTO')) {
-                            whatsapp.sendWhatsAppMessage(orderId, 'rto_alert', order.phone, { orderId, reason: metadata.reason });
-                        }
-                    } catch (e) { }
+                    // WhatsApp Notifications
+                    if (newStatus === ORDER_STATUSES.SHIPPED || newStatus === 'Carrier-Assigned') {
+                        sendWhatsAppMessage(order.phone, 'ORDER_SHIPPED', { orderId: order.id, awb: order.awb || 'N/A', carrier: order.carrier || 'N/A' });
+                    } else if (newStatus === ORDER_STATUSES.DELIVERED) {
+                        sendWhatsAppMessage(order.phone, 'ORDER_DELIVERED', { orderId: order.id });
+                    }
 
                     return transitionResult.order;
                 }
@@ -112,6 +118,22 @@ export const DataProvider = ({ children }) => {
         }));
         return result || { success: false, error: 'Transition failed' };
     }, []);
+
+    const adjustStock = useCallback((sku, delta) => {
+        setInventoryLevels(prev => {
+            const current = prev[sku] || { inStock: 0, reserved: 0, location: 'UNKNOWN' };
+            return {
+                ...prev,
+                [sku]: { ...current, inStock: Math.max(0, current.inStock + delta) }
+            };
+        });
+    }, []);
+
+    const transferStock = useCallback((sku, from, to, qty) => {
+        adjustStock(sku, -qty);
+        // In a real app we'd add to the 'to' warehouse inventory
+        logActivity({ type: 'inventory.transfer', action: `Transferred ${qty} of ${sku} from ${from} to ${to}` });
+    }, [adjustStock]);
 
     const syncSKUMaster = useCallback(async () => {
         setSyncStatus('syncing');
@@ -133,11 +155,15 @@ export const DataProvider = ({ children }) => {
         inventoryLevels,
         customerMaster,
         batches,
+        flaggedOrders,
         loading,
         syncStatus,
         addOrder,
+        updateOrder,
         updateOrderStatus,
         syncSKUMaster,
+        adjustStock,
+        transferStock,
         getCarrierRates: (s) => getAllRates(s),
         getCarrierRecommendation: (s, p) => getRecommendation(s, p)
     };
@@ -146,3 +172,4 @@ export const DataProvider = ({ children }) => {
 };
 
 export const useData = () => useContext(DataContext);
+export default DataContext;
