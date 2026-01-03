@@ -1,444 +1,116 @@
 /**
- * Label & Print Service - Generate shipping labels, manifests, and invoices
- * Uses browser print APIs with proper formatting for thermal printers
+ * Label Print Service
+ * Generates ZPL II commands for thermal printers (Zebra, TSC, Honeywell)
+ * Supports 4x6 inch shipping labels
  */
 
-// Label size configurations
-export const LABEL_SIZES = {
-    '4x6': { width: 4, height: 6, dpi: 203, name: '4x6 Standard' },
-    '4x4': { width: 4, height: 4, dpi: 203, name: '4x4 Compact' },
-    'A5': { width: 5.83, height: 8.27, dpi: 300, name: 'A5 Sheet' },
-    'A4': { width: 8.27, height: 11.69, dpi: 300, name: 'A4 Sheet' }
-};
-
-// Barcode font (Code 128 simulation using characters)
-const generateBarcode128 = (text) => {
-    // Simple representation - in production, use a proper barcode library
-    return text.split('').map(c => {
-        const code = c.charCodeAt(0);
-        return '|'.repeat(Math.max(1, code % 4 + 1)) + ' ';
-    }).join('');
-};
-
-/**
- * Generate HTML for a shipping label
- * @param {object} order - Order data
- * @param {string} size - Label size key
- * @returns {string} - HTML content
- */
-export const generateLabelHTML = (order, size = '4x6') => {
-    const labelSize = LABEL_SIZES[size];
-
-    return `
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Shipping Label - ${order.awb || order.id}</title>
-    <style>
-        @page {
-            size: ${labelSize.width}in ${labelSize.height}in;
-            margin: 0;
-        }
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        body {
-            font-family: 'Arial', sans-serif;
-            font-size: 10pt;
-            width: ${labelSize.width}in;
-            height: ${labelSize.height}in;
-            padding: 8px;
-        }
-        .label-container {
-            border: 2px solid #000;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-        }
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 8px;
-            border-bottom: 2px solid #000;
-            background: #f0f0f0;
-        }
-        .carrier-logo {
-            font-size: 18pt;
-            font-weight: bold;
-        }
-        .awb-section {
-            text-align: center;
-            padding: 8px;
-            border-bottom: 1px solid #000;
-        }
-        .awb-number {
-            font-size: 14pt;
-            font-weight: bold;
-            letter-spacing: 1px;
-        }
-        .barcode {
-            font-family: 'Courier New', monospace;
-            font-size: 24pt;
-            text-align: center;
-            margin: 8px 0;
-            letter-spacing: -2px;
-        }
-        .address-section {
-            flex: 1;
-            padding: 8px;
-        }
-        .address-header {
-            font-size: 8pt;
-            color: #666;
-            margin-bottom: 4px;
-        }
-        .address-name {
-            font-size: 12pt;
-            font-weight: bold;
-        }
-        .address-line {
-            font-size: 10pt;
-        }
-        .details-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 8px;
-            border-top: 1px solid #000;
-            background: #f8f8f8;
-        }
-        .detail-item {
-            text-align: center;
-        }
-        .detail-label {
-            font-size: 7pt;
-            color: #666;
-        }
-        .detail-value {
-            font-size: 10pt;
-            font-weight: bold;
-        }
-        .footer {
-            padding: 4px 8px;
-            border-top: 2px solid #000;
-            font-size: 7pt;
-            text-align: center;
-            background: #000;
-            color: #fff;
-        }
-        .cod-badge {
-            background: #ff0000;
-            color: #fff;
-            padding: 2px 8px;
-            font-weight: bold;
-            font-size: 10pt;
-        }
-    </style>
-</head>
-<body>
-    <div class="label-container">
-        <div class="header">
-            <div class="carrier-logo">${order.carrier || 'CARRIER'}</div>
-            <div>
-                ${order.isCOD ? '<span class="cod-badge">COD</span>' : '<span style="font-weight:bold">PREPAID</span>'}
-            </div>
-        </div>
-        
-        <div class="awb-section">
-            <div class="awb-number">${order.awb || 'AWB-PENDING'}</div>
-            <div class="barcode">${generateBarcode128(order.awb || order.id)}</div>
-        </div>
-        
-        <div class="address-section">
-            <div class="address-header">SHIP TO:</div>
-            <div class="address-name">${order.customerName || 'Customer'}</div>
-            <div class="address-line">${order.address || ''}</div>
-            <div class="address-line">${order.city || ''}, ${order.state || ''} - ${order.pincode || ''}</div>
-            <div class="address-line" style="margin-top: 4px;">📞 ${order.phone || ''}</div>
-            
-            <div style="margin-top: 16px; border-top: 1px dashed #ccc; padding-top: 8px;">
-                <div class="address-header">FROM:</div>
-                <div class="address-line"><strong>Bluewud India</strong></div>
-                <div class="address-line">Warehouse, Bangalore 560058</div>
-            </div>
-        </div>
-        
-        <div class="details-row">
-            <div class="detail-item">
-                <div class="detail-label">ORDER ID</div>
-                <div class="detail-value">${order.id}</div>
-            </div>
-            <div class="detail-item">
-                <div class="detail-label">WEIGHT</div>
-                <div class="detail-value">${order.weight || 0} kg</div>
-            </div>
-            <div class="detail-item">
-                <div class="detail-label">SKU</div>
-                <div class="detail-value">${order.sku || '-'}</div>
-            </div>
-            ${order.isCOD ? `
-            <div class="detail-item">
-                <div class="detail-label">COD AMT</div>
-                <div class="detail-value">₹${order.codAmount || order.amount || 0}</div>
-            </div>
-            ` : ''}
-        </div>
-        
-        <div class="footer">
-            Powered by Bluewud OTS • ${new Date().toLocaleDateString('en-IN')}
-        </div>
-    </div>
-</body>
-</html>
-    `;
-};
-
-/**
- * Print a shipping label (Hybrid: Real PDF or Legacy HTML)
- * @param {object} order 
- * @param {string} size 
- */
-export const printLabel = async (order, size = '4x6') => {
-    // 1. Check if Live Label URL exists (from previous API fetch)
-    if (order.labelUrl) {
-        window.open(order.labelUrl, '_blank');
-        return;
+class LabelPrintService {
+    constructor() {
+        this.dpi = 203; // Standard thermal printer DPI
+        this.labelWidth = 4; // inches
+        this.labelHeight = 6; // inches
     }
 
-    // 2. Try Fetching Live Label if Carrier API is active
-    /* 
-       Optimistic Check: If credentials exist, we might try to fetch on-the-fly.
-       However, usually label generation happens at "Ship" status which saves the URL.
-       This block is for on-demand fetching implementation.
-    */
-    const delhiveryToken = import.meta.env.VITE_DELHIVERY_TOKEN;
-    if (delhiveryToken && order.carrier === 'Delhivery' && !order.isSimulated) {
-        const labelUrl = await fetchCarrierLabel(order);
-        if (labelUrl) {
-            window.open(labelUrl, '_blank');
-            return;
+    /**
+     * Generates ZPL code for a shipping label
+     * @param {object} order - Order details
+     * @param {object} carrier - Carrier details (optional)
+     * @returns {string} ZPL string
+     */
+    generateZPL(order, carrier = {}) {
+        const date = new Date().toISOString().split('T')[0];
+        const sender = "Bluewud Furniture";
+        const senderAddr = "A-123, Industrial Area, Noida, UP - 201301";
+
+        // ZPL Start
+        let zpl = `^XA`;
+        zpl += `^PW812`; // Print width 812 dots (4 inches * 203 dpi)
+        zpl += `^LL1218`; // Label length 1218 dots (6 inches * 203 dpi)
+        zpl += `^PON`; // Print orientation normal
+
+        // Header (Sender)
+        zpl += `^FO50,50^A0N,30,30^FD${sender}^FS`;
+        zpl += `^FO50,90^A0N,25,25^FD${senderAddr}^FS`;
+
+        // Recipient Box
+        zpl += `^FO50,150^GB712,250,3^FS`; // Box
+        zpl += `^FO70,170^A0N,25,25^FDShip To:^FS`;
+        zpl += `^FO70,210^A0N,40,40^FD${this._sanitize(order.customerName)}^FS`;
+        zpl += `^FO70,260^A0N,30,30^FD${this._sanitize(order.shippingAddress?.street || '')}^FS`;
+        zpl += `^FO70,300^A0N,30,30^FD${this._sanitize(order.shippingAddress?.city || '')}, ${this._sanitize(order.shippingAddress?.state || '')}^FS`;
+        zpl += `^FO70,340^A0N,30,30^FD${order.shippingAddress?.pincode || ''}^FS`;
+        zpl += `^FO70,380^A0N,30,30^FDPh: ${order.phoneNumber || ''}^FS`;
+
+        // Routing Info / Carrier
+        zpl += `^FO450,170^A0N,50,50^FD${carrier.name || 'Standard'}^FS`;
+        zpl += `^FO450,230^A0N,30,30^FDRouting: ${order.shippingAddress?.state?.substring(0, 3).toUpperCase() || 'STD'}^FS`;
+
+        // Barcode (Code 128) - Order ID
+        zpl += `^FO50,450^BY3,3,100^BCN,100,Y,N,N^FD${order.id}^FS`;
+
+        // SKU Details
+        zpl += `^FO50,600^GB712,400,3^FS`; // Items Box
+        let yPos = 620;
+        zpl += `^FO70,${yPos}^A0N,25,25^FDContents:^FS`;
+        yPos += 40;
+
+        if (order.items && order.items.length > 0) {
+            order.items.slice(0, 5).forEach(item => {
+                const text = `${item.quantity}x ${item.name.substring(0, 40)}`;
+                zpl += `^FO70,${yPos}^A0N,25,25^FD${this._sanitize(text)}^FS`;
+                yPos += 30;
+            });
+        } else {
+            zpl += `^FO70,${yPos}^A0N,25,25^FD1x ${this._sanitize(order.productName || 'Furniture Item')}^FS`;
+        }
+
+        // Footer
+        zpl += `^FO50,1100^A0N,25,25^FDOrder Date: ${order.date || date}^FS`;
+        zpl += `^FO450,1100^A0N,40,40^FD${order.paymentMethod === 'COD' ? 'COD: Rs.' + order.amount : 'PREPAID'}^FS`;
+
+        // End Label
+        zpl += `^XZ`;
+
+        return zpl;
+    }
+
+    /**
+     * Sanitizes text for ZPL (removes special chars that might break command)
+     */
+    _sanitize(text) {
+        if (!text) return '';
+        // Basic sanitization, ZPL doesn't support full Unicode easily without font packs
+        return text.replace(/[^\w\s\-,.]/g, '');
+    }
+
+    /**
+     * Tries to print using a browser-local web server or WebUSB (Conceptual)
+     */
+    async printLabel(order) {
+        const zpl = this.generateZPL(order);
+
+        // In a real scenario, we would send this to a local QZ Tray websocket
+        // or a WebUSB endpoint. For this demo, we'll log it or open a Blob.
+        console.log("Generated ZPL:", zpl);
+
+        // Simulation of sending to printer
+        try {
+            // Check for QZ Tray or similar
+            if (window.qz) {
+                // await window.qz.print(...)
+            } else {
+                // Fallback: Open Labelary API to visualize
+                const url = `http://labelary.com/viewer.html?density=8&quality=Bitonal&width=4&height=6&units=inches&zpl=${encodeURIComponent(zpl)}`;
+                window.open(url, '_blank');
+            }
+            return { success: true, zpl };
+        } catch (e) {
+            console.error("Print failed", e);
+            return { success: false, error: e.message };
         }
     }
+}
 
-    // 3. Fallback to Legacy HTML Generator
-    const html = generateLabelHTML(order, size);
-    const printWindow = window.open('', '_blank', 'width=400,height=600');
-    printWindow.document.write(html);
-    printWindow.document.close();
-    printWindow.focus();
-
-    // Auto-print after content loads
-    printWindow.onload = () => {
-        printWindow.print();
-    };
-};
-
-/**
- * Fetch official label from Carrier API
- */
-const fetchCarrierLabel = async (order) => {
-    try {
-        // Simulation of API call to /waybill/fetch
-        console.log(`Fetching live label for ${order.id} from ${order.carrier}...`);
-
-        // Return null to fallback to HTML for now, until real endpoint is mapped
-        // In real impl: 
-        // const res = await fetch('https://track.delhivery.com/api/waybill/url', ...);
-        // return res.json().url;
-
-        return null;
-    } catch (err) {
-        console.error('Label Fetch Failed:', err);
-        return null;
-    }
-};
-
-/**
- * Generate manifest/pickup sheet for multiple orders
- * @param {object[]} orders 
- * @param {string} carrier 
- * @returns {string} - HTML content
- */
-export const generateManifestHTML = (orders, carrier = 'All Carriers') => {
-    const date = new Date().toLocaleDateString('en-IN', {
-        day: '2-digit',
-        month: 'short',
-        year: 'numeric'
-    });
-
-    const rows = orders.map((order, idx) => `
-        <tr>
-            <td>${idx + 1}</td>
-            <td><strong>${order.id}</strong></td>
-            <td>${order.awb || '-'}</td>
-            <td>${order.customerName}</td>
-            <td>${order.city}, ${order.state}</td>
-            <td>${order.weight} kg</td>
-            <td>${order.isCOD ? '₹' + (order.codAmount || order.amount) : 'PREPAID'}</td>
-            <td style="width: 60px;"></td>
-        </tr>
-    `).join('');
-
-    return `
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Manifest - ${date}</title>
-    <style>
-        @page { size: A4; margin: 10mm; }
-        body { font-family: Arial, sans-serif; font-size: 9pt; }
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 2px solid #000; padding-bottom: 10px; }
-        .title { font-size: 18pt; font-weight: bold; }
-        table { width: 100%; border-collapse: collapse; }
-        th, td { border: 1px solid #000; padding: 6px; text-align: left; }
-        th { background: #f0f0f0; font-weight: bold; }
-        .footer { margin-top: 30px; display: flex; justify-content: space-between; }
-        .signature { border-top: 1px solid #000; width: 200px; text-align: center; padding-top: 4px; }
-    </style>
-</head>
-<body>
-    <div class="header">
-        <div>
-            <div class="title">PICKUP MANIFEST</div>
-            <div>Date: ${date}</div>
-        </div>
-        <div style="text-align: right;">
-            <div><strong>Bluewud India</strong></div>
-            <div>Carrier: ${carrier}</div>
-            <div>Total: ${orders.length} shipments</div>
-        </div>
-    </div>
-    
-    <table>
-        <thead>
-            <tr>
-                <th>#</th>
-                <th>Order ID</th>
-                <th>AWB</th>
-                <th>Customer</th>
-                <th>Destination</th>
-                <th>Weight</th>
-                <th>COD/Prepaid</th>
-                <th>Received ✓</th>
-            </tr>
-        </thead>
-        <tbody>
-            ${rows}
-        </tbody>
-    </table>
-    
-    <div class="footer">
-        <div>
-            <p><strong>Warehouse Staff:</strong></p>
-            <div class="signature">Signature & Date</div>
-        </div>
-        <div>
-            <p><strong>Carrier Executive:</strong></p>
-            <div class="signature">Signature & Date</div>
-        </div>
-    </div>
-    
-    <p style="margin-top: 20px; font-size: 8pt; color: #666; text-align: center;">
-        Generated by Bluewud OTS • ${new Date().toLocaleString('en-IN')}
-    </p>
-</body>
-</html>
-    `;
-};
-
-/**
- * Print manifest
- * @param {object[]} orders 
- * @param {string} carrier 
- */
-export const printManifest = (orders, carrier) => {
-    const html = generateManifestHTML(orders, carrier);
-    const printWindow = window.open('', '_blank', 'width=800,height=600');
-    printWindow.document.write(html);
-    printWindow.document.close();
-    printWindow.focus();
-    printWindow.onload = () => printWindow.print();
-};
-
-/**
- * Generate packing slip
- * @param {object} order 
- * @returns {string}
- */
-export const generatePackingSlipHTML = (order) => {
-    return `
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Packing Slip - ${order.id}</title>
-    <style>
-        @page { size: A5; margin: 10mm; }
-        body { font-family: Arial, sans-serif; font-size: 10pt; }
-        .header { border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 15px; }
-        .company { font-size: 16pt; font-weight: bold; }
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-        th, td { border: 1px solid #ccc; padding: 8px; }
-        th { background: #f0f0f0; }
-        .thank-you { text-align: center; margin-top: 30px; font-style: italic; }
-    </style>
-</head>
-<body>
-    <div class="header">
-        <div class="company">Bluewud India</div>
-        <div>Furniture that defines you</div>
-    </div>
-    
-    <p><strong>Order #:</strong> ${order.id}</p>
-    <p><strong>Customer:</strong> ${order.customerName}</p>
-    <p><strong>Shipping To:</strong> ${order.address || ''}, ${order.city}, ${order.state} - ${order.pincode}</p>
-    
-    <table>
-        <thead>
-            <tr>
-                <th>SKU</th>
-                <th>Description</th>
-                <th>Qty</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>${order.sku}</td>
-                <td>${order.productName || 'Product'}</td>
-                <td>${order.quantity || 1}</td>
-            </tr>
-        </tbody>
-    </table>
-    
-    <div class="thank-you">
-        <p>Thank you for shopping with Bluewud!</p>
-        <p>Questions? Contact us at support@bluewud.in</p>
-    </div>
-</body>
-</html>
-    `;
-};
-
-/**
- * Download labels as PDF (opens print dialog)
- * @param {object[]} orders 
- * @param {string} size 
- */
-export const batchPrintLabels = (orders, size = '4x6') => {
-    orders.forEach((order, idx) => {
-        setTimeout(() => {
-            printLabel(order, size);
-        }, idx * 500); // Stagger to avoid popup blocking
-    });
-};
-
-export default {
-    LABEL_SIZES,
-    generateLabelHTML,
-    printLabel,
-    generateManifestHTML,
-    printManifest,
-    generatePackingSlipHTML,
-    batchPrintLabels
-};
+// Singleton
+export const labelPrintService = new LabelPrintService();
+export default labelPrintService;
