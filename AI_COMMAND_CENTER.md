@@ -103,7 +103,7 @@ All new UI components MUST follow:
 
 | Task ID | Description | Assigned To | Status | Last Updated |
 |---------|-------------|-------------|--------|--------------|
-| 15.8 | Lighthouse Performance Audit | *AVAILABLE* | 🟡 Open | 2026-01-04 |
+| 15.8 | Lighthouse Performance Audit | Antigravity-Alpha | 🔵 In Progress | 2026-01-04 |
 | 16.1 | Real WhatsApp API Integration | *AVAILABLE* | 🟡 Open | 2026-01-04 |
 | 16.2 | Thermal Printer Integration | *AVAILABLE* | 🟡 Open | 2026-01-04 |
 | 16.3 | 2FA Implementation | *AVAILABLE* | 🟡 Open | 2026-01-04 |
