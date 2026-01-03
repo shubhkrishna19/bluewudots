@@ -13,7 +13,7 @@
 
 | Task | Assignee | Started | Branch/Session | Notes |
 |------|----------|---------|----------------|-------|
-| P16.4: Thermal Printer Integration | Antigravity (Agent-1) | 2026-01-04 | session-current | Implementing `ZebraBrowserPrint` logic |
+| _None currently_ | - | - | - | - |
 | P15.9: Unit Test Coverage | Antigravity (Agent-2) | 2026-01-04 03:55 | session-current | Auditing coverage, targeting 80%+ |
 
 ---
@@ -25,6 +25,7 @@
 | P16.2: Live Carrier API Integration | Antigravity | 2026-01-04 | Session-Current |
 | P16.1: WhatsApp API Integration | Antigravity | 2026-01-04 | Session-124 |
 | P16.2: Carrier API Integration | Antigravity | 2026-01-04 | Session-Current |
+| Phase 28: RTO & Reverse Logistics (Refinement) | Antigravity | 2026-01-04 | session-current |
 | P16.3: Marketplace Sync | Antigravity | 2026-01-04 | Session-Current |
 | Phase 16: Vision AI | Antigravity AI | 2026-01-04 | session-c18f8671 |
 | Phase 28: RTO & Reverse Logistics | Antigravity AI | 2026-01-04 | `main` |
