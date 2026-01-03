@@ -108,15 +108,10 @@ const getCurrentUser = () => {
  * @param {object} activity 
  */
 const syncToBackend = async (activity) => {
-<<<<<<< HEAD
     // 1. Persist to high-speed local cache (IndexedDB)
     cacheData('activityLog', activity);
 
-    // 2. Future: Sync with Zoho Catalyst
-    // try {
-    //     await fetch('/server/activity', { ... });
-    // } catch (e) { ... }
-=======
+    // 2. Sync with Backend
     try {
         await fetch('/server/activity', {
             method: 'POST',
@@ -126,7 +121,6 @@ const syncToBackend = async (activity) => {
     } catch (error) {
         console.warn('Activity sync failed:', error);
     }
->>>>>>> 4be53487f72a2bfacf3cde5d60b2e7a7e0ec3174
 };
 
 /**

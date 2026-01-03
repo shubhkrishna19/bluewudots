@@ -13,19 +13,19 @@ const API_BASE = '/server/zoho'; // Base path for Catalyst functions
  */
 export const fetchSKUMaster = async () => {
     try {
-        console.log('🔄 Fetching SKU Master (Syncing with SSOT)...');
+        console.log('[Bluewud-AI] 🔄 Fetching SKU Master (Syncing with SSOT)...');
 
         const response = await fetch(`${API_BASE}/sku`);
         if (!response.ok) {
             // Fallback to seed data if network fails (for offline/dev resilience)
-            console.warn('⚠️ Zoho Sync failed, falling back to Seed Data.');
+            console.warn('[Bluewud-AI] ⚠️ Zoho Sync failed, falling back to Seed Data.');
             return SKU_MASTER;
         }
         const data = await response.json();
-        console.log('✅ Synchronized with Zoho CRM SKU Master');
+        console.log('[Bluewud-AI] ✅ Synchronized with Zoho CRM SKU Master');
         return data;
     } catch (error) {
-        console.error('❌ SKU Sync Error:', error);
+        console.error('[Bluewud-AI] ❌ SKU Sync Error:', error);
         return SKU_MASTER; // Resilient fallback
     }
 };
@@ -37,7 +37,7 @@ export const fetchSKUMaster = async () => {
  */
 export const pushOrderToZoho = async (order) => {
     try {
-        console.log(`📤 Pushing Order ${order.id} to Zoho CRM...`);
+        console.log(`[Bluewud-AI] 📤 Pushing Order ${order.id} to Zoho CRM...`);
 
         const response = await fetch(`${API_BASE}/order`, {
             method: 'POST',

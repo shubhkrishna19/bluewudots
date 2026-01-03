@@ -14,7 +14,16 @@ const CHANNEL_CONFIGS = {
     pepperfry: { name: 'Pepperfry', idField: 'order_id', customerField: 'customer_name', cityField: 'city', stateField: 'state', skuField: 'product_code' },
     indiamart: { name: 'IndiaMART', idField: 'enquiry_id', customerField: 'company_name', cityField: 'city', stateField: 'state', skuField: 'product' },
     local_shop: { name: 'Local Shop', idField: 'order_id', customerField: 'customer', cityField: 'city', stateField: 'state', skuField: 'sku' },
-    dealer: { name: 'Dealer', idField: 'order_id', customerField: 'dealer_name', cityField: 'city', stateField: 'state', skuField: 'sku' }
+    dealer: { name: 'Dealer', idField: 'order_id', customerField: 'dealer_name', cityField: 'city', stateField: 'state', skuField: 'sku' },
+    custom: { name: 'Auto-Detect (Smart Map)', idField: null, customerField: null, cityField: null, stateField: null, skuField: null }
+};
+
+const SMART_MAPPINGS = {
+    id: ['order-id', 'order_id', 'id', 'ref', 'po_number'],
+    customer: ['buyer-name', 'customer', 'name', 'buyer', 'bill_to'],
+    city: ['ship-city', 'city', 'town', 'billing_city'],
+    state: ['ship-state', 'state', 'province', 'region'],
+    sku: ['sku', 'item_code', 'product_id', 'part_number']
 };
 
 const UniversalImporter = () => {
@@ -36,10 +45,27 @@ const UniversalImporter = () => {
             skipEmptyLines: true,
             complete: (results) => {
                 const rawData = results.data;
+                if (rawData.length === 0) return;
+
+                // Smart Mapping Logic
+                let config = CHANNEL_CONFIGS[selectedChannel];
+                if (selectedChannel === 'custom') {
+                    const headers = Object.keys(rawData[0]);
+                    config = { ...config };
+
+                    // Try to find best match for each field
+                    config.idField = headers.find(h => SMART_MAPPINGS.id.includes(h.toLowerCase())) || headers[0];
+                    config.customerField = headers.find(h => SMART_MAPPINGS.customer.includes(h.toLowerCase())) || headers[1];
+                    config.cityField = headers.find(h => SMART_MAPPINGS.city.includes(h.toLowerCase()));
+                    config.stateField = headers.find(h => SMART_MAPPINGS.state.includes(h.toLowerCase()));
+                    config.skuField = headers.find(h => SMART_MAPPINGS.sku.includes(h.toLowerCase()));
+
+                    console.log('Smart Mapping Detected:', config);
+                }
 
                 const transformed = rawData.map(row => ({
-                    id: row[config.idField] || `BW-${selectedChannel.toUpperCase().slice(0, 3)}-${Math.random().toString(36).substr(2, 5).toUpperCase()}`,
-                    customer: row[config.customerField] || 'Customer',
+                    id: row[config.idField] || `BW-CS-${Math.random().toString(36).substr(2, 5).toUpperCase()}`,
+                    customer: row[config.customerField] || 'Unknown Customer',
                     city: row[config.cityField] || 'Unknown',
                     state: row[config.stateField] || 'Unknown',
                     sku: resolveSkuAlias(row[config.skuField] || 'SKU-UNKNOWN', skuAliases),

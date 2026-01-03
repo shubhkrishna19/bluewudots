@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useData } from '../../context/DataContext';
 import { calculateProfitability, TMS_LEVELS, getEnhancedSKU } from '../../utils/commercialUtils';
+import mlForecastService from '../../services/mlForecastService';
+import { Zap, AlertOctagon, TrendingUp, RefreshCcw } from 'lucide-react';
 
 
 const SKUMaster = () => {
@@ -120,6 +122,65 @@ const SKUMaster = () => {
                                     </div>
                                 </div>
                             </div>
+
+                            {/* ML Demand Insight */}
+                            {(() => {
+                                const { orders, inventoryLevels } = useData();
+                                const analysis = mlForecastService.predictDemand(orders, enhancedSku.sku);
+                                const rrq = mlForecastService.calculateRRQ(analysis);
+                                const currentStock = inventoryLevels[enhancedSku.sku]?.inStock || 0;
+                                const stockOut = mlForecastService.predictStockOutDate(orders, enhancedSku.sku, currentStock);
+
+                                return analysis && !analysis.error ? (
+                                    <div className="ml-insight glass border-l-4 border-primary mt-4 overflow-hidden relative group" style={{ padding: '16px', background: 'rgba(99, 102, 241, 0.03)' }}>
+                                        <div className="flex justify-between items-start">
+                                            <div>
+                                                <div className="flex items-center gap-1.5 mb-2">
+                                                    <div className="bg-primary/20 p-1 rounded-md">
+                                                        <Zap className="text-primary w-3 h-3" />
+                                                    </div>
+                                                    <span className="text-[10px] font-black uppercase tracking-widest text-primary">Neural Insight</span>
+                                                </div>
+                                                <p className="text-sm font-bold m-0 leading-tight">
+                                                    Forecasting <span className="text-primary">+{analysis.metrics.growthRate}</span> units next 30 days
+                                                </p>
+                                                <div className="flex items-center gap-2 mt-2">
+                                                    <span className="text-[9px] font-bold text-slate-500 uppercase">Days of Supply:</span>
+                                                    <span className={`text-xs font-mono font-bold ${stockOut.days < 15 ? 'text-red-400' : 'text-green-400'}`}>
+                                                        {stockOut.days > 90 ? '90+' : stockOut.days}d
+                                                    </span>
+                                                </div>
+
+                                                {stockOut && stockOut.urgency !== 'SAFE' && (
+                                                    <div className="flex items-center gap-1.5 mt-3 animate-pulse">
+                                                        <AlertOctagon className="w-3.5 h-3.5" style={{ color: stockOut.urgency === 'CRITICAL' ? 'var(--danger)' : 'var(--warning)' }} />
+                                                        <span className="text-[10px] font-black uppercase tracking-tighter" style={{ color: stockOut.urgency === 'CRITICAL' ? 'var(--danger)' : 'var(--warning)' }}>
+                                                            Stockout {stockOut.date === 'OUT_OF_STOCK' ? 'NOW' : `Risk in ${stockOut.days} Days`}
+                                                        </span>
+                                                    </div>
+                                                )}
+                                            </div>
+                                            <div className="text-right">
+                                                <div className="flex flex-col items-end">
+                                                    <span className="text-[9px] font-black opacity-40 uppercase tracking-widest">RRQ (Optimized)</span>
+                                                    <p className="text-xl font-black m-0 tracking-tighter">{rrq}</p>
+                                                    <div className="flex items-center gap-1 mt-1 opacity-60">
+                                                        <RefreshCcw className="w-2.5 h-2.5" />
+                                                        <span className="text-[8px] font-bold">95% Confidence</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* Decorative background icon */}
+                                        <TrendingUp className="absolute -right-2 -bottom-2 w-12 h-12 text-primary opacity-5 group-hover:scale-110 transition-transform" />
+                                    </div>
+                                ) : (
+                                    <div className="glass mt-4 p-4 text-center opacity-50 border-dashed border-white/10">
+                                        <p className="text-[10px] font-bold uppercase tracking-widest m-0">Insufficient ML Data Baseline</p>
+                                    </div>
+                                );
+                            })()}
 
 
                             <div style={{ marginTop: '16px', display: 'flex', gap: '8px' }}>

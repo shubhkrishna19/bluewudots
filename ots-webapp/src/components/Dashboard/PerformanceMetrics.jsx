@@ -11,6 +11,8 @@ const PerformanceMetrics = () => {
 
     const inTransit = orders.filter(o => o.status === 'In-Transit').length;
     const pending = orders.filter(o => o.status === 'Imported' || o.status === 'MTP-Applied').length;
+    const rtoCount = orders.filter(o => o.status?.startsWith('RTO')).length;
+    const rtoRate = totalOrders > 0 ? ((rtoCount / totalOrders) * 100).toFixed(1) : 0;
 
     const sourceDistribution = orders.reduce((acc, o) => {
         acc[o.source || 'Manual'] = (acc[o.source || 'Manual'] || 0) + 1;
@@ -23,7 +25,7 @@ const PerformanceMetrics = () => {
 
     const metrics = [
         { label: 'Delivery Rate', value: `${deliveryRate}%`, icon: '📈', color: 'var(--success)', desc: 'Orders successfully delivered' },
-        { label: 'Active Carriers', value: logistics.filter(l => l.active).length, icon: '🚚', color: 'var(--primary)', desc: 'Carriers in use' },
+        { label: 'RTO Rate', value: `${rtoRate}%`, icon: '↩️', color: 'var(--danger)', desc: 'Returned to Origin rate' },
         { label: 'SKU Catalog', value: skuMaster.length, icon: '🏷️', color: 'var(--accent)', desc: 'Products tracked' },
         { label: 'Avg Weight', value: `${avgWeight} kg`, icon: '⚖️', color: 'var(--warning)', desc: 'Per order average' }
     ];

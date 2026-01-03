@@ -7,6 +7,7 @@ import UserProfile from './components/Auth/UserProfile'
 import CarrierSelection from './components/Logistics/CarrierSelection'
 import UniversalImporter from './components/Automation/UniversalImporter'
 import SKUMaster from './components/Commercial/SKUMaster'
+import StockOptix from './components/Inventory/StockOptix'
 import BarcodeDispatcher from './components/Orders/BarcodeDispatcher'
 import AnalyticsDashboard from './components/Dashboard/AnalyticsEnhanced'
 import DealerLookup from './components/Dealers/DealerLookup'
@@ -23,6 +24,7 @@ import CustomerLookup from './components/Customers/CustomerLookup'
 import PerformanceMetrics from './components/Dashboard/PerformanceMetrics'
 import RoadmapPage from './components/Roadmap/RoadmapPage'
 import RTOManager from './components/Orders/RTOManager'
+import ReturnsManager from './components/Orders/ReturnsManager'
 import CarrierPerformance from './components/Logistics/CarrierPerformance'
 import ShipmentTracker from './components/Tracking/ShipmentTracker'
 import InvoiceGenerator from './components/Commercial/InvoiceGenerator'
@@ -40,6 +42,8 @@ import MarginGuard from './components/Commercial/MarginGuard'
 import AmazonMapper from './components/Automation/AmazonMapper'
 import ShortcutsModal from './components/Help/ShortcutsModal'
 import InternationalShipping from './components/Logistics/InternationalShipping'
+import MarketplaceReconciliation from './components/Commercial/MarketplaceReconciliation'
+import MLAnalyticsDashboard from './components/Dashboard/MLAnalyticsDashboard'
 import { initShortcuts, registerDefaultShortcuts, destroyShortcuts } from './services/keyboardShortcuts'
 import searchService from './services/searchService'
 import pushNotificationService from './services/pushNotificationService'
@@ -47,15 +51,22 @@ import ResponsiveLayout from './components/Shared/ResponsiveLayout'
 import ErrorBoundary from './components/Shared/ErrorBoundary'
 import keyboardShortcuts from './services/keyboardShortcutsEnhanced'
 import { initWhatsAppService } from './services/whatsappServiceEnhanced'
+import { Guard, ROLES, PERMISSIONS } from './services/rbacMiddleware'
+import DealerPortal from './components/Dealers/DealerPortal'
+// import { PERMISSIONS } from './utils/permissionUtils' // Deprecated/Duplicate
 
 function App() {
-  const { isAuthenticated, isLoading, user } = useAuth()
+  const { isAuthenticated, isLoading, user, hasPermission } = useAuth()
   const [activeTab, setActiveTab] = useState('dashboard')
-  const [showQuickOrder, setShowQuickOrder] = useState(false)
-  const [showNotifications, setShowNotifications] = useState(false)
-  const [showProfile, setShowProfile] = useState(false)
-  const [showShortcuts, setShowShortcuts] = useState(false)
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+
+  // Set default tab based on role
+  useEffect(() => {
+    if (user?.role === 'dealer') {
+      setActiveTab('dealer-portal');
+    } else {
+      setActiveTab('dashboard');
+    }
+  }, [user?.role]);
   const { syncSKUMaster, syncStatus, universalSearch, orders, skuMaster } = useData()
   const [searchQuery, setSearchQuery] = useState('')
   const [searchResults, setSearchResults] = useState(null)
@@ -176,28 +187,47 @@ function App() {
                   <label>OPERATIONS</label>
                   <ul className="nav-links">
                     <li className={activeTab === 'dashboard' ? 'active' : ''} onClick={() => { setActiveTab('dashboard'); setIsMobileMenuOpen(false); }}>📊 Analytics</li>
-                    {user?.role !== 'viewer' && <li className={activeTab === 'metrics' ? 'active' : ''} onClick={() => { setActiveTab('metrics'); setIsMobileMenuOpen(false); }}>📈 KPIs</li>}
-                    {user?.role !== 'viewer' && <li className={activeTab === 'orderlist' ? 'active' : ''} onClick={() => { setActiveTab('orderlist'); setIsMobileMenuOpen(false); }}>📋 Orders</li>}
-                    {['admin', 'manager'].includes(user?.role) && <li className={activeTab === 'bulk' ? 'active' : ''} onClick={() => { setActiveTab('bulk'); setIsMobileMenuOpen(false); }}>⚡ Bulk</li>}
+
+                    <Guard user={user} permission={PERMISSIONS.VIEW_REPORTS}>
+                      <li className={activeTab === 'metrics' ? 'active' : ''} onClick={() => { setActiveTab('metrics'); setIsMobileMenuOpen(false); }}>📈 KPIs</li>
+                    </Guard>
+
+                    <Guard user={user} permission={PERMISSIONS.MANAGE_ORDERS}>
+                      <li className={activeTab === 'orderlist' ? 'active' : ''} onClick={() => { setActiveTab('orderlist'); setIsMobileMenuOpen(false); }}>📋 Orders</li>
+                    </Guard>
+
+                    <Guard user={user} permission={PERMISSIONS.PLACE_WHOLESALE_ORDER}>
+                      <li className={activeTab === 'dealer-portal' ? 'active' : ''} onClick={() => { setActiveTab('dealer-portal'); setIsMobileMenuOpen(false); }}>🛒 Partner Portal</li>
+                    </Guard>
+
+                    <Guard user={user} permission={PERMISSIONS.MANAGE_ORDERS}>
+                      <li className={activeTab === 'bulk' ? 'active' : ''} onClick={() => { setActiveTab('bulk'); setIsMobileMenuOpen(false); }}>⚡ Bulk</li>
+                    </Guard>
+
                     <li className={activeTab === 'tracking' ? 'active' : ''} onClick={() => { setActiveTab('tracking'); setIsMobileMenuOpen(false); }}>📡 Tracking</li>
-                    {user?.role !== 'viewer' && <li className={activeTab === 'rto' ? 'active' : ''} onClick={() => { setActiveTab('rto'); setIsMobileMenuOpen(false); }}>↩️ RTO</li>}
+
+                    <Guard user={user} permission={PERMISSIONS.MANAGE_ORDERS}>
+                      <li className={activeTab === 'rto' ? 'active' : ''} onClick={() => { setActiveTab('rto'); setIsMobileMenuOpen(false); }}>↩️ RTO</li>
+                      <li className={activeTab === 'returns' ? 'active' : ''} onClick={() => { setActiveTab('returns'); setIsMobileMenuOpen(false); }}>🔄 Returns (RMA)</li>
+                    </Guard>
                   </ul>
                 </div>
 
-                {user?.role !== 'viewer' && (
+                <Guard user={user} permission={PERMISSIONS.MANAGE_INVENTORY}>
                   <div className="nav-group">
                     <label>INVENTORY & IMPORT</label>
                     <ul className="nav-links">
                       <li className={activeTab === 'inventory' ? 'active' : ''} onClick={() => { setActiveTab('inventory'); setIsMobileMenuOpen(false); }}>🏷️ SKU Master</li>
+                      <li className={activeTab === 'stockoptix' ? 'active' : ''} onClick={() => { setActiveTab('stockoptix'); setIsMobileMenuOpen(false); }}>🧠 StockOptix™</li>
                       <li className={activeTab === 'warehouse' ? 'active' : ''} onClick={() => { setActiveTab('warehouse'); setIsMobileMenuOpen(false); }}>🏭 Warehouse</li>
                       <li className={activeTab === 'dispatcher' ? 'active' : ''} onClick={() => { setActiveTab('dispatcher'); setIsMobileMenuOpen(false); }}>📷 Dispatch</li>
                       <li className={activeTab === 'orders' ? 'active' : ''} onClick={() => { setActiveTab('orders'); setIsMobileMenuOpen(false); }}>📤 Universal Import</li>
                       <li className={activeTab === 'automation' ? 'active' : ''} onClick={() => { setActiveTab('automation'); setIsMobileMenuOpen(false); }}>🤖 Amazon Mapper</li>
                     </ul>
                   </div>
-                )}
+                </Guard>
 
-                {user?.role !== 'operator' && user?.role !== 'viewer' && (
+                <Guard user={user} permission={PERMISSIONS.MANAGE_CARRIERS}>
                   <div className="nav-group">
                     <label>LOGISTICS</label>
                     <ul className="nav-links">
@@ -207,9 +237,9 @@ function App() {
                       <li className={activeTab === 'zones' ? 'active' : ''} onClick={() => { setActiveTab('zones'); setIsMobileMenuOpen(false); }}>🗺️ Zones</li>
                     </ul>
                   </div>
-                )}
+                </Guard>
 
-                {['admin', 'manager'].includes(user?.role) && (
+                <Guard user={user} permission={PERMISSIONS.PROCESS_PAYMENTS}>
                   <div className="nav-group">
                     <label>FINANCE</label>
                     <ul className="nav-links">
@@ -217,13 +247,14 @@ function App() {
                       <li className={activeTab === 'commhub' ? 'active' : ''} onClick={() => { setActiveTab('commhub'); setIsMobileMenuOpen(false); }}>💎 Comm. Hub</li>
                       <li className={activeTab === 'guards' ? 'active' : ''} onClick={() => { setActiveTab('guards'); setIsMobileMenuOpen(false); }}>🛡️ Margin Guard</li>
                       <li className={activeTab === 'globalledger' ? 'active' : ''} onClick={() => { setActiveTab('globalledger'); setIsMobileMenuOpen(false); }}>🌍 Global Ledger</li>
+                      <li className={activeTab === 'reconciliation' ? 'active' : ''} onClick={() => { setActiveTab('reconciliation'); setIsMobileMenuOpen(false); }}>⚖️ Marketplace Audit</li>
                       <li className={activeTab === 'invoice' ? 'active' : ''} onClick={() => { setActiveTab('invoice'); setIsMobileMenuOpen(false); }}>🧾 Invoicing</li>
                       <li className={activeTab === 'cod' ? 'active' : ''} onClick={() => { setActiveTab('cod'); setIsMobileMenuOpen(false); }}>💰 COD Recon</li>
                     </ul>
                   </div>
-                )}
+                </Guard>
 
-                {['admin', 'manager'].includes(user?.role) && (
+                <Guard user={user} permission={PERMISSIONS.VIEW_REPORTS}>
                   <div className="nav-group">
                     <label>CRM & MARKETING</label>
                     <ul className="nav-links">
@@ -233,9 +264,9 @@ function App() {
                       <li className={activeTab === 'dealers' ? 'active' : ''} onClick={() => { setActiveTab('dealers'); setIsMobileMenuOpen(false); }}>🤝 Dealers</li>
                     </ul>
                   </div>
-                )}
+                </Guard>
 
-                {['admin', 'manager'].includes(user?.role) && (
+                <Guard user={user} permission={PERMISSIONS.PROCESS_QC}>
                   <div className="nav-group">
                     <label>SUPPLY CHAIN</label>
                     <ul className="nav-links">
@@ -243,16 +274,24 @@ function App() {
                       <li className={activeTab === 'qa' ? 'active' : ''} onClick={() => { setActiveTab('qa'); setIsMobileMenuOpen(false); }}>💎 Quality Gate</li>
                     </ul>
                   </div>
-                )}
+                </Guard>
 
                 <div className="nav-group">
                   <label>ADMIN & SUPPORT</label>
                   <ul className="nav-links">
-                    {user?.role === 'admin' && <li className={activeTab === 'activity' ? 'active' : ''} onClick={() => { setActiveTab('activity'); setIsMobileMenuOpen(false); }}>📜 Activity Log</li>}
-                    <li className={activeTab === 'reports' ? 'active' : ''} onClick={() => { setActiveTab('reports'); setIsMobileMenuOpen(false); }}>📄 Export</li>
-                    <li className={activeTab === 'roadmap' ? 'active' : ''} onClick={() => { setActiveTab('roadmap'); setIsMobileMenuOpen(false); }}>🛣️ Roadmap</li>
+                    <Guard user={user} permission={PERMISSIONS.VIEW_ACTIVITY_LOG}>
+                      <li className={activeTab === 'activity' ? 'active' : ''} onClick={() => { setActiveTab('activity'); setIsMobileMenuOpen(false); }}>📜 Activity Log</li>
+                    </Guard>
+                    <Guard user={user} permission={PERMISSIONS.VIEW_REPORTS}>
+                      <li className={activeTab === 'reports' ? 'active' : ''} onClick={() => { setActiveTab('reports'); setIsMobileMenuOpen(false); }}>📄 Export</li>
+                    </Guard>
+                    <li className={activeTab === 'performance' ? 'active' : ''} onClick={() => { setActiveTab('performance'); setIsMobileMenuOpen(false); }}>📈 Performance Score</li>
+                    <li className={activeTab === 'ml-forecast' ? 'active' : ''} onClick={() => { setActiveTab('ml-forecast'); setIsMobileMenuOpen(false); }}>🧠 ML Forecast</li>
+                    <li className={activeTab === 'roadmap' ? 'active' : ''} onClick={() => { setActiveTab('roadmap'); setIsMobileMenuOpen(false); }}>🛣️ Product Roadmap</li>
                     <li className={activeTab === 'help' ? 'active' : ''} onClick={() => { setActiveTab('help'); setIsMobileMenuOpen(false); }}>❓ Help</li>
-                    {user?.role === 'admin' && <li className={activeTab === 'settings' ? 'active' : ''} onClick={() => { setActiveTab('settings'); setIsMobileMenuOpen(false); }}>⚙️ Settings</li>}
+                    <Guard user={user} permission={PERMISSIONS.MANAGE_SETTINGS}>
+                      <li className={activeTab === 'settings' ? 'active' : ''} onClick={() => { setActiveTab('settings'); setIsMobileMenuOpen(false); }}>⚙️ Settings</li>
+                    </Guard>
                   </ul>
                 </div>
               </div>
@@ -337,38 +376,75 @@ function App() {
 
             <section className="view-container">
               {activeTab === 'dashboard' && <AnalyticsDashboard />}
-              {activeTab === 'metrics' && <PerformanceMetrics />}
-              {activeTab === 'orderlist' && <OrderList />}
-              {activeTab === 'bulk' && <BulkActions />}
-              {activeTab === 'rto' && <RTOManager />}
-              {activeTab === 'logistics' && <CarrierSelection />}
-              {activeTab === 'intlship' && <InternationalShipping />}
-              {activeTab === 'carrierperf' && <CarrierPerformance />}
-              {activeTab === 'zones' && <ZoneMap />}
-              {activeTab === 'tracking' && <ShipmentTracker />}
-              {activeTab === 'orders' && <UniversalImporter />}
-              {activeTab === 'warehouse' && <WarehouseManager />}
-              {activeTab === 'inventory' && <SKUMaster />}
-              {activeTab === 'invoice' && <InvoiceGenerator />}
-              {activeTab === 'finance' && <FinancialCenter />}
-              {activeTab === 'commhub' && <CommercialHub />}
-              {activeTab === 'guards' && <MarginGuard />}
-              {activeTab === 'globalledger' && <GlobalLedger />}
-              {activeTab === 'cod' && <CODReconciliation />}
 
-              {activeTab === 'dispatcher' && <BarcodeDispatcher />}
-              {activeTab === 'dealers' && <DealerLookup />}
-              {activeTab === 'customers' && <CustomerLookup />}
-              {activeTab === 'custintel' && <CustomerAnalytics />}
-              {activeTab === 'marketing' && <MarketingCenter />}
-              {activeTab === 'production' && <ProductionTracker />}
-              {activeTab === 'qa' && <QualityGate />}
-              {activeTab === 'automation' && <AmazonMapper />}
-              {activeTab === 'activity' && (user?.role === 'admin' ? <ActivityLog /> : <div className="glass" style={{ padding: '40px', textAlign: 'center' }}>🚫 Access Restricted</div>)}
-              {activeTab === 'reports' && <ExportTools />}
+              <Guard user={user} permission={PERMISSIONS.VIEW_REPORTS} fallback={<div className="glass p-20 text-center">🚫 Restricted View</div>}>
+                {activeTab === 'metrics' && <PerformanceMetrics />}
+              </Guard>
+
+              <Guard user={user} permission={PERMISSIONS.MANAGE_ORDERS} fallback={<div className="glass p-20 text-center">🚫 Access Denied</div>}>
+                {activeTab === 'orderlist' && <OrderList />}
+                {activeTab === 'bulk' && <BulkActions />}
+                {activeTab === 'rto' && <RTOManager />}
+                {activeTab === 'returns' && <ReturnsManager />}
+              </Guard>
+
+              <Guard user={user} permission={PERMISSIONS.MANAGE_CARRIERS}>
+                {activeTab === 'logistics' && <CarrierSelection />}
+                {activeTab === 'intlship' && <InternationalShipping />}
+                {activeTab === 'carrierperf' && <CarrierPerformance />}
+                {activeTab === 'zones' && <ZoneMap />}
+              </Guard>
+
+              {activeTab === 'tracking' && <ShipmentTracker />}
+
+              <Guard user={user} permission={PERMISSIONS.MANAGE_INVENTORY}>
+                {activeTab === 'orders' && <UniversalImporter />}
+                {activeTab === 'warehouse' && <WarehouseManager />}
+                {activeTab === 'inventory' && <SKUMaster />}
+                {activeTab === 'stockoptix' && <StockOptix />}
+                {activeTab === 'dispatcher' && <BarcodeDispatcher />}
+                {activeTab === 'automation' && <AmazonMapper />}
+              </Guard>
+
+              <Guard user={user} permission={PERMISSIONS.PROCESS_PAYMENTS}>
+                {activeTab === 'invoice' && <InvoiceGenerator />}
+                {activeTab === 'finance' && <FinancialCenter />}
+                {activeTab === 'commhub' && <CommercialHub />}
+                {activeTab === 'guards' && <MarginGuard />}
+                {activeTab === 'reconciliation' && <MarketplaceReconciliation />}
+                {activeTab === 'globalledger' && <GlobalLedger />}
+                {activeTab === 'cod' && <CODReconciliation />}
+              </Guard>
+
+              <Guard user={user} permission={PERMISSIONS.PLACE_WHOLESALE_ORDER}>
+                {activeTab === 'dealer-portal' && <DealerPortal />}
+              </Guard>
+
+              <Guard user={user} permission={PERMISSIONS.VIEW_REPORTS}>
+                {activeTab === 'dealers' && <DealerLookup />}
+                {activeTab === 'customers' && <CustomerLookup />}
+                {activeTab === 'custintel' && <CustomerAnalytics />}
+                {activeTab === 'marketing' && <MarketingCenter />}
+                {activeTab === 'reports' && <ExportTools />}
+              </Guard>
+
+              <Guard user={user} permission={PERMISSIONS.PROCESS_QC}>
+                {activeTab === 'production' && <ProductionTracker />}
+                {activeTab === 'qa' && <QualityGate />}
+              </Guard>
+
+              <Guard user={user} permission={PERMISSIONS.VIEW_ACTIVITY_LOG}>
+                {activeTab === 'activity' && <ActivityLog />}
+              </Guard>
+
+              {activeTab === 'ml-forecast' && <MLAnalyticsDashboard />}
+              {activeTab === 'performance' && <PerformanceMetrics />}
               {activeTab === 'roadmap' && <RoadmapPage />}
               {activeTab === 'help' && <HelpCenter />}
-              {activeTab === 'settings' && <SettingsPanel />}
+
+              <Guard user={user} permission={PERMISSIONS.MANAGE_SETTINGS}>
+                {activeTab === 'settings' && <SettingsPanel />}
+              </Guard>
             </section>
           </main>
         </ResponsiveLayout>

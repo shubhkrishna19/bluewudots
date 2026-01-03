@@ -23,12 +23,12 @@ const DEFAULT_SHORTCUTS = {
 export const initializeShortcuts = (customShortcuts = {}) => {
   // Load defaults
   Object.entries(DEFAULT_SHORTCUTS).forEach(([combo, config]) => {
-    registerShortcut(combo, config.action, config.description);
+    registerShortcut(combo, config.action, { description: config.description });
   });
 
   // Load custom shortcuts
   Object.entries(customShortcuts).forEach(([combo, config]) => {
-    registerShortcut(combo, config.action, config.description);
+    registerShortcut(combo, config.action, { description: config.description });
   });
 
   // Attach global listener
@@ -38,55 +38,66 @@ export const initializeShortcuts = (customShortcuts = {}) => {
 
 /**
  * Register a keyboard shortcut
- * @param {String} combo - Key combination (e.g., 'Ctrl+K', 'Shift+Alt+S')
- * @param {String|Function} action - Action name or callback function
- * @param {String} description - Human-readable description
+ * @param {String} shortcut - Key combination (e.g., 'Ctrl+K', 'Shift+Alt+S')
+ * @param {String|Function} callback - Action name or callback function
+ * @param {Object} options - Options { description, scope }
  */
-<<<<<<< HEAD
 export const registerShortcut = (shortcut, callback, options = {}) => {
-    const id = shortcut.toLowerCase();
+  const id = shortcut.toLowerCase();
 
-    // Conflict Resolution: Warn if shortcut already exists in same scope
-    if (shortcuts.has(id) && shortcuts.get(id).scope === (options.scope || 'global')) {
-        console.warn(`[Shortcuts] Conflict: ${shortcut} is already registered in ${options.scope || 'global'} scope. Overwriting.`);
+  // Conflict Resolution: Warn if shortcut already exists in same scope
+  if (shortcuts.has(id)) {
+    const existing = shortcuts.get(id);
+    if (existing.scope === (options.scope || 'global')) {
+      console.warn(`[Shortcuts] Conflict: ${shortcut} is already registered in ${options.scope || 'global'} scope. Overwriting.`);
     }
-
-    const parsed = parseShortcut(shortcut);
-
-    shortcuts.set(id, {
-        shortcut,
-        parsed,
-        callback,
-        description: options.description || '',
-        scope: options.scope || 'global',
-        enabled: true
-    });
-
-    return () => unregisterShortcut(shortcut);
-=======
-export const registerShortcut = (combo, action, description = '') => {
-  if (shortcuts.has(combo)) {
-    console.warn(`[Shortcuts] Overwriting existing shortcut: ${combo}`);
   }
 
-  shortcuts.set(combo, { action, description, callback: null });
-  console.log(`[Shortcuts] Registered: ${combo} -> ${action}`);
->>>>>>> 4be53487f72a2bfacf3cde5d60b2e7a7e0ec3174
+  const parsed = parseShortcut(shortcut);
+
+  shortcuts.set(id, {
+    shortcut,
+    parsed,
+    callback,
+    description: options.description || '',
+    scope: options.scope || 'global',
+    enabled: true
+  });
+
+  // Support simpler signature usage from other parts of app if they pass (combo, action, description)
+  // but here we standard on (shortcut, callback, options)
+
+  return () => unregisterShortcut(shortcut);
+};
+
+export const unregisterShortcut = (shortcut) => {
+  const id = shortcut.toLowerCase();
+  if (shortcuts.has(id)) {
+    shortcuts.delete(id);
+    return true;
+  }
+  return false;
 };
 
 /**
- * Bind a shortcut to a callback function
+ * Bind a shortcut to a callback function (for named actions)
  * @param {String} action - Action name
  * @param {Function} callback - Function to execute
  */
 export const bindAction = (action, callback) => {
+  for (const [combo, config] of shortcuts.entries()) {
+    if (config.callback === action || (typeof config.callback === 'string' && config.callback === action)) {
+      config.callback = callback; // Rebind string action to function
+      return true;
+    }
+  }
+  // Also check if action matches config.action (legacy structure)
   for (const [combo, config] of shortcuts.entries()) {
     if (config.action === action) {
       config.callback = callback;
       return true;
     }
   }
-  console.warn(`[Shortcuts] Action not found: ${action}`);
   return false;
 };
 
@@ -96,10 +107,23 @@ export const bindAction = (action, callback) => {
  */
 export const getAllShortcuts = () => {
   return Array.from(shortcuts.entries()).map(([combo, config]) => ({
-    combo,
-    action: config.action,
+    shortcut: config.shortcut,
+    combo, // normalized combo
+    action: typeof config.callback === 'string' ? config.callback : (config.action || 'Custom Action'),
     description: config.description
   }));
+};
+
+export const getShortcuts = getAllShortcuts;
+
+/**
+ * Format shortcut for display (e.g. 'ctrl+k' -> 'Ctrl + K')
+ */
+export const formatShortcut = (combo) => {
+  return combo
+    .split('+')
+    .map(part => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(' + ');
 };
 
 /**
@@ -115,12 +139,7 @@ export const toggleShortcuts = (enable = null) => {
  * Remove a shortcut
  */
 export const removeShortcut = (combo) => {
-  if (shortcuts.has(combo)) {
-    shortcuts.delete(combo);
-    console.log(`[Shortcuts] Removed: ${combo}`);
-    return true;
-  }
-  return false;
+  return unregisterShortcut(combo);
 };
 
 /**
@@ -132,7 +151,27 @@ export const cleanup = () => {
   console.log('[Shortcuts] Cleaned up');
 };
 
+/**
+ * Destroy shortcuts (Alias for cleanup)
+ */
+export const destroyShortcuts = cleanup;
+
+/**
+ * Register default shortcuts (Helper)
+ */
+export const registerDefaultShortcuts = (actionsMap) => {
+  Object.entries(actionsMap).forEach(([actionName, callback]) => {
+    // Find shortcuts mapped to this action name and bind them
+    bindAction(actionName, callback);
+  });
+};
+
 // ===== Private Helpers =====
+
+function parseShortcut(shortcut) {
+  // Simple parser for checking (Not fully used in this simplified logic but good to have)
+  return shortcut.split('+');
+}
 
 function parseKeyCombo(event) {
   const parts = [];
@@ -157,33 +196,32 @@ function handleKeyDown(event) {
   }
 
   const combo = parseKeyCombo(event);
-  const config = shortcuts.get(combo);
+  const config = shortcuts.get(combo.toLowerCase());
 
-  if (config) {
+  if (config && config.enabled) {
     event.preventDefault();
-    
-    if (config.callback) {
+
+    if (typeof config.callback === 'function') {
       try {
         config.callback();
       } catch (err) {
         console.error(`[Shortcuts] Error executing ${combo}:`, err);
       }
     } else if (typeof config.action === 'function') {
-      try {
-        config.action();
-      } catch (err) {
-        console.error(`[Shortcuts] Error executing ${combo}:`, err);
-      }
+      // Legacy support
+      config.action();
     } else {
       // Dispatch custom event for action
       document.dispatchEvent(new CustomEvent('shortcut', {
-        detail: { action: config.action, combo }
+        detail: { action: config.callback || config.action, combo }
       }));
     }
 
     console.log(`[Shortcuts] Executed: ${combo}`);
   }
 }
+
+export const initShortcuts = initializeShortcuts; // Alias
 
 export default {
   initializeShortcuts,
@@ -193,5 +231,9 @@ export default {
   toggleShortcuts,
   removeShortcut,
   cleanup,
-  DEFAULT_SHORTCUTS
+  destroyShortcuts,
+  registerDefaultShortcuts,
+  DEFAULT_SHORTCUTS,
+  getShortcuts,
+  formatShortcut
 };

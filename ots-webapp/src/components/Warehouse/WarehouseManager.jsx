@@ -194,7 +194,6 @@ const WarehouseManager = () => {
                     </tbody>
                 </table>
             </div>
-<<<<<<< HEAD
             {/* FIFO Batch List */}
             <div className="batch-inventory-section glass" style={{ marginTop: '32px', padding: '24px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
@@ -217,7 +216,6 @@ const WarehouseManager = () => {
                     ))}
                 </div>
             </div>
-=======
 
             {/* Transfer Modal */}
             {transferModal.show && (
@@ -262,7 +260,6 @@ const WarehouseManager = () => {
                     </div>
                 </div>
             )}
->>>>>>> 4be53487f72a2bfacf3cde5d60b2e7a7e0ec3174
         </div>
     );
 };

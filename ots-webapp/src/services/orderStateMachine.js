@@ -167,6 +167,9 @@ export const transitionOrder = (order, newStatus, metadata = {}) => {
     if (newStatus.startsWith('RTO') && metadata.rtoReason) {
         updatedOrder.rtoReason = metadata.rtoReason;
     }
+    if (newStatus.startsWith('RTO') && metadata.rtoRiskScore) {
+        updatedOrder.rtoRiskScore = metadata.rtoRiskScore;
+    }
 
     return {
         success: true,

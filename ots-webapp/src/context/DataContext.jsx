@@ -13,8 +13,14 @@ import marginProtectionService from '../services/marginProtectionService';
 import { getWhatsAppService } from '../services/whatsappServiceEnhanced';
 import webhookService from '../services/zohoWebhookService';
 import { syncDeltaOrders } from '../services/zohoBridgeService';
-import { initOfflineCacheService, getOfflineCacheService } from '../services/offlineCacheService';
+import cacheService, { initOfflineCacheService } from '../services/offlineCacheService';
 import warehouseOptimizer from '../services/warehouseOptimizer';
+import mlForecastService from '../services/mlForecastService';
+import dealerService from '../services/dealerService';
+import dealerService from '../services/dealerService';
+import rtoService from '../services/rtoService';
+import reverseLogisticsService from '../services/reverseLogisticsService';
+import { ROLES, PERMISSIONS, can } from '../services/rbacMiddleware';
 
 import { SKU_MASTER, SKU_ALIASES } from '../data/skuMasterData';
 
@@ -31,6 +37,9 @@ export const DataProvider = ({ children }) => {
     const [inventoryLevels, setInventoryLevels] = useState({}); // { skuId: { inStock, reserved, location } }
     const [batches, setBatches] = useState([]); // Array of { id, sku, vendor, quantity, allocated, receivedAt }
     const [flaggedOrders, setFlaggedOrders] = useState([]); // Orders requiring financial review
+    const [warehouseLoads, setWarehouseLoads] = useState({}); // { warehouseId: currentOrderCount }
+    const [dealerCredits, setDealerCredits] = useState({}); // { dealerId: usedCredit }
+    const [returns, setReturns] = useState([]); // Active return requests
 
 
     const [activityLog, setActivityLog] = useState([]);
@@ -68,8 +77,7 @@ export const DataProvider = ({ children }) => {
 
         // Persist orders to cache
         if (orders.length > 0) {
-            const cache = getOfflineCacheService();
-            orders.forEach(o => cache.cacheData('orders', o.id, o));
+            orders.forEach(o => cacheService.cacheData('orders', o.id, o));
         }
 
         const syncInterval = setInterval(() => {
@@ -94,7 +102,7 @@ export const DataProvider = ({ children }) => {
     useEffect(() => {
         const initializeData = async () => {
             try {
-                console.log('🔄 Synchronizing with Bluewud India Nodes...');
+                console.log('[Bluewud-AI] 🔄 Synchronizing with Global Nodes...');
                 setSyncStatus('syncing');
 
                 // 1. Load from Offline Cache first (Highest Priority for Speed)
@@ -102,13 +110,13 @@ export const DataProvider = ({ children }) => {
                 const cachedSkuMaster = await cacheService.retrieveCachedData('skuMaster');
                 const cachedCustomers = await cacheService.retrieveCachedData('customers');
                 const cachedActivityLog = await cacheService.retrieveCachedData('activityLog');
-                const cachedInventoryLevels = await cacheService.retrieveCachedData('metadata'); // Will find key='inventoryLevels'
-                const cachedBatches = await cacheService.retrieveCachedData('metadata'); // Will find key='batches'
+                const cachedMetadata = await cacheService.retrieveCachedData('metadata');
 
                 if (cachedOrders && cachedOrders.length > 0) {
-                    console.log(`📦 Loaded ${cachedOrders.length} orders from local cache`);
+                    console.log(`[Bluewud-AI] 📦 Loaded ${cachedOrders.length} orders from cache`);
                     setOrders(cachedOrders);
-                } else {
+                }
+                else {
                     // Seed Mock Orders only if cache is empty
                     const mockOrders = [
                         ...Array(6).fill(0).map((_, i) => ({
@@ -148,10 +156,16 @@ export const DataProvider = ({ children }) => {
                     setActivityLog(cachedActivityLog);
                 }
 
-                const invEntry = cachedInventoryLevels?.find(m => m.key === 'inventoryLevels');
+                const invEntry = cachedMetadata?.find(m => m.key === 'inventoryLevels');
                 if (invEntry) {
                     setInventoryLevels(invEntry.data);
-                } else {
+                }
+                const loadEntry = cachedMetadata?.find(m => m.key === 'warehouseLoads');
+                if (loadEntry) setWarehouseLoads(loadEntry.data);
+
+                const creditEntry = cachedMetadata?.find(m => m.key === 'dealerCredits');
+                if (creditEntry) setDealerCredits(creditEntry.data);
+                else {
                     // Seed Mock Inventory
                     const initialInventory = {};
                     SKU_MASTER.filter(s => !s.isParent).forEach(child => {
@@ -186,7 +200,7 @@ export const DataProvider = ({ children }) => {
                 // 2. Network Check / Remote Sync
                 setSyncStatus('online');
                 setLoading(false);
-                console.log('✅ Data sync complete');
+                console.log('[Bluewud-AI] ✅ Core systems ready');
             } catch (error) {
                 console.error('❌ Data Sync Failed:', error);
                 setSyncStatus('error');
@@ -224,8 +238,10 @@ export const DataProvider = ({ children }) => {
     useEffect(() => {
         if (!loading) {
             cacheService.cacheData('metadata', { key: 'batches', data: batches });
+            cacheService.cacheData('metadata', { key: 'warehouseLoads', data: warehouseLoads });
+            cacheService.cacheData('metadata', { key: 'dealerCredits', data: dealerCredits });
         }
-    }, [batches, loading]);
+    }, [batches, warehouseLoads, dealerCredits, loading]);
 
     // ============================================
     // LIVE TRACKING SIMULATOR
@@ -262,12 +278,23 @@ export const DataProvider = ({ children }) => {
     // ============================================
 
     /**
-     * Smart routing for regional warehouse selection
+     * Smart routing for regional warehouse selection with real-time load balancing
      */
     const smartRouteOrder = useCallback((pincode, state) => {
-        const result = warehouseOptimizer.selectOptimalWarehouse({ pincode, state });
+        const result = warehouseOptimizer.selectOptimalWarehouse({ pincode, state }, warehouseLoads);
         return result.warehouse.id;
-    }, []);
+    }, [warehouseLoads]);
+
+    // Update warehouse loads when orders change
+    useEffect(() => {
+        const loads = {};
+        orders.forEach(o => {
+            if (o.warehouse && !['Delivered', 'Cancelled', 'RTO-Delivered'].includes(o.status)) {
+                loads[o.warehouse] = (loads[o.warehouse] || 0) + 1;
+            }
+        });
+        setWarehouseLoads(loads);
+    }, [orders]);
 
     // ============================================
     // ORDER MANAGEMENT
@@ -293,8 +320,56 @@ export const DataProvider = ({ children }) => {
                 user: 'system'
             }],
             createdAt: new Date().toISOString(),
+            createdAt: new Date().toISOString(),
             warehouse: smartRouteOrder(orderData.pincode, orderData.state)
         };
+
+        // --- RTO PREDICTION ---
+        const rtoAnalysis = rtoService.calculateRtoRisk(newOrder, getCustomerMetrics(newOrder.phone));
+        newOrder.rtoScore = rtoAnalysis.score;
+        newOrder.rtoRisk = rtoAnalysis.riskLevel;
+        newOrder.rtoReasons = rtoAnalysis.reasons;
+
+        // --- B2B DEALER LOGIC ---
+        if (orderData.dealerId) {
+            const dealer = {
+                id: orderData.dealerId,
+                tier: orderData.dealerTier || 'SILVER',
+                usedCredit: dealerCredits[orderData.dealerId] || 0
+            };
+
+            // Calculate Hybrid Wholesale Price
+            if (!orderData.isWholesaleApplied) {
+                const qty = orderData.quantity || 1;
+                const retailUnitPrice = newOrder.amount / qty;
+
+                // 1. Apply Quantity-based discount from wholesaleService
+                const qtyDiscountedPrice = wholesaleService.calculateTieredPrice(retailUnitPrice, qty);
+
+                // 2. Apply Tier-based discount from dealerService (on top of or as an alternative)
+                // For Bluewud, we'll take the better of the two or a combined approach.
+                // Let's use the Dealer Tier discount as it's typically higher (25%+)
+                const tierDiscountedPrice = dealerService.calculateWholesalePrice(retailUnitPrice, dealer.tier);
+
+                // Take the lowest price (highest discount)
+                const finalUnitPrice = Math.min(qtyDiscountedPrice, tierDiscountedPrice);
+
+                newOrder.amount = finalUnitPrice * qty;
+                newOrder.isWholesaleApplied = true;
+                newOrder.unitPrice = finalUnitPrice;
+            }
+
+            const creditCheck = dealerService.checkCreditLimit(newOrder.amount, dealer.usedCredit, dealer.tier);
+            if (!creditCheck.allowed) {
+                return { success: false, errors: [creditCheck.reason] };
+            }
+
+            // Update credit usage
+            setDealerCredits(prev => ({
+                ...prev,
+                [dealer.id]: (prev[dealer.id] || 0) + newOrder.amount
+            }));
+        }
 
         // --- MARGIN PROTECTION CHECK ---
         const skuData = skuMaster.find(s => s.sku === newOrder.sku);
@@ -672,6 +747,44 @@ export const DataProvider = ({ children }) => {
     }, [inventoryLevels]);
 
     // ============================================
+    // REVERSE LOGISTICS
+    // ============================================
+
+    /**
+     * Initiate a return request
+     */
+    const initiateReturn = useCallback((orderId, reason, items) => {
+        try {
+            const returnRequest = reverseLogisticsService.createReturnRequest(orderId, reason, items);
+            setReturns(prev => [returnRequest, ...prev]);
+
+            // Link return to order
+            setOrders(prev => prev.map(o => o.id === orderId ? { ...o, returnId: returnRequest.id, status: 'Return-Requested' } : o));
+
+            return { success: true, returnRequest };
+        } catch (error) {
+            return { success: false, error: error.message };
+        }
+    }, []);
+
+    /**
+     * Update return status (Approve/Reject/Complete)
+     */
+    const updateReturnStatus = useCallback((returnId, status, note) => {
+        setReturns(prev => prev.map(ret => {
+            if (ret.id === returnId) {
+                let updated;
+                if (status === 'APPROVED') updated = reverseLogisticsService.approveReturn(ret, note);
+                else if (status === 'REJECTED') updated = reverseLogisticsService.rejectReturn(ret, note);
+                else updated = { ...ret, status, logs: [...ret.logs, { status, timestamp: new Date().toISOString(), note }] };
+
+                return updated;
+            }
+            return ret;
+        }));
+    }, []);
+
+    // ============================================
     // EXPORT FUNCTIONS
     // ============================================
 
@@ -789,6 +902,10 @@ export const DataProvider = ({ children }) => {
         getOrderStats,
         getCustomerMetrics,
 
+        // Warehouse Functions
+        smartRouteOrder,
+        warehouseLoads,
+
         // Intelligence & Forecasting
         getDemandForecast: (days, forecastDays) => calculateSMAForecast(orders, days, forecastDays),
         getSKUPrediction: (sku, days) => predictSKUDemand(orders, sku, days),
@@ -798,6 +915,7 @@ export const DataProvider = ({ children }) => {
             const sku = skuMaster.find(s => s.sku === skuId);
             return calculateSKUProfitability(sku, price);
         },
+        getMLDemandForecast: (skuId) => mlForecastService.predictDemand(orders, skuId),
 
         // Warehouse
         inventoryLevels,
@@ -809,6 +927,11 @@ export const DataProvider = ({ children }) => {
         // Supply Chain
         batches,
         receiveStock,
+
+        // Reverse Logistics
+        returns,
+        initiateReturn,
+        updateReturnStatus,
 
         // Search
         universalSearch: (query) => searchService.universalSearch({ orders, skuMaster }, query),

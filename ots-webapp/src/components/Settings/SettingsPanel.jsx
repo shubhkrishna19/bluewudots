@@ -184,7 +184,6 @@ const SettingsPanel = () => {
                     </div>
                 </div>
 
-<<<<<<< HEAD
                 {/* Financial Guardrails */}
                 <div className="settings-card glass" style={{ padding: '24px' }}>
                     <h3 style={{ marginBottom: '20px' }}>🛡️ Financial Guardrails</h3>
@@ -213,7 +212,9 @@ const SettingsPanel = () => {
                             />
                             <span className="text-muted">Prevent order creation below this</span>
                         </div>
-=======
+                    </div>
+                </div>
+
                 {/* Security Settings (Enterprise Integration) */}
                 <div className="settings-card glass" style={{ padding: '24px', gridColumn: 'span 2' }}>
                     <h3 style={{ marginBottom: '20px' }}>🔐 Enterprise Security Suite</h3>
@@ -224,7 +225,6 @@ const SettingsPanel = () => {
                             onCancel={() => console.log('2FA Setup Cancelled')}
                         />
                         <IPWhitelistManager onIpListUpdate={(list) => console.log('IP Whitelist Updated', list)} />
->>>>>>> 4be53487f72a2bfacf3cde5d60b2e7a7e0ec3174
                     </div>
                 </div>
 
