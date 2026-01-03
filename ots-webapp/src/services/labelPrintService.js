@@ -4,11 +4,41 @@
  * Supports 4x6 inch shipping labels
  */
 
+import thermalPrintService from './thermalPrintService';
+
 class LabelPrintService {
     constructor() {
         this.dpi = 203; // Standard thermal printer DPI
         this.labelWidth = 4; // inches
         this.labelHeight = 6; // inches
+    }
+
+    /**
+     * Print to thermal printer (wrapper for thermalPrintService)
+     * @param {object} order 
+     */
+    async printToThermal(order) {
+        try {
+            const result = await thermalPrintService.printToThermal(order);
+            if (result.success) {
+                return { success: true, mode: 'thermal' };
+            } else if (result.fallback) {
+                // Fallback to browser print
+                return this.printLabel(order);
+            }
+            return result;
+        } catch (error) {
+            console.error('[LabelPrint] Thermal print failed:', error);
+            // Fallback to browser print
+            return this.printLabel(order);
+        }
+    }
+
+    /**
+     * Get thermal printer status
+     */
+    async getThermalStatus() {
+        return await thermalPrintService.getPrinterStatus();
     }
 
     /**

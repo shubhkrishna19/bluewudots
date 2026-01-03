@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useData } from '../../context/DataContext';
 import { generatePackingSlip, generateShippingLabel } from '../../utils/labelGenerator';
 import shipmentService from '../../services/shipmentService';
+import labelPrintService from '../../services/labelPrintService';
 
 const STAGES = [
     { key: 'Imported', label: 'IMPORTED', color: 'var(--text-muted)' },
@@ -15,6 +16,14 @@ const OrderJourney = ({ orderId }) => {
     const { orders, updateOrderStatus } = useData();
     const order = orders.find(o => o.id === orderId);
     const [showLabelMenu, setShowLabelMenu] = useState(false);
+    const [thermalAvailable, setThermalAvailable] = useState(false);
+
+    // Check thermal printer status on mount
+    React.useEffect(() => {
+        labelPrintService.getThermalStatus().then(status => {
+            setThermalAvailable(status.available);
+        });
+    }, []);
 
     if (!order) return null;
 
@@ -25,6 +34,20 @@ const OrderJourney = ({ orderId }) => {
             generatePackingSlip(order);
         } else {
             generateShippingLabel(order);
+        }
+        setShowLabelMenu(false);
+    };
+
+    const handleThermalPrint = async () => {
+        try {
+            const result = await labelPrintService.printToThermal(order);
+            if (result.success) {
+                alert('✅ Label sent to thermal printer!');
+            } else {
+                alert('⚠️ Thermal print failed. Check printer connection.');
+            }
+        } catch (error) {
+            alert('❌ Print error: ' + error.message);
         }
         setShowLabelMenu(false);
     };
@@ -156,6 +179,14 @@ const OrderJourney = ({ orderId }) => {
                             >
                                 🏷️ Thermal Label (4x6)
                             </button>
+                            {thermalAvailable && (
+                                <button
+                                    onClick={handleThermalPrint}
+                                    style={{ width: '100%', padding: '12px', background: 'var(--success)', border: 'none', color: '#fff', cursor: 'pointer', textAlign: 'left', borderTop: '1px solid var(--glass-border)', fontWeight: 'bold' }}
+                                >
+                                    🖨️ Print to Zebra (Direct)
+                                </button>
+                            )}
                         </div>
                     )}
                 </div>
