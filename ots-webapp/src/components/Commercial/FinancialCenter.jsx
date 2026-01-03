@@ -3,15 +3,9 @@ import { useFinance } from '../../context/FinancialContext';
 import { useData } from '../../context/DataContext';
 import { calculateProfitability, getEnhancedSKU } from '../../utils/commercialUtils';
 
-
 const FinancialCenter = () => {
-<<<<<<< HEAD
-    const { finStats } = useFinance();
-    const { orders, flaggedOrders } = useData();
-=======
-    const { finStats, settlements } = useFinance();
-    const { orders, skuMaster } = useData();
->>>>>>> 4be53487f72a2bfacf3cde5d60b2e7a7e0ec3174
+    const { finStats, settlements = [] } = useFinance();
+    const { orders, flaggedOrders = [], skuMaster = [] } = useData();
     const [selectedView, setSelectedView] = useState('overview');
 
     const formatINR = (val) => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(val);

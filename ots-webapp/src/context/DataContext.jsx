@@ -10,11 +10,19 @@ import { fetchSKUMaster, pushOrderToZoho } from '../services/zohoBridgeService';
 import marketplaceService from '../services/marketplaceService';
 import searchService from '../services/searchService';
 import marginProtectionService from '../services/marginProtectionService';
+<<<<<<< HEAD
 import cacheService from '../services/offlineCacheService';
 import { getWhatsAppService } from '../services/whatsappService'; // Using existing whatsappService
 import webhookService from '../services/zohoWebhookService';
 import { syncDeltaOrders } from '../services/zohoBridgeService';
 import { initOfflineCacheService } from '../services/offlineCacheService';
+=======
+import { getWhatsAppService } from '../services/whatsappServiceEnhanced';
+import webhookService from '../services/zohoWebhookService';
+import { syncDeltaOrders } from '../services/zohoBridgeService';
+import { initOfflineCacheService, getOfflineCacheService } from '../services/offlineCacheService';
+import warehouseOptimizer from '../services/warehouseOptimizer';
+>>>>>>> bdfa91095dfdb711d0b2ac67852aebe794017405
 
 import { SKU_MASTER, SKU_ALIASES } from '../data/skuMasterData';
 
@@ -264,13 +272,9 @@ export const DataProvider = ({ children }) => {
     /**
      * Smart routing for regional warehouse selection
      */
-    const smartRouteOrder = useCallback((pincode) => {
-        const p = parseInt(pincode);
-        if (p >= 110000 && p < 300000) return 'NORTH-HUB';
-        if (p >= 400000 && p < 600000) return 'WEST-HUB';
-        if (p >= 500000 && p < 600000) return 'SOUTH-HUB';
-        if (p >= 700000 && p < 900000) return 'EAST-HUB';
-        return 'CENTRAL-WH';
+    const smartRouteOrder = useCallback((pincode, state) => {
+        const result = warehouseOptimizer.selectOptimalWarehouse({ pincode, state });
+        return result.warehouse.id;
     }, []);
 
     // ============================================
@@ -297,7 +301,7 @@ export const DataProvider = ({ children }) => {
                 user: 'system'
             }],
             createdAt: new Date().toISOString(),
-            warehouse: smartRouteOrder(orderData.pincode)
+            warehouse: smartRouteOrder(orderData.pincode, orderData.state)
         };
 
         // --- MARGIN PROTECTION CHECK ---
@@ -407,11 +411,28 @@ export const DataProvider = ({ children }) => {
                             notifyOrderShipped(transitionResult.order);
                         } else if (newStatus === ORDER_STATUSES.DELIVERED) {
                             notifyOrderDelivered(transitionResult.order);
+<<<<<<< HEAD
                         } else if (newStatus.startsWith('RTO')) {
                             notifyOrderRTO(transitionResult.order, metadata.reason || 'Shipment returned');
                         }
                     } catch (e) {
                         console.warn('Notification service failed during transition:', e.message);
+=======
+                            whatsapp.sendWhatsAppMessage(orderId, 'delivery_confirmation', order.phone, { orderId });
+                        } else if (newStatus.startsWith('RTO')) {
+                            const reason = metadata.reason || 'Shipment returned';
+                            notifyOrderRTO(transitionResult.order, reason);
+                            whatsapp.sendWhatsAppMessage(orderId, 'rto_alert', order.phone, { orderId, reason });
+                        }
+                    } catch (e) {
+                        console.warn('Notification service error during transitions:', e.message);
+                        // Fallback to basic notifications
+                        if (newStatus === ORDER_STATUSES.IN_TRANSIT || newStatus === ORDER_STATUSES.PICKED_UP) {
+                            notifyOrderShipped(transitionResult.order);
+                        } else if (newStatus === ORDER_STATUSES.DELIVERED) {
+                            notifyOrderDelivered(transitionResult.order);
+                        }
+>>>>>>> bdfa91095dfdb711d0b2ac67852aebe794017405
                     }
 
                     return transitionResult.order;
@@ -480,7 +501,8 @@ export const DataProvider = ({ children }) => {
                     timestamp: new Date().toISOString(),
                     user: 'import'
                 }],
-                createdAt: new Date().toISOString()
+                createdAt: new Date().toISOString(),
+                warehouse: smartRouteOrder(normalized.pincode, normalized.state)
             };
         });
 
@@ -826,7 +848,11 @@ export const DataProvider = ({ children }) => {
 
         // Push Notifications & Offline Support
         pushEnabled,
+<<<<<<< HEAD
         enablePushNotifications,
+=======
+        enablePushNotifications: initializePushNotifications,
+>>>>>>> bdfa91095dfdb711d0b2ac67852aebe794017405
         queueOrderOffline,
         syncOfflineOrders
     };

@@ -79,14 +79,14 @@ describe('Order Flow Integration', () => {
 
         it('should normalize Flipkart order format', () => {
             const flipkartOrder = {
-                'Order ID': 'FKT-789',
-                'Customer Name': 'Flipkart Buyer',
-                'Mobile': '9123456789',
-                'Address': 'Flipkart Address',
-                'City': 'Delhi',
-                'State': 'Delhi',
-                'Pincode': '110001',
-                'SKU': 'BL-DESK-01'
+                'order_item_id': 'FKT-789',
+                'buyer_name': 'Flipkart Buyer',
+                'buyer_phone': '9123456789',
+                'ship_address': 'Flipkart Address',
+                'ship_city': 'Delhi',
+                'ship_state': 'Delhi',
+                'ship_pincode': '110001',
+                'sku': 'BL-DESK-01'
             };
 
             const normalized = normalizeOrder(flipkartOrder, 'flipkart');
@@ -165,16 +165,16 @@ describe('Order Flow Integration', () => {
             const rates = getAllRates(shipment);
             expect(rates.length).toBeGreaterThan(0);
             rates.forEach(rate => {
-                expect(rate).toHaveProperty('carrier');
-                expect(rate).toHaveProperty('rate');
-                expect(rate).toHaveProperty('eta');
+                expect(rate).toHaveProperty('carrierId');
+                expect(rate).toHaveProperty('total');
+                expect(rate).toHaveProperty('estimatedDelivery');
             });
         });
 
         it('should provide carrier recommendation', () => {
             const recommendation = getRecommendation(shipment, 'cost');
-            expect(recommendation).toHaveProperty('carrier');
-            expect(recommendation).toHaveProperty('rate');
+            expect(recommendation).toHaveProperty('carrierId');
+            expect(recommendation).toHaveProperty('total');
             expect(recommendation).toHaveProperty('reason');
         });
     });
@@ -231,23 +231,27 @@ describe('Order Flow Integration', () => {
             result = transitionOrder(result.order, ORDER_STATUSES.CARRIER_ASSIGNED, { carrier: 'Delhivery' });
             expect(result.success).toBe(true);
 
-            // 5. Pick Up
+            // 5. Generate Label
+            result = transitionOrder(result.order, ORDER_STATUSES.LABEL_GENERATED, { awb: 'AWB12345' });
+            expect(result.success).toBe(true);
+
+            // 6. Pick Up
             result = transitionOrder(result.order, ORDER_STATUSES.PICKED_UP);
             expect(result.success).toBe(true);
 
-            // 6. In Transit
+            // 7. In Transit
             result = transitionOrder(result.order, ORDER_STATUSES.IN_TRANSIT);
             expect(result.success).toBe(true);
 
-            // 7. Out for Delivery
+            // 8. Out for Delivery
             result = transitionOrder(result.order, ORDER_STATUSES.OUT_FOR_DELIVERY);
             expect(result.success).toBe(true);
 
-            // 8. Delivered
+            // 9. Delivered
             result = transitionOrder(result.order, ORDER_STATUSES.DELIVERED);
             expect(result.success).toBe(true);
 
-            // 9. Verify final state
+            // 10. Verify final state
             expect(result.order.status).toBe(ORDER_STATUSES.DELIVERED);
             expect(result.order.statusHistory.length).toBe(7); // All transitions
         });

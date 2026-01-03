@@ -1,15 +1,11 @@
 import React, { useState } from 'react';
 import { useData } from '../../context/DataContext';
 import OrderJourney from './OrderJourney';
-<<<<<<< HEAD
-import { generatePackingSlip, generateShippingLabel } from '../../utils/labelGenerator';
-=======
 import labelPrintService from '../../services/labelPrintService';
 import { getOptimalCarrier } from '../../services/carrierOptimizer';
->>>>>>> 4be53487f72a2bfacf3cde5d60b2e7a7e0ec3174
 
 const OrderList = () => {
-    const { orders, updateOrderStatus } = useData();
+    const { orders, updateOrderStatus, updateOrder } = useData();
     const [searchTerm, setSearchTerm] = useState('');
     const [statusFilter, setStatusFilter] = useState('all');
     const [sourceFilter, setSourceFilter] = useState('all');
@@ -51,7 +47,6 @@ const OrderList = () => {
         try {
             for (const orderId of selectedOrders) {
                 const order = orders.find(o => o.id === orderId);
-                // In a real app, we'd fetch zone/weight details. Using defaults for demo.
                 const recommendation = await getOptimalCarrier({
                     pincode: order.pincode || '400001',
                     weight: order.weight || 0.5,
@@ -265,36 +260,6 @@ const OrderList = () => {
                         <OrderJourney orderId={selectedOrder.id} />
 
                         <div style={{ marginTop: '24px', display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
-<<<<<<< HEAD
-                            <button
-                                className="btn-primary glass-hover"
-                                style={{ flex: 1, minWidth: '150px' }}
-                                onClick={() => {/* Future: Process logic */ }}
-                            >
-                                Process Order
-                            </button>
-                            <button
-                                className="btn-secondary glass-hover"
-                                style={{ flex: 1, minWidth: '150px' }}
-                                onClick={() => generatePackingSlip(selectedOrder)}
-                            >
-                                📄 Packing Slip
-                            </button>
-                            <button
-                                className="btn-secondary glass-hover"
-                                style={{ flex: 1, minWidth: '150px' }}
-                                onClick={() => generateShippingLabel(selectedOrder)}
-                            >
-                                🏷️ Shipping Label
-                            </button>
-                            <button
-                                className="btn-secondary glass-hover"
-                                style={{ flex: 1, minWidth: '150px' }}
-                                onClick={() => setSelectedOrder(null)}
-                            >
-                                Close
-                            </button>
-=======
                             <button className="btn-primary glass-hover" style={{ flex: 1 }}>Process Order</button>
                             <button
                                 className="btn-secondary glass-hover"
@@ -317,7 +282,6 @@ const OrderList = () => {
                                 📄 Packing Slip
                             </button>
                             <button className="btn-secondary glass-hover" style={{ flex: 1 }} onClick={() => setSelectedOrder(null)}>Close</button>
->>>>>>> 4be53487f72a2bfacf3cde5d60b2e7a7e0ec3174
                         </div>
                     </div>
                 </div>

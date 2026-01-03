@@ -3,12 +3,12 @@ import { useData } from '../../context/DataContext';
 import { routeOrderToWarehouse, getWarehouses } from '../../services/warehouseService';
 
 const WarehouseManager = () => {
-    const { skuMaster = [], inventoryLevels = [], batches = [], adjustStock, setStockLocation } = useData();
+    const { skuMaster = [], inventoryLevels = [], batches = [], adjustStock, transferStock } = useData();
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('All');
-    const [selectedWh, setSelectedWh] = useState(null);
     const [routingPincode, setRoutingPincode] = useState('');
     const [routedWarehouse, setRoutedWarehouse] = useState(null);
+    const [transferModal, setTransferModal] = useState({ show: false, sku: null });
 
     const warehouses = getWarehouses();
 
@@ -35,15 +35,14 @@ const WarehouseManager = () => {
     const totalUnits = inventory.reduce((sum, i) => sum + i.inStock, 0);
     const lowStockItems = inventory.filter(i => i.available <= (i.reorderLevel || 15));
 
-    const [transferModal, setTransferModal] = useState({ show: false, sku: null });
-    const { transferStock } = useData();
-
     const handleTransfer = (skuId) => {
         setTransferModal({ show: true, sku: skuId });
     };
 
     const confirmTransfer = (from, to, qty) => {
-        transferStock(transferModal.sku, from, to, qty);
+        if (transferStock) {
+            transferStock(transferModal.sku, from, to, parseInt(qty));
+        }
         setTransferModal({ show: false, sku: null });
     };
 
@@ -194,48 +193,49 @@ const WarehouseManager = () => {
                     </tbody>
                 </table>
             </div>
-<<<<<<< HEAD
+
             {/* FIFO Batch List */}
-            <div className="batch-inventory-section glass" style={{ marginTop: '32px', padding: '24px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-                    <h3>🕒 FIFO Batch Inventory</h3>
-                    <span className="badge" style={{ background: 'var(--accent)' }}>{batches.length} Batches Active</span>
-                </div>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '16px' }}>
-                    {batches.slice(-6).reverse().map(batch => (
-                        <div key={batch.id} className="glass glass-hover" style={{ padding: '16px', borderLeft: '4px solid var(--primary)' }}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                <span style={{ fontWeight: '800', color: 'var(--primary)' }}>{batch.sku}</span>
-                                <span className="badge" style={{ background: 'rgba(255,255,255,0.05)', fontSize: '0.65rem' }}>#{batch.id.slice(-6)}</span>
+            {batches.length > 0 && (
+                <div className="batch-inventory-section glass" style={{ marginTop: '32px', padding: '24px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                        <h3>🕒 FIFO Batch Inventory</h3>
+                        <span className="badge" style={{ background: 'var(--accent)' }}>{batches.length} Batches Active</span>
+                    </div>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '16px' }}>
+                        {batches.slice(-6).reverse().map(batch => (
+                            <div key={batch.id} className="glass glass-hover" style={{ padding: '16px', borderLeft: '4px solid var(--primary)' }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                    <span style={{ fontWeight: '800', color: 'var(--primary)' }}>{batch.sku}</span>
+                                    <span className="badge" style={{ background: 'rgba(255,255,255,0.05)', fontSize: '0.65rem' }}>#{batch.id.slice(-6)}</span>
+                                </div>
+                                <p style={{ fontSize: '0.85rem', marginTop: '8px' }}>Vendor: {batch.vendor}</p>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '12px', alignItems: 'center' }}>
+                                    <span style={{ fontSize: '1.2rem', fontWeight: '800' }}>{batch.quantity}</span>
+                                    <span className="text-muted" style={{ fontSize: '0.7rem' }}>Received: {new Date(batch.receivedAt).toLocaleDateString()}</span>
+                                </div>
                             </div>
-                            <p style={{ fontSize: '0.85rem', marginTop: '8px' }}>Vendor: {batch.vendor}</p>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '12px', alignItems: 'center' }}>
-                                <span style={{ fontSize: '1.2rem', fontWeight: '800' }}>{batch.quantity}</span>
-                                <span className="text-muted" style={{ fontSize: '0.7rem' }}>Received: {new Date(batch.receivedAt).toLocaleDateString()}</span>
-                            </div>
-                        </div>
-                    ))}
+                        ))}
+                    </div>
                 </div>
-            </div>
-=======
+            )}
 
             {/* Transfer Modal */}
             {transferModal.show && (
                 <div className="modal-overlay glass" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
-                    <div className="modal-content glass" style={{ padding: '32px', width: '400px', border: '1px solid var(--glass-border)' }}>
+                    <div className="modal-content glass" style={{ padding: '32px', width: '400px', border: '1px solid var(--glass-border)', borderRadius: '12px' }}>
                         <h3>Stock Transfer: {transferModal.sku}</h3>
                         <p className="text-muted" style={{ fontSize: '0.8rem', marginBottom: '20px' }}>Select destination hub and quantity.</p>
 
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                             <div>
                                 <label style={{ fontSize: '0.75rem', display: 'block', marginBottom: '4px' }}>Destination Hub</label>
-                                <select id="dest-hub" className="glass" style={{ width: '100%', padding: '10px' }}>
+                                <select id="dest-hub" className="glass" style={{ width: '100%', padding: '12px', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--glass-border)', color: '#fff' }}>
                                     {warehouses.map(w => <option key={w.id} value={w.id}>{w.name}</option>)}
                                 </select>
                             </div>
                             <div>
                                 <label style={{ fontSize: '0.75rem', display: 'block', marginBottom: '4px' }}>Quantity</label>
-                                <input id="transfer-qty" type="number" defaultValue="1" className="glass" style={{ width: '100%', padding: '10px' }} />
+                                <input id="transfer-qty" type="number" defaultValue="1" className="glass" style={{ width: '100%', padding: '12px', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--glass-border)', color: '#fff' }} />
                             </div>
 
                             <div style={{ display: 'flex', gap: '12px', marginTop: '12px' }}>
@@ -262,7 +262,6 @@ const WarehouseManager = () => {
                     </div>
                 </div>
             )}
->>>>>>> 4be53487f72a2bfacf3cde5d60b2e7a7e0ec3174
         </div>
     );
 };
