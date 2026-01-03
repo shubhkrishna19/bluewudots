@@ -12,22 +12,28 @@ const RTOManager = () => {
     const [selectedOrders, setSelectedOrders] = useState([]);
     const [selectedRTO, setSelectedRTO] = useState(null);
     const [filterLevel, setFilterLevel] = useState('ALL');
+    const [reattemptOrder, setReattemptOrder] = useState(null); // Order being edited for re-attempt
 
     // --- Tab 1: Risk Prevention Logic ---
     const riskData = useMemo(() => {
         return orders.map(order => {
             const risk = rtoService.predictRisk(order);
+            // If already blocked by bot, use that risk
+            if (order.status === 'On-Hold' && order.holdReason?.includes('RTO')) {
+                return { ...order, risk: { ...risk, level: 'BLOCKED' } };
+            }
             return { ...order, risk };
         }).filter(o => {
-            // Only active, non-delivered, non-returned orders
-            return !['Delivered', 'Cancelled', 'Returned'].includes(o.status) && !o.status.startsWith('RTO');
+            // Include On-Hold (Blocked) and active high-risk orders
+            if (o.status === 'On-Hold' && o.holdReason?.includes('RTO')) return true;
+            return !['Delivered', 'Cancelled', 'Returned', 'On-Hold'].includes(o.status) && !o.status.startsWith('RTO');
         });
     }, [orders]);
 
     const highRiskOrders = useMemo(() => {
         return riskData.filter(o =>
-            (o.risk.level === RTORiskLevels.HIGH || o.risk.level === RTORiskLevels.CRITICAL) &&
-            (filterLevel === 'ALL' || o.risk.level === filterLevel)
+            (o.risk.level === 'BLOCKED' || o.risk.level === RTORiskLevels.HIGH || o.risk.level === RTORiskLevels.CRITICAL) &&
+            (filterLevel === 'ALL' || (filterLevel === 'BLOCKED' ? o.risk.level === 'BLOCKED' : o.risk.level === filterLevel))
         );
     }, [riskData, filterLevel]);
 
@@ -38,7 +44,7 @@ const RTOManager = () => {
         selectedOrders.forEach(id => {
             if (action === 'HOLD') updateOrderStatus(id, 'On-Hold', { reason: 'High RTO Risk' });
             if (action === 'CANCEL') updateOrderStatus(id, 'Cancelled', { reason: 'High RTO Risk Prevention' });
-            if (action === 'APPROVE') updateOrderStatus(id, 'Processing', { reason: 'Risk Verified' });
+            if (action === 'APPROVE') updateOrderStatus(id, 'Pending', { reason: 'Risk Manually Verified' }); // Move to Pending to Unblock
         });
         setSelectedOrders([]);
     };
@@ -49,13 +55,24 @@ const RTOManager = () => {
 
     const handleRTOAction = (orderId, action) => {
         if (action === 'reattempt') {
-            updateOrderStatus(orderId, 'Pending', { reason: 'Customer Re-attempt Requested' });
+            const order = orders.find(o => o.id === orderId);
+            setReattemptOrder(order); // Open "Modal"
         } else if (action === 'refund') {
             updateOrderStatus(orderId, 'Cancelled', { reason: 'Refund Processed' });
         } else if (action === 'writeoff') {
             updateOrderStatus(orderId, 'Cancelled', { reason: 'RTO Write-off' });
         }
         setSelectedRTO(null);
+    };
+
+    const submitReattempt = (updatedDetails) => {
+        if (!reattemptOrder) return;
+        // In real app, update address fields
+        updateOrderStatus(reattemptOrder.id, 'Pending', {
+            reason: 'Customer Re-attempt Requested',
+            notes: `Address updated: ${updatedDetails.address || 'No change'}`
+        });
+        setReattemptOrder(null);
     };
 
     const getReasonColor = (reason) => {
@@ -120,12 +137,14 @@ const RTOManager = () => {
                     <div className="flex justify-between items-center mb-4">
                         <div className="flex gap-2">
                             <button className={`px-3 py-1.5 rounded-lg text-xs transition-all ${filterLevel === 'ALL' ? 'bg-slate-700 text-white' : 'glass text-muted'}`} onClick={() => setFilterLevel('ALL')}>All</button>
+                            <button className={`px-3 py-1.5 rounded-lg text-xs transition-all ${filterLevel === 'BLOCKED' ? 'bg-purple-500/20 text-purple-500' : 'glass text-muted'}`} onClick={() => setFilterLevel('BLOCKED')}>⛔ Blocked</button>
                             <button className={`px-3 py-1.5 rounded-lg text-xs transition-all ${filterLevel === 'CRITICAL' ? 'bg-red-500/20 text-red-500' : 'glass text-muted'}`} onClick={() => setFilterLevel('CRITICAL')}>Critical</button>
                             <button className={`px-3 py-1.5 rounded-lg text-xs transition-all ${filterLevel === 'HIGH' ? 'bg-orange-500/20 text-orange-500' : 'glass text-muted'}`} onClick={() => setFilterLevel('HIGH')}>High</button>
                         </div>
                         <div className="flex gap-2">
-                            <button className="btn-secondary glass-hover text-xs" onClick={() => handleBulkAction('HOLD')} disabled={!selectedOrders.length}>🛑 Hold ({selectedOrders.length})</button>
-                            <button className="btn-primary glass-hover text-xs bg-red-500/80 hover:bg-red-500" onClick={() => handleBulkAction('CANCEL')} disabled={!selectedOrders.length}>✖ Cancel ({selectedOrders.length})</button>
+                            <button className="btn-secondary glass-hover text-xs" onClick={() => handleBulkAction('HOLD')} disabled={!selectedOrders.length}>🛑 Hold</button>
+                            <button className="btn-primary glass-hover text-xs bg-red-500/80 hover:bg-red-500" onClick={() => handleBulkAction('CANCEL')} disabled={!selectedOrders.length}>✖ Cancel</button>
+                            <button className="btn-primary glass-hover text-xs bg-green-500/80 hover:bg-green-500" onClick={() => handleBulkAction('APPROVE')} disabled={!selectedOrders.length}>✅ Allow</button>
                         </div>
                     </div>
 
@@ -147,7 +166,7 @@ const RTOManager = () => {
                                     <tr><td colSpan="6" className="p-8 text-center text-muted"><ShieldAlert className="w-8 h-8 mx-auto mb-2 opacity-20" />No high-risk orders detected.</td></tr>
                                 ) : (
                                     highRiskOrders.map(order => (
-                                        <tr key={order.id} className="hover:bg-white/5 transition-colors">
+                                        <tr key={order.id} className={`hover:bg-white/5 transition-colors ${order.risk.level === 'BLOCKED' ? 'bg-purple-500/5' : ''}`}>
                                             <td className="p-4"><input type="checkbox" checked={selectedOrders.includes(order.id)} onChange={() => setSelectedOrders(p => p.includes(order.id) ? p.filter(x => x !== order.id) : [...p, order.id])} /></td>
                                             <td className="p-4">
                                                 <div className="font-bold text-blue-300">{order.id}</div>
@@ -156,12 +175,12 @@ const RTOManager = () => {
                                             </td>
                                             <td className="p-4 city-cell">{order.city}<br /><span className="text-[10px] text-muted">{order.pincode}</span></td>
                                             <td className="p-4">
-                                                <span className={`px-2 py-0.5 rounded text-[10px] font-bold border block w-fit mb-1 ${order.risk.level === 'CRITICAL' ? 'bg-red-500/10 text-red-500 border-red-500/20' : 'bg-orange-500/10 text-orange-500 border-orange-500/20'}`}>{order.risk.level} ({order.risk.score})</span>
+                                                <span className={`px-2 py-0.5 rounded text-[10px] font-bold border block w-fit mb-1 ${order.risk.level === 'BLOCKED' ? 'bg-purple-500/20 text-purple-400 border-purple-500' : order.risk.level === 'CRITICAL' ? 'bg-red-500/10 text-red-500 border-red-500/20' : 'bg-orange-500/10 text-orange-500 border-orange-500/20'}`}>{order.risk.level} ({order.risk.score})</span>
                                                 <span className="text-[10px] text-muted">{order.risk.reasons.join(', ')}</span>
                                             </td>
                                             <td className="p-4 font-mono text-red-300">-₹{order.risk.potentialLoss}</td>
                                             <td className="p-4 text-right flex justify-end gap-2">
-                                                <button className="p-1 hover:bg-green-500/20 rounded text-green-500" title="Approve" onClick={() => updateOrderStatus(order.id, 'Processing')}><CheckSquare className="w-4 h-4" /></button>
+                                                <button className="p-1 hover:bg-green-500/20 rounded text-green-500" title="Approve" onClick={() => updateOrderStatus(order.id, 'Pending')}><CheckSquare className="w-4 h-4" /></button>
                                                 <button className="p-1 hover:bg-red-500/20 rounded text-red-500" title="Cancel" onClick={() => updateOrderStatus(order.id, 'Cancelled')}><XSquare className="w-4 h-4" /></button>
                                             </td>
                                         </tr>
@@ -173,7 +192,31 @@ const RTOManager = () => {
                 </div>
             ) : (
                 <div className="animate-fade">
-                    {/* RTO Handling UI (Legacy Logic Enhanced) */}
+                    {/* ... RTO Handling content ... */}
+                    {reattemptOrder && (
+                        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4" onClick={() => setReattemptOrder(null)}>
+                            <div className="bg-slate-900 border border-white/10 p-6 rounded-xl w-full max-w-md" onClick={e => e.stopPropagation()}>
+                                <h3 className="text-lg font-bold mb-4">Smart Re-attempt: {reattemptOrder.id}</h3>
+                                <div className="space-y-4">
+                                    <div>
+                                        <label className="text-xs text-muted block mb-1">Confirm Phone</label>
+                                        <input type="text" defaultValue={reattemptOrder.phone} className="w-full bg-black/20 border border-white/10 rounded p-2" />
+                                    </div>
+                                    <div>
+                                        <label className="text-xs text-muted block mb-1">Update Address</label>
+                                        <textarea defaultValue={reattemptOrder.address} className="w-full bg-black/20 border border-white/10 rounded p-2 h-20"></textarea>
+                                    </div>
+                                    <button
+                                        className="w-full btn-primary py-2"
+                                        onClick={() => submitReattempt({ address: 'Updated via Smart Re-attempt' })}
+                                    >
+                                        🚀 Launch Re-attempt
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                    {/* RTO List */}
                     <div className="grid grid-cols-4 gap-4 mb-8">
                         {['Customer Refused', 'Incorrect Address', 'Damaged in Transit'].map((reason, i) => (
                             <div key={reason} className="glass p-4 rounded-xl text-center">

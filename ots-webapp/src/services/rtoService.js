@@ -52,7 +52,7 @@ class RTOService {
         const paymentRisk = RISK_FACTORS.PAYMENT_METHODS[paymentMethod] || 40;
         if (paymentMethod === 'cod') {
             score += 40;
-            // reasons.push('COD Payment'); // Implicit
+            reasons.push('COD Payment Factor');
         }
 
         // 2. Location Analysis (Pincode & State Risk)
@@ -62,7 +62,7 @@ class RTOService {
         const state = order.state || order.shippingAddress?.state;
         if (state === 'Uttar Pradesh' || state === 'Bihar' || state === 'West Bengal') {
             score += 15;
-            // reasons.push(`High-risk State: ${state}`);
+            reasons.push(`High-risk State: ${state}`);
         }
 
         if (pincodeData) {
@@ -185,7 +185,7 @@ class RTOService {
     }
 }
 
-const rtoService = new RTOService();
+export const rtoService = new RTOService();
 // User's tests expect 'calculateRtoRisk' (camelCase 'to') and 'analyzeRiskFactors'
 export const calculateRtoRisk = (order, history) => {
     // Adapter to map test fields to service logic if needed, or update service logic directly.
@@ -229,5 +229,7 @@ export const analyzeRiskFactors = (order) => {
 export default {
     calculateRtoRisk,
     analyzeRiskFactors,
-    predictRisk: (order, history) => rtoService.predictRisk(order, history)
+    predictRisk: (order, history) => rtoService.predictRisk(order, history),
+    requiresVerification: (order) => rtoService.requiresVerification(order),
+    calculatePotentialLoss: (order, score) => rtoService.calculatePotentialLoss(order, score)
 };

@@ -94,6 +94,16 @@ Before closing your session:
 - [x] **Marketplace Reconciliation**: Automated fee analysis and net margin calculation in `MarketplaceReconciliation.jsx`.
 - [x] **Universal Import**: Smart Auto-Map for unknown CSV/Excel formats in `UniversalImporter.jsx`.
 
+### Phase 31: Advanced Security & Audit System ✅
+- [x] **Activity Log**: Forensic dashboard in `ActivityLog.jsx` via `SecurityContext.jsx`.
+- [x] **Security Fortress**: IP Whitelist manager in `SecurityFortress.jsx`.
+- [x] **Data Privacy**: PII redaction (`redactPII`) for Viewer roles in `CustomerLookup.jsx`.
+
+### Phase 32: Intelligent Automation & Testing ✅
+- [x] **RTO Automation**: Test suite `rto_automation.test.jsx` verifying risk logic.
+- [x] **Conversational Commerce**: WhatsApp integration in `OrderList.jsx`.
+- [x] **Security Hardening**: Full `Guard` coverage in `App.jsx`.
+
 ---
 
 ## 🏗️ 5. Global System Architecture

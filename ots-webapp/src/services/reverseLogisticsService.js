@@ -5,6 +5,8 @@
 
 import { generateOrderId } from '../utils/dataUtils';
 
+import { jsPDF } from "jspdf";
+
 export class ReverseLogisticsService {
 
     constructor() {
@@ -80,17 +82,64 @@ export class ReverseLogisticsService {
     }
 
     /**
-     * Generate a Mock Return Label (PDF logic would be in labelGenerator)
+     * Generate a Real Return Label PDF
      * @param {string} returnId 
+     * @param {Object} orderDetails
      */
-    generateReturnLabel(returnId) {
-        // In a real app, this would call a PDF generator
-        console.log(`Generating return label for ${returnId}`);
-        return {
-            success: true,
-            url: `/mock-labels/return-${returnId}.pdf`,
-            trackingNumber: `RET-TRK-${Math.floor(Math.random() * 100000)}`
-        };
+    generateReturnLabel(returnId, orderDetails = {}) {
+        try {
+            const doc = new jsPDF({
+                orientation: 'portrait',
+                unit: 'mm',
+                format: [100, 150] // Standard label size
+            });
+
+            // Header
+            doc.setFontSize(16);
+            doc.setFont('helvetica', 'bold');
+            doc.text("RETURN LABEL", 50, 15, { align: 'center' });
+
+            // Barcode Placeholder
+            doc.setLineWidth(0.5);
+            doc.rect(10, 25, 80, 20);
+            doc.setFontSize(10);
+            doc.text(`*${returnId}*`, 50, 38, { align: 'center' });
+
+            // From Address
+            doc.setFontSize(8);
+            doc.setFont('helvetica', 'normal');
+            doc.text("FROM:", 10, 55);
+            doc.setFont('helvetica', 'bold');
+            doc.text(orderDetails.customer || "Customer Name", 10, 60);
+            doc.setFont('helvetica', 'normal');
+            doc.text(orderDetails.city || "City, State", 10, 65);
+            doc.text(`Ph: ${orderDetails.phone || 'N/A'}`, 10, 70);
+
+            // To Address
+            doc.text("TO:", 10, 85);
+            doc.setFont('helvetica', 'bold');
+            doc.text("BLUEWUD RETURNS CENTRE", 10, 90);
+            doc.setFont('helvetica', 'normal');
+            doc.text("Plot No 88, Udyog Vihar", 10, 95);
+            doc.text("Gurgaon, Haryana, 122016", 10, 100);
+
+            // RMA Details
+            doc.setDrawColor(0);
+            doc.line(10, 110, 90, 110);
+            doc.setFontSize(9);
+            doc.text(`RMA #: ${returnId}`, 10, 120);
+            doc.text(`Date: ${new Date().toLocaleDateString()}`, 60, 120);
+            doc.text(`Reason: ${orderDetails.reason || 'Return'}`, 10, 130);
+
+            return {
+                success: true,
+                url: doc.output('bloburl'),
+                trackingNumber: `RET-TRK-${Math.floor(Math.random() * 100000)}`
+            };
+        } catch (error) {
+            console.error("PDF Generation Failed", error);
+            return { success: false, error: "Failed to generate label" };
+        }
     }
 
     /**

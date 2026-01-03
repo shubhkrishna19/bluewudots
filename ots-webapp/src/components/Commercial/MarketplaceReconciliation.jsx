@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { useData } from '../../context/DataContext';
-import marketplaceSyncService from '../../services/MarketplaceSyncService';
+import marketplaceSyncService from '../../services/marketplaceService';
 import { DollarSign, AlertCircle, TrendingUp, FileText } from 'lucide-react';
 
 const MarketplaceReconciliation = () => {

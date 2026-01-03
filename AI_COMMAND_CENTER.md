@@ -18,11 +18,9 @@
 ---
 
 ## 🚨 CRITICAL HANDOVER NOTE (Latest)
-**Key Unifications:**
-- Simplified and robust `securityUtils.js` (XSS + Crypto).
-- Unified `whatsappService.js` (Real API + Development Mock).
-- Combined `complianceService.js` (E-way Bill + International Docs).
-**Next Shift Focus:** Start Phase 16 (External Integrations).
+**Phase 28 (Automated RTO Management)** is COMPLETE.
+**Current Status:** The system now automatically holds high-risk COD orders. `rtoService` and `zohoWebhookService` are active. `OrderList` has a "High Risk" filter, and `RTOManager` supports blocking/unblocking.
+**Next Shift Focus:** Start **Phase 29 (ML Demand Forecasting)**.
 
 ---
 
@@ -30,12 +28,10 @@
 
 | Task ID | Description | Assigned To | Status | Last Updated |
 |---------|-------------|-------------|--------|--------------|
-| **28.1** | RTO Prediction & Reverse Logistics | Antigravity AI | ✅ Complete | 2026-01-04 |
-| **P16.1** | Real WhatsApp Business API | Antigravity AI | ✅ Complete | 2026-01-04 |
-| P16.2 | Carrier API Live Integration | Antigravity | ✅ Complete | 2026-01-04 |
-| P16.3 | Amazon/Flipkart Real-time Sync | Antigravity | ✅ Complete | 2026-01-04 |
-| P16.4 | Thermal Printer Implementation | Antigravity | 🔵 In Progress | 2026-01-04 |
-| **P14.1** | Multi-Currency Conversion Engine | Antigravity AI | 2026-01-04 | `internationalService.js` |
+| **P28.1** | Automated RTO Risk Blocking | Antigravity AI | ✅ Complete | 2026-01-04 |
+| **P28.2** | RTO Webhook Integration | Antigravity AI | ✅ Complete | 2026-01-04 |
+| **P28.3** | RTO Manager UI (Blocked Tab) | Antigravity AI | ✅ Complete | 2026-01-04 |
+| **P27.1** | B2B Dealer Portal & RBAC | Antigravity AI | ✅ Complete | 2026-01-04 |
 | **P14.2** | Global Financial Ledger | Antigravity AI | 2026-01-04 | `GlobalLedger.jsx` |
 | **P14.3** | International Shipping Stubs (DHL/FedEx) | Antigravity AI | 2026-01-04 | `internationalShippingService.js` |
 | **P15.1** | BUG-001 | White Page Error Fix (imports) | Antigravity AI | 2026-01-04 | `main.jsx`, `internationalService.js`, `DataContext.jsx` |
@@ -49,13 +45,14 @@
 
 ## 📂 Pending Tasks – READY FOR OVERNIGHT WORK
 
-### Phase 16: External Integrations (The Big Shift)
+## 📂 Pending Tasks – READY FOR OVERNIGHT WORK
+
+### Phase 29: ML-Powered Demand Forecasting
 | Task ID | Priority | Description | Est. Time | Dependencies |
 |---------|----------|-------------|-----------|--------------|
-| **P16.1** | CRITICAL | Real WhatsApp Business API | Antigravity | ✅ Complete |
-| **P16.2** | HIGH | Carrier API Live Integration | Antigravity | ✅ Complete |
-| **P16.3** | MEDIUM | Amazon/Flipkart Real-time Sync | Antigravity | 🔵 In Progress |
-| **P16.4** | LOW | Thermal Printer Implementation | 2-3 hrs | `labelGenerator.js` |
+| **P29.1** | HIGH | Prophet Model Integration (Python Bridge) | 3 hrs | `forecastService.js` |
+| **P29.2** | MEDIUM | Forecast Visualization (Recharts) | 2 hrs | `DemandForecast.jsx` |
+| **P29.3** | LOW | Inventory Reorder Alerts | 1 hr | `InventoryOptimizer.js` |
 
 ---
 

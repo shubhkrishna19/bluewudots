@@ -1,19 +1,13 @@
 /**
+ * @deprecated This file is deprecated. Please use src/services/rbacMiddleware.js instead.
+ * 
  * Permission Utilities
  * Centralized mapping of permissions to roles and helper functions.
  */
 
-export const PERMISSIONS = {
-    VIEW_DASHBOARD: 'canViewDashboard',
-    MANAGE_ORDERS: 'canManageOrders',
-    MANAGE_INVENTORY: 'canManageInventory',
-    MANAGE_USERS: 'canManageUsers',
-    VIEW_REPORTS: 'canViewReports',
-    MANAGE_SETTINGS: 'canManageSettings',
-    MANAGE_CARRIERS: 'canManageCarriers',
-    PROCESS_PAYMENTS: 'canProcessPayments',
-    IS_DEALER: 'isDealer'
-};
+import { can, ROLES, PERMISSIONS as RBAC_PERMISSIONS } from '../services/rbacMiddleware';
+
+export const PERMISSIONS = RBAC_PERMISSIONS;
 
 /**
  * Checks if a user object has a specific permission.
@@ -22,13 +16,14 @@ export const PERMISSIONS = {
  * @returns {boolean}
  */
 export const hasPermission = (user, permission) => {
-    if (!user || !user.permissions) return false;
-    return user.permissions[permission] === true;
+    return can(user, permission);
 };
 
 /**
  * Helper to check if user is a dealer
  */
 export const isDealer = (user) => {
-    return hasPermission(user, PERMISSIONS.IS_DEALER);
+    return user?.role === ROLES.DEALER;
 };
+
+export default { hasPermission, isDealer, PERMISSIONS };

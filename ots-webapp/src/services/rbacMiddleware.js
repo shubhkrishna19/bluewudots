@@ -25,7 +25,8 @@ export const PERMISSIONS = {
     PLACE_WHOLESALE_ORDER: 'place_wholesale_order',
     VIEW_ALL_ORDERS: 'view_all_orders',
     VIEW_OWN_ORDERS: 'view_own_orders',
-    PROCESS_QC: 'process_qc'
+    PROCESS_QC: 'process_qc',
+    VIEW_ACTIVITY_LOG: 'view_activity_log'
 };
 
 const ROLE_PERMISSIONS = {
@@ -39,7 +40,8 @@ const ROLE_PERMISSIONS = {
         PERMISSIONS.PROCESS_PAYMENTS,
         PERMISSIONS.PLACE_WHOLESALE_ORDER,
         PERMISSIONS.VIEW_ALL_ORDERS,
-        PERMISSIONS.PROCESS_QC
+        PERMISSIONS.PROCESS_QC,
+        PERMISSIONS.VIEW_ACTIVITY_LOG
     ],
     [ROLES.OPERATOR]: [
         PERMISSIONS.VIEW_ANALYTICS,

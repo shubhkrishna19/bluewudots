@@ -18,7 +18,7 @@ class WhatsAppService {
     this.apiToken = apiToken;
     this.businessAccountId = businessAccountId;
     this.phoneNumberId = phoneNumberId;
-    this.baseUrl = 'https://graph.instagram.com/v18.0'; // Or specific WhatsApp API URL
+    this.baseUrl = 'https://graph.facebook.com/v18.0'; // Changed from Instagram to Facebook Graph API
     this.tokenExpiry = null;
     this.rateLimitWindow = 60000; // 1 minute
     this.messagesPerWindow = 100;
@@ -101,7 +101,9 @@ class WhatsAppService {
       if (!response.ok) {
         const error = await response.json();
         // Check for specific error codes (e.g., 1004 = user blocked, 131030 = 24hr window closed)
-        throw new Error(`WhatsApp API Error: ${error.error?.message || response.statusText}`);
+        const errorMessage = error.error?.message || response.statusText;
+        console.error(`WhatsApp API Error (${response.status}):`, errorMessage);
+        throw new Error(`WhatsApp API Error: ${errorMessage}`);
       }
 
       const result = await response.json();
@@ -109,7 +111,7 @@ class WhatsAppService {
       // 5. Track Success
       this.trackMessage({
         orderId,
-        messageId: result.messages[0].id,
+        messageId: result.messages?.[0]?.id || `real_${Date.now()}`,
         phoneNumber: validPhone,
         templateId,
         timestamp: Date.now(),
@@ -118,7 +120,7 @@ class WhatsAppService {
 
       return {
         success: true,
-        messageId: result.messages[0].id,
+        messageId: result.messages?.[0]?.id,
         orderId,
         timestamp,
         mode: 'real'
@@ -158,14 +160,35 @@ class WhatsAppService {
   buildTemplateComponents(parameters) {
     if (!parameters || Object.keys(parameters).length === 0) return [];
 
-    // Naive implementation: assuming all params go to BODY component in order
-    // In production, might need header/body/footer separation based on template
-    const paramValues = Object.values(parameters).map(val => ({
-      type: 'text',
-      text: String(val)
-    }));
+    // Improved implementation: Supports header variables if passed explicitly
+    // Structure expected: { header: [], body: [], footer: [] } or just flat values
 
-    return [{ type: 'body', parameters: paramValues }];
+    // Legacy support (flat object map to BODY)
+    if (!parameters.body && !parameters.header) {
+      const paramValues = Object.values(parameters).map(val => ({
+        type: 'text',
+        text: String(val)
+      }));
+      return [{ type: 'body', parameters: paramValues }];
+    }
+
+    const components = [];
+
+    if (parameters.header) {
+      components.push({
+        type: 'header',
+        parameters: parameters.header.map(val => ({ type: 'text', text: String(val) }))
+      });
+    }
+
+    if (parameters.body) {
+      components.push({
+        type: 'body',
+        parameters: parameters.body.map(val => ({ type: 'text', text: String(val) }))
+      });
+    }
+
+    return components;
   }
 
   canSendMessage() {

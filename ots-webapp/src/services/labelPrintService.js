@@ -196,11 +196,33 @@ export const generateLabelHTML = (order, size = '4x6') => {
 };
 
 /**
- * Print a shipping label
+ * Print a shipping label (Hybrid: Real PDF or Legacy HTML)
  * @param {object} order 
  * @param {string} size 
  */
-export const printLabel = (order, size = '4x6') => {
+export const printLabel = async (order, size = '4x6') => {
+    // 1. Check if Live Label URL exists (from previous API fetch)
+    if (order.labelUrl) {
+        window.open(order.labelUrl, '_blank');
+        return;
+    }
+
+    // 2. Try Fetching Live Label if Carrier API is active
+    /* 
+       Optimistic Check: If credentials exist, we might try to fetch on-the-fly.
+       However, usually label generation happens at "Ship" status which saves the URL.
+       This block is for on-demand fetching implementation.
+    */
+    const delhiveryToken = import.meta.env.VITE_DELHIVERY_TOKEN;
+    if (delhiveryToken && order.carrier === 'Delhivery' && !order.isSimulated) {
+        const labelUrl = await fetchCarrierLabel(order);
+        if (labelUrl) {
+            window.open(labelUrl, '_blank');
+            return;
+        }
+    }
+
+    // 3. Fallback to Legacy HTML Generator
     const html = generateLabelHTML(order, size);
     const printWindow = window.open('', '_blank', 'width=400,height=600');
     printWindow.document.write(html);
@@ -211,6 +233,26 @@ export const printLabel = (order, size = '4x6') => {
     printWindow.onload = () => {
         printWindow.print();
     };
+};
+
+/**
+ * Fetch official label from Carrier API
+ */
+const fetchCarrierLabel = async (order) => {
+    try {
+        // Simulation of API call to /waybill/fetch
+        console.log(`Fetching live label for ${order.id} from ${order.carrier}...`);
+
+        // Return null to fallback to HTML for now, until real endpoint is mapped
+        // In real impl: 
+        // const res = await fetch('https://track.delhivery.com/api/waybill/url', ...);
+        // return res.json().url;
+
+        return null;
+    } catch (err) {
+        console.error('Label Fetch Failed:', err);
+        return null;
+    }
 };
 
 /**

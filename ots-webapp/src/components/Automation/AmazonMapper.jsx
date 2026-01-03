@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Papa from 'papaparse';
 import { useData } from '../../context/DataContext';
 import OrderJourney from '../Orders/OrderJourney';
-import marketplaceSyncService from '../../services/MarketplaceSyncService';
+import marketplaceSyncService from '../../services/marketplaceService';
 import { RefreshCw, Upload, CheckCircle, AlertTriangle } from 'lucide-react';
 
 const AmazonMapper = () => {
@@ -43,6 +43,27 @@ const AmazonMapper = () => {
         });
     };
 
+    const handleOrderSync = async () => {
+        setIsUploading(true);
+        try {
+            // Fetch Order Batch via Service (Real or Mock)
+            const newOrders = await marketplaceSyncService.fetchOrders('amazon');
+
+            setOrders(prev => {
+                // Avoid duplicates based on Order ID
+                const existingIds = new Set(prev.map(o => o.id));
+                const uniqueNew = newOrders.filter(o => !existingIds.has(o.id));
+                return [...uniqueNew, ...prev];
+            });
+
+            setStats({ count: newOrders.length });
+        } catch (err) {
+            console.error('Order Sync Failed:', err);
+        } finally {
+            setIsUploading(false);
+        }
+    };
+
     const handleBulkSync = async () => {
         setIsUploading(true);
         const newStatus = {};
@@ -50,6 +71,7 @@ const AmazonMapper = () => {
         // Simulate syncing top 5 SKUs
         for (const item of skuMaster.slice(0, 5)) {
             try {
+                // Use the new service method
                 await marketplaceSyncService.syncInventory(item.sku, item.stock, 'amazon');
                 newStatus[item.sku] = 'success';
             } catch (err) {
@@ -108,7 +130,15 @@ const AmazonMapper = () => {
                                 </div>
                             ) : (
                                 <div className="text-muted" style={{ marginTop: '20px' }}>
-                                    Waiting for data stream...
+                                    <p>Waiting for data stream...</p>
+                                    <button
+                                        className="btn-secondary glass-hover"
+                                        style={{ marginTop: '16px', width: '100%', borderColor: 'var(--accent)', color: 'var(--accent)' }}
+                                        onClick={handleOrderSync}
+                                        disabled={isUploading}
+                                    >
+                                        {isUploading ? 'Connecting...' : '🔌 Sync via SP-API'}
+                                    </button>
                                 </div>
                             )}
                         </div>

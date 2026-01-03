@@ -1,9 +1,9 @@
-```javascript
+
 import React, { useState, useMemo } from 'react';
 import { useData } from '../../context/DataContext';
 import { useAuth } from '../../context/AuthContext';
 import churnService from '../../services/churnService';
-import { getWhatsAppService } from '../../services/whatsappServiceEnhanced';
+import { getWhatsAppService } from '../../services/whatsappService';
 import { redactPII } from '../../utils/securityUtils';
 
 const CustomerLookup = () => {
@@ -43,8 +43,14 @@ const CustomerLookup = () => {
     const sendReactivationMessage = async (customer) => {
         const message = churnService.generateOutreachMessage(customer);
         try {
-            await getWhatsAppService().sendWhatsAppMessage(customer.phone, message, 'reactivation');
-            alert(`Reactivation message sent to ${ customer.name || customer.phone } ! 🫡`);
+            // Using 'churn_reactivation' as orderId, and assuming 'reactivation_outreach' is the template
+            await getWhatsAppService().sendWhatsAppMessage(
+                `churn_${customer.phone}`,
+                'reactivation_offer_v1',
+                customer.phone,
+                { body: [customer.name] }
+            );
+            alert(`Reactivation message sent to ${customer.name || customer.phone} ! 🫡`);
         } catch (error) {
             console.error('Outreach failed:', error);
             alert('Failed to send message. Please check API credentials.');
@@ -67,7 +73,7 @@ const CustomerLookup = () => {
                     style={{ flex: 1, padding: '14px 20px', background: 'var(--bg-accent)', border: '1px solid var(--glass-border)', borderRadius: '10px', color: '#fff', fontSize: '1rem' }}
                 />
                 <button
-                    className={`btn - secondary glass - hover ${ showAtRiskOnly ? 'active' : '' } `}
+                    className={`btn - secondary glass - hover ${showAtRiskOnly ? 'active' : ''} `}
                     style={{ padding: '12px 20px', background: showAtRiskOnly ? 'var(--danger)' : 'var(--bg-accent)' }}
                     onClick={() => setShowAtRiskOnly(!showAtRiskOnly)}
                 >
@@ -82,7 +88,7 @@ const CustomerLookup = () => {
                         return (
                             <div
                                 key={idx}
-                                className={`customer - card glass glass - hover ${ selectedCustomer?.phone === customer.phone ? 'selected' : '' } `}
+                                className={`customer - card glass glass - hover ${selectedCustomer?.phone === customer.phone ? 'selected' : ''} `}
                                 style={{
                                     padding: '20px',
                                     cursor: 'pointer',

@@ -37,10 +37,32 @@ class ZohoWebhookService {
     processWebhook(payload) {
         const { action, entity, details } = payload;
 
+        let eventType = `${entity}_${action}`.toUpperCase();
+        let mappedData = { ...details };
+
+        // RTO Detection Logic
+        if (entity === 'shipment' || entity === 'delivery') {
+            const status = (details.status || '').toLowerCase();
+            const reason = (details.reason || '').toLowerCase();
+
+            if (status === 'undelivered' || status === 'returned') {
+                eventType = 'RTO_INITIATED';
+                mappedData.rtoStatus = 'RTO-Initiated';
+
+                if (reason.includes('refuse') || reason.includes('cancelled')) {
+                    mappedData.rtoReason = 'Customer Refused';
+                } else if (reason.includes('address') || reason.includes('location')) {
+                    mappedData.rtoReason = 'Incorrect Address';
+                } else {
+                    mappedData.rtoReason = 'Carrier Undelivered';
+                }
+            }
+        }
+
         // Logic to map Zoho internal fields to OTS state
         const mappedEvent = {
-            type: `${entity}_${action}`.toUpperCase(),
-            data: details,
+            type: eventType,
+            data: mappedData,
             timestamp: new Date().toISOString()
         };
 

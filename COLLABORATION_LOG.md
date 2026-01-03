@@ -11,7 +11,10 @@
 
 ## 🔴 CURRENTLY IN PROGRESS (LOCKED TASKS)
 
-| P16.4: Thermal Printer Integration | Antigravity | 2026-01-04 | session-current | Implementing `ZebraBrowserPrint` logic |
+| Task | Assignee | Started | Branch/Session | Notes |
+|------|----------|---------|----------------|-------|
+| P16.4: Thermal Printer Integration | Antigravity (Agent-1) | 2026-01-04 | session-current | Implementing `ZebraBrowserPrint` logic |
+| P15.9: Unit Test Coverage | Antigravity (Agent-2) | 2026-01-04 03:55 | session-current | Auditing coverage, targeting 80%+ |
 
 ---
 
@@ -44,7 +47,7 @@
 - [ ] **P16.3: Marketplace API Sync** - Real-time Amazon/Flipkart integration
 
 ### Medium Priority
-- [ ] **P15.9: Unit Test Coverage** - Increase coverage to 80%+
+- [x] **P15.9: Unit Test Coverage** - Increase coverage to 80%+ (CLAIMED by Agent-2)
 - [ ] **Mobile UX Polish** - Touch gesture improvements
 - [ ] **Accessibility Audit** - WCAG 2.1 compliance
 
@@ -92,5 +95,5 @@
 
 ---
 
-*Last Updated: 2026-01-04 03:00 IST*
-*Updated By: Antigravity AI*
+*Last Updated: 2026-01-04 03:55 IST*
+*Updated By: Antigravity AI (Agent-2)*

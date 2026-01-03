@@ -34,6 +34,7 @@ import WarehouseManager from './components/Warehouse/WarehouseManager'
 import MobileBottomNav from './components/Navigation/MobileBottomNav'
 import CommercialHub from './components/Commercial/CommercialHub'
 import MarketingCenter from './components/Marketing/MarketingCenter'
+import WhatsAppTemplateManager from './components/Marketing/WhatsAppTemplateManager'
 import CustomerAnalytics from './components/Customers/CustomerAnalytics'
 import GlobalLedger from './components/Commercial/GlobalLedger'
 import ProductionTracker from './components/SupplyChain/ProductionTracker'
@@ -53,7 +54,6 @@ import keyboardShortcuts from './services/keyboardShortcutsEnhanced'
 import { initWhatsAppService } from './services/whatsappService'
 import { Guard, ROLES, PERMISSIONS } from './services/rbacMiddleware'
 import DealerPortal from './components/Dealers/DealerPortal'
-// import { PERMISSIONS } from './utils/permissionUtils' // Deprecated/Duplicate
 
 function App() {
   const { isAuthenticated, isLoading, user, hasPermission } = useAuth()
@@ -261,6 +261,7 @@ function App() {
                       <li className={activeTab === 'customers' ? 'active' : ''} onClick={() => { setActiveTab('customers'); setIsMobileMenuOpen(false); }}>👥 Customers</li>
                       <li className={activeTab === 'custintel' ? 'active' : ''} onClick={() => { setActiveTab('custintel'); setIsMobileMenuOpen(false); }}>💎 Customer Intel</li>
                       <li className={activeTab === 'marketing' ? 'active' : ''} onClick={() => { setActiveTab('marketing'); setIsMobileMenuOpen(false); }}>🎯 Marketing</li>
+                      <li className={activeTab === 'whatsapp-templates' ? 'active' : ''} onClick={() => { setActiveTab('whatsapp-templates'); setIsMobileMenuOpen(false); }}>💬 WhatsApp</li>
                       <li className={activeTab === 'dealers' ? 'active' : ''} onClick={() => { setActiveTab('dealers'); setIsMobileMenuOpen(false); }}>🤝 Dealers</li>
                     </ul>
                   </div>
@@ -375,7 +376,9 @@ function App() {
             </header>
 
             <section className="view-container">
-              {activeTab === 'dashboard' && <AnalyticsDashboard />}
+              <Guard user={user} permission={PERMISSIONS.VIEW_ANALYTICS} fallback={<div className="glass p-20 text-center">Please contact admin for access.</div>}>
+                {activeTab === 'dashboard' && <AnalyticsDashboard />}
+              </Guard>
 
               <Guard user={user} permission={PERMISSIONS.VIEW_REPORTS} fallback={<div className="glass p-20 text-center">🚫 Restricted View</div>}>
                 {activeTab === 'metrics' && <PerformanceMetrics />}
@@ -425,6 +428,7 @@ function App() {
                 {activeTab === 'customers' && <CustomerLookup />}
                 {activeTab === 'custintel' && <CustomerAnalytics />}
                 {activeTab === 'marketing' && <MarketingCenter />}
+                {activeTab === 'whatsapp-templates' && <WhatsAppTemplateManager />}
                 {activeTab === 'reports' && <ExportTools />}
               </Guard>
 
@@ -437,7 +441,10 @@ function App() {
                 {activeTab === 'activity' && <ActivityLog />}
               </Guard>
 
-              {activeTab === 'ml-forecast' && <MLAnalyticsDashboard />}
+              <Guard user={user} permission={PERMISSIONS.VIEW_ANALYTICS}>
+                {activeTab === 'ml-forecast' && <MLAnalyticsDashboard />}
+              </Guard>
+
               {activeTab === 'performance' && <PerformanceMetrics />}
               {activeTab === 'roadmap' && <RoadmapPage />}
               {activeTab === 'help' && <HelpCenter />}
