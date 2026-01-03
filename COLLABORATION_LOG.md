@@ -11,10 +11,7 @@
 
 ## 🔴 CURRENTLY IN PROGRESS (LOCKED TASKS)
 
-| Task | Assignee | Started | Branch/Session | Notes |
-|------|----------|---------|----------------|-------|
-| _None currently_ | - | - | - | - |
-| Phase 28: RTO & Reverse Logistics (Refinement) | Antigravity | 2026-01-04 | session-current | Implementing `RTOManager`, `reverseLogisticsService` |
+| P16.4: Thermal Printer Integration | Antigravity | 2026-01-04 | session-current | Implementing `ZebraBrowserPrint` logic |
 
 ---
 
@@ -22,7 +19,10 @@
 
 | Task | Completed By | Date | Commit/PR |
 |------|--------------|------|-----------|
+| P16.2: Live Carrier API Integration | Antigravity | 2026-01-04 | Session-Current |
 | P16.1: WhatsApp API Integration | Antigravity | 2026-01-04 | Session-124 |
+| P16.2: Carrier API Integration | Antigravity | 2026-01-04 | Session-Current |
+| P16.3: Marketplace Sync | Antigravity | 2026-01-04 | Session-Current |
 | Phase 16: Vision AI | Antigravity AI | 2026-01-04 | session-c18f8671 |
 | Phase 28: RTO & Reverse Logistics | Antigravity AI | 2026-01-04 | `main` |
 | 28.1 RTO & Reverse Logistics | Antigravity AI | 2026-01-04 | `main` |
@@ -49,7 +49,7 @@
 - [ ] **Accessibility Audit** - WCAG 2.1 compliance
 
 ### Low Priority
-- [ ] **P16.4: Thermal Printer Integration** - Raw print data generation
+- [x] **P16.4: Thermal Printer Integration** - Raw print data generation (Claimed)
 - [ ] **Dark/Light Theme Toggle** - User preference theming
 - [ ] **Notification Sound Options** - Custom alert tones
 
