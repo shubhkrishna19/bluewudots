@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useData } from '../../context/DataContext';
-import dealerService from '../../services/dealerService';
+import dealerService, { DEALER_TIERS } from '../../services/dealerService';
 import wholesaleService from '../../services/wholesaleService';
 import DealerOrderEntry from './DealerOrderEntry';
 import { LayoutDashboard, ShoppingBag, CreditCard, History } from 'lucide-react';
@@ -27,14 +27,12 @@ const DealerPortal = () => {
 
         const tier = dealerService.determineTier(total);
         const usedCredit = dealerCredits[user.id] || 0;
-        const tierConfig = dealerService.calculateWholesalePrice(100, tier); // Just to get config if needed? No, let's just get limits.
-
-        // Let's get credit limit from dealerService DEALER_TIERS
-        // Note: dealerService exports a class instance, DEALER_TIERS is internal but used by checkCreditLimit.
-        // We might want to expose DEALER_TIERS or similar.
 
         return { total, tier, usedCredit };
     }, [dealerOrders, dealerCredits, user.id]);
+
+    const currentTierConfig = DEALER_TIERS[stats.tier] || DEALER_TIERS.SILVER;
+    const creditLimit = currentTierConfig.creditLimit;
 
     if (view === 'order') {
         return (
@@ -43,7 +41,7 @@ const DealerPortal = () => {
                     ...user,
                     tier: stats.tier,
                     usedCredit: stats.usedCredit,
-                    creditLimit: stats.tier === 'PLATINUM' ? 1000000 : stats.tier === 'GOLD' ? 200000 : 50000
+                    creditLimit: creditLimit
                 }}
                 onBack={() => setView('dashboard')}
                 onComplete={() => setView('dashboard')}
@@ -79,7 +77,7 @@ const DealerPortal = () => {
                     <div>
                         <h4 className="font-bold">Available Credit</h4>
                         <p className="text-xs text-slate-500">
-                            ₹{((stats.tier === 'PLATINUM' ? 1000000 : stats.tier === 'GOLD' ? 200000 : 50000) - stats.usedCredit).toLocaleString()}
+                            ₹{(creditLimit - stats.usedCredit).toLocaleString()}
                         </p>
                     </div>
                 </div>
@@ -155,7 +153,11 @@ const DealerPortal = () => {
                                 />
                             </div>
                             <p className="text-[10px] text-slate-500 italic">
-                                {stats.tier === 'SILVER' ? 'Spend ₹1L to reach GOLD' : stats.tier === 'GOLD' ? 'Spend ₹5L to reach PLATINUM' : 'You are at the top tier!'}
+                                {stats.tier === 'SILVER'
+                                    ? `Spend ₹${(DEALER_TIERS.GOLD.minMonthlyVolume / 100000).toFixed(0)}L to reach GOLD`
+                                    : stats.tier === 'GOLD'
+                                        ? `Spend ₹${(DEALER_TIERS.PLATINUM.minMonthlyVolume / 100000).toFixed(0)}L to reach PLATINUM`
+                                        : 'You are at the top tier!'}
                             </p>
                         </div>
                     </div>
