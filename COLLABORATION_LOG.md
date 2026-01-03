@@ -9,7 +9,7 @@
 
 | Task | Assignee | Started | Branch/Session | Notes |
 |------|----------|---------|----------------|-------|
-| _None currently_ | - | - | - | - |
+| 15.8 Lighthouse Performance Audit | Antigravity-Alpha | 2026-01-04 | `main` | Auditing for LCP/FID improvements |
 
 ---
 

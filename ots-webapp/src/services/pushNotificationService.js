@@ -1,8 +1,11 @@
 /**
-<<<<<<< HEAD
  * Web Push Notification Service
  * 
- * Handles VAPID registration and browser subscription for real-time alerts.
+ * Handles VAPID registration, service worker subscription, and real-time alerts.
+ * Features:
+ * - Browser subscription management
+ * - Local & remote push notifications
+ * - Offline notification queueing
  */
 
 const VAPID_PUBLIC_KEY = import.meta.env.VITE_VAPID_PUBLIC_KEY || '';
@@ -11,393 +14,89 @@ const VAPID_PUBLIC_KEY = import.meta.env.VITE_VAPID_PUBLIC_KEY || '';
  * Convert base64 string to Uint8Array for VAPID key
  */
 const urlBase64ToUint8Array = (base64String) => {
-    const padding = '='.repeat((4 - base64String.length % 4) % 4);
-    const base64 = (base64String + padding)
-        .replace(/-/g, '+')
-        .replace(/_/g, '/');
+  if (!base64String) return new Uint8Array(0);
+  const padding = '='.repeat((4 - base64String.length % 4) % 4);
+  const base64 = (base64String + padding)
+    .replace(/-/g, '+')
+    .replace(/_/g, '/');
 
-=======
- * Push Notification Service
- * Manages web push notifications for real-time alerts
- * 
- * Features:
- * - Service Worker integration
- * - Subscription management
- * - Notification persistence
- * - Badge & icon management
- * - Notification click handling
- */
+  const rawData = window.atob(base64);
+  const outputArray = new Uint8Array(rawData.length);
 
-class PushNotificationService {
-  constructor(vapidPublicKey) {
-    this.vapidPublicKey = vapidPublicKey;
-    this.swRegistration = null;
-    this.subscriptions = new Map();
-    this.notificationSettings = {
-      badge: '/badge-icon.png',
-      icon: '/notification-icon.png',
-      vibrate: [100, 50, 100],
-      tag: 'bluewud-notification'
-    };
+  for (let i = 0; i < rawData.length; ++i) {
+    outputArray[i] = rawData.charCodeAt(i);
   }
-
-  /**
-   * Initializes the Push Notification Service
-   * @returns {Promise<void>}
-   */
-  async initialize() {
-    try {
-      // Check browser support
-      if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
-        console.warn('Push Notifications not supported in this browser');
-        return;
-      }
-
-      // Register Service Worker
-      this.swRegistration = await navigator.serviceWorker.register(
-        '/sw.js',
-        { scope: '/' }
-      );
-      console.log('Service Worker registered for Push Notifications');
-
-      // Check for existing subscription
-      const existingSubscription = await this.swRegistration.pushManager.getSubscription();
-      if (existingSubscription) {
-        this.subscriptions.set('default', existingSubscription);
-      }
-
-      // Listen for push messages
-      navigator.serviceWorker.addEventListener('message', (event) => {
-        if (event.data.type === 'PUSH_NOTIFICATION') {
-          this.handleNotificationClick(event.data);
-        }
-      });
-    } catch (error) {
-      console.error('Failed to initialize Push Notifications:', error);
-    }
-  }
-
-  /**
-   * Requests and registers push subscription
-   * @param {string} userId - User ID
-   * @returns {Promise<object>} Subscription object
-   */
-  async registerPushSubscription(userId) {
-    try {
-      // Check permission
-      if (Notification.permission === 'denied') {
-        return {
-          success: false,
-          error: 'Notification permission denied',
-          userId
-        };
-      }
-
-      // Request permission if needed
-      if (Notification.permission !== 'granted') {
-        const permission = await Notification.requestPermission();
-        if (permission !== 'granted') {
-          return {
-            success: false,
-            error: 'User denied notification permission',
-            userId
-          };
-        }
-      }
-
-      // Subscribe to push
-      const subscription = await this.swRegistration.pushManager.subscribe({
-        userVisibleOnly: true,
-        applicationServerKey: this.urlBase64ToUint8Array(this.vapidPublicKey)
-      });
-
-      // Store subscription
-      this.subscriptions.set(userId, subscription);
-
-      // Persist to backend
-      await this.persistSubscription(userId, subscription);
-
-      return {
-        success: true,
-        subscription: subscription.toJSON(),
-        userId,
-        timestamp: new Date().toISOString()
-      };
-    } catch (error) {
-      console.error('Failed to register push subscription:', error);
-      return {
-        success: false,
-        error: error.message,
-        userId
-      };
-    }
-  }
-
-  /**
-   * Unsubscribes from push notifications
-   * @param {string} userId - User ID
-   * @returns {Promise<boolean>} Success status
-   */
-  async unregisterPushSubscription(userId) {
-    try {
-      const subscription = this.subscriptions.get(userId);
-      if (subscription) {
-        await subscription.unsubscribe();
-        this.subscriptions.delete(userId);
-        await this.removeSubscription(userId);
-        return true;
-      }
-      return false;
-    } catch (error) {
-      console.error('Failed to unregister push subscription:', error);
-      return false;
-    }
-  }
-
-  /**
-   * Sends notification to user
-   * @param {string} title - Notification title
-   * @param {object} options - Notification options
-   * @returns {Promise<void>}
-   */
-  async sendNotification(title, options = {}) {
-    try {
-      if (!this.swRegistration) {
-        throw new Error('Service Worker not registered');
-      }
-
-      const notificationOptions = {
-        ...this.notificationSettings,
-        ...options,
-        tag: options.tag || this.notificationSettings.tag,
-        requireInteraction: options.requireInteraction || false
-      };
-
-      await this.swRegistration.showNotification(title, notificationOptions);
-    } catch (error) {
-      console.error('Failed to send notification:', error);
-    }
-  }
-
-  /**
-   * Sends order status update notification
-   * @param {object} order - Order object
-   * @returns {Promise<void>}
-   */
-  async sendOrderStatusNotification(order) {
-    const title = `Order ${order.id} - ${order.status}`;
-    const options = {
-      body: order.message || `Your order status: ${order.status}`,
-      icon: '/order-icon.png',
-      badge: '/badge-icon.png',
-      tag: `order-${order.id}`,
-      data: {
-        orderId: order.id,
-        status: order.status,
-        timestamp: Date.now(),
-        url: `/orders/${order.id}`
-      },
-      actions: [
-        {
-          action: 'open',
-          title: 'View Order',
-          icon: '/icons/view.png'
-        },
-        {
-          action: 'close',
-          title: 'Dismiss',
-          icon: '/icons/close.png'
-        }
-      ]
-    };
-
-    await this.sendNotification(title, options);
-  }
-
-  /**
-   * Handles notification click
-   * @param {object} data - Notification data
-   */
-  handleNotificationClick(data) {
-    if (data.action === 'open' && data.url) {
-      window.location.href = data.url;
-    }
-  }
-
-  /**
-   * Gets current subscription status
-   * @param {string} userId - User ID
-   * @returns {object} Subscription status
-   */
-  getSubscriptionStatus(userId) {
-    const subscription = this.subscriptions.get(userId);
-    return {
-      userId,
-      isSubscribed: !!subscription,
-      subscription: subscription ? subscription.toJSON() : null,
-      permissionStatus: Notification.permission
-    };
-  }
-
-  /**
-   * Persists subscription to backend
-   * @param {string} userId - User ID
-   * @param {object} subscription - Subscription object
-   * @returns {Promise<boolean>}
-   */
-  async persistSubscription(userId, subscription) {
-    try {
-      const response = await fetch('/api/push-subscriptions', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          userId,
-          subscription: subscription.toJSON()
-        })
-      });
-
-      return response.ok;
-    } catch (error) {
-      console.error('Failed to persist subscription:', error);
-      return false;
-    }
-  }
-
-  /**
-   * Removes subscription from backend
-   * @param {string} userId - User ID
-   * @returns {Promise<boolean>}
-   */
-  async removeSubscription(userId) {
-    try {
-      const response = await fetch(`/api/push-subscriptions/${userId}`, {
-        method: 'DELETE'
-      });
-      return response.ok;
-    } catch (error) {
-      console.error('Failed to remove subscription:', error);
-      return false;
-    }
-  }
-
-  /**
-   * Converts VAPID public key from base64 to Uint8Array
-   * @param {string} base64String - Base64 encoded key
-   * @returns {Uint8Array}
-   */
-  urlBase64ToUint8Array(base64String) {
-    const padding = '='.repeat((4 - base64String.length % 4) % 4);
-    const base64 = (base64String + padding)
-      .replace(/\-/g, '+')
-      .replace(/_/g, '/');
-
->>>>>>> 4be53487f72a2bfacf3cde5d60b2e7a7e0ec3174
-    const rawData = window.atob(base64);
-    const outputArray = new Uint8Array(rawData.length);
-
-    for (let i = 0; i < rawData.length; ++i) {
-      outputArray[i] = rawData.charCodeAt(i);
-    }
-
-    return outputArray;
-<<<<<<< HEAD
+  return outputArray;
 };
 
 /**
  * Register the browser for push notifications
- * @returns {object|null} - Subscription object
  */
 export const subscribeUser = async () => {
-    if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
-        console.warn('Push messaging is not supported in this browser');
-        return null;
+  if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+    console.warn('Push messaging is not supported in this browser');
+    return null;
+  }
+
+  try {
+    const registration = await navigator.serviceWorker.ready;
+    let subscription = await registration.pushManager.getSubscription();
+
+    if (!subscription && VAPID_PUBLIC_KEY) {
+      subscription = await registration.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
+      });
+      console.log('[Push] New subscription:', subscription);
     }
 
-    try {
-        const registration = await navigator.serviceWorker.ready;
-
-        // Check if subscription already exists
-        let subscription = await registration.pushManager.getSubscription();
-
-        if (!subscription && VAPID_PUBLIC_KEY) {
-            subscription = await registration.pushManager.subscribe({
-                userVisibleOnly: true,
-                applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
-            });
-            console.log('User subscribed for Push:', subscription);
-        }
-
-        return subscription;
-    } catch (error) {
-        console.error('Failed to subscribe user for push:', error);
-        return null;
-    }
+    return subscription;
+  } catch (error) {
+    console.error('[Push] Subscription failed:', error);
+    return null;
+  }
 };
 
 /**
- * Send a local push notification (Development/Testing)
- * @param {string} title 
- * @param {object} options 
+ * Send a local push notification (Immediate)
  */
 export const sendLocalNotification = async (title, options = {}) => {
-    if (!('serviceWorker' in navigator)) return;
+  if (!('serviceWorker' in navigator)) return;
 
-    try {
-        const registration = await navigator.serviceWorker.ready;
-        registration.showNotification(title, {
-            body: options.body || 'New update from Bluewud OTS',
-            icon: '/icons/icon-192x192.png',
-            badge: '/icons/badge-72x72.png',
-            vibrate: [100, 50, 100],
-            data: options.data || { dateOfArrival: Date.now() },
-            ...options
-        });
-    } catch (error) {
-        console.error('Local notification failed:', error);
-    }
+  try {
+    const registration = await navigator.serviceWorker.ready;
+    registration.showNotification(title, {
+      body: options.body || 'New update from Bluewud OTS',
+      icon: '/icons/icon-192x192.png',
+      badge: '/icons/badge-72x72.png',
+      vibrate: [100, 50, 100],
+      data: options.data || { dateOfArrival: Date.now() },
+      ...options
+    });
+  } catch (error) {
+    console.error('[Push] Local notification failed:', error);
+  }
+};
+
+/**
+ * Check if notifications are enabled
+ */
+export const isPushEnabled = async () => {
+  if (!('Notification' in window)) return false;
+  return Notification.permission === 'granted';
+};
+
+/**
+ * Request notification permission
+ */
+export const requestPermission = async () => {
+  if (!('Notification' in window)) return 'unsupported';
+  return await Notification.requestPermission();
 };
 
 export default {
-    subscribeUser,
-    sendLocalNotification
+  subscribeUser,
+  sendLocalNotification,
+  isPushEnabled,
+  requestPermission
 };
-=======
-  }
-}
-
-// Export as singleton
-let pushNotificationInstance = null;
-
-export const initPushNotificationService = (vapidPublicKey) => {
-  pushNotificationInstance = new PushNotificationService(vapidPublicKey);
-  return pushNotificationInstance;
-};
-
-export const getPushNotificationService = () => {
-  if (!pushNotificationInstance) {
-    throw new Error('Push Notification Service not initialized. Call initPushNotificationService first.');
-  }
-  return pushNotificationInstance;
-};
-
-// Usage Examples:
-// ============
-// 1. Initialize (in main.jsx or App.jsx)
-// import { initPushNotificationService } from './services/07_PushNotificationService';
-// const pushService = initPushNotificationService(import.meta.env.VITE_VAPID_PUBLIC_KEY);
-// await pushService.initialize();
-
-// 2. Register subscription
-// const result = await pushService.registerPushSubscription('user-123');
-
-// 3. Send order notification
-// await pushService.sendOrderStatusNotification({
-//   id: 'ORD-12345',
-//   status: 'Shipped',
-//   message: 'Your order has been shipped!'
-// });
-
-export default PushNotificationService;
->>>>>>> 4be53487f72a2bfacf3cde5d60b2e7a7e0ec3174

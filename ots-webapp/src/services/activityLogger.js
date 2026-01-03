@@ -108,15 +108,14 @@ const getCurrentUser = () => {
  * @param {object} activity 
  */
 const syncToBackend = async (activity) => {
-<<<<<<< HEAD
     // 1. Persist to high-speed local cache (IndexedDB)
-    cacheData('activityLog', activity);
+    try {
+        await cacheData('activityLog', activity);
+    } catch (e) {
+        console.warn('Local activity logging failed:', e);
+    }
 
-    // 2. Future: Sync with Zoho Catalyst
-    // try {
-    //     await fetch('/server/activity', { ... });
-    // } catch (e) { ... }
-=======
+    // 2. Sync with Zoho Catalyst / Server
     try {
         await fetch('/server/activity', {
             method: 'POST',
@@ -124,9 +123,8 @@ const syncToBackend = async (activity) => {
             body: JSON.stringify(activity)
         });
     } catch (error) {
-        console.warn('Activity sync failed:', error);
+        console.warn('Remote activity sync failed:', error);
     }
->>>>>>> 4be53487f72a2bfacf3cde5d60b2e7a7e0ec3174
 };
 
 /**
@@ -254,11 +252,26 @@ export const logLabelGenerate = (order, awb) => {
     });
 };
 
-export const logImportComplete = (source, count, errors = 0) => {
+export const logImportComplete = (count) => {
     return logActivity({
         type: ACTIVITY_TYPES.IMPORT_COMPLETE,
-        action: `Imported ${count} orders from ${source}`,
-        details: { source, count, errors }
+        action: `Imported ${count} orders successfully`,
+        details: { count }
+    });
+};
+
+/**
+ * Log a system error (Phase 15.2)
+ */
+export const logSystemError = (error, component = 'unknown') => {
+    return logActivity({
+        type: ACTIVITY_TYPES.SYSTEM_ERROR,
+        action: `System Error in ${component}: ${error.message}`,
+        details: {
+            stack: error.stack,
+            component
+        },
+        priority: 'critical'
     });
 };
 
@@ -301,6 +314,7 @@ export default {
     logCarrierAssign,
     logLabelGenerate,
     logImportComplete,
+    logSystemError,
     logExport,
     logUserLogin,
     logUserLogout

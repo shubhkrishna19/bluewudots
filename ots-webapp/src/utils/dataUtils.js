@@ -413,6 +413,24 @@ export const deduplicateCustomers = (customers = []) => {
     return unique;
 };
 
+/**
+ * Sanitize user input to prevent XSS
+ * @param {string} input 
+ * @returns {string} Sanitized string
+ */
+export const sanitizeInput = (input) => {
+    if (typeof input !== 'string') return input;
+    return input.replace(/[&<>"']/g, function (m) {
+        return {
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#039;'
+        }[m];
+    });
+};
+
 export default {
     calculateGST,
     getGSTType,
@@ -430,6 +448,7 @@ export default {
     formatDateIN,
     formatDateTimeIN,
     getRelativeTime,
-    STATE_CODES
+    STATE_CODES,
+    sanitizeInput
 };
 

@@ -8,16 +8,13 @@ import { calculateSMAForecast, predictSKUDemand } from '../services/forecastServ
 import { getOrderTrend, projectRevenue, calculateSKUProfitability } from '../services/analyticsService';
 import { fetchSKUMaster, pushOrderToZoho } from '../services/zohoBridgeService';
 import marketplaceService from '../services/marketplaceService';
-<<<<<<< HEAD
 import searchService from '../services/searchService';
 import marginProtectionService from '../services/marginProtectionService';
 import cacheService from '../services/offlineCacheService';
-=======
-import { getWhatsAppService } from '../services/whatsappServiceEnhanced';
+import { getWhatsAppService } from '../services/whatsappService'; // Using existing whatsappService
 import webhookService from '../services/zohoWebhookService';
 import { syncDeltaOrders } from '../services/zohoBridgeService';
-import { initOfflineCacheService, getOfflineCacheService } from '../services/offlineCacheService';
->>>>>>> 4be53487f72a2bfacf3cde5d60b2e7a7e0ec3174
+import { initOfflineCacheService } from '../services/offlineCacheService';
 
 import { SKU_MASTER, SKU_ALIASES } from '../data/skuMasterData';
 
@@ -405,27 +402,16 @@ export const DataProvider = ({ children }) => {
                     }
 
                     // Trigger notifications for key statuses
-<<<<<<< HEAD
-                    if (newStatus === ORDER_STATUSES.IN_TRANSIT || newStatus === ORDER_STATUSES.PICKED_UP) {
-                        notifyOrderShipped(transitionResult.order);
-                    } else if (newStatus === ORDER_STATUSES.DELIVERED) {
-                        notifyOrderDelivered(transitionResult.order);
-                    } else if (newStatus.startsWith('RTO')) {
-                        notifyOrderRTO(transitionResult.order, metadata.reason || 'Shipment returned');
-=======
                     try {
-                        const whatsapp = getWhatsAppService();
                         if (newStatus === ORDER_STATUSES.IN_TRANSIT || newStatus === ORDER_STATUSES.PICKED_UP) {
                             notifyOrderShipped(transitionResult.order);
-                            whatsapp.sendWhatsAppMessage(orderId, 'shipping_update', order.phone, { orderId, status: newStatus });
                         } else if (newStatus === ORDER_STATUSES.DELIVERED) {
-                            whatsapp.sendWhatsAppMessage(orderId, 'delivery_confirmation', order.phone, { orderId });
+                            notifyOrderDelivered(transitionResult.order);
                         } else if (newStatus.startsWith('RTO')) {
-                            whatsapp.sendWhatsAppMessage(orderId, 'rto_alert', order.phone, { orderId });
+                            notifyOrderRTO(transitionResult.order, metadata.reason || 'Shipment returned');
                         }
                     } catch (e) {
-                        console.warn('WhatsApp service not available for transitions:', e.message);
->>>>>>> 4be53487f72a2bfacf3cde5d60b2e7a7e0ec3174
+                        console.warn('Notification service failed during transition:', e.message);
                     }
 
                     return transitionResult.order;
@@ -836,10 +822,10 @@ export const DataProvider = ({ children }) => {
         // Legacy compatibility
         setLogistics,
         setSkuMaster,
-        getRecommendations: (state, city, weight) => getAllRates({ state, city, weight })
+        getRecommendations: (state, city, weight) => getAllRates({ state, city, weight }),
 
-    // Push Notifications & Offline Support
-    pushEnabled,
+        // Push Notifications & Offline Support
+        pushEnabled,
         enablePushNotifications,
         queueOrderOffline,
         syncOfflineOrders
