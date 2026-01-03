@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'react'
 
 /**
  * ContextProviders Layout Component
@@ -28,10 +28,10 @@ const ContextProviders = ({ children }) => {
       */}
       {children}
     </>
-  );
-};
+  )
+}
 
-export default ContextProviders;
+export default ContextProviders
 
 /*
 Example usage in App.jsx:
@@ -42,11 +42,9 @@ import ErrorBoundary from './components/ErrorBoundary';
 function App() {
   return (
     <ErrorBoundary>
-      <ContextProviders>
-        {/* Your app routes and pages here */}
-      </ContextProviders >
-    </ErrorBoundary >
-  );
+      <ContextProviders>{children}</ContextProviders>
+    </ErrorBoundary>
+  )
 }
 
 export default App;

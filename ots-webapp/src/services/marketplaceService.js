@@ -45,6 +45,16 @@ class MarketplaceService {
   }
 
   /**
+   * Fetch return requests from Marketplace
+   * @param {string} platform 'amazon' | 'flipkart'
+   */
+  async fetchReturns(platform = 'amazon') {
+    // Simulation: Amazon and Flipkart have different return handling
+    await new Promise((r) => setTimeout(r, 1000))
+    return this.getMockReturns(platform)
+  }
+
+  /**
    * Sync Inventory Update to Marketplace
    * @param {string} sku
    * @param {number} quantity
@@ -98,6 +108,27 @@ class MarketplaceService {
       })
     }
     return orders
+  }
+
+  getMockReturns(platform) {
+    const prefix = platform === 'amazon' ? 'RET-AMZ' : 'RET-FK'
+    const count = platform === 'amazon' ? 2 : 1
+    const returns = []
+
+    for (let i = 0; i < count; i++) {
+      returns.push({
+        id: `${prefix}-${Math.floor(Math.random() * 100000)}`,
+        orderId: `${platform.toUpperCase()}-${Math.floor(Math.random() * 100000)}`,
+        source: platform === 'amazon' ? 'Amazon' : 'Flipkart',
+        customerName: `Customer ${i + 1}`,
+        reason: i === 0 ? 'Wrong Item Sent' : 'Size/Fit Issue',
+        riskScore: i === 0 ? 65 : 15,
+        refundAmount: 1200 + i * 500,
+        status: 'Pending',
+        createdAt: new Date().toISOString(),
+      })
+    }
+    return returns
   }
 
   // --- Real API Stubs (Future Implementation) ---

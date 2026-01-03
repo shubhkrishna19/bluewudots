@@ -30,13 +30,14 @@ const MobileBottomNav = ({ activeTab, onTabChange, notificationCount = 0 }) => {
             role="button"
             tabIndex={0}
             aria-label={item.label}
+            aria-pressed={activeTab === item.id}
           >
-            <div className="nav-icon-wrapper">
+            <div className={`nav-icon-wrapper ${activeTab === item.id ? 'bounce' : ''}`}>
               <span className="nav-icon">
                 {activeTab === item.id ? item.activeIcon : item.icon}
               </span>
               {item.id === 'orderlist' && notificationCount > 0 && (
-                <span className="notification-badge">
+                <span className="notification-badge pulse">
                   {notificationCount > 9 ? '9+' : notificationCount}
                 </span>
               )}

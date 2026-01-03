@@ -26,12 +26,13 @@ export class ReverseLogisticsService {
    * @param {Array} items - List of items to return
    * @returns {Object} New return request object
    */
-  createReturnRequest(orderId, reason, items = []) {
+  createReturnRequest(orderId, reason, items = [], source = 'Local') {
     if (!orderId) throw new Error('Order ID is required')
 
     const returnRequest = {
       id: `RET-${Date.now().toString().slice(-6)}`,
       orderId,
+      source,
       reason,
       items,
       status: 'REQUESTED', // REQUESTED, APPROVED, PICKUP_SCHEDULED, PICKED_UP, RECEIVED, REFUNDED, REJECTED

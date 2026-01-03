@@ -7,7 +7,16 @@ import { getWhatsAppService } from '../../services/whatsappService'
 import shipmentService from '../../services/shipmentService'
 import rtoService from '../../services/rtoService'
 import reverseLogisticsService from '../../services/reverseLogisticsService'
-import { AlertTriangle, RotateCcw, ShieldCheck, CheckCircle, MessageSquare } from 'lucide-react'
+import {
+  AlertTriangle,
+  RotateCcw,
+  ShieldCheck,
+  CheckCircle,
+  MessageSquare,
+  LayoutList,
+  RefreshCcw,
+} from 'lucide-react'
+import ReturnsDashboard from '../Commercial/ReturnsDashboard'
 
 const OrderList = () => {
   const { orders, updateOrderStatus } = useData()
@@ -17,6 +26,7 @@ const OrderList = () => {
   const [selectedOrder, setSelectedOrder] = useState(null)
   const [selectedOrders, setSelectedOrders] = useState([])
   const [isOptimizing, setIsOptimizing] = useState(false)
+  const [activeTab, setActiveTab] = useState('orders') // orders | returns
 
   const filteredOrders = orders.filter((order) => {
     const matchesSearch =
@@ -194,6 +204,27 @@ const OrderList = () => {
           <h2>Order Management</h2>
           <p className="text-muted">Track, Search & Manage All Orders</p>
         </div>
+
+        {/* Tab Switcher */}
+        <div className="glass p-1 rounded-lg flex gap-1 mx-4">
+          <button
+            onClick={() => setActiveTab('orders')}
+            className={`flex items-center gap-2 px-4 py-1.5 rounded-md text-sm font-bold transition-all ${activeTab === 'orders' ? 'bg-primary text-white shadow-lg' : 'text-slate-400 hover:text-white'}`}
+            aria-label="View Orders"
+            aria-pressed={activeTab === 'orders'}
+          >
+            <LayoutList className="w-4 h-4" /> Orders
+          </button>
+          <button
+            onClick={() => setActiveTab('returns')}
+            className={`flex items-center gap-2 px-4 py-1.5 rounded-md text-sm font-bold transition-all ${activeTab === 'returns' ? 'bg-purple-600 text-white shadow-lg' : 'text-slate-400 hover:text-white'}`}
+            aria-label="View Returns"
+            aria-pressed={activeTab === 'returns'}
+          >
+            <RefreshCcw className="w-4 h-4" /> Returns
+          </button>
+        </div>
+
         <div style={{ display: 'flex', gap: '10px' }}>
           <span className="badge" style={{ background: 'var(--primary)' }}>
             {orders.length} Total
@@ -201,266 +232,297 @@ const OrderList = () => {
           <span className="badge" style={{ background: 'var(--success)' }}>
             {orders.filter((o) => o.status === 'Delivered').length} Delivered
           </span>
-          <button
-            className="btn-secondary glass-hover"
-            style={{
-              padding: '6px 12px',
-              fontSize: '0.75rem',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '4px',
-            }}
-            onClick={handleBatchManifest}
-          >
-            📋 Batch Manifest
-          </button>
-          <button
-            className="btn-secondary glass-hover"
-            style={{
-              padding: '6px 12px',
-              fontSize: '0.75rem',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '4px',
-              background: 'var(--success)',
-              color: '#fff',
-              border: 'none',
-            }}
-            disabled={selectedOrders.length === 0}
-            onClick={handleWhatsAppNotify}
-          >
-            <MessageSquare className="w-3 h-3" /> Notify
-          </button>
-          <button
-            className="btn-primary glass-hover"
-            style={{
-              padding: '6px 12px',
-              fontSize: '0.75rem',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '4px',
-            }}
-            disabled={selectedOrders.length === 0 || isOptimizing}
-            onClick={handleSmartAssign}
-          >
-            {isOptimizing ? '🤖 Optimizing...' : `🧠 Smart Assign (${selectedOrders.length})`}
-          </button>
-        </div>
-      </div>
-
-      {/* Filters Bar */}
-      <div
-        className="filters-bar glass"
-        style={{
-          padding: '16px 20px',
-          marginTop: '24px',
-          display: 'flex',
-          gap: '16px',
-          alignItems: 'center',
-          flexWrap: 'wrap',
-        }}
-      >
-        <div style={{ flex: 2, minWidth: '250px' }}>
-          <input
-            type="text"
-            placeholder="🔍 Search by Order ID, Customer, or SKU..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            style={{
-              width: '100%',
-              padding: '12px 16px',
-              background: 'var(--bg-accent)',
-              border: '1px solid var(--glass-border)',
-              borderRadius: '8px',
-              color: '#fff',
-            }}
-          />
-        </div>
-        <select
-          value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value)}
-          style={{
-            padding: '12px 16px',
-            background: 'var(--bg-accent)',
-            border: '1px solid var(--glass-border)',
-            borderRadius: '8px',
-            color: '#fff',
-            minWidth: '150px',
-          }}
-        >
-          <option value="all">All Statuses</option>
-          <option value="HIGH_RISK">⚠️ High Risk</option>
-          {uniqueStatuses.map((s) => (
-            <option key={s} value={s}>
-              {s}
-            </option>
-          ))}
-        </select>
-        <select
-          value={sourceFilter}
-          onChange={(e) => setSourceFilter(e.target.value)}
-          style={{
-            padding: '12px 16px',
-            background: 'var(--bg-accent)',
-            border: '1px solid var(--glass-border)',
-            borderRadius: '8px',
-            color: '#fff',
-            minWidth: '150px',
-          }}
-        >
-          <option value="all">All Channels</option>
-          {uniqueSources.map((s) => (
-            <option key={s} value={s}>
-              {s}
-            </option>
-          ))}
-        </select>
-        <button
-          className="btn-secondary glass-hover"
-          style={{ padding: '12px 20px' }}
-          onClick={() => {
-            setSearchTerm('')
-            setStatusFilter('all')
-            setSourceFilter('all')
-          }}
-        >
-          Clear
-        </button>
-      </div>
-
-      {/* Orders Table */}
-      <div
-        className="orders-table glass"
-        style={{ marginTop: '24px', overflow: 'hidden', borderRadius: '12px' }}
-      >
-        <div
-          className="table-header"
-          style={{
-            display: 'grid',
-            gridTemplateColumns: '40px 1.5fr 2fr 1fr 1fr 1fr 0.8fr 1fr',
-            padding: '16px 20px',
-            background: 'var(--bg-accent)',
-            fontWeight: '700',
-            fontSize: '0.75rem',
-            color: 'var(--text-muted)',
-            textTransform: 'uppercase',
-          }}
-        >
-          <input
-            type="checkbox"
-            onChange={(e) =>
-              setSelectedOrders(e.target.checked ? filteredOrders.map((o) => o.id) : [])
-            }
-            checked={selectedOrders.length > 0 && selectedOrders.length === filteredOrders.length}
-          />
-          <span>Order ID</span>
-          <span>Customer</span>
-          <span>SKU</span>
-          <span>Source</span>
-          <span>Status</span>
-          <span>Risk</span>
-          <span>Actions</span>
-        </div>
-
-        <div className="table-body" style={{ maxHeight: '500px', overflowY: 'auto' }}>
-          {filteredOrders.length === 0 ? (
-            <div style={{ padding: '40px', textAlign: 'center' }}>
-              <p className="text-muted">No orders found matching your criteria</p>
-            </div>
-          ) : (
-            filteredOrders.map((order, idx) => (
-              <div
-                key={order.id}
-                className="table-row glass-hover"
+          {activeTab === 'orders' && (
+            <>
+              <button
+                className="btn-secondary glass-hover"
                 style={{
-                  display: 'grid',
-                  gridTemplateColumns: '40px 1.5fr 2fr 1fr 1fr 1fr 0.8fr 1fr',
-                  padding: '16px 20px',
+                  padding: '6px 12px',
+                  fontSize: '0.75rem',
+                  display: 'flex',
                   alignItems: 'center',
-                  borderBottom: '1px solid var(--glass-border)',
-                  cursor: 'pointer',
+                  gap: '4px',
                 }}
-                onClick={() => setSelectedOrder(order)}
+                onClick={handleBatchManifest}
+                aria-label="Generate Batch Manifest"
               >
-                <input
-                  type="checkbox"
-                  checked={selectedOrders.includes(order.id)}
-                  onClick={(e) => e.stopPropagation()}
-                  onChange={() => toggleOrderSelection(order.id)}
-                />
-                <span style={{ fontWeight: '700', color: 'var(--primary)' }}>{order.id}</span>
-                <span>{order.customer || 'N/A'}</span>
-                <span style={{ fontSize: '0.85rem' }}>{order.sku || 'N/A'}</span>
-                <span
-                  className="badge"
-                  style={{
-                    background: 'var(--glass-border)',
-                    fontSize: '0.65rem',
-                    justifySelf: 'start',
-                  }}
-                >
-                  {order.source || 'Manual'}
-                </span>
-                <span
-                  className="badge"
-                  style={{
-                    background: getStatusColor(order.status),
-                    fontSize: '0.65rem',
-                    justifySelf: 'start',
-                  }}
-                >
-                  {order.status}
-                </span>
-                <span className="risk-indicator" style={{ justifySelf: 'start' }}>
-                  {order.status === 'Pending' && order.paymentMethod?.toLowerCase() === 'cod' ? (
-                    (() => {
-                      const risk = rtoService.predictRisk(order)
-                      return (
-                        <span
-                          className={`badge ${risk.riskLevel.toLowerCase()}`}
-                          style={{
-                            background:
-                              risk.riskLevel === 'CRITICAL'
-                                ? 'rgba(239, 68, 68, 0.2)'
-                                : risk.riskLevel === 'HIGH'
-                                  ? 'rgba(245, 158, 11, 0.2)'
-                                  : 'rgba(16, 185, 129, 0.1)',
-                            color:
-                              risk.riskLevel === 'CRITICAL'
-                                ? '#ef4444'
-                                : risk.riskLevel === 'HIGH'
-                                  ? '#f59e0b'
-                                  : '#10b981',
-                            fontSize: '0.6rem',
-                            border: '1px solid currentColor',
-                          }}
-                          title={risk.reasons.join(', ')}
-                        >
-                          {risk.level}
-                        </span>
-                      )
-                    })()
-                  ) : (
-                    <span className="text-muted" style={{ fontSize: '0.6rem' }}>
-                      --
-                    </span>
-                  )}
-                </span>
-                <button
-                  className="btn-secondary glass-hover"
-                  style={{ padding: '6px 12px', fontSize: '0.75rem' }}
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    setSelectedOrder(order)
-                  }}
-                >
-                  View
-                </button>
-              </div>
-            ))
+                📋 Batch Manifest
+              </button>
+              <button
+                className="btn-secondary glass-hover"
+                style={{
+                  padding: '6px 12px',
+                  fontSize: '0.75rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '4px',
+                  background: 'var(--success)',
+                  color: '#fff',
+                  border: 'none',
+                }}
+                disabled={selectedOrders.length === 0}
+                onClick={handleWhatsAppNotify}
+                aria-label={`Notify ${selectedOrders.length} customers via WhatsApp`}
+              >
+                <MessageSquare className="w-3 h-3" /> Notify
+              </button>
+              <button
+                className="btn-primary glass-hover"
+                style={{
+                  padding: '6px 12px',
+                  fontSize: '0.75rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '4px',
+                }}
+                disabled={selectedOrders.length === 0 || isOptimizing}
+                onClick={handleSmartAssign}
+                aria-label="Process Smart Carrier Assignment"
+              >
+                {isOptimizing ? '🤖 Optimizing...' : `🧠 Smart Assign (${selectedOrders.length})`}
+              </button>
+            </>
           )}
         </div>
       </div>
+
+      {activeTab === 'returns' ? (
+        <div className="mt-6">
+          <ReturnsDashboard />
+        </div>
+      ) : (
+        <>
+          {/* Filters Bar */}
+          <div
+            className="filters-bar glass"
+            style={{
+              padding: '16px 20px',
+              marginTop: '24px',
+              display: 'flex',
+              gap: '16px',
+              alignItems: 'center',
+              flexWrap: 'wrap',
+            }}
+          >
+            <div style={{ flex: 2, minWidth: '250px' }}>
+              <input
+                type="text"
+                placeholder="🔍 Search by Order ID, Customer, or SKU..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                style={{
+                  width: '100%',
+                  padding: '12px 16px',
+                  background: 'var(--bg-accent)',
+                  border: '1px solid var(--glass-border)',
+                  borderRadius: '8px',
+                  color: '#fff',
+                }}
+              />
+            </div>
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              style={{
+                padding: '12px 16px',
+                background: 'var(--bg-accent)',
+                border: '1px solid var(--glass-border)',
+                borderRadius: '8px',
+                color: '#fff',
+                minWidth: '150px',
+              }}
+            >
+              <option value="all">All Statuses</option>
+              <option value="HIGH_RISK">⚠️ High Risk</option>
+              {uniqueStatuses.map((s) => (
+                <option key={s} value={s}>
+                  {s}
+                </option>
+              ))}
+            </select>
+            <select
+              value={sourceFilter}
+              onChange={(e) => setSourceFilter(e.target.value)}
+              style={{
+                padding: '12px 16px',
+                background: 'var(--bg-accent)',
+                border: '1px solid var(--glass-border)',
+                borderRadius: '8px',
+                color: '#fff',
+                minWidth: '150px',
+              }}
+            >
+              <option value="all">All Channels</option>
+              {uniqueSources.map((s) => (
+                <option key={s} value={s}>
+                  {s}
+                </option>
+              ))}
+            </select>
+            <button
+              className="btn-secondary glass-hover"
+              style={{ padding: '12px 20px' }}
+              onClick={() => {
+                setSearchTerm('')
+                setStatusFilter('all')
+                setSourceFilter('all')
+              }}
+            >
+              Clear
+            </button>
+          </div>
+
+          {/* Orders Table */}
+          <div
+            className="orders-table glass"
+            style={{ marginTop: '24px', overflow: 'hidden', borderRadius: '12px' }}
+          >
+            <div
+              className="table-header"
+              style={{
+                display: 'grid',
+                gridTemplateColumns: '40px 1.5fr 2fr 1fr 1fr 1fr 0.8fr 1fr',
+                padding: '16px 20px',
+                background: 'var(--bg-accent)',
+                fontWeight: '700',
+                fontSize: '0.75rem',
+                color: 'var(--text-muted)',
+                textTransform: 'uppercase',
+              }}
+            >
+              <input
+                type="checkbox"
+                onChange={(e) =>
+                  setSelectedOrders(e.target.checked ? filteredOrders.map((o) => o.id) : [])
+                }
+                checked={
+                  selectedOrders.length > 0 && selectedOrders.length === filteredOrders.length
+                }
+              />
+              <span className="hidden md:block">Order ID</span>
+              <span className="hidden md:block">Customer</span>
+              <span className="hidden md:block">SKU</span>
+              <span className="hidden md:block">Source</span>
+              <span className="hidden md:block">Status</span>
+              <span className="hidden md:block">Risk</span>
+              <span className="hidden md:block">Actions</span>
+            </div>
+
+            <div className="table-body" style={{ maxHeight: '65vh', overflowY: 'auto' }}>
+              {filteredOrders.length === 0 ? (
+                <div style={{ padding: '40px', textAlign: 'center' }}>
+                  <p className="text-muted">No orders found matching your criteria</p>
+                </div>
+              ) : (
+                filteredOrders.map((order, idx) => (
+                  <div
+                    key={order.id}
+                    className="table-row glass-hover"
+                    style={{
+                      display: 'grid',
+                      gridTemplateColumns: '40px 1.5fr 2fr 1fr 1fr 1fr 0.8fr 1fr',
+                      padding: '16px 20px',
+                      alignItems: 'center',
+                      borderBottom: '1px solid var(--glass-border)',
+                      cursor: 'pointer',
+                    }}
+                    onClick={() => setSelectedOrder(order)}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={selectedOrders.includes(order.id)}
+                      onClick={(e) => e.stopPropagation()}
+                      onChange={() => toggleOrderSelection(order.id)}
+                    />
+                    <span
+                      data-label="Order ID"
+                      style={{ fontWeight: '700', color: 'var(--primary)' }}
+                    >
+                      {order.id}
+                    </span>
+                    <span data-label="Customer">{order.customer || 'N/A'}</span>
+                    <span data-label="SKU" style={{ fontSize: '0.85rem' }}>
+                      {order.sku || 'N/A'}
+                    </span>
+                    <span
+                      data-label="Source"
+                      className="badge"
+                      style={{
+                        background: 'var(--glass-border)',
+                        fontSize: '0.65rem',
+                        justifySelf: 'start',
+                      }}
+                    >
+                      {order.source || 'Manual'}
+                    </span>
+                    <span
+                      data-label="Status"
+                      className="badge"
+                      style={{
+                        background: getStatusColor(order.status),
+                        fontSize: '0.65rem',
+                        justifySelf: 'start',
+                      }}
+                    >
+                      {order.status}
+                    </span>
+                    <span
+                      className="risk-indicator"
+                      style={{ justifySelf: 'start' }}
+                      data-label="Risk"
+                    >
+                      {order.status === 'Pending' &&
+                      order.paymentMethod?.toLowerCase() === 'cod' ? (
+                        (() => {
+                          const risk = rtoService.predictRisk(order)
+                          return (
+                            <span
+                              className={`badge ${risk.riskLevel.toLowerCase()}`}
+                              style={{
+                                background:
+                                  risk.riskLevel === 'CRITICAL'
+                                    ? 'rgba(239, 68, 68, 0.2)'
+                                    : risk.riskLevel === 'HIGH'
+                                      ? 'rgba(245, 158, 11, 0.2)'
+                                      : 'rgba(16, 185, 129, 0.1)',
+                                color:
+                                  risk.riskLevel === 'CRITICAL'
+                                    ? '#ef4444'
+                                    : risk.riskLevel === 'HIGH'
+                                      ? '#f59e0b'
+                                      : '#10b981',
+                                fontSize: '0.6rem',
+                                border: '1px solid currentColor',
+                              }}
+                              title={risk.reasons.join(', ')}
+                            >
+                              {risk.level}
+                            </span>
+                          )
+                        })()
+                      ) : (
+                        <span className="text-muted" style={{ fontSize: '0.6rem' }}>
+                          --
+                        </span>
+                      )}
+                    </span>
+                    <button
+                      className="btn-secondary glass-hover mobile-full-width"
+                      style={{ padding: '6px 12px', fontSize: '0.75rem' }}
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        setSelectedOrder(order)
+                      }}
+                    >
+                      View Details
+                    </button>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+        </>
+      )}
 
       {/* Order Detail Modal */}
       {selectedOrder && (

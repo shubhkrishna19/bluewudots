@@ -1,100 +1,84 @@
 /**
  * Returns Aggregator Service
- * Centralizes return requests from Shopify, Amazon, Flipkart, and Manual entries.
- * Normalizes data into a single schema for the Returns Dashboard.
+ * Unifies return requests from Local Orders, Amazon, and Flipkart.
+ * Provides automated risk scoring and auto-approval logic.
  */
 
+import marketplaceService from './marketplaceService'
+import reverseLogisticsService from './reverseLogisticsService'
+
 class ReturnsAggregatorService {
-    constructor() {
-        this.returns = [];
+  /**
+   * Fetch all pending returns from all sources
+   */
+  async fetchPendingReturns() {
+    const sources = ['amazon', 'flipkart', 'local']
+    const results = await Promise.all(sources.map((s) => this.fetchFromSource(s)))
+
+    // Flatten and sort by riskScore (high risk first) or date
+    return results.flat().sort((a, b) => b.riskScore - a.riskScore)
+  }
+
+  /**
+   * Fetch returns from a specific source
+   */
+  async fetchFromSource(source) {
+    if (source === 'local') {
+      // Local returns from DataContext/ReverseLogistics
+      // This would normally come from a database, using mock for now
+      return [
+        {
+          id: 'RET-1001',
+          orderId: 'BW-5521',
+          source: 'Local',
+          customerName: 'Rahul Sharma',
+          reason: 'Damaged on arrival',
+          riskScore: 85,
+          refundAmount: 4500,
+          status: 'Pending',
+          createdAt: new Date().toISOString(),
+        },
+      ]
     }
 
-    /**
-     * Fetch pending returns from all sources
-     * @returns {Promise<Array>} Normalized returns
-     */
-    async fetchPendingReturns() {
-        // Simulate fetching from different sources
-        const mockAmazonReturns = this._generateMockReturns('Amazon', 2);
-        const mockFlipkartReturns = this._generateMockReturns('Flipkart', 1);
-        const mockShopifyReturns = this._generateMockReturns('Shopify', 3);
+    // Marketplace returns
+    const mpReturns = await marketplaceService.fetchReturns(source)
 
-        const allReturns = [
-            ...mockAmazonReturns,
-            ...mockFlipkartReturns,
-            ...mockShopifyReturns
-        ];
+    return mpReturns
+  }
 
-        return allReturns.map(r => this.normalizeReturn(r, r.source));
+  /**
+   * Check if a return qualifies for Auto-Approval
+   */
+  checkAutoApproval(returnRequest) {
+    const rules = [
+      { name: 'Low Risk', check: (r) => r.riskScore < 30 },
+      { name: 'Low Value', check: (r) => r.refundAmount < 2000 },
+      { name: 'Not Damaged', check: (r) => r.reason !== 'Damaged on arrival' },
+    ]
+
+    const failedRules = rules.filter((rule) => !rule.check(returnRequest))
+
+    if (failedRules.length === 0) {
+      return { approved: true, reason: 'System Auto-Approval (Low Risk)' }
     }
 
-    /**
-     * Normalize return data to standard schema
-     * @param {object} rawData 
-     * @param {string} source 
-     */
-    normalizeReturn(rawData, source) {
-        return {
-            id: rawData.id,
-            orderId: rawData.orderId,
-            customerName: rawData.customerName,
-            sku: rawData.sku,
-            productName: rawData.productName,
-            returnDate: rawData.returnDate,
-            reason: rawData.reason,
-            condition: rawData.condition || 'Unknown',
-            status: rawData.status || 'Pending', // Pending, Approved, Rejected, Refunded
-            refundAmount: rawData.refundAmount,
-            source: source,
-            riskScore: Math.floor(Math.random() * 100), // Integrated Risk Score (Mock)
-            images: rawData.images || []
-        };
+    return {
+      approved: false,
+      reason: `Manual Review Required: ${failedRules.map((f) => f.name).join(', ')}`,
     }
+  }
 
-    /**
-     * Process Refund Logic
-     * @param {string} returnId 
-     * @param {number} amount 
-     */
-    async processRefund(returnId, amount) {
-        console.log(`Processing refund of ₹${amount} for Return ID: ${returnId}`);
-        // In real scenario: Call Payment Gateway Refund API
-        await new Promise(r => setTimeout(r, 1000));
-        return { success: true, transactionId: `REF-${Date.now()}` };
-    }
-
-    /**
-     * Auto-Approval Logic
-     * @param {object} returnRequest 
-     */
-    checkAutoApproval(returnRequest) {
-        // Example Rule: Auto-approve if value < 500 and low risk
-        if (returnRequest.refundAmount < 500 && returnRequest.riskScore < 30) {
-            return { approved: true, reason: 'Low Value & Low Risk' };
-        }
-        return { approved: false };
-    }
-
-    // --- MOCK GENERATOR ---
-    _generateMockReturns(source, count) {
-        const returns = [];
-        for (let i = 0; i < count; i++) {
-            returns.push({
-                id: `RET-${source.substring(0, 3).toUpperCase()}-${Math.floor(Math.random() * 10000)}`,
-                orderId: `ORD-${Math.floor(Math.random() * 100000)}`,
-                customerName: `Customer ${source} ${i + 1}`,
-                sku: `SKU-${Math.floor(Math.random() * 100)}`,
-                productName: `Furniture Item ${i + 1}`,
-                returnDate: new Date().toISOString(),
-                reason: ['Damaged', 'Wrong Item', 'Changed Mind'][Math.floor(Math.random() * 3)],
-                refundAmount: Math.floor(Math.random() * 2000) + 100,
-                source: source,
-                status: 'Pending'
-            });
-        }
-        return returns;
-    }
+  /**
+   * Process refund for a return
+   */
+  async processRefund(returnId, amount) {
+    console.log(`[Aggregator] Processing refund for ${returnId}: ₹${amount}`)
+    // Simulate API call to payment gateway or marketplace
+    await new Promise((r) => setTimeout(r, 1000))
+    return { success: true, txnId: `TXN-${Math.floor(Math.random() * 1000000)}` }
+  }
 }
 
-export const returnsAggregatorService = new ReturnsAggregatorService();
-export default returnsAggregatorService;
+export const returnsAggregatorService = new ReturnsAggregatorService()
+export default returnsAggregatorService

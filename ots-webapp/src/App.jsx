@@ -1,65 +1,99 @@
 import React, { useState, useEffect } from 'react'
 import './App.css'
-import { useData } from './context/DataContext'
-import { useAuth } from './context/AuthContext'
-import LoginPage from './components/Auth/LoginPage'
-import UserProfile from './components/Auth/UserProfile'
-import CarrierSelection from './components/Logistics/CarrierSelection'
-import UniversalImporter from './components/Automation/UniversalImporter'
-import SKUMaster from './components/Commercial/SKUMaster'
-import StockOptix from './components/Inventory/StockOptix'
-import BarcodeDispatcher from './components/Orders/BarcodeDispatcher'
-import AnalyticsDashboard from './components/Dashboard/AnalyticsEnhanced'
-import DealerLookup from './components/Dealers/DealerLookup'
-import SettingsPanel from './components/Settings/SettingsPanel'
-import OrderList from './components/Orders/OrderList'
-import ExportTools from './components/Reports/ExportTools'
-import QuickOrderForm from './components/Orders/QuickOrderForm'
-import NotificationCenter from './components/Notifications/NotificationCenter'
-import ActivityLog from './components/Activity/ActivityLog'
-import BulkActions from './components/Orders/BulkActions'
-import ZoneMap from './components/Logistics/ZoneMap'
-import HelpCenter from './components/Help/HelpCenter'
-import CustomerLookup from './components/Customers/CustomerLookup'
-import PerformanceMetrics from './components/Dashboard/PerformanceMetrics'
-import RoadmapPage from './components/Roadmap/RoadmapPage'
-import RTOManager from './components/Orders/RTOManager'
-import ReturnsManager from './components/Orders/ReturnsManager'
-import CarrierPerformance from './components/Logistics/CarrierPerformance'
-import ShipmentTracker from './components/Tracking/ShipmentTracker'
-import InvoiceGenerator from './components/Commercial/InvoiceGenerator'
-import CODReconciliation from './components/Commercial/CODReconciliation'
-import FinancialCenter from './components/Commercial/FinancialCenter'
-import WarehouseManager from './components/Warehouse/WarehouseManager'
-import MobileBottomNav from './components/Navigation/MobileBottomNav'
-import CommercialHub from './components/Commercial/CommercialHub'
-import MarketingCenter from './components/Marketing/MarketingCenter'
-import WhatsAppTemplateManager from './components/Marketing/WhatsAppTemplateManager'
-import LabelTemplateManager from './components/Logistics/LabelTemplateManager'
-import CustomerAnalytics from './components/Customers/CustomerAnalytics'
-import GlobalLedger from './components/Commercial/GlobalLedger'
-import ProductionTracker from './components/SupplyChain/ProductionTracker'
-import QualityGate from './components/SupplyChain/QualityGate'
-import MarginGuard from './components/Commercial/MarginGuard'
-import AmazonMapper from './components/Automation/AmazonMapper'
-import ShortcutsModal from './components/Help/ShortcutsModal'
-import InternationalShipping from './components/Logistics/InternationalShipping'
-import MarketplaceReconciliation from './components/Commercial/MarketplaceReconciliation'
-import ReturnsDashboard from './components/Commercial/ReturnsDashboard'
-import DemandForecast from './components/Analytics/DemandForecast'
+import { useData } from '@/context/DataContext'
+import { useAuth } from '@/context/AuthContext'
+import LoginPage from '@/components/Auth/LoginPage'
+import ErrorBoundary from '@/components/Shared/ErrorBoundary'
+import { Guard, ROLES, PERMISSIONS } from '@/services/rbacMiddleware'
+import ResponsiveLayout from '@/components/Shared/ResponsiveLayout'
+import MobileBottomNav from '@/components/Navigation/MobileBottomNav'
+
+// Service & Utility Imports
 import {
   initShortcuts,
   registerDefaultShortcuts,
   destroyShortcuts,
-} from './services/keyboardShortcuts'
-import searchService from './services/searchService'
-import pushNotificationService from './services/pushNotificationService'
-import ResponsiveLayout from './components/Shared/ResponsiveLayout'
-import ErrorBoundary from './components/Shared/ErrorBoundary'
-import keyboardShortcuts from './services/keyboardShortcutsEnhanced'
-import { initWhatsAppService } from './services/whatsappService'
-import { Guard, ROLES, PERMISSIONS } from './services/rbacMiddleware'
-import DealerPortal from './components/Dealers/DealerPortal'
+  keyboardShortcuts,
+} from '@/services/keyboardShortcutsEnhanced'
+import { initWhatsAppService } from '@/services/whatsappService'
+import searchService from '@/services/searchService'
+
+// --- Lazy Loaded Components (Performance Optimization) ---
+// Auth
+const UserProfile = React.lazy(() => import('@/components/Auth/UserProfile'))
+
+// Dashboard & Analytics
+const AnalyticsDashboard = React.lazy(() => import('@/components/Dashboard/AnalyticsEnhanced'))
+const PerformanceMetrics = React.lazy(() => import('@/components/Dashboard/PerformanceMetrics'))
+const ActivityLog = React.lazy(() => import('@/components/Activity/ActivityLog'))
+const DemandForecast = React.lazy(() => import('@/components/Analytics/DemandForecast'))
+const ReturnsDashboard = React.lazy(() => import('@/components/Commercial/ReturnsDashboard'))
+
+// Orders
+const OrderList = React.lazy(() => import('@/components/Orders/OrderList'))
+const QuickOrderForm = React.lazy(() => import('@/components/Orders/QuickOrderForm'))
+const BulkActions = React.lazy(() => import('@/components/Orders/BulkActions'))
+const RTOManager = React.lazy(() => import('@/components/Orders/RTOManager'))
+const ReturnsManager = React.lazy(() => import('@/components/Orders/ReturnsManager'))
+const BarcodeDispatcher = React.lazy(() => import('@/components/Orders/BarcodeDispatcher'))
+
+// Logistics
+const CarrierSelection = React.lazy(() => import('@/components/Logistics/CarrierSelection'))
+const ZoneMap = React.lazy(() => import('@/components/Logistics/ZoneMap'))
+const CarrierPerformance = React.lazy(() => import('@/components/Logistics/CarrierPerformance'))
+const ShipmentTracker = React.lazy(() => import('@/components/Tracking/ShipmentTracker'))
+const LabelTemplateManager = React.lazy(() => import('@/components/Logistics/LabelTemplateManager'))
+const InternationalShipping = React.lazy(
+  () => import('@/components/Logistics/InternationalShipping')
+)
+
+// Inventory & Warehouse
+const SKUMaster = React.lazy(() => import('@/components/Commercial/SKUMaster'))
+const StockOptix = React.lazy(() => import('@/components/Inventory/StockOptix'))
+const WarehouseManager = React.lazy(() => import('@/components/Warehouse/WarehouseManager'))
+const UniversalImporter = React.lazy(() => import('@/components/Automation/UniversalImporter'))
+const AmazonMapper = React.lazy(() => import('@/components/Automation/AmazonMapper'))
+
+// Commercial & Finance
+const FinancialCenter = React.lazy(() => import('@/components/Commercial/FinancialCenter'))
+const CommercialHub = React.lazy(() => import('@/components/Commercial/CommercialHub'))
+const GlobalLedger = React.lazy(() => import('@/components/Commercial/GlobalLedger'))
+const MarginGuard = React.lazy(() => import('@/components/Commercial/MarginGuard'))
+const InvoiceGenerator = React.lazy(() => import('@/components/Commercial/InvoiceGenerator'))
+const CODReconciliation = React.lazy(() => import('@/components/Commercial/CODReconciliation'))
+const MarketplaceReconciliation = React.lazy(
+  () => import('@/components/Commercial/MarketplaceReconciliation')
+)
+
+// CRM & Marketing
+const DealerLookup = React.lazy(() => import('@/components/Dealers/DealerLookup'))
+const CustomerLookup = React.lazy(() => import('@/components/Customers/CustomerLookup'))
+const CustomerAnalytics = React.lazy(() => import('@/components/Customers/CustomerAnalytics'))
+const MarketingCenter = React.lazy(() => import('@/components/Marketing/MarketingCenter'))
+const WhatsAppTemplateManager = React.lazy(
+  () => import('@/components/Marketing/WhatsAppTemplateManager')
+)
+const DealerPortal = React.lazy(() => import('@/components/Dealers/DealerPortal'))
+
+// Supply Chain
+const ProductionTracker = React.lazy(() => import('@/components/SupplyChain/ProductionTracker'))
+const QualityGate = React.lazy(() => import('@/components/SupplyChain/QualityGate'))
+
+// Settings & Support
+const SettingsPanel = React.lazy(() => import('@/components/Settings/SettingsPanel'))
+const HelpCenter = React.lazy(() => import('@/components/Help/HelpCenter'))
+const ShortcutsModal = React.lazy(() => import('@/components/Help/ShortcutsModal'))
+const NotificationCenter = React.lazy(() => import('@/components/Notifications/NotificationCenter'))
+
+// Reuseable Loading Component
+const PageLoader = () => (
+  <div className="flex items-center justify-center p-20 h-full animate-fade">
+    <div className="text-center">
+      <div className="w-12 h-12 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+      <p className="text-slate-400 text-sm">Loading module...</p>
+    </div>
+  </div>
+)
 
 function App() {
   const { isAuthenticated, isLoading, user, hasPermission } = useAuth()
@@ -77,6 +111,13 @@ function App() {
   const [searchQuery, setSearchQuery] = useState('')
   const [searchResults, setSearchResults] = useState(null)
   const [isSearchActive, setIsSearchActive] = useState(false)
+
+  // UI State Modals & Menus
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [showQuickOrder, setShowQuickOrder] = useState(false)
+  const [showNotifications, setShowNotifications] = useState(false)
+  const [showProfile, setShowProfile] = useState(false)
+  const [showShortcuts, setShowShortcuts] = useState(false)
 
   // Auto-sync SKU Master on mount & Initialize Shortcuts & Push
   useEffect(() => {
@@ -796,103 +837,105 @@ function App() {
             </header>
 
             <section className="view-container">
-              <Guard
-                user={user}
-                permission={PERMISSIONS.VIEW_ANALYTICS}
-                fallback={
-                  <div className="glass p-20 text-center">Please contact admin for access.</div>
-                }
-              >
-                {activeTab === 'dashboard' && <AnalyticsDashboard />}
-              </Guard>
+              <React.Suspense fallback={<PageLoader />}>
+                <Guard
+                  user={user}
+                  permission={PERMISSIONS.VIEW_ANALYTICS}
+                  fallback={
+                    <div className="glass p-20 text-center">Please contact admin for access.</div>
+                  }
+                >
+                  {activeTab === 'dashboard' && <AnalyticsDashboard />}
+                </Guard>
 
-              <Guard
-                user={user}
-                permission={PERMISSIONS.VIEW_REPORTS}
-                fallback={<div className="glass p-20 text-center">🚫 Restricted View</div>}
-              >
-                {activeTab === 'metrics' && <PerformanceMetrics />}
-              </Guard>
+                <Guard
+                  user={user}
+                  permission={PERMISSIONS.VIEW_REPORTS}
+                  fallback={<div className="glass p-20 text-center">🚫 Restricted View</div>}
+                >
+                  {activeTab === 'metrics' && <PerformanceMetrics />}
+                </Guard>
 
-              <Guard
-                user={user}
-                permission={PERMISSIONS.MANAGE_ORDERS}
-                fallback={<div className="glass p-20 text-center">🚫 Access Denied</div>}
-              >
-                {activeTab === 'orderlist' && <OrderList />}
-                {activeTab === 'bulk' && <BulkActions />}
-                {activeTab === 'rto' && <RTOManager />}
-                {activeTab === 'returns' && <ReturnsManager />}
-              </Guard>
+                <Guard
+                  user={user}
+                  permission={PERMISSIONS.MANAGE_ORDERS}
+                  fallback={<div className="glass p-20 text-center">🚫 Access Denied</div>}
+                >
+                  {activeTab === 'orderlist' && <OrderList />}
+                  {activeTab === 'bulk' && <BulkActions />}
+                  {activeTab === 'rto' && <RTOManager />}
+                  {activeTab === 'returns' && <ReturnsManager />}
+                </Guard>
 
-              <Guard user={user} permission={PERMISSIONS.MANAGE_CARRIERS}>
-                {activeTab === 'logistics' && <CarrierSelection />}
-                {activeTab === 'intlship' && <InternationalShipping />}
-                {activeTab === 'carrierperf' && <CarrierPerformance />}
-                {activeTab === 'label-templates' && <LabelTemplateManager />}
-                {activeTab === 'zones' && <ZoneMap />}
-              </Guard>
+                <Guard user={user} permission={PERMISSIONS.MANAGE_CARRIERS}>
+                  {activeTab === 'logistics' && <CarrierSelection />}
+                  {activeTab === 'intlship' && <InternationalShipping />}
+                  {activeTab === 'carrierperf' && <CarrierPerformance />}
+                  {activeTab === 'label-templates' && <LabelTemplateManager />}
+                  {activeTab === 'zones' && <ZoneMap />}
+                </Guard>
 
-              {activeTab === 'tracking' && <ShipmentTracker />}
+                {activeTab === 'tracking' && <ShipmentTracker />}
 
-              <Guard user={user} permission={PERMISSIONS.MANAGE_INVENTORY}>
-                {activeTab === 'orders' && <UniversalImporter />}
-                {activeTab === 'warehouse' && <WarehouseManager />}
-                {activeTab === 'inventory' && <SKUMaster />}
-                {activeTab === 'stockoptix' && <StockOptix />}
-                {activeTab === 'dispatcher' && <BarcodeDispatcher />}
-                {activeTab === 'automation' && <AmazonMapper />}
-              </Guard>
+                <Guard user={user} permission={PERMISSIONS.MANAGE_INVENTORY}>
+                  {activeTab === 'orders' && <UniversalImporter />}
+                  {activeTab === 'warehouse' && <WarehouseManager />}
+                  {activeTab === 'inventory' && <SKUMaster />}
+                  {activeTab === 'stockoptix' && <StockOptix />}
+                  {activeTab === 'dispatcher' && <BarcodeDispatcher />}
+                  {activeTab === 'automation' && <AmazonMapper />}
+                </Guard>
 
-              <Guard user={user} permission={PERMISSIONS.PROCESS_PAYMENTS}>
-                {activeTab === 'invoice' && <InvoiceGenerator />}
-                {activeTab === 'finance' && <FinancialCenter />}
-                {activeTab === 'commhub' && <CommercialHub />}
-                {activeTab === 'guards' && <MarginGuard />}
-                {activeTab === 'reconciliation' && <MarketplaceReconciliation />}
-                {activeTab === 'globalledger' && <GlobalLedger />}
-                {activeTab === 'cod' && <CODReconciliation />}
-              </Guard>
+                <Guard user={user} permission={PERMISSIONS.PROCESS_PAYMENTS}>
+                  {activeTab === 'invoice' && <InvoiceGenerator />}
+                  {activeTab === 'finance' && <FinancialCenter />}
+                  {activeTab === 'commhub' && <CommercialHub />}
+                  {activeTab === 'guards' && <MarginGuard />}
+                  {activeTab === 'reconciliation' && <MarketplaceReconciliation />}
+                  {activeTab === 'globalledger' && <GlobalLedger />}
+                  {activeTab === 'cod' && <CODReconciliation />}
+                </Guard>
 
-              <Guard user={user} permission={PERMISSIONS.PLACE_WHOLESALE_ORDER}>
-                {activeTab === 'dealer-portal' && <DealerPortal />}
-              </Guard>
+                <Guard user={user} permission={PERMISSIONS.PLACE_WHOLESALE_ORDER}>
+                  {activeTab === 'dealer-portal' && <DealerPortal />}
+                </Guard>
 
-              <Guard user={user} permission={PERMISSIONS.VIEW_REPORTS}>
-                {activeTab === 'dealers' && <DealerLookup />}
-                {activeTab === 'customers' && <CustomerLookup />}
-                {activeTab === 'custintel' && <CustomerAnalytics />}
-                {activeTab === 'marketing' && <MarketingCenter />}
-                {activeTab === 'whatsapp-templates' && <WhatsAppTemplateManager />}
-                {activeTab === 'reports' && <ExportTools />}
-              </Guard>
+                <Guard user={user} permission={PERMISSIONS.VIEW_REPORTS}>
+                  {activeTab === 'dealers' && <DealerLookup />}
+                  {activeTab === 'customers' && <CustomerLookup />}
+                  {activeTab === 'custintel' && <CustomerAnalytics />}
+                  {activeTab === 'marketing' && <MarketingCenter />}
+                  {activeTab === 'whatsapp-templates' && <WhatsAppTemplateManager />}
+                  {activeTab === 'reports' && <ExportTools />}
+                </Guard>
 
-              <Guard user={user} permission={PERMISSIONS.PROCESS_QC}>
-                {activeTab === 'production' && <ProductionTracker />}
-                {activeTab === 'qa' && <QualityGate />}
-              </Guard>
+                <Guard user={user} permission={PERMISSIONS.PROCESS_QC}>
+                  {activeTab === 'production' && <ProductionTracker />}
+                  {activeTab === 'qa' && <QualityGate />}
+                </Guard>
 
-              <Guard user={user} permission={PERMISSIONS.VIEW_FINANCE}>
-                {activeTab === 'marketplace-recon' && <MarketplaceReconciliation />}
-              </Guard>
+                <Guard user={user} permission={PERMISSIONS.VIEW_FINANCE}>
+                  {activeTab === 'marketplace-recon' && <MarketplaceReconciliation />}
+                </Guard>
 
-              {activeTab === 'returns' && <ReturnsDashboard />}
+                {activeTab === 'returns' && <ReturnsDashboard />}
 
-              <Guard user={user} permission={PERMISSIONS.VIEW_ACTIVITY_LOG}>
-                {activeTab === 'activity' && <ActivityLog />}
-              </Guard>
+                <Guard user={user} permission={PERMISSIONS.VIEW_ACTIVITY_LOG}>
+                  {activeTab === 'activity' && <ActivityLog />}
+                </Guard>
 
-              <Guard user={user} permission={PERMISSIONS.VIEW_ANALYTICS}>
-                {activeTab === 'ml-forecast' && <DemandForecast />}
-              </Guard>
+                <Guard user={user} permission={PERMISSIONS.VIEW_ANALYTICS}>
+                  {activeTab === 'ml-forecast' && <DemandForecast />}
+                </Guard>
 
-              {activeTab === 'performance' && <PerformanceMetrics />}
-              {activeTab === 'roadmap' && <RoadmapPage />}
-              {activeTab === 'help' && <HelpCenter />}
+                {activeTab === 'performance' && <PerformanceMetrics />}
+                {activeTab === 'roadmap' && <RoadmapPage />}
+                {activeTab === 'help' && <HelpCenter />}
 
-              <Guard user={user} permission={PERMISSIONS.MANAGE_SETTINGS}>
-                {activeTab === 'settings' && <SettingsPanel />}
-              </Guard>
+                <Guard user={user} permission={PERMISSIONS.MANAGE_SETTINGS}>
+                  {activeTab === 'settings' && <SettingsPanel />}
+                </Guard>
+              </React.Suspense>
             </section>
           </main>
         </ResponsiveLayout>

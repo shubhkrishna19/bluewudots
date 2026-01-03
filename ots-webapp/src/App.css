@@ -602,3 +602,148 @@ button[id*='html5-qrcode-button']:hover {
     transform: scale(0.98);
   }
 }
+
+/* --- Phase 34: Accessibility & Mobile Polish --- */
+
+/* Focus Visibility for Keyboard Navigation */
+:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+/* Improved Tap Highlights */
+button,
+.nav-item,
+.result-item,
+.table-row {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  /* Optimizes touch events delay */
+}
+
+/* Mobile Nav Animations */
+@keyframes bounce {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.2);
+  }
+}
+
+.bounce {
+  animation: bounce 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes pulse-red {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+  }
+
+  70% {
+    transform: scale(1.1);
+    box-shadow: 0 0 0 4px rgba(239, 68, 68, 0);
+  }
+
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+  }
+}
+
+.pulse {
+  animation: pulse-red 2s infinite;
+}
+
+/* Card View for Mobile Tables */
+@media (max-width: 768px) {
+  .orders-table .table-header {
+    display: none !important;
+  }
+
+  .orders-table .table-body {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 12px;
+    max-height: none !important;
+    overflow-y: visible !important;
+  }
+
+  .orders-table .table-row {
+    display: flex !important;
+    flex-direction: column;
+    align-items: flex-start !important;
+    gap: 8px;
+    padding: 16px !important;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+  }
+
+  /* Transform row items to labelled pairs */
+  .orders-table .table-row span {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.85rem !important;
+  }
+
+  .orders-table .table-row span::before {
+    content: attr(data-label);
+    font-weight: 700;
+    color: var(--text-muted);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    margin-right: 10px;
+  }
+
+  /* Specific tweaks for Order Items in Card View */
+  .orders-table .table-row input[type='checkbox'] {
+    align-self: flex-end;
+    margin-bottom: -20px;
+    z-index: 10;
+  }
+}
+
+/* --- Phase 34: Mobile UX Utilities --- */
+
+.mobile-full-width {
+  width: 100% !important;
+  margin-top: 8px;
+}
+
+.touch-target {
+  min-height: 44px;
+  min-width: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.animate-pulse-subtle {
+  animation: pulse-subtle 3s infinite ease-in-out;
+}
+
+@keyframes pulse-subtle {
+  0%,
+  100% {
+    opacity: 0.8;
+  }
+
+  50% {
+    opacity: 1;
+  }
+}
+
+@media (max-width: 600px) {
+  .btn-primary,
+  .btn-secondary {
+    padding: 14px 20px !important;
+    font-size: 0.9rem !important;
+  }
+}
