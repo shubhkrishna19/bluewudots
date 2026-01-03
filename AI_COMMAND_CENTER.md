@@ -16,6 +16,7 @@ Antigravity AI has completed the bulk of **Phase 14 (Global)** and **Phase 15 (H
 | Task ID | Description | Assigned To | Status | Last Updated |
 |---------|-------------|-------------|--------|--------------|
 | **15.8** | Lighthouse Performance Audit / Optimization | Antigravity AI | ✅ Complete | 2026-01-04 |
+| **28.1** | RTO Prediction & Reverse Logistics | Antigravity AI | ✅ Complete | 2026-01-04 |
 | **P14.1** | Multi-Currency Conversion Engine | Antigravity AI | 2026-01-04 | `internationalService.js` |
 | **P14.2** | Global Financial Ledger | Antigravity AI | 2026-01-04 | `GlobalLedger.jsx` |
 | **P14.3** | International Shipping Stubs (DHL/FedEx) | Antigravity AI | 2026-01-04 | `internationalShippingService.js` |
@@ -67,7 +68,7 @@ Antigravity AI has completed the bulk of **Phase 14 (Global)** and **Phase 15 (H
 
 | Task ID | Description | Claimed By | Started | Status |
 |---------|-------------|------------|---------|--------|
-| — | *No active tasks* | — | — | — |
+| P16.1 | Real WhatsApp Business API | Antigravity | 2026-01-04 | 🔵 In Progress |
 
 ---
 

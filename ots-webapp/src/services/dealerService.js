@@ -3,7 +3,7 @@
  * Handles wholesale logic, credit limits, and tiered pricing for B2B partners.
  */
 
-const DEALER_TIERS = {
+export const DEALER_TIERS = {
     SILVER: { minMonthlyVolume: 0, discountPercent: 25, creditLimit: 50000 },
     GOLD: { minMonthlyVolume: 100000, discountPercent: 30, creditLimit: 200000 },
     PLATINUM: { minMonthlyVolume: 500000, discountPercent: 35, creditLimit: 1000000 }

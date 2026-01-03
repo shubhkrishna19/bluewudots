@@ -9,7 +9,7 @@
 
 | Task | Assignee | Started | Branch/Session | Notes |
 |------|----------|---------|----------------|-------|
-| _None currently_ | - | - | - | - |
+| Phase 16: WhatsApp API Integration | Antigravity | 2026-01-04 | session-current | P16.1 Implementation |
 
 ---
 
@@ -19,6 +19,7 @@
 |------|--------------|------|-----------|
 | Phase 16: Vision AI | Antigravity AI | 2026-01-04 | session-c18f8671 |
 | Phase 28: RTO & Reverse Logistics | Antigravity AI | 2026-01-04 | `main` |
+| 28.1 RTO & Reverse Logistics | Antigravity AI | 2026-01-04 | `main` |
 | 15.8 Lighthouse Performance Audit | Antigravity AI | 2026-01-04 | `main` |
 | Phase 15: Production Hardening | Antigravity AI | 2026-01-04 | `main` |
 | Phase 14: Omni-Channel Global | Antigravity AI | 2026-01-04 | `main` |
