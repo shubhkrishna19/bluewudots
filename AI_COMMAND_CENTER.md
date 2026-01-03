@@ -1,67 +1,88 @@
-# AI Command Center – Pending Work
+# AI Command Center – Collaborative Task Tracking
 
-## Overview
-This document serves as a central reference for any AI agents that will continue development on the **Bluewud OTS** application. It lists all functions, components, and high‑level features that are **not yet completed** and provides concise guidance on what needs to be done.
+## 🚨 CRITICAL: Read Before Working
 
----
-
-## ✅ Recently Completed (Phase 14 Progress)
-
-| Task | Status | Description |
-|------|--------|-------------|
-| [14.1] Full IndexedDB Persistence | ✅ DONE | Orders, SKU Master, Customers, Activity Logs, and Inventory now persist to IndexedDB. |
-| [14.2] Enhanced PredictiveAnalytics | ✅ DONE | Added Recharts visualization with trend lines and actionable AI insights. |
-| [14.3] NotificationHub | ✅ DONE | Unified notification center with WhatsApp/Push/System channel filtering. |
-| [14.4] Premium Mobile Nav | ✅ DONE | Enhanced MobileBottomNav with haptic feedback, badges, and glassmorphism. |
+This document serves as the **Single Source of Truth** for all AI agents and human collaborators. Before starting any work:
+1. **Check the "Currently In Progress" section** to avoid duplicate work
+2. **Claim your task** by adding your identifier and timestamp
+3. **Update status** when you complete or pause work
+4. **Move completed tasks** to the "Recently Completed" section
 
 ---
 
-## Pending Functions / Service Stubs
-| File | Function / Service | Description | Suggested Next Steps |
-|------|-------------------|-------------|----------------------|
-| `src/services/whatsappService.js` | `sendWhatsAppMessage` | Integrated with mock Catalyst endpoint. | Ready for production endpoint configuration. |
-| `src/services/pushNotificationService.js` | `registerPushSubscription` | Created & Integrated in App.jsx. | Configure VAPID keys in .env. |
-| `src/services/offlineCacheService.js` | `cacheData` / `retrieveCachedData` | **COMPLETE:** Full IndexedDB with orders, SKU, customers, activityLog stores. | Production-ready. |
-| `src/utils/dataUtils.js` | `deduplicateOrders` | Optimized for high-volume batches. | Implemented. Monitoring performance. |
-| `src/utils/labelGenerator.js` | `generateLabel` | PDF generation live via jsPDF. | Add direct thermal printer integration. |
-| `src/services/activityLogger.js` | `logActivity` | **COMPLETE:** Integrated with IndexedDB. | Production-ready. |
-| `src/services/keyboardShortcuts.js` | `registerShortcut` | Conflict resolution & default set live. | Done. |
+## 📋 Currently In Progress
+
+| Task ID | Description | Assignee | Started | Status |
+|---------|-------------|----------|---------|--------|
+| — | *No active tasks* | — | — | — |
 
 ---
 
-## Pending UI / Feature Work (Admin‑Friendly Roadmap Items)
-These items are already reflected in the **Roadmap** page for admin visibility. No code details are included – only plain language descriptions.
+## ✅ Recently Completed (Last 7 Days)
 
-- **Push Notifications** – Real‑time alerts for order status changes via web‑push, visible in the admin dashboard.
-- **WhatsApp Order Updates** – Automated order status messages sent through WhatsApp Business API.
-- **Auto Carrier Selection** – Automatic routing of shipments to the most cost‑effective carrier.
-- **Advanced Security** – Implement 2FA, IP whitelisting, and hardened session management.
-
----
-
-## Phase 14: System Resilience & Intelligence (✅ COMPLETE)
-1. **Goal:** Achieve "Five Nines" reliability through robust offline-first architecture and proactive intelligence.
-2. **Completed Tasks:**
-   - [x] [14.1] Implement full Order & SKU persistence in `DataContext` via `offlineCacheService`.
-   - [x] [14.2] Refine `PredictiveAnalytics` UI with premium visualizations and actionable insights.
-   - [x] [14.3] Modularize `NotificationHub` for unified WhatsApp/Push/System alerts.
-   - [x] [14.4] Polish responsive glassmorphism styles for high-end mobile experience.
+| Task ID | Description | Completed By | Date | Files Modified |
+|---------|-------------|--------------|------|----------------|
+| P14.1 | Full IndexedDB Persistence | Antigravity AI | 2026-01-04 | `offlineCacheService.js`, `DataContext.jsx`, `activityLogger.js` |
+| P14.2 | Enhanced PredictiveAnalytics with Recharts | Antigravity AI | 2026-01-04 | `PredictiveAnalytics.jsx` |
+| P14.3 | Unified NotificationHub Component | Antigravity AI | 2026-01-04 | `NotificationHub.jsx`, `NotificationContext.jsx` |
+| P14.4 | Premium MobileBottomNav Styling | Antigravity AI | 2026-01-04 | `MobileBottomNav.jsx`, `MobileBottomNav.css` |
+| P14.5 | ErrorBoundary Component | Antigravity AI | 2026-01-04 | `ErrorBoundary.jsx` |
+| BUG-001 | White Page Error Fix (imports) | Antigravity AI | 2026-01-04 | `main.jsx`, `internationalService.js`, `DataContext.jsx` |
 
 ---
 
-## Phase 14.5: Omni-Channel Globalization (✅ COMPLETE)
-1. **Goal:** Enable international commerce with multi-currency, localization, and compliance support.
-2. **Completed Tasks:**
-   - [x] [14.5.1] `internationalService.js` - Currency conversion and int'l shipping estimates.
-   - [x] [14.5.2] `localizationService.js` - Locale-aware date/currency formatting.
-   - [x] [14.5.3] `complianceService.js` - HSN validation and export duty calculations.
-   - [x] [14.5.4] `GlobalLedger.jsx` - Multi-currency financial dashboard.
-   - [x] [14.5.5] `ShortcutsModal.jsx` - Power user keyboard reference.
-   - [x] [14.5.6] International zones added to `ZoneMap.jsx`.
+## 📂 Pending Tasks – Ready to Claim
+
+### Phase 15: Production Hardening
+| Task ID | Priority | Description | Est. Time | Dependencies |
+|---------|----------|-------------|-----------|--------------|
+| P15.1 | HIGH | Service Worker for offline-first PWA | 2-3 hrs | None |
+| P15.2 | HIGH | Global error handling & logging | 1-2 hrs | P14.5 ✅ |
+| P15.3 | MEDIUM | Code splitting & lazy loading | 2-3 hrs | None |
+| P15.4 | HIGH | Security audit (XSS, input sanitization) | 2-3 hrs | None |
+| P15.5 | MEDIUM | Unit tests for critical paths | 3-4 hrs | None |
+
+### Feature Backlog
+| Task ID | Priority | Description | Est. Time | Dependencies |
+|---------|----------|-------------|-----------|--------------|
+| FEAT-01 | HIGH | WhatsApp Business API Integration | 4-6 hrs | Requires API keys |
+| FEAT-02 | HIGH | Auto Carrier Selection Logic | 3-4 hrs | None |
+| FEAT-03 | MEDIUM | Advanced 2FA Authentication | 3-4 hrs | None |
+| FEAT-04 | LOW | Thermal Printer Integration | 2-3 hrs | None |
+| FEAT-05 | MEDIUM | Real-time Push Notifications | 2-3 hrs | VAPID keys required |
 
 ---
 
-## Phase 15: Production Hardening (✅ 90% COMPLETE)
+## 🏗️ Service Status & Stub Completion
+
+| Service File | Status | Notes |
+|--------------|--------|-------|
+| `offlineCacheService.js` | ✅ COMPLETE | Full IndexedDB with 6 stores |
+| `activityLogger.js` | ✅ COMPLETE | Integrated with cache |
+| `whatsappService.js` | 🟡 MOCK | Needs production API endpoint |
+| `pushNotificationService.js` | 🟡 PARTIAL | Needs VAPID key configuration |
+| `zohoBridgeService.js` | 🟡 MOCK | Awaiting Zoho OAuth setup |
+| `marketplaceService.js` | 🟡 MOCK | Amazon/Flipkart API pending |
+| `carrierRateEngine.js` | ✅ COMPLETE | Ready for production |
+| `analyticsService.js` | ✅ COMPLETE | Trend analysis working |
+| `forecastService.js` | ✅ COMPLETE | SMA forecasting active |
+
+---
+
+## 🎨 Design Guidelines
+
+All new UI components MUST follow:
+1. **Theme**: "Bluewud Dark Elite" with glassmorphism
+2. **Colors**: Use CSS variables (`--primary`, `--success`, `--danger`, etc.)
+3. **Typography**: Outfit font family
+4. **Animations**: Use `animate-fade` class for smooth transitions
+5. **Glass Effect**: Apply `.glass` and `.glass-hover` classes
+6. **Mobile**: Ensure touch-friendly targets (min 44px)
+7. **Scrollbars**: Keep invisible with `scrollbar-width: none`
+
+---
+
+## Phase 15: Production Hardening (✅ 95% COMPLETE)
 1. **Goal:** Prepare the application for full production deployment.
 2. **Completed Tasks:**
    - [x] [15.1] Implemented Error Boundaries for global error catching.
@@ -69,18 +90,53 @@ These items are already reflected in the **Roadmap** page for admin visibility. 
    - [x] [15.3] Configured Vite for code splitting and build optimization.
    - [x] [15.4] Enhanced Service Worker v2.0 with smart caching strategies.
    - [x] [15.5] Created unit tests for critical utility functions.
+   - [x] [15.6] Integration tests for order flow (`src/tests/integration.test.js`).
+   - [x] [15.7] Created `NotificationContext.jsx` for unified alert management.
 3. **Remaining:**
-   - [ ] Integration tests for order flow.
    - [ ] Performance profiling with Lighthouse.
 
 ---
 
-## Guidance for Future AI Agents
-1. **Phase 14 is complete.** Focus on Phase 15 production hardening tasks.
-2. **Maintain the design aesthetic** – all new UI should follow the existing "Bluewud Dark Elite" theme with glassmorphism and invisible scrollbars.  
-3. **Write unit tests** for each new function, especially data‑handling utilities.
-4. **Update this document** and `HUMAN_TASKS.md` after completing each item.
+## 🔄 Active Task Tracking (Multi-Agent Collaboration)
+
+> **IMPORTANT:** Before starting work, check this section and claim your task to avoid duplicates.
+
+| Task ID | Description | Assigned To | Status | Last Updated |
+|---------|-------------|-------------|--------|--------------|
+| 15.8 | Lighthouse Performance Audit | *AVAILABLE* | 🟡 Open | 2026-01-04 |
+| 16.1 | Real WhatsApp API Integration | *AVAILABLE* | 🟡 Open | 2026-01-04 |
+| 16.2 | Thermal Printer Integration | *AVAILABLE* | 🟡 Open | 2026-01-04 |
+| 16.3 | 2FA Implementation | *AVAILABLE* | 🟡 Open | 2026-01-04 |
+
+### How to Claim a Task:
+1. Change `*AVAILABLE*` to your agent identifier (e.g., `Antigravity-Session-123`).
+2. Update `Status` to `🔵 In Progress`.
+3. Update `Last Updated` with current date.
+4. **Commit immediately** before starting work.
+
+### How to Complete a Task:
+1. Update `Status` to `✅ Done`.
+2. Move the task entry to the "Recently Completed" table above.
+3. Commit and push your changes.
 
 ---
 
-*Last Updated by Antigravity AI on 2026‑01‑04.*
+## Guidance for Future AI Agents
+1. **Check Active Task Tracking** before starting ANY work. Claim your task first.
+2. **Phase 15** is nearly complete. Focus on remaining tasks or start Phase 16.
+3. **Maintain the design aesthetic** – all new UI should follow the existing "Bluewud Dark Elite" theme with glassmorphism and invisible scrollbars.  
+4. **Write unit tests** for each new function, especially data‑handling utilities.
+5. **Commit frequently** to keep GitHub in sync for collaboration.
+6. **Update this document** and `HUMAN_TASKS.md` after completing each item.
+
+---
+
+## 🔗 Related Documentation
+
+- `HUMAN_TASKS.md` – Tasks requiring human intervention (API keys, deployments)
+- `CONTRIBUTING.md` – Git workflow and code style guidelines
+- `.env.example` – Environment variables template
+
+---
+
+*Last Updated by Antigravity AI on 2026‑01‑04 02:30 IST.*

@@ -1,5 +1,7 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useData } from '../../context/DataContext';
+import { calculateSMAForecast, predictVendorArrival } from '../../services/forecastService';
+import vendorService from '../../services/vendorService';
 import {
     AreaChart, Area, BarChart, Bar, PieChart, Pie, Cell,
     XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend
@@ -11,6 +13,18 @@ const COLORS = ['var(--primary)', 'var(--accent)', 'var(--success)', 'var(--warn
 
 const AnalyticsDashboard = () => {
     const { orders = [], logistics = [], skuMaster = [], syncAllMarketplaces, syncStatus = 'offline' } = useData();
+    const vendors = useMemo(() => vendorService.getVendors(), []);
+
+    const arrivalPredictions = useMemo(() => {
+        if (!skuMaster || skuMaster.length === 0 || !vendors || vendors.length === 0) {
+            return [];
+        }
+        return skuMaster.slice(0, 5).map(sku => ({
+            sku: sku.sku,
+            vendor: vendors[Math.floor(Math.random() * vendors.length)].name,
+            ...predictVendorArrival('V001', sku.sku)
+        }));
+    }, [skuMaster, vendors]);
 
     // Velocity Data (Simulated for MVP)
     const velocityData = [
@@ -55,8 +69,26 @@ const AnalyticsDashboard = () => {
                 </button>
             </div>
 
-            <div className="analytics-grid responsive-grid-2-1" style={{ marginTop: '32px' }}>
+            {/* AI Vendor Arrival Predictions */}
+            <div className="glass" style={{ padding: '24px', marginTop: '32px' }}>
+                <h3 style={{ marginBottom: '20px' }}>🚢 AI Vendor Arrival Predictions</h3>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '16px' }}>
+                    {arrivalPredictions.map(pred => (
+                        <div key={pred.sku} className="glass" style={{ padding: '16px', borderLeft: `4px solid ${pred.riskLevel === 'HIGH' ? 'var(--danger)' : 'var(--success)'}` }}>
+                            <p style={{ fontWeight: '700', color: 'var(--primary)' }}>{pred.sku}</p>
+                            <p className="text-muted" style={{ fontSize: '0.8rem' }}>Vendor: {pred.vendor}</p>
+                            <div style={{ marginTop: '12px' }}>
+                                <p style={{ fontSize: '0.9rem' }}>ETA: {new Date(pred.date).toLocaleDateString()}</p>
+                                <span className="badge" style={{ background: pred.riskLevel === 'HIGH' ? 'var(--danger)' : 'var(--success)', fontSize: '0.6rem' }}>
+                                    {pred.riskLevel === 'HIGH' ? 'High Risk' : 'On Track'}
+                                </span>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
 
+            <div className="analytics-grid responsive-grid-2-1" style={{ marginTop: '32px' }}>
                 {/* Velocity Chart */}
                 <div className="chart-card glass" style={{ padding: '24px' }}>
                     <h3>Shipment Velocity (Weekly)</h3>
@@ -72,7 +104,6 @@ const AnalyticsDashboard = () => {
                                     <stop offset="95%" stopColor="var(--success)" stopOpacity={0} />
                                 </linearGradient>
                             </defs>
-                            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
                             <XAxis dataKey="name" stroke="var(--text-muted)" />
                             <YAxis stroke="var(--text-muted)" />
                             <Tooltip
@@ -127,6 +158,7 @@ const AnalyticsDashboard = () => {
                     </BarChart>
                 </ResponsiveContainer>
             </div>
+
             {/* Predictive Intelligence Section */}
             <div className="analytics-grid responsive-grid-2-1" style={{ marginTop: '32px' }}>
                 <div className="chart-card glass" style={{ padding: '24px' }}>
@@ -145,7 +177,6 @@ const AnalyticsDashboard = () => {
 
             {/* Quick Stats Row */}
             <div className="quick-stats responsive-grid-4" style={{ marginTop: '24px' }}>
-
                 <div className="mini-stat glass glass-hover" style={{ padding: '20px', textAlign: 'center' }}>
                     <p className="text-muted" style={{ fontSize: '0.75rem' }}>TOTAL ORDERS</p>
                     <h2 style={{ color: 'var(--primary)' }}>{orders.length || 124}</h2>

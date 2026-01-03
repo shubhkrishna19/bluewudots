@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { useData } from '../../context/DataContext';
+import complianceService from '../../services/complianceService';
 
 const InvoiceGenerator = () => {
     const { orders, skuMaster } = useData();
     const [selectedOrder, setSelectedOrder] = useState(null);
+    const [ewayBillData, setEwayBillData] = useState(null);
 
     // Mock invoice data
     const mockInvoices = [
@@ -46,9 +48,20 @@ const InvoiceGenerator = () => {
     const totalGST = mockInvoices.reduce((sum, inv) => sum + inv.gstAmount, 0);
 
     const generateInvoicePDF = (invoice) => {
-        // In production: Use jspdf or API to generate
         console.log('Generating invoice PDF for:', invoice.id);
         alert(`Invoice ${invoice.id} would be downloaded as PDF`);
+    };
+
+    const generateEwayBill = (invoice) => {
+        const ewayBill = complianceService.generateEwayBill({
+            id: invoice.orderId,
+            total: invoice.total,
+            sku: invoice.items[0]?.sku || 'DEFAULT',
+            state: 'Karnataka',
+            carrier: 'Delhivery'
+        });
+        setEwayBillData(ewayBill);
+        alert(`E-way Bill Generated: ${ewayBill.ewayNumber}\nValid Until: ${new Date(ewayBill.validUntil).toLocaleDateString()}`);
     };
 
     return (
@@ -134,6 +147,15 @@ const InvoiceGenerator = () => {
                             >
                                 PDF
                             </button>
+                            {invoice.total > 50000 && (
+                                <button
+                                    className="btn-secondary glass-hover"
+                                    style={{ padding: '6px 12px', fontSize: '0.65rem', background: 'var(--accent)' }}
+                                    onClick={() => generateEwayBill(invoice)}
+                                >
+                                    📦 E-way
+                                </button>
+                            )}
                         </div>
                     </div>
                 ))}

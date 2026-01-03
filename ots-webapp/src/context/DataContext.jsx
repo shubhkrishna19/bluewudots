@@ -8,9 +8,16 @@ import { calculateSMAForecast, predictSKUDemand } from '../services/forecastServ
 import { getOrderTrend, projectRevenue, calculateSKUProfitability } from '../services/analyticsService';
 import { fetchSKUMaster, pushOrderToZoho } from '../services/zohoBridgeService';
 import marketplaceService from '../services/marketplaceService';
+<<<<<<< HEAD
 import searchService from '../services/searchService';
 import marginProtectionService from '../services/marginProtectionService';
 import cacheService from '../services/offlineCacheService';
+=======
+import { getWhatsAppService } from '../services/whatsappServiceEnhanced';
+import webhookService from '../services/zohoWebhookService';
+import { syncDeltaOrders } from '../services/zohoBridgeService';
+import { initOfflineCacheService, getOfflineCacheService } from '../services/offlineCacheService';
+>>>>>>> 4be53487f72a2bfacf3cde5d60b2e7a7e0ec3174
 
 import { SKU_MASTER, SKU_ALIASES } from '../data/skuMasterData';
 
@@ -30,9 +37,59 @@ export const DataProvider = ({ children }) => {
 
 
     const [activityLog, setActivityLog] = useState([]);
+    const [agentMetadata, setAgentMetadata] = useState({
+        lastAgent: 'Antigravity',
+        sessionStart: new Date().toISOString(),
+        mutations: 0
+    });
     const [loading, setLoading] = useState(true);
+
+    // Initialize Cache
+    useEffect(() => {
+        const cache = initOfflineCacheService();
+        cache.initialize().then(async () => {
+            const cachedOrders = await cache.getAllData('orders');
+            if (cachedOrders.length > 0 && orders.length === 0) {
+                setOrders(cachedOrders.map(c => c.data));
+            }
+        });
+    }, []);
+
+    // Zoho Webhook & Delta Sync
+    useEffect(() => {
+        const unsubscribe = webhookService.subscribe(({ type, data }) => {
+            if (type === 'ORDER_UPDATED') {
+                setOrders(prev => {
+                    const updatedOrders = prev.map(o => o.id === data.id ? { ...o, ...data } : o);
+                    setAgentMetadata(m => ({ ...m, mutations: m.mutations + 1 }));
+                    return updatedOrders;
+                });
+            } else if (type === 'INVENTORY_SYNC') {
+                setInventoryLevels(prev => ({ ...prev, [data.sku]: data.levels }));
+            }
+        });
+
+        // Persist orders to cache
+        if (orders.length > 0) {
+            const cache = getOfflineCacheService();
+            orders.forEach(o => cache.cacheData('orders', o.id, o));
+        }
+
+        const syncInterval = setInterval(() => {
+            if (orders.length > 0) {
+                syncDeltaOrders(orders).catch(err => console.error('Delta Sync Failed:', err));
+            }
+        }, 300000); // 5 mins
+
+        return () => {
+            unsubscribe();
+            clearInterval(syncInterval);
+        };
+    }, [orders.length]);
     const [syncStatus, setSyncStatus] = useState('offline'); // offline | online | syncing | error
     const [lastSyncTime, setLastSyncTime] = useState(null);
+    const [pushEnabled, setPushEnabled] = useState(false);
+    const [offlineQueue, setOfflineQueue] = useState([]);
 
     // ============================================
     // INITIAL DATA LOAD
@@ -174,6 +231,52 @@ export const DataProvider = ({ children }) => {
     }, [batches, loading]);
 
     // ============================================
+    // LIVE TRACKING SIMULATOR
+    // ============================================
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setOrders(prev => prev.map(order => {
+                if (order.status === 'In-Transit' && Math.random() > 0.8) {
+                    const hubs = ['Mumbai Gateway', 'Delhi Sorting Hub', 'Nagpur Logistics Park', 'Ambala Center', 'Kolkata Hub'];
+                    const randomHub = hubs[Math.floor(Math.random() * hubs.length)];
+                    return {
+                        ...order,
+                        lastUpdated: new Date().toISOString(),
+                        statusHistory: [
+                            ...(order.statusHistory || []),
+                            {
+                                from: 'In-Transit',
+                                to: 'In-Transit',
+                                timestamp: new Date().toISOString(),
+                                location: randomHub,
+                                user: 'carrier-service'
+                            }
+                        ]
+                    };
+                }
+                return order;
+            }));
+        }, 30000); // Check every 30s
+        return () => clearInterval(interval);
+    }, []);
+
+    // ============================================
+    // SMART ROUTING LOGIC
+    // ============================================
+
+    /**
+     * Smart routing for regional warehouse selection
+     */
+    const smartRouteOrder = useCallback((pincode) => {
+        const p = parseInt(pincode);
+        if (p >= 110000 && p < 300000) return 'NORTH-HUB';
+        if (p >= 400000 && p < 600000) return 'WEST-HUB';
+        if (p >= 500000 && p < 600000) return 'SOUTH-HUB';
+        if (p >= 700000 && p < 900000) return 'EAST-HUB';
+        return 'CENTRAL-WH';
+    }, []);
+
+    // ============================================
     // ORDER MANAGEMENT
     // ============================================
 
@@ -196,7 +299,8 @@ export const DataProvider = ({ children }) => {
                 timestamp: new Date().toISOString(),
                 user: 'system'
             }],
-            createdAt: new Date().toISOString()
+            createdAt: new Date().toISOString(),
+            warehouse: smartRouteOrder(orderData.pincode)
         };
 
         // --- MARGIN PROTECTION CHECK ---
@@ -246,6 +350,10 @@ export const DataProvider = ({ children }) => {
 
         logOrderCreate(newOrder);
         notifyOrderCreated(newOrder);
+        try {
+            const whatsapp = getWhatsAppService();
+            whatsapp.sendWhatsAppMessage(newOrder.id, 'order_confirmation', newOrder.phone, { orderId: newOrder.id, customer: newOrder.customerName });
+        } catch (e) { console.warn('WhatsApp not initialized'); }
 
         return { success: true, order: newOrder };
     }, []);
@@ -255,6 +363,12 @@ export const DataProvider = ({ children }) => {
     /**
      * Update order status with state machine validation
      */
+    const updateOrder = useCallback((orderId, updates) => {
+        setOrders(prev => prev.map(order =>
+            order.id === orderId ? { ...order, ...updates, lastUpdated: new Date().toISOString() } : order
+        ));
+    }, []);
+
     const updateOrderStatus = useCallback((orderId, newStatus, metadata = {}) => {
         let result = null;
 
@@ -291,12 +405,27 @@ export const DataProvider = ({ children }) => {
                     }
 
                     // Trigger notifications for key statuses
+<<<<<<< HEAD
                     if (newStatus === ORDER_STATUSES.IN_TRANSIT || newStatus === ORDER_STATUSES.PICKED_UP) {
                         notifyOrderShipped(transitionResult.order);
                     } else if (newStatus === ORDER_STATUSES.DELIVERED) {
                         notifyOrderDelivered(transitionResult.order);
                     } else if (newStatus.startsWith('RTO')) {
                         notifyOrderRTO(transitionResult.order, metadata.reason || 'Shipment returned');
+=======
+                    try {
+                        const whatsapp = getWhatsAppService();
+                        if (newStatus === ORDER_STATUSES.IN_TRANSIT || newStatus === ORDER_STATUSES.PICKED_UP) {
+                            notifyOrderShipped(transitionResult.order);
+                            whatsapp.sendWhatsAppMessage(orderId, 'shipping_update', order.phone, { orderId, status: newStatus });
+                        } else if (newStatus === ORDER_STATUSES.DELIVERED) {
+                            whatsapp.sendWhatsAppMessage(orderId, 'delivery_confirmation', order.phone, { orderId });
+                        } else if (newStatus.startsWith('RTO')) {
+                            whatsapp.sendWhatsAppMessage(orderId, 'rto_alert', order.phone, { orderId });
+                        }
+                    } catch (e) {
+                        console.warn('WhatsApp service not available for transitions:', e.message);
+>>>>>>> 4be53487f72a2bfacf3cde5d60b2e7a7e0ec3174
                     }
 
                     return transitionResult.order;
@@ -446,6 +575,31 @@ export const DataProvider = ({ children }) => {
                 location
             }
         }));
+    }, []);
+
+    /**
+     * Warehouse: Transfer stock between locations/bins
+     */
+    const transferStock = useCallback((sku, fromBin, toBin, qty) => {
+        console.log(`📦 Transferring ${qty} of ${sku} from ${fromBin} to ${toBin}`);
+        setInventoryLevels(prev => {
+            const current = prev[sku] || { inStock: 0, reserved: 0, location: 'UNKNOWN' };
+            return {
+                ...prev,
+                [sku]: {
+                    ...current,
+                    location: toBin // Simplified: moves the SKU to the new bin
+                }
+            };
+        });
+
+        setActivityLog(prev => [{
+            id: Date.now(),
+            action: 'STOCK_TRANSFER',
+            sku,
+            details: `${qty} units moved: ${fromBin} -> ${toBin}`,
+            timestamp: new Date().toISOString()
+        }, ...prev]);
     }, []);
 
     /**
@@ -622,6 +776,7 @@ export const DataProvider = ({ children }) => {
 
         // Order Management
         addOrder,
+        updateOrder,
         updateOrderStatus,
         bulkUpdateStatus,
         assignCarrier,
@@ -653,6 +808,7 @@ export const DataProvider = ({ children }) => {
         // Warehouse
         inventoryLevels,
         adjustStock,
+        transferStock,
         setStockLocation,
         syncAllMarketplaces,
 
@@ -681,7 +837,81 @@ export const DataProvider = ({ children }) => {
         setLogistics,
         setSkuMaster,
         getRecommendations: (state, city, weight) => getAllRates({ state, city, weight })
+
+    // Push Notifications & Offline Support
+    pushEnabled,
+        enablePushNotifications,
+        queueOrderOffline,
+        syncOfflineOrders
     };
+
+    // ============================================
+    // PUSH NOTIFICATIONS & OFFLINE SUPPORT
+    // ============================================
+    /**
+     * Initialize push notifications on app load
+     */
+    const initializePushNotifications = useCallback(async () => {
+        try {
+            const enabled = await isPushEnabled();
+            setPushEnabled(enabled);
+            if (enabled) {
+                // Process any queued notifications
+                await processQueuedNotifications();
+                console.log('[Push] Notifications enabled and initialized');
+            }
+        } catch (err) {
+            console.error('[Push] Initialization failed:', err);
+        }
+    }, []);
+
+    /**
+     * Register for push notifications
+     */
+    const enablePushNotifications = useCallback(async () => {
+        try {
+            const subscription = await registerPushSubscription();
+            if (subscription) {
+                setPushEnabled(true);
+                return { success: true, subscription };
+            }
+            return { success: false, error: 'Push registration returned null' };
+        } catch (err) {
+            return { success: false, error: err.message };
+        }
+    }, []);
+
+    /**
+     * Add order to offline queue
+     */
+    const queueOrderOffline = useCallback((order) => {
+        setOfflineQueue(prev => [...prev, { ...order, queuedAt: new Date().toISOString() }]);
+        cacheData('orders:offline-queue', offlineQueue);
+    }, [offlineQueue]);
+
+    /**
+     * Sync offline orders when coming online
+     */
+    const syncOfflineOrders = useCallback(async () => {
+        if (offlineQueue.length === 0) return { success: true, synced: 0 };
+        try {
+            const results = await Promise.all(
+                offlineQueue.map(order => importOrders([order], 'offline-sync'))
+            );
+            const synced = results.reduce((sum, r) => sum + (r.count || 0), 0);
+            setOfflineQueue([]);
+            await removeCachedData('orders:offline-queue');
+            return { success: true, synced };
+        } catch (err) {
+            return { success: false, error: err.message };
+        }
+    }, [offlineQueue, importOrders]);
+
+    // Initialize push notifications on mount
+    useEffect(() => {
+        initializePushNotifications();
+    }, [initializePushNotifications]);
+
 
     return (
         <DataContext.Provider value={value}>

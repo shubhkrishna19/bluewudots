@@ -6,6 +6,7 @@ import { DataProvider } from './context/DataContext'
 import { subscribeUser } from './services/pushNotificationService'
 import { AuthProvider } from './context/AuthContext'
 import { FinancialProvider } from './context/FinancialContext'
+import { NotificationProvider } from './context/NotificationContext'
 import ErrorBoundary from './components/ErrorBoundary'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
@@ -14,7 +15,9 @@ ReactDOM.createRoot(document.getElementById('root')).render(
       <AuthProvider>
         <DataProvider>
           <FinancialProvider>
-            <App />
+            <NotificationProvider>
+              <App />
+            </NotificationProvider>
           </FinancialProvider>
         </DataProvider>
       </AuthProvider>

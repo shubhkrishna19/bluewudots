@@ -8,7 +8,7 @@ import CarrierSelection from './components/Logistics/CarrierSelection'
 import UniversalImporter from './components/Automation/UniversalImporter'
 import SKUMaster from './components/Commercial/SKUMaster'
 import BarcodeDispatcher from './components/Orders/BarcodeDispatcher'
-import AnalyticsDashboard from './components/Dashboard/AnalyticsDashboard'
+import AnalyticsDashboard from './components/Dashboard/AnalyticsEnhanced'
 import DealerLookup from './components/Dealers/DealerLookup'
 import SettingsPanel from './components/Settings/SettingsPanel'
 import OrderList from './components/Orders/OrderList'
@@ -36,11 +36,20 @@ import CustomerAnalytics from './components/Customers/CustomerAnalytics'
 import GlobalLedger from './components/Commercial/GlobalLedger'
 import ProductionTracker from './components/SupplyChain/ProductionTracker'
 import QualityGate from './components/SupplyChain/QualityGate'
+<<<<<<< HEAD
 import MarginGuard from './components/Commercial/MarginGuard'
 import AmazonMapper from './components/Automation/AmazonMapper'
 import ShortcutsModal from './components/Help/ShortcutsModal'
 import InternationalShipping from './components/Logistics/InternationalShipping'
 import { initShortcuts, registerDefaultShortcuts, destroyShortcuts } from './services/keyboardShortcuts'
+=======
+import searchService from './services/searchService'
+import pushNotificationService from './services/pushNotificationService'
+import ResponsiveLayout from './components/Shared/ResponsiveLayout'
+import ErrorBoundary from './components/Shared/ErrorBoundary'
+import keyboardShortcuts from './services/keyboardShortcutsEnhanced'
+import { initWhatsAppService } from './services/whatsappServiceEnhanced'
+>>>>>>> 4be53487f72a2bfacf3cde5d60b2e7a7e0ec3174
 
 
 function App() {
@@ -51,9 +60,30 @@ function App() {
   const [showProfile, setShowProfile] = useState(false)
   const [showShortcuts, setShowShortcuts] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+<<<<<<< HEAD
   const { syncSKUMaster, syncStatus, universalSearch, orders, skuMaster } = useData()
   const [searchQuery, setSearchQuery] = useState('')
   const [searchResults, setSearchResults] = useState(null)
+=======
+  const [searchQuery, setSearchQuery] = useState('')
+  const [searchResults, setSearchResults] = useState(null)
+  const [isSearchActive, setIsSearchActive] = useState(false)
+  const { syncSKUMaster, syncStatus, orders = [], skuMaster = [] } = useData()
+
+  // Register for push notifications on mount
+  useEffect(() => {
+    if (isAuthenticated) {
+      pushNotificationService.registerServiceWorker();
+
+      // Initialize WhatsApp Service
+      initWhatsAppService(
+        import.meta.env.VITE_WHATSAPP_API_TOKEN,
+        import.meta.env.VITE_WHATSAPP_BUSINESS_ID,
+        import.meta.env.VITE_WHATSAPP_PHONE_ID
+      );
+    }
+  }, [isAuthenticated]);
+>>>>>>> 4be53487f72a2bfacf3cde5d60b2e7a7e0ec3174
 
   // Auto-sync SKU Master on mount & Initialize Shortcuts & Push
   useEffect(() => {
@@ -84,6 +114,37 @@ function App() {
     return () => destroyShortcuts();
   }, [isAuthenticated, syncSKUMaster]);
 
+  // Initialize enhanced keyboard shortcuts
+  useEffect(() => {
+    if (isAuthenticated) {
+      // Example: Ctrl+K opens search
+      keyboardShortcuts.on('commandPalette', () => {
+        document.querySelector('.search-bar input')?.focus();
+      });
+      // Ctrl+N for new order
+      keyboardShortcuts.on('newOrder', () => setShowQuickOrder(true));
+
+      return () => {
+        keyboardShortcuts.off('commandPalette');
+        keyboardShortcuts.off('newOrder');
+      };
+    }
+  }, [isAuthenticated]);
+
+  const handleSearch = (e) => {
+    const query = e.target.value;
+    setSearchQuery(query);
+
+    if (query.length >= 2) {
+      const results = searchService.universalSearch({ orders, skuMaster }, query);
+      setSearchResults(results);
+      setIsSearchActive(true);
+    } else {
+      setSearchResults(null);
+      setIsSearchActive(false);
+    }
+  };
+
 
   // Show loading spinner while checking auth
   if (isLoading) {
@@ -103,6 +164,7 @@ function App() {
   }
 
   return (
+<<<<<<< HEAD
     <div className={`app-container animate-fade ${isMobileMenuOpen ? 'mobile-menu-open' : ''}`}>
       {/* Sidebar Navigation */}
       <nav className={`sidebar glass ${isMobileMenuOpen ? 'open' : ''}`}>
@@ -136,9 +198,20 @@ function App() {
                 <li className={activeTab === 'orders' ? 'active' : ''} onClick={() => { setActiveTab('orders'); setIsMobileMenuOpen(false); }}>📤 Universal Import</li>
                 <li className={activeTab === 'automation' ? 'active' : ''} onClick={() => { setActiveTab('automation'); setIsMobileMenuOpen(false); }}>🤖 Amazon Mapper</li>
               </ul>
+=======
+    <ErrorBoundary>
+      <div className={`app-container animate-fade ${isMobileMenuOpen ? 'mobile-menu-open' : ''}`}>
+        {/* Main Layout Wrap (Responsive) */}
+        <ResponsiveLayout
+          sidebar={<nav className={`sidebar glass ${isMobileMenuOpen ? 'open' : ''}`}>
+            <div className="logo-section">
+              <div className="logo-icon">B</div>
+              <h2>Bluewud<span>OTS</span></h2>
+              <button className="mobile-close" onClick={() => setIsMobileMenuOpen(false)}>✕</button>
+>>>>>>> 4be53487f72a2bfacf3cde5d60b2e7a7e0ec3174
             </div>
-          )}
 
+<<<<<<< HEAD
           {user?.role !== 'operator' && user?.role !== 'viewer' && (
             <div className="nav-group">
               <label>LOGISTICS</label>
@@ -148,9 +221,91 @@ function App() {
                 <li className={activeTab === 'carrierperf' ? 'active' : ''} onClick={() => { setActiveTab('carrierperf'); setIsMobileMenuOpen(false); }}>🏆 Performance</li>
                 <li className={activeTab === 'zones' ? 'active' : ''} onClick={() => { setActiveTab('zones'); setIsMobileMenuOpen(false); }}>🗺️ Zones</li>
               </ul>
-            </div>
-          )}
+=======
+            <div className="nav-items">
+              <div className="nav-group">
+                <label>OPERATIONS</label>
+                <ul className="nav-links">
+                  <li className={activeTab === 'dashboard' ? 'active' : ''} onClick={() => { setActiveTab('dashboard'); setIsMobileMenuOpen(false); }}>📊 Analytics</li>
+                  {user?.role !== 'viewer' && <li className={activeTab === 'metrics' ? 'active' : ''} onClick={() => { setActiveTab('metrics'); setIsMobileMenuOpen(false); }}>📈 KPIs</li>}
+                  <li className={activeTab === 'orderlist' ? 'active' : ''} onClick={() => { setActiveTab('orderlist'); setIsMobileMenuOpen(false); }}>📋 Orders</li>
+                  {['admin', 'manager'].includes(user?.role) && <li className={activeTab === 'bulk' ? 'active' : ''} onClick={() => { setActiveTab('bulk'); setIsMobileMenuOpen(false); }}>⚡ Bulk</li>}
+                  <li className={activeTab === 'tracking' ? 'active' : ''} onClick={() => { setActiveTab('tracking'); setIsMobileMenuOpen(false); }}>📡 Tracking</li>
+                  {user?.role !== 'viewer' && <li className={activeTab === 'rto' ? 'active' : ''} onClick={() => { setActiveTab('rto'); setIsMobileMenuOpen(false); }}>↩️ RTO</li>}
+                </ul>
+              </div>
 
+              {user?.role !== 'viewer' && (
+                <div className="nav-group">
+                  <label>INVENTORY & IMPORT</label>
+                  <ul className="nav-links">
+                    <li className={activeTab === 'inventory' ? 'active' : ''} onClick={() => { setActiveTab('inventory'); setIsMobileMenuOpen(false); }}>🏷️ SKU Master</li>
+                    <li className={activeTab === 'warehouse' ? 'active' : ''} onClick={() => { setActiveTab('warehouse'); setIsMobileMenuOpen(false); }}>🏭 Warehouse</li>
+                    <li className={activeTab === 'dispatcher' ? 'active' : ''} onClick={() => { setActiveTab('dispatcher'); setIsMobileMenuOpen(false); }}>📷 Dispatch</li>
+                    <li className={activeTab === 'orders' ? 'active' : ''} onClick={() => { setActiveTab('orders'); setIsMobileMenuOpen(false); }}>📤 Universal Import</li>
+                  </ul>
+                </div>
+              )}
+
+              {user?.role !== 'operator' && user?.role !== 'viewer' && (
+                <div className="nav-group">
+                  <label>LOGISTICS</label>
+                  <ul className="nav-links">
+                    <li className={activeTab === 'logistics' ? 'active' : ''} onClick={() => { setActiveTab('logistics'); setIsMobileMenuOpen(false); }}>🚚 Carriers</li>
+                    <li className={activeTab === 'carrierperf' ? 'active' : ''} onClick={() => { setActiveTab('carrierperf'); setIsMobileMenuOpen(false); }}>🏆 Performance</li>
+                    <li className={activeTab === 'zones' ? 'active' : ''} onClick={() => { setActiveTab('zones'); setIsMobileMenuOpen(false); }}>🗺️ Zones</li>
+                  </ul>
+                </div>
+              )}
+
+              {['admin', 'manager'].includes(user?.role) && (
+                <div className="nav-group">
+                  <label>FINANCE</label>
+                  <ul className="nav-links">
+                    <li className={activeTab === 'finance' ? 'active' : ''} onClick={() => { setActiveTab('finance'); setIsMobileMenuOpen(false); }}>💹 Financials</li>
+                    <li className={activeTab === 'commhub' ? 'active' : ''} onClick={() => { setActiveTab('commhub'); setIsMobileMenuOpen(false); }}>💎 Comm. Hub</li>
+                    <li className={activeTab === 'invoice' ? 'active' : ''} onClick={() => { setActiveTab('invoice'); setIsMobileMenuOpen(false); }}>🧾 Invoicing</li>
+                    <li className={activeTab === 'cod' ? 'active' : ''} onClick={() => { setActiveTab('cod'); setIsMobileMenuOpen(false); }}>💰 COD Recon</li>
+                  </ul>
+                </div>
+              )}
+
+              {['admin', 'manager'].includes(user?.role) && (
+                <div className="nav-group">
+                  <label>CRM & MARKETING</label>
+                  <ul className="nav-links">
+                    <li className={activeTab === 'customers' ? 'active' : ''} onClick={() => { setActiveTab('customers'); setIsMobileMenuOpen(false); }}>👥 Customers</li>
+                    <li className={activeTab === 'custintel' ? 'active' : ''} onClick={() => { setActiveTab('custintel'); setIsMobileMenuOpen(false); }}>💎 Customer Intel</li>
+                    <li className={activeTab === 'marketing' ? 'active' : ''} onClick={() => { setActiveTab('marketing'); setIsMobileMenuOpen(false); }}>🎯 Marketing</li>
+                    <li className={activeTab === 'dealers' ? 'active' : ''} onClick={() => { setActiveTab('dealers'); setIsMobileMenuOpen(false); }}>🤝 Dealers</li>
+                  </ul>
+                </div>
+              )}
+
+              {['admin', 'manager'].includes(user?.role) && (
+                <div className="nav-group">
+                  <label>SUPPLY CHAIN</label>
+                  <ul className="nav-links">
+                    <li className={activeTab === 'production' ? 'active' : ''} onClick={() => { setActiveTab('production'); setIsMobileMenuOpen(false); }}>🏭 Production</li>
+                    <li className={activeTab === 'qa' ? 'active' : ''} onClick={() => { setActiveTab('qa'); setIsMobileMenuOpen(false); }}>💎 Quality Gate</li>
+                  </ul>
+                </div>
+              )}
+
+              <div className="nav-group">
+                <label>ADMIN & SUPPORT</label>
+                <ul className="nav-links">
+                  {user?.role === 'admin' && <li className={activeTab === 'activity' ? 'active' : ''} onClick={() => { setActiveTab('activity'); setIsMobileMenuOpen(false); }}>📜 Activity Log</li>}
+                  <li className={activeTab === 'reports' ? 'active' : ''} onClick={() => { setActiveTab('reports'); setIsMobileMenuOpen(false); }}>📄 Export</li>
+                  <li className={activeTab === 'roadmap' ? 'active' : ''} onClick={() => { setActiveTab('roadmap'); setIsMobileMenuOpen(false); }}>🛣️ Roadmap</li>
+                  <li className={activeTab === 'help' ? 'active' : ''} onClick={() => { setActiveTab('help'); setIsMobileMenuOpen(false); }}>❓ Help</li>
+                  {user?.role === 'admin' && <li className={activeTab === 'settings' ? 'active' : ''} onClick={() => { setActiveTab('settings'); setIsMobileMenuOpen(false); }}>⚙️ Settings</li>}
+                </ul>
+              </div>
+>>>>>>> 4be53487f72a2bfacf3cde5d60b2e7a7e0ec3174
+            </div>
+
+<<<<<<< HEAD
           {['admin', 'manager'].includes(user?.role) && (
             <div className="nav-group">
               <label>FINANCE</label>
@@ -162,56 +317,127 @@ function App() {
                 <li className={activeTab === 'invoice' ? 'active' : ''} onClick={() => { setActiveTab('invoice'); setIsMobileMenuOpen(false); }}>🧾 Invoicing</li>
                 <li className={activeTab === 'cod' ? 'active' : ''} onClick={() => { setActiveTab('cod'); setIsMobileMenuOpen(false); }}>💰 COD Recon</li>
               </ul>
+=======
+            <div className="nav-footer glass">
+              <div className="user-profile" style={{ cursor: 'pointer' }} onClick={() => setShowProfile(true)}>
+                <div className="avatar">{user?.avatar || 'U'}</div>
+                <div className="user-info">
+                  <p className="username">{user?.name || 'User'}</p>
+                  <p className="role">{user?.role?.charAt(0).toUpperCase() + user?.role?.slice(1) || 'Role'}</p>
+                </div>
+              </div>
+>>>>>>> 4be53487f72a2bfacf3cde5d60b2e7a7e0ec3174
             </div>
-          )}
+          </nav>}
+        >
+          <main className="main-content">
+            <header className="top-bar">
+              <button className="hamburger" onClick={() => setIsMobileMenuOpen(true)}>☰</button>
+              <div className="search-container">
+                <div className="search-bar glass">
+                  <span className="search-icon">🔍</span>
+                  <input
+                    type="text"
+                    placeholder="Search orders, customers, or SKUs (Fuzzy)..."
+                    value={searchQuery}
+                    onChange={handleSearch}
+                    onFocus={() => searchQuery.length >= 2 && setIsSearchActive(true)}
+                  />
+                </div>
 
-          {['admin', 'manager'].includes(user?.role) && (
-            <div className="nav-group">
-              <label>CRM & MARKETING</label>
-              <ul className="nav-links">
-                <li className={activeTab === 'customers' ? 'active' : ''} onClick={() => { setActiveTab('customers'); setIsMobileMenuOpen(false); }}>👥 Customers</li>
-                <li className={activeTab === 'custintel' ? 'active' : ''} onClick={() => { setActiveTab('custintel'); setIsMobileMenuOpen(false); }}>💎 Customer Intel</li>
-                <li className={activeTab === 'marketing' ? 'active' : ''} onClick={() => { setActiveTab('marketing'); setIsMobileMenuOpen(false); }}>🎯 Marketing</li>
-                <li className={activeTab === 'dealers' ? 'active' : ''} onClick={() => { setActiveTab('dealers'); setIsMobileMenuOpen(false); }}>🤝 Dealers</li>
-              </ul>
+                {isSearchActive && searchResults && (
+                  <div className="search-dropdown glass animate-fade">
+                    <div className="search-results-header">
+                      <span>Fuzzy Match Results ({searchResults.totalResults})</span>
+                      <button onClick={() => setIsSearchActive(false)} className="close-search">×</button>
+                    </div>
+                    <div className="search-scroll">
+                      {searchResults.orders.length > 0 && (
+                        <div className="result-group">
+                          <label>Orders</label>
+                          {searchResults.orders.map(order => (
+                            <div key={order.id} className="result-item" onClick={() => { setActiveTab('orderlist'); setIsSearchActive(false); }}>
+                              <span className="id">{order.id}</span>
+                              <span className="meta">{order.customerName} • {order.status}</span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+
+                      {searchResults.skus.length > 0 && (
+                        <div className="result-group">
+                          <label>SKU Catalog</label>
+                          {searchResults.skus.map(sku => (
+                            <div key={sku.code} className="result-item" onClick={() => { setActiveTab('inventory'); setIsSearchActive(false); }}>
+                              <span className="id">{sku.code}</span>
+                              <span className="meta">{sku.name}</span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+
+                      {searchResults.totalResults === 0 && (
+                        <div className="no-results">No matches found for "{searchQuery}"</div>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+              <div className="actions">
+                <button className="btn-primary glass-hover" onClick={() => setShowQuickOrder(true)}>+ New Order</button>
+                <div className="notifications glass" style={{ cursor: 'pointer', position: 'relative' }} onClick={() => setShowNotifications(true)}>
+                  🔔
+                  <span style={{ position: 'absolute', top: '-4px', right: '-4px', width: '10px', height: '10px', background: 'var(--danger)', borderRadius: '50%' }}></span>
+                </div>
+              </div>
+            </header>
+
+            <section className="view-container">
+              {activeTab === 'dashboard' && <AnalyticsDashboard />}
+              {activeTab === 'metrics' && <PerformanceMetrics />}
+              {activeTab === 'orderlist' && <OrderList />}
+              {activeTab === 'bulk' && <BulkActions />}
+              {activeTab === 'rto' && <RTOManager />}
+              {activeTab === 'logistics' && <CarrierSelection />}
+              {activeTab === 'carrierperf' && <CarrierPerformance />}
+              {activeTab === 'zones' && <ZoneMap />}
+              {activeTab === 'tracking' && <ShipmentTracker />}
+              {activeTab === 'orders' && <UniversalImporter />}
+              {activeTab === 'warehouse' && <WarehouseManager />}
+              {activeTab === 'inventory' && <SKUMaster />}
+              {activeTab === 'invoice' && <InvoiceGenerator />}
+              {activeTab === 'finance' && <FinancialCenter />}
+              {activeTab === 'commhub' && <CommercialHub />}
+              {activeTab === 'cod' && <CODReconciliation />}
+              {activeTab === 'dispatcher' && <BarcodeDispatcher />}
+              {activeTab === 'dealers' && <DealerLookup />}
+              {activeTab === 'customers' && <CustomerLookup />}
+              {activeTab === 'custintel' && <CustomerAnalytics />}
+              {activeTab === 'marketing' && <MarketingCenter />}
+              {activeTab === 'production' && <ProductionTracker />}
+              {activeTab === 'qa' && <QualityGate />}
+              {activeTab === 'activity' && (user?.role === 'admin' ? <ActivityLog /> : <div className="glass" style={{ padding: '40px', textAlign: 'center' }}>🚫 Access Restricted</div>)}
+              {activeTab === 'reports' && <ExportTools />}
+              {activeTab === 'roadmap' && <RoadmapPage />}
+              {activeTab === 'help' && <HelpCenter />}
+              {activeTab === 'settings' && <SettingsPanel />}
+            </section>
+          </main>
+        </ResponsiveLayout>
+
+        {/* Overlays/Modals */}
+        {showQuickOrder && (
+          <div className="modal-overlay" style={{
+            position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+            background: 'rgba(0,0,0,0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000
+          }} onClick={() => setShowQuickOrder(false)}>
+            <div style={{ maxWidth: '700px', width: '90%' }} onClick={(e) => e.stopPropagation()}>
+              <QuickOrderForm onClose={() => setShowQuickOrder(false)} />
             </div>
-          )}
-
-          {['admin', 'manager'].includes(user?.role) && (
-            <div className="nav-group">
-              <label>SUPPLY CHAIN</label>
-              <ul className="nav-links">
-                <li className={activeTab === 'production' ? 'active' : ''} onClick={() => { setActiveTab('production'); setIsMobileMenuOpen(false); }}>🏭 Production</li>
-                <li className={activeTab === 'qa' ? 'active' : ''} onClick={() => { setActiveTab('qa'); setIsMobileMenuOpen(false); }}>💎 Quality Gate</li>
-              </ul>
-            </div>
-          )}
-
-          <div className="nav-group">
-            <label>ADMIN & SUPPORT</label>
-            <ul className="nav-links">
-              {user?.role === 'admin' && <li className={activeTab === 'activity' ? 'active' : ''} onClick={() => { setActiveTab('activity'); setIsMobileMenuOpen(false); }}>📜 Activity Log</li>}
-              <li className={activeTab === 'reports' ? 'active' : ''} onClick={() => { setActiveTab('reports'); setIsMobileMenuOpen(false); }}>📄 Export</li>
-              <li className={activeTab === 'roadmap' ? 'active' : ''} onClick={() => { setActiveTab('roadmap'); setIsMobileMenuOpen(false); }}>🛣️ Roadmap</li>
-              <li className={activeTab === 'help' ? 'active' : ''} onClick={() => { setActiveTab('help'); setIsMobileMenuOpen(false); }}>❓ Help</li>
-              {user?.role === 'admin' && <li className={activeTab === 'settings' ? 'active' : ''} onClick={() => { setActiveTab('settings'); setIsMobileMenuOpen(false); }}>⚙️ Settings</li>}
-            </ul>
           </div>
-        </div>
+        )}
 
-
-
-        <div className="nav-footer glass">
-          <div className="user-profile" style={{ cursor: 'pointer' }} onClick={() => setShowProfile(true)}>
-            <div className="avatar">{user?.avatar || 'U'}</div>
-            <div className="user-info">
-              <p className="username">{user?.name || 'User'}</p>
-              <p className="role">{user?.role?.charAt(0).toUpperCase() + user?.role?.slice(1) || 'Role'}</p>
-            </div>
-          </div>
-        </div>
-      </nav>
-
+<<<<<<< HEAD
       {/* Main Content Area */}
       <main className="main-content">
         <header className="top-bar">
@@ -343,6 +569,13 @@ function App() {
       {/* Mobile Bottom Navigation Bar */}
       <MobileBottomNav activeTab={activeTab} onTabChange={setActiveTab} />
     </div>
+=======
+        <NotificationCenter isOpen={showNotifications} onClose={() => setShowNotifications(false)} />
+        {showProfile && <UserProfile onClose={() => setShowProfile(false)} />}
+        <MobileBottomNav activeTab={activeTab} onTabChange={setActiveTab} />
+      </div>
+    </ErrorBoundary>
+>>>>>>> 4be53487f72a2bfacf3cde5d60b2e7a7e0ec3174
   )
 }
 

@@ -1,51 +1,48 @@
-/**
- * Keyboard Shortcut Service - Global keyboard bindings for power users
- */
+// Keyboard Shortcuts Service
+// Global keyboard bindings for power users with conflict resolution,
+// accessibility support, and customizable key combinations.
 
-// Registered shortcuts
 const shortcuts = new Map();
+let isEnabled = true;
 
-// Modifier key state
-let modifiers = { ctrl: false, alt: false, shift: false, meta: false };
-
-/**
- * Parse a shortcut string into components
- * @param {string} shortcut - e.g., "Ctrl+Shift+N"
- * @returns {object}
- */
-const parseShortcut = (shortcut) => {
-    const parts = shortcut.toLowerCase().split('+');
-    return {
-        ctrl: parts.includes('ctrl') || parts.includes('control'),
-        alt: parts.includes('alt'),
-        shift: parts.includes('shift'),
-        meta: parts.includes('meta') || parts.includes('cmd'),
-        key: parts.find(p => !['ctrl', 'control', 'alt', 'shift', 'meta', 'cmd'].includes(p))
-    };
+const DEFAULT_SHORTCUTS = {
+  'Ctrl+K': { action: 'openCommandPalette', description: 'Open command palette' },
+  'Ctrl+/': { action: 'openSearch', description: 'Quick search orders' },
+  'Ctrl+N': { action: 'newOrder', description: 'Create new order' },
+  'Ctrl+Shift+L': { action: 'viewLogs', description: 'View activity logs' },
+  'Ctrl+Shift+S': { action: 'saveChanges', description: 'Save all changes' },
+  'Ctrl+Shift+D': { action: 'toggleDarkMode', description: 'Toggle dark mode' },
+  'Escape': { action: 'closeModal', description: 'Close modal/popup' },
+  '?': { action: 'showHelp', description: 'Show keyboard shortcuts help' }
 };
 
 /**
- * Check if event matches a shortcut
- * @param {KeyboardEvent} event 
- * @param {object} shortcut 
- * @returns {boolean}
+ * Initialize keyboard shortcuts system
+ * @param {Object} customShortcuts - Optional custom shortcuts to add
  */
-const matchesShortcut = (event, shortcut) => {
-    return (
-        event.ctrlKey === shortcut.ctrl &&
-        event.altKey === shortcut.alt &&
-        event.shiftKey === shortcut.shift &&
-        event.metaKey === shortcut.meta &&
-        event.key.toLowerCase() === shortcut.key
-    );
+export const initializeShortcuts = (customShortcuts = {}) => {
+  // Load defaults
+  Object.entries(DEFAULT_SHORTCUTS).forEach(([combo, config]) => {
+    registerShortcut(combo, config.action, config.description);
+  });
+
+  // Load custom shortcuts
+  Object.entries(customShortcuts).forEach(([combo, config]) => {
+    registerShortcut(combo, config.action, config.description);
+  });
+
+  // Attach global listener
+  document.addEventListener('keydown', handleKeyDown);
+  console.log('[Shortcuts] Initialized with', shortcuts.size, 'shortcuts');
 };
 
 /**
  * Register a keyboard shortcut
- * @param {string} shortcut - e.g., "Ctrl+N"
- * @param {function} callback 
- * @param {object} options - { description, scope }
+ * @param {String} combo - Key combination (e.g., 'Ctrl+K', 'Shift+Alt+S')
+ * @param {String|Function} action - Action name or callback function
+ * @param {String} description - Human-readable description
  */
+<<<<<<< HEAD
 export const registerShortcut = (shortcut, callback, options = {}) => {
     const id = shortcut.toLowerCase();
 
@@ -66,128 +63,135 @@ export const registerShortcut = (shortcut, callback, options = {}) => {
     });
 
     return () => unregisterShortcut(shortcut);
+=======
+export const registerShortcut = (combo, action, description = '') => {
+  if (shortcuts.has(combo)) {
+    console.warn(`[Shortcuts] Overwriting existing shortcut: ${combo}`);
+  }
+
+  shortcuts.set(combo, { action, description, callback: null });
+  console.log(`[Shortcuts] Registered: ${combo} -> ${action}`);
+>>>>>>> 4be53487f72a2bfacf3cde5d60b2e7a7e0ec3174
 };
 
 /**
- * Unregister a shortcut
- * @param {string} shortcut 
+ * Bind a shortcut to a callback function
+ * @param {String} action - Action name
+ * @param {Function} callback - Function to execute
  */
-export const unregisterShortcut = (shortcut) => {
-    shortcuts.delete(shortcut.toLowerCase());
-};
-
-/**
- * Enable/disable a shortcut
- * @param {string} shortcut 
- * @param {boolean} enabled 
- */
-export const setShortcutEnabled = (shortcut, enabled) => {
-    const entry = shortcuts.get(shortcut.toLowerCase());
-    if (entry) {
-        entry.enabled = enabled;
+export const bindAction = (action, callback) => {
+  for (const [combo, config] of shortcuts.entries()) {
+    if (config.action === action) {
+      config.callback = callback;
+      return true;
     }
+  }
+  console.warn(`[Shortcuts] Action not found: ${action}`);
+  return false;
 };
 
 /**
  * Get all registered shortcuts
- * @returns {object[]}
+ * @returns {Array} - Array of {combo, action, description}
  */
-export const getShortcuts = () => {
-    return Array.from(shortcuts.entries()).map(([id, data]) => ({
-        id,
-        shortcut: data.shortcut,
-        description: data.description,
-        scope: data.scope,
-        enabled: data.enabled
-    }));
+export const getAllShortcuts = () => {
+  return Array.from(shortcuts.entries()).map(([combo, config]) => ({
+    combo,
+    action: config.action,
+    description: config.description
+  }));
 };
 
 /**
- * Handle keyboard event
- * @param {KeyboardEvent} event 
+ * Toggle shortcuts on/off
  */
-const handleKeyDown = (event) => {
-    // Don't trigger shortcuts if typing in an input
-    const target = event.target;
-    if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable) {
-        // Allow Escape to blur
-        if (event.key === 'Escape') {
-            target.blur();
-        }
-        return;
+export const toggleShortcuts = (enable = null) => {
+  isEnabled = enable !== null ? enable : !isEnabled;
+  console.log(`[Shortcuts] ${isEnabled ? 'Enabled' : 'Disabled'}`);
+  return isEnabled;
+};
+
+/**
+ * Remove a shortcut
+ */
+export const removeShortcut = (combo) => {
+  if (shortcuts.has(combo)) {
+    shortcuts.delete(combo);
+    console.log(`[Shortcuts] Removed: ${combo}`);
+    return true;
+  }
+  return false;
+};
+
+/**
+ * Cleanup and remove all listeners
+ */
+export const cleanup = () => {
+  document.removeEventListener('keydown', handleKeyDown);
+  shortcuts.clear();
+  console.log('[Shortcuts] Cleaned up');
+};
+
+// ===== Private Helpers =====
+
+function parseKeyCombo(event) {
+  const parts = [];
+  if (event.ctrlKey || event.metaKey) parts.push('Ctrl');
+  if (event.shiftKey) parts.push('Shift');
+  if (event.altKey) parts.push('Alt');
+
+  const key = event.key === ' ' ? 'Space' : event.key.length === 1 ? event.key.toUpperCase() : event.key;
+  parts.push(key);
+
+  return parts.join('+');
+}
+
+function handleKeyDown(event) {
+  if (!isEnabled) return;
+
+  // Skip if focused on input/textarea
+  const target = event.target;
+  if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA') {
+    // Allow some shortcuts even in inputs
+    if (!['Escape'].includes(event.key)) return;
+  }
+
+  const combo = parseKeyCombo(event);
+  const config = shortcuts.get(combo);
+
+  if (config) {
+    event.preventDefault();
+    
+    if (config.callback) {
+      try {
+        config.callback();
+      } catch (err) {
+        console.error(`[Shortcuts] Error executing ${combo}:`, err);
+      }
+    } else if (typeof config.action === 'function') {
+      try {
+        config.action();
+      } catch (err) {
+        console.error(`[Shortcuts] Error executing ${combo}:`, err);
+      }
+    } else {
+      // Dispatch custom event for action
+      document.dispatchEvent(new CustomEvent('shortcut', {
+        detail: { action: config.action, combo }
+      }));
     }
 
-    for (const [id, data] of shortcuts) {
-        if (data.enabled && matchesShortcut(event, data.parsed)) {
-            event.preventDefault();
-            event.stopPropagation();
-            data.callback(event);
-            return;
-        }
-    }
-};
-
-/**
- * Initialize the shortcut listener
- */
-export const initShortcuts = () => {
-    document.addEventListener('keydown', handleKeyDown);
-};
-
-/**
- * Clean up the shortcut listener
- */
-export const destroyShortcuts = () => {
-    document.removeEventListener('keydown', handleKeyDown);
-    shortcuts.clear();
-};
-
-/**
- * Default shortcuts for the OTS app
- * @param {object} actions - { newOrder, search, bulk, export, ... }
- */
-export const registerDefaultShortcuts = (actions) => {
-    const defaults = [
-        { shortcut: 'Ctrl+N', action: 'newOrder', description: 'Create new order' },
-        { shortcut: 'Ctrl+F', action: 'search', description: 'Focus search' },
-        { shortcut: 'Ctrl+B', action: 'bulk', description: 'Open bulk actions' },
-        { shortcut: 'Ctrl+E', action: 'export', description: 'Export data' },
-        { shortcut: 'Ctrl+/', action: 'help', description: 'Show shortcuts' },
-        { shortcut: 'Alt+1', action: 'dashboard', description: 'Go to Dashboard' },
-        { shortcut: 'Alt+2', action: 'orders', description: 'Go to Orders' },
-        { shortcut: 'Alt+3', action: 'tracking', description: 'Go to Tracking' },
-        { shortcut: 'Escape', action: 'closeModal', description: 'Close modal/panel' }
-    ];
-
-    defaults.forEach(({ shortcut, action, description }) => {
-        if (actions[action]) {
-            registerShortcut(shortcut, actions[action], { description });
-        }
-    });
-};
-
-/**
- * Format shortcut for display (Mac vs Windows)
- * @param {string} shortcut 
- * @returns {string}
- */
-export const formatShortcut = (shortcut) => {
-    const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
-
-    return shortcut
-        .replace(/Ctrl/gi, isMac ? '⌘' : 'Ctrl')
-        .replace(/Alt/gi, isMac ? '⌥' : 'Alt')
-        .replace(/Shift/gi, isMac ? '⇧' : 'Shift')
-        .replace(/\+/g, isMac ? '' : '+');
-};
+    console.log(`[Shortcuts] Executed: ${combo}`);
+  }
+}
 
 export default {
-    registerShortcut,
-    unregisterShortcut,
-    setShortcutEnabled,
-    getShortcuts,
-    initShortcuts,
-    destroyShortcuts,
-    registerDefaultShortcuts,
-    formatShortcut
+  initializeShortcuts,
+  registerShortcut,
+  bindAction,
+  getAllShortcuts,
+  toggleShortcuts,
+  removeShortcut,
+  cleanup,
+  DEFAULT_SHORTCUTS
 };

@@ -63,18 +63,29 @@ export const FinancialProvider = ({ children }) => {
 
             setFinStats(stats);
 
-            // Mock Settlement Data Generation for existing orders
-            const newSettlements = orders.map(order => {
-                const isDelivered = order.status === 'Delivered';
-                return {
-                    orderId: order.id,
-                    amount: isDelivered ? order.amount * 0.82 : 0, // Approx net after GST/Comm
-                    status: isDelivered ? (Math.random() > 0.1 ? 'Matched' : 'Discrepancy') : 'Pending',
-                    type: 'Marketplace Remittance',
-                    timestamp: new Date().toISOString()
-                };
-            });
-            setSettlements(newSettlements);
+            // Fetch Real Settlement Data from Commercial Backend
+            const fetchSettlements = async () => {
+                try {
+                    const response = await fetch('/server/finance/settlements');
+                    if (response.ok) {
+                        const data = await response.json();
+                        setSettlements(data);
+                    } else {
+                        // Fallback logic for demo/dev
+                        const mockSettlements = orders.map(order => ({
+                            orderId: order.id,
+                            amount: order.status === 'Delivered' ? order.amount * 0.82 : 0,
+                            status: order.status === 'Delivered' ? 'Matched' : 'Pending',
+                            type: 'Marketplace Remittance',
+                            timestamp: new Date().toISOString()
+                        }));
+                        setSettlements(mockSettlements);
+                    }
+                } catch (error) {
+                    console.error('Financial Recon Sync Error:', error);
+                }
+            };
+            fetchSettlements();
         };
 
 

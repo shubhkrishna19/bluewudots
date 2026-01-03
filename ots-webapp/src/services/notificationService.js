@@ -239,7 +239,7 @@ export const notifyOrderDelivered = (order) => {
 };
 
 export const notifyOrderRTO = (order, reason) => {
-    return createNotification({
+    const notif = createNotification({
         type: 'ORDER_RTO',
         title: 'RTO Initiated',
         message: `Order ${order.id} RTO: ${reason}`,

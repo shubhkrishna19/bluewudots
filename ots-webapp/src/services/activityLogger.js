@@ -108,6 +108,7 @@ const getCurrentUser = () => {
  * @param {object} activity 
  */
 const syncToBackend = async (activity) => {
+<<<<<<< HEAD
     // 1. Persist to high-speed local cache (IndexedDB)
     cacheData('activityLog', activity);
 
@@ -115,6 +116,17 @@ const syncToBackend = async (activity) => {
     // try {
     //     await fetch('/server/activity', { ... });
     // } catch (e) { ... }
+=======
+    try {
+        await fetch('/server/activity', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(activity)
+        });
+    } catch (error) {
+        console.warn('Activity sync failed:', error);
+    }
+>>>>>>> 4be53487f72a2bfacf3cde5d60b2e7a7e0ec3174
 };
 
 /**
