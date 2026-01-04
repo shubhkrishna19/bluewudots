@@ -40,7 +40,7 @@ describe('RTO Automation & Webhooks', () => {
 
   it('should auto-hold HIGH risk COD orders', async () => {
     // Setup High Risk Mock
-    rtoService.predictRisk.mockReturnValue({
+    rtoService.calculateRtoRisk.mockReturnValue({
       score: 85,
       riskLevel: 'CRITICAL',
       reasons: ['High Risk Pincode'],
@@ -76,7 +76,7 @@ describe('RTO Automation & Webhooks', () => {
 
   it('should allow LOW risk COD orders to be Pending', async () => {
     // Setup Low Risk Mock
-    rtoService.predictRisk.mockReturnValue({
+    rtoService.calculateRtoRisk.mockReturnValue({
       score: 10,
       riskLevel: 'LOW',
       reasons: [],

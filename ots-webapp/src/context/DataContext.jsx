@@ -232,6 +232,11 @@ export const DataProvider = ({ children }) => {
         newOrder.rtoScore = rtoAnalysis.score;
         newOrder.rtoRisk = rtoAnalysis.riskLevel;
 
+        if (['HIGH', 'CRITICAL'].includes(rtoAnalysis.riskLevel) && newOrder.paymentMethod === 'COD') {
+            newOrder.status = 'On-Hold';
+            newOrder.holdReason = 'High RTO Risk';
+        }
+
         setOrders(prev => deduplicateOrders(prev, [newOrder]));
         logOrderCreate(newOrder);
         notifyOrderCreated(newOrder);

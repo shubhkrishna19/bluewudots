@@ -74,6 +74,7 @@ const SettingsPanel = lazy(() => import('@/components/Settings/SettingsPanel'))
 const HelpCenter = lazy(() => import('@/components/Help/HelpCenter'))
 const ShortcutsModal = lazy(() => import('@/components/Help/ShortcutsModal'))
 const RoadmapPage = lazy(() => import('@/components/Roadmap/RoadmapPage'))
+const ReportBuilder = lazy(() => import('@/components/Reports/ReportBuilder'))
 
 // Reuseable Loading Component
 const PageLoader = () => (
@@ -139,7 +140,7 @@ function App() {
           setShowNotifications(false)
           setShowProfile(false)
           setShowShortcuts(false)
-        }
+        },
       })
     }
     return () => destroyShortcuts()
@@ -299,6 +300,9 @@ function App() {
             <li className={activeTab === 'help' ? 'active' : ''} onClick={() => { setActiveTab('help'); setIsMobileMenuOpen(false); }}>
               ❓ {t('nav.help', 'Help')}
             </li>
+            <li className={activeTab === 'reports' ? 'active' : ''} onClick={() => { setActiveTab('reports'); setIsMobileMenuOpen(false); }}>
+              📄 {t('nav.reports', 'Reports')}
+            </li>
           </ul>
         </div>
       </div>
@@ -387,6 +391,8 @@ function App() {
       case 'settings': return <SettingsPanel />
       case 'help': return <HelpCenter />
       case 'roadmap': return <RoadmapPage />
+      case 'reports': return <ReportBuilder />
+      case 'ml-forecast': return <DemandForecast />
       default: return <AnalyticsDashboard />
     }
   }
