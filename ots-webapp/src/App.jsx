@@ -39,7 +39,7 @@ const CarrierSelection = lazy(() => import('@/components/Logistics/CarrierSelect
 const ZoneMap = lazy(() => import('@/components/Logistics/ZoneMap'))
 const CarrierPerformance = lazy(() => import('@/components/Logistics/CarrierPerformance'))
 const ShipmentTracker = lazy(() => import('@/components/Tracking/ShipmentTracker'))
-const InternationalShipping = lazy(() => import('@/components/Logistics/InternationalShipping'))
+const DomesticRateFinder = lazy(() => import('@/components/Logistics/DomesticRateFinder'))
 const LogisticsHQ = lazy(() => import('@/components/Logistics/LogisticsHQ'))
 const LabelTemplateManager = lazy(() => import('@/components/Logistics/LabelTemplateManager'))
 
@@ -244,8 +244,8 @@ function App() {
               <li className={activeTab === 'label-templates' ? 'active' : ''} onClick={() => { setActiveTab('label-templates'); setIsMobileMenuOpen(false); }}>
                 🏷️ {t('nav.label_templates', 'Labels')}
               </li>
-              <li className={activeTab === 'intlship' ? 'active' : ''} onClick={() => { setActiveTab('intlship'); setIsMobileMenuOpen(false); }}>
-                🌐 {t('nav.intl_shipping', 'Intl Shipping')}
+              <li className={activeTab === 'domesticship' ? 'active' : ''} onClick={() => { setActiveTab('domesticship'); setIsMobileMenuOpen(false); }}>
+                🏢 {t('nav.domestic_shipping', 'Domestic Rates')}
               </li>
             </ul>
           </div>
@@ -445,7 +445,7 @@ function App() {
       case 'returns': return wrap(<ReturnsManager />, PERMISSIONS.MANAGE_ORDERS)
       case 'logisticshq': return wrap(<LogisticsHQ />, PERMISSIONS.MANAGE_LOGISTICS)
       case 'label-templates': return wrap(<LabelTemplateManager />, PERMISSIONS.MANAGE_LOGISTICS)
-      case 'intlship': return wrap(<InternationalShipping />, PERMISSIONS.MANAGE_LOGISTICS)
+      case 'domesticship': return wrap(<DomesticRateFinder />, PERMISSIONS.MANAGE_LOGISTICS)
       case 'zones': return wrap(<ZoneMap />, PERMISSIONS.MANAGE_LOGISTICS)
       case 'carrierperf': return wrap(<CarrierPerformance />, PERMISSIONS.MANAGE_LOGISTICS)
       case 'tracking': return wrap(<ShipmentTracker />, PERMISSIONS.MANAGE_ORDERS)

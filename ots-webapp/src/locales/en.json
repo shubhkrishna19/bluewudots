@@ -49,7 +49,7 @@
         "importer": "Universal Import",
         "amazon_mapper": "Amazon Mapper",
         "logistics_hq": "Logistics HQ",
-        "intl_shipping": "Int'l Shipping",
+        "intl_shipping": "Domestic Rates",
         "performance": "Performance",
         "ledger": "Global Ledger",
         "audit": "Marketplace Audit",
@@ -66,7 +66,8 @@
         "margin_guard": "Margin Guard",
         "invoice": "Invoice Generator",
         "dealer_lookup": "Dealer Lookup",
-        "customer_lookup": "Customer Lookup"
+        "customer_lookup": "Customer Lookup",
+        "domestic_shipping": "Domestic Rates"
     },
     "dashboard": {
         "title": "Order Analytics",

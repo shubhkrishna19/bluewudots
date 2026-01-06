@@ -49,7 +49,7 @@
         "importer": "यूनिवर्सल इम्पोर्ट",
         "amazon_mapper": "अमेज़ॅन मैपर",
         "logistics_hq": "लॉजिस्टिक्स मुख्यालय",
-        "intl_shipping": "अंतर्राष्ट्रीय शिपिंग",
+        "intl_shipping": "घरेलू दरें",
         "performance": "प्रदर्शन",
         "ledger": "ग्लोबल लेजर",
         "audit": "मार्केटप्लेस ऑडिट",
@@ -66,7 +66,8 @@
         "margin_guard": "मार्जिन गार्ड",
         "invoice": "इनवॉइस जनरेटर",
         "dealer_lookup": "डीलर लुकअप",
-        "customer_lookup": "ग्राहक लुकअप"
+        "customer_lookup": "ग्राहक लुकअप",
+        "domestic_shipping": "घरेलू दरें"
     },
     "dashboard": {
         "title": "ऑर्डर एनालिटिक्स",

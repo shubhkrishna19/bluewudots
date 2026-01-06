@@ -12,12 +12,11 @@ import {
     Package
 } from 'lucide-react'
 import carrierOptimizer from '../../services/carrierOptimizer'
-import internationalShippingService from '../../services/internationalShippingService'
 
 const LogisticsHQ = () => {
     const [carrierHealth, setCarrierHealth] = useState([])
     const [isRefreshing, setIsRefreshing] = useState(false)
-    const [activeTab, setActiveTab] = useState('domestic') // domestic | international
+    const [activeTab, setActiveTab] = useState('domestic')
 
     useEffect(() => {
         refreshIntelligence()
@@ -56,7 +55,7 @@ const LogisticsHQ = () => {
                         <Globe className="text-primary w-8 h-8" />
                         Logistics Intelligence HQ
                     </h2>
-                    <p className="text-muted">Real-time global carrier performance & AI routing monitor</p>
+                    <p className="text-muted">Real-time domestic carrier performance & AI routing monitor</p>
                 </div>
                 <button
                     onClick={refreshIntelligence}
@@ -103,18 +102,12 @@ const LogisticsHQ = () => {
                                 >
                                     Domestic Carriers
                                 </button>
-                                <button
-                                    onClick={() => setActiveTab('international')}
-                                    className={`text-xs font-bold transition-all ${activeTab === 'international' ? 'text-primary border-b-2 border-primary pb-1' : 'text-slate-400 hover:text-white'}`}
-                                >
-                                    Global Carriers
-                                </button>
                             </div>
                             <span className="text-[10px] font-mono text-slate-500 uppercase">Live Metrics</span>
                         </div>
 
                         <div className="space-y-4">
-                            {(activeTab === 'domestic' ? carrierHealth : Object.values(internationalShippingService.CARRIERS)).map((carrier, i) => (
+                            {carrierHealth.map((carrier, i) => (
                                 <div key={i} className="glass border-white/5 p-4 flex items-center justify-between group hover:border-primary/30 transition-all">
                                     <div className="flex items-center gap-4">
                                         <div className="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center text-2xl group-hover:bg-primary/10 transition-all">

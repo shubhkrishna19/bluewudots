@@ -8,7 +8,6 @@ import { getWhatsAppService } from '../../services/whatsappService'
 import shipmentService from '../../services/shipmentService'
 import rtoService from '../../services/rtoService'
 import reverseLogisticsService from '../../services/reverseLogisticsService'
-import internationalShippingService from '../../services/internationalShippingService'
 import {
   AlertTriangle,
   RotateCcw,
@@ -186,30 +185,14 @@ const OrderList = () => {
         const order = orders.find((o) => o.id === orderId)
         if (!order) continue
 
-        const isInternational = order.country && order.country !== 'India'
-        let recommendation
-
-        if (isInternational) {
-          const rates = internationalShippingService.compareInternationalRates(
-            order.country,
-            order.weight || 2.0
-          )
-          if (rates.length > 0) {
-            recommendation = {
-              carrier: { name: rates[0].carrier },
-              cost: rates[0].total,
-            }
-          }
-        } else {
-          recommendation = await getOptimalCarrier({
-            pincode: order.pincode || '400001',
-            weight: order.weight || 0.5,
-            amount: order.amount || 0,
-            zone: order.state === 'Maharashtra' ? 'metro' : 'tier2',
-            cod_required: order.paymentMethod === 'cod',
-            priority: order.priority || 'standard',
-          })
-        }
+        const recommendation = await getOptimalCarrier({
+          pincode: order.pincode || '400001',
+          weight: order.weight || 0.5,
+          amount: order.amount || 0,
+          zone: order.state === 'Maharashtra' ? 'metro' : 'tier2',
+          cod_required: order.paymentMethod === 'cod',
+          priority: order.priority || 'standard',
+        })
 
         if (recommendation) {
           updateOrder(orderId, {
