@@ -109,11 +109,39 @@ class OfflineCacheService {
         })
       }
 
+      if (Array.isArray(actualData)) {
+        return new Promise((resolve, reject) => {
+          let count = 0;
+          let failed = false;
+          actualData.forEach(item => {
+            if (failed) return;
+            // Ensure item has the keyPath property if not in 'cache' or 'metadata' with explicit key
+            const request = store.put(item);
+            request.onerror = (e) => {
+              if (!failed) {
+                console.warn(`[OfflineCache] Batch item failed:`, e.target.error, item);
+                failed = true;
+                // Don't reject the whole promise yet, let it finish or handle gracefully
+              }
+            };
+            request.onsuccess = () => {
+              count++;
+              if (count === actualData.length) resolve(true);
+            };
+          });
+          // If array is empty
+          if (actualData.length === 0) resolve(true);
+
+          tx.oncomplete = () => resolve(true);
+          tx.onerror = (e) => reject(e.target.error);
+        });
+      }
+
       return new Promise((resolve, reject) => {
-        const request = store.put(actualData)
-        request.onsuccess = () => resolve(true)
-        request.onerror = () => reject(request.error)
-      })
+        const request = store.put(actualData);
+        request.onsuccess = () => resolve(true);
+        request.onerror = () => reject(request.error);
+      });
     } catch (error) {
       console.error('Cache data failed:', error)
       return false

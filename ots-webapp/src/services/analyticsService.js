@@ -29,9 +29,13 @@ export const getOrderTrend = (orders = [], days = 30) => {
   }
 
   orders.forEach((order) => {
-    const date = new Date(order.createdAt).toISOString().split('T')[0]
-    if (dailyCounts[date] !== undefined) dailyCounts[date]++
-  })
+    const rawDate = order.orderDate || order.createdAt;
+    if (!rawDate) return;
+    const d = new Date(rawDate);
+    if (isNaN(d.getTime())) return;
+    const date = d.toISOString().split('T')[0];
+    if (dailyCounts[date] !== undefined) dailyCounts[date]++;
+  });
 
   // Linear regression
   const data = Object.values(dailyCounts)
@@ -98,9 +102,12 @@ export const getKPIs = (orders = [], startDate, endDate) => {
 
   // Filter by date range
   const filtered = orders.filter((o) => {
-    const orderDate = new Date(o.createdAt)
-    return orderDate >= startDate && orderDate <= endDate
-  })
+    const dateVal = o.orderDate || o.createdAt;
+    if (!dateVal) return false;
+    const orderDate = new Date(dateVal);
+    if (isNaN(orderDate.getTime())) return false;
+    return orderDate >= startDate && orderDate <= endDate;
+  });
 
   const totalOrders = filtered.length
   const totalRevenue = filtered.reduce((sum, o) => sum + (o.amount || 0), 0)
@@ -117,10 +124,11 @@ export const getKPIs = (orders = [], startDate, endDate) => {
   let avgDeliveryTime = 0
   if (deliveredOrders.length > 0) {
     const totalTime = deliveredOrders.reduce((sum, o) => {
-      const created = new Date(o.createdAt)
-      const delivered = new Date(o.deliveredAt)
-      return sum + (delivered - created)
-    }, 0)
+      const created = new Date(o.orderDate || o.createdAt);
+      const delivered = new Date(o.deliveredAt);
+      if (isNaN(created.getTime()) || isNaN(delivered.getTime())) return sum;
+      return sum + (delivered - created);
+    }, 0);
     avgDeliveryTime = Math.round(totalTime / (deliveredOrders.length * 86400000))
   }
 
@@ -226,15 +234,16 @@ export const getCachedAnalytics = async (key) => {
  * Project future revenue based on current trends
  */
 export const projectRevenue = (orders = [], days = 30) => {
-  const trend = getOrderTrend(orders, 90)
+  const trend = getOrderTrend(orders, 90);
+  const validOrders = orders.filter(o => o.amount != null);
   const avgRevenuePerOrder =
-    orders.length > 0 ? orders.reduce((sum, o) => sum + (o.amount || 0), 0) / orders.length : 0
+    validOrders.length > 0 ? validOrders.reduce((sum, o) => sum + (o.amount || 0), 0) / validOrders.length : 0;
 
-  const currentVolume = orders.length / 90 // daily avg
-  const projectedVolume = currentVolume + (trend.slope * days) / 90
+  const currentVolume = orders.length / 90; // daily avg
+  const projectedVolume = currentVolume + (trend.slope * days) / 90;
 
-  return Math.round(projectedVolume * days * avgRevenuePerOrder)
-}
+  return Math.round(projectedVolume * days * avgRevenuePerOrder);
+};
 
 /**
  * Calculate profitability per SKU
