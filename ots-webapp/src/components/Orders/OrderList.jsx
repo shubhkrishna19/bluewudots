@@ -417,7 +417,7 @@ const OrderList = () => {
               className="table-header"
               style={{
                 display: 'grid',
-                gridTemplateColumns: '40px 1.5fr 2fr 1fr 1fr 1fr 0.8fr 1fr', // Adjusted for new columns
+                gridTemplateColumns: '40px 1.2fr 1fr 1.5fr 1.5fr 1fr 1fr 0.8fr 1fr', // Added Date Column
                 padding: '16px 20px',
                 background: 'var(--bg-accent)',
                 fontWeight: '700',
@@ -436,6 +436,7 @@ const OrderList = () => {
                 }
               />
               <span className="hidden md:block">{t('orders.id')}</span>
+              <span className="hidden md:block">{t('common.date', 'Date')}</span>
               <span className="hidden md:block">{t('orders.customer')}</span>
               <span className="hidden md:block">{t('orders.items')}</span>
               <span className="hidden md:block">{t('orders.status')}</span>
@@ -456,7 +457,7 @@ const OrderList = () => {
                     className="table-row glass-hover"
                     style={{
                       display: 'grid',
-                      gridTemplateColumns: '40px 1.5fr 2fr 1fr 1fr 1fr 0.8fr 1fr', // Adjusted for new columns
+                      gridTemplateColumns: '40px 1.2fr 1fr 1.5fr 1.5fr 1fr 1fr 0.8fr 1fr', // Added Date Column
                       padding: '16px 20px',
                       alignItems: 'center',
                       borderBottom: '1px solid var(--glass-border)',
@@ -475,6 +476,9 @@ const OrderList = () => {
                       style={{ fontWeight: '700', color: 'var(--primary)' }}
                     >
                       {order.id}
+                    </span>
+                    <span className="text-muted" style={{ fontSize: '0.75rem' }}>
+                      {new Date(order.orderDate || order.createdAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: '2-digit' })}
                     </span>
                     <span data-label={t('orders.customer')}>{order.customer || 'N/A'}</span>
                     <span data-label={t('orders.items')} style={{ fontSize: '0.85rem' }}>
