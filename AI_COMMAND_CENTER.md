@@ -5,11 +5,12 @@
 > All agents MUST follow the steps below. Failure to do so will result in race conditions.
 
 ## 🤝 Coordination Protocol
-1.  **CHECK**: Read this file (`AI_COMMAND_CENTER.md`) and `LOCKS.md` before doing anything.
-2.  **CLAIM**: Find your task in the "Pending Tasks" table and replace `*AVAILABLE*` with `[Agent Name]`. Commit immediately.
-3.  **LOCK**: If editing core files, add an entry to `LOCKS.md`.
-4.  **EXECUTE**: Perform your work. Update `task.md` regularly.
-5.  **UPDATE**:
+1.  **READ FIRST**: See `CODEX_MASTER_PROTOCOL.md` for Architecture, Data, and Tech Stack rules.
+2.  **CHECK**: Read this file (`AI_COMMAND_CENTER.md`) and `LOCKS.md` before doing anything.
+3.  **CLAIM**: Find your task in the "Pending Tasks" table and replace `*AVAILABLE*` with `[Agent Name]`. Commit immediately.
+4.  **LOCK**: If editing core files, add an entry to `LOCKS.md`.
+5.  **EXECUTE**: Perform your work. Update `task.md` regularly.
+6.  **UPDATE**:
     *   Mark your task as `✅ Complete` in `AI_COMMAND_CENTER.md`.
     *   Add your summary to the "Recently Completed" log.
     *   Remove your file locks.
