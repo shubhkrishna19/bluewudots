@@ -91,8 +91,8 @@ export const DataProvider = ({ children }) => {
                 const cachedActivityLog = await cacheService.retrieveCachedData('activityLog');
                 const cachedMetadata = await cacheService.retrieveCachedData('metadata');
 
-                // Data Versioning: If cached orders are small (mock data), override with real seed
-                const isMockData = cachedOrders && cachedOrders.length < 50;
+                // Data Versioning: If cached orders are small (mock/stale data), override with real seed
+                const isMockData = cachedOrders && cachedOrders.length < 10000; // Threshold raised for 32k dataset
 
                 if (cachedOrders && cachedOrders.length > 0 && !isMockData) {
                     setOrders(cachedOrders);
