@@ -57,13 +57,14 @@ Antigravity AI has finalized **Analytics 2.0 (Phase 37)** and **Advanced Reporti
 | **P38.2** | HIGH | Custom Report Builder UI | Antigravity | ✅ Complete |
 | **P38.3** | MEDIUM | Automated Email Reports (Scheduled) | Antigravity | ✅ Complete |
 
-### Phase 40: Analytics & Performance Post-Release
+### Phase 40: "Perfection" & Advanced Logic (Active)
 | Task ID | Priority | Description | Assigned To | Status |
 |---------|----------|-------------|-------------|--------|
-| **P40.1** | HIGH | Connect 103k Sales Records to Analytics Charts | *AVAILABLE* | ⏳ Pending |
-| **P40.2** | HIGH | Implement Advanced Search/Filter on Paginated Orders | *AVAILABLE* | ⏳ Pending |
-| **P40.3** | MEDIUM | Real-time Inventory Health Sync with Seed Data | *AVAILABLE* | ⏳ Pending |
-| **P40.4** | MEDIUM | Mobile UI Polish for 32k Order List | *AVAILABLE* | ⏳ Pending |
+| **P40.1** | HIGH | **Analytics Deep Link**: Connect 103k Sales Records to Charts (replace simple Order aggregations). | *AVAILABLE* | ⏳ Pending |
+| **P40.2** | HIGH | **Search Optimization**: Implement Web Worker for searching 32k Orders instantly without UI freeze. | *AVAILABLE* | ⏳ Pending |
+| **P40.3** | HIGH | **Alias Logic**: Create "Unified Stock View" grouping Amazon/Myntra aliases under Parent SKU. | *AVAILABLE* | ⏳ Pending |
+| **P40.4** | MEDIUM | **RTO Blocker**: Automate "Hold" status for High-Risk COD orders (City/History match). | *AVAILABLE* | ⏳ Pending |
+| **P40.5** | MEDIUM | **Mobile Polish**: Fix table scrolling and header alignment on mobile view. | *AVAILABLE* | ⏳ Pending |
 
 ---
 
