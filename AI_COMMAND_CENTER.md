@@ -36,6 +36,8 @@ Antigravity AI has finalized **Analytics 2.0 (Phase 37)** and **Advanced Reporti
 | **P39.2** | RBAC Sidebar Visibility Fix (Admin Access) | Antigravity | ✅ Complete | 2026-01-06 |
 | **MVP-FIX** | Fixed 'Invalid time value' & Data Seeding | Antigravity | ✅ Complete | 2026-01-06 |
 | **MVP-UI** | PerformanceMetrics Crash Fix | Antigravity | ✅ Complete | 2026-01-06 |
+| **DOCS** | Source File Mapping for Decisions | Antigravity | ✅ Complete | 2026-01-06 |
+| **UI-DATE** | Added Date Column to OrderList | Antigravity | ✅ Complete | 2026-01-06 |
 
 ---
 
