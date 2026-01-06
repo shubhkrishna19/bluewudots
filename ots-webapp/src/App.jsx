@@ -254,7 +254,7 @@ function App() {
           </div>
         </Guard>
 
-        <Guard user={user} permission={PERMISSIONS.PROCESS_PAYMENTS}>
+        <Guard user={user} permission={PERMISSIONS.VIEW_FINANCIALS}>
           <div className="nav-group">
             <label>{t('nav.finance', 'FINANCE')}</label>
             <ul className="nav-links">
@@ -291,12 +291,14 @@ function App() {
         <div className="nav-group">
           <label>SYSTEM</label>
           <ul className="nav-links">
-            <li className={activeTab === 'activity' ? 'active' : ''} onClick={() => { setActiveTab('activity'); setIsMobileMenuOpen(false); }}>
-              📜 {t('nav.activity', 'Activity')}
-            </li>
-            <li className={activeTab === 'settings' ? 'active' : ''} onClick={() => { setActiveTab('settings'); setIsMobileMenuOpen(false); }}>
-              ⚙️ {t('nav.settings', 'Settings')}
-            </li>
+            <Guard user={user} permission={PERMISSIONS.SYSTEM_ADMIN}>
+              <li className={activeTab === 'activity' ? 'active' : ''} onClick={() => { setActiveTab('activity'); setIsMobileMenuOpen(false); }}>
+                📜 {t('nav.activity', 'Activity')}
+              </li>
+              <li className={activeTab === 'settings' ? 'active' : ''} onClick={() => { setActiveTab('settings'); setIsMobileMenuOpen(false); }}>
+                ⚙️ {t('nav.settings', 'Settings')}
+              </li>
+            </Guard>
             <li className={activeTab === 'help' ? 'active' : ''} onClick={() => { setActiveTab('help'); setIsMobileMenuOpen(false); }}>
               ❓ {t('nav.help', 'Help')}
             </li>
@@ -364,31 +366,37 @@ function App() {
   )
 
   const renderView = () => {
+    const wrap = (comp, perm) => (
+      <Guard user={user} permission={perm} fallback={<div className="glass p-12 text-center"><h3>Access Denied</h3><p>You don't have permission to view this module.</p></div>}>
+        {comp}
+      </Guard>
+    )
+
     switch (activeTab) {
-      case 'dashboard': return <AnalyticsDashboard />
-      case 'metrics': return <PerformanceMetrics />
-      case 'orderlist': return <OrderList />
-      case 'bulk': return <BulkActions />
-      case 'rto': return <RTOManager />
-      case 'returns': return <ReturnsManager />
-      case 'logistics': return <CarrierSelection />
-      case 'intlship': return <InternationalShipping />
-      case 'zones': return <ZoneMap />
-      case 'carrierperf': return <CarrierPerformance />
-      case 'tracking': return <ShipmentTracker />
-      case 'warehouse': return <WarehouseManager />
-      case 'inventory': return <SKUMaster />
-      case 'stock-audit': return <StockAudit />
-      case 'stockoptix': return <StockOptix />
-      case 'dispatcher': return <BarcodeDispatcher />
-      case 'finance': return <FinancialCenter />
-      case 'commhub': return <CommercialHub />
-      case 'globalledger': return <GlobalLedger />
-      case 'marketplace-recon': return <MarketplaceReconciliation />
-      case 'cod': return <CODReconciliation />
-      case 'dealer-portal': return <DealerPortal />
-      case 'activity': return <ActivityLog />
-      case 'settings': return <SettingsPanel />
+      case 'dashboard': return wrap(<AnalyticsDashboard />, PERMISSIONS.VIEW_ANALYTICS)
+      case 'metrics': return wrap(<PerformanceMetrics />, PERMISSIONS.VIEW_REPORTS)
+      case 'orderlist': return wrap(<OrderList />, PERMISSIONS.MANAGE_ORDERS)
+      case 'bulk': return wrap(<BulkActions />, PERMISSIONS.MANAGE_ORDERS)
+      case 'rto': return wrap(<RTOManager />, PERMISSIONS.MANAGE_ORDERS)
+      case 'returns': return wrap(<ReturnsManager />, PERMISSIONS.MANAGE_ORDERS)
+      case 'logistics': return wrap(<CarrierSelection />, PERMISSIONS.MANAGE_LOGISTICS)
+      case 'intlship': return wrap(<InternationalShipping />, PERMISSIONS.MANAGE_LOGISTICS)
+      case 'zones': return wrap(<ZoneMap />, PERMISSIONS.MANAGE_LOGISTICS)
+      case 'carrierperf': return wrap(<CarrierPerformance />, PERMISSIONS.MANAGE_LOGISTICS)
+      case 'tracking': return wrap(<ShipmentTracker />, PERMISSIONS.MANAGE_ORDERS)
+      case 'warehouse': return wrap(<WarehouseManager />, PERMISSIONS.MANAGE_WH_OPS)
+      case 'inventory': return wrap(<SKUMaster />, PERMISSIONS.MANAGE_INVENTORY)
+      case 'stock-audit': return wrap(<StockAudit />, PERMISSIONS.MANAGE_WH_OPS)
+      case 'stockoptix': return wrap(<StockOptix />, PERMISSIONS.MANAGE_INVENTORY)
+      case 'dispatcher': return wrap(<BarcodeDispatcher />, PERMISSIONS.MANAGE_WH_OPS)
+      case 'finance': return wrap(<FinancialCenter />, PERMISSIONS.VIEW_FINANCIALS)
+      case 'commhub': return wrap(<CommercialHub />, PERMISSIONS.VIEW_FINANCIALS)
+      case 'globalledger': return wrap(<GlobalLedger />, PERMISSIONS.VIEW_FINANCIALS)
+      case 'marketplace-recon': return wrap(<MarketplaceReconciliation />, PERMISSIONS.VIEW_FINANCIALS)
+      case 'cod': return wrap(<CODReconciliation />, PERMISSIONS.VIEW_FINANCIALS)
+      case 'dealer-portal': return wrap(<DealerPortal />, PERMISSIONS.PLACE_DEALER_ORDER)
+      case 'activity': return wrap(<ActivityLog />, PERMISSIONS.SYSTEM_ADMIN)
+      case 'settings': return wrap(<SettingsPanel />, PERMISSIONS.SYSTEM_ADMIN)
       case 'help': return <HelpCenter />
       case 'roadmap': return <RoadmapPage />
       case 'reports': return <ReportBuilder />
@@ -396,6 +404,8 @@ function App() {
       default: return <AnalyticsDashboard />
     }
   }
+
+
 
   return (
     <ErrorBoundary>

@@ -13,9 +13,10 @@ const LoginPage = () => {
   }
 
   const demoAccounts = [
-    { email: 'admin@bluewud.com', password: 'admin123', role: 'Admin' },
-    { email: 'manager@bluewud.com', password: 'manager123', role: 'Manager' },
-    { email: 'operator@bluewud.com', password: 'operator123', role: 'Operator' },
+    { email: 'admin@bluewud.com', password: 'admin123', role: 'admin' },
+    { email: 'manager@bluewud.com', password: 'manager123', role: 'manager' },
+    { email: 'wh@bluewud.com', password: 'wh123', role: 'warehouse' },
+    { email: 'sales@bluewud.com', password: 'sales123', role: 'sales' },
   ]
 
   const fillDemo = (account) => {

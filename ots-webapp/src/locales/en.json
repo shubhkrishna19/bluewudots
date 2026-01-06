@@ -66,7 +66,10 @@
         "delivered_orders": "Delivered Orders",
         "avg_delivery_time": "Avg Delivery Time",
         "carrier_health": "Live Carrier Health",
-        "top_channels": "Top Channels"
+        "top_channels": "Top Channels",
+        "new_order": "New Order",
+        "operational_intelligence": "Operational Intelligence",
+        "subtitle": "Real-time performance & predictive insights"
     },
     "orders": {
         "title": "Orders",

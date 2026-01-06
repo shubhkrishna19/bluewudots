@@ -38,12 +38,15 @@ const OrderList = () => {
   const [selectedOrders, setSelectedOrders] = useState([])
   const [isOptimizing, setIsOptimizing] = useState(false)
   const [activeTab, setActiveTab] = useState('orders') // orders | returns
+  const [currentPage, setCurrentPage] = useState(1)
+  const itemsPerPage = 50
 
   const filteredOrders = orders.filter((order) => {
+    const searchLow = searchTerm.toLowerCase()
     const matchesSearch =
-      order.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      order.customer?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      order.sku?.toLowerCase().includes(searchTerm.toLowerCase())
+      (order.id && order.id.toLowerCase().includes(searchLow)) ||
+      (order.customer && order.customer.toLowerCase().includes(searchLow)) ||
+      (order.sku && order.sku.toLowerCase().includes(searchLow))
 
     // Special logic for High Risk filter
     let matchesStatus = true
@@ -57,6 +60,9 @@ const OrderList = () => {
     const matchesSource = sourceFilter === 'all' || order.source === sourceFilter
     return matchesSearch && matchesStatus && matchesSource
   })
+
+  const paginatedOrders = filteredOrders.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
+  const totalPages = Math.ceil(filteredOrders.length / itemsPerPage)
 
   const uniqueSources = [...new Set(orders.map((o) => o.source).filter(Boolean))]
   const uniqueStatuses = [...new Set(orders.map((o) => o.status).filter(Boolean))]
@@ -444,7 +450,7 @@ const OrderList = () => {
                   <p className="text-muted">{t('orders.no_orders_found')}</p>
                 </div>
               ) : (
-                filteredOrders.map((order, idx) => (
+                paginatedOrders.map((order, idx) => (
                   <div
                     key={order.id}
                     className="table-row glass-hover"
@@ -534,6 +540,34 @@ const OrderList = () => {
                 ))
               )}
             </div>
+
+            {/* Pagination Controls */}
+            {totalPages > 1 && (
+              <div className="flex items-center justify-between p-4 glass-border-t">
+                <span className="text-sm text-muted">
+                  Showing {(currentPage - 1) * itemsPerPage + 1} to {Math.min(currentPage * itemsPerPage, filteredOrders.length)} of {filteredOrders.length}
+                </span>
+                <div className="flex gap-2">
+                  <button
+                    className="btn-secondary glass px-4 py-1.5"
+                    disabled={currentPage === 1}
+                    onClick={() => setCurrentPage(prev => prev - 1)}
+                  >
+                    {t('common.previous', 'Previous')}
+                  </button>
+                  <span className="px-4 py-1.5 glass bg-primary/20 rounded-md">
+                    {currentPage} / {totalPages}
+                  </span>
+                  <button
+                    className="btn-secondary glass px-4 py-1.5"
+                    disabled={currentPage === totalPages}
+                    onClick={() => setCurrentPage(prev => prev + 1)}
+                  >
+                    {t('common.next', 'Next')}
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </>
       )}

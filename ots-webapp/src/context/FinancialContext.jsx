@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react'
-import { useData } from './DataContext'
+import { useData } from '@/context/DataContext'
 import { calculateProfitability, getEnhancedSKU } from '../utils/commercialUtils'
 
 const FinancialContext = createContext()
@@ -65,7 +65,8 @@ export const FinancialProvider = ({ children }) => {
       const fetchSettlements = async () => {
         try {
           const response = await fetch('/server/finance/settlements')
-          if (response.ok) {
+          const contentType = response.headers.get('content-type');
+          if (response.ok && contentType && contentType.includes('application/json')) {
             const data = await response.json()
             setSettlements(data)
           } else {

@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react'
 import { useNotifications } from '../context/NotificationContext'
-import { useRegisterSW } from 'virtual:pwa-register/react' // Look into this later if using vite-plugin-pwa, but for now manual
 
 const ServiceWorkerUpdater = () => {
   const { showToast } = useNotifications()

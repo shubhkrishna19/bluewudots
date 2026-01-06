@@ -40,6 +40,10 @@ class PushNotificationService {
       console.log('Service Worker registered for Push Notifications')
 
       // Check for existing subscription
+      if (!this.swRegistration) {
+        console.warn('Service Worker registration not available')
+        return
+      }
       const existingSubscription = await this.swRegistration.pushManager.getSubscription()
       if (existingSubscription) {
         this.subscriptions.set('default', existingSubscription)

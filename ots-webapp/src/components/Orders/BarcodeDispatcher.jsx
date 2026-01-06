@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { Html5QrcodeScanner } from 'html5-qrcode'
 import { useData } from '../../context/DataContext'
-import labelGenerator from '../../services/labelGeneratorEnhanced'
+import labelGenerator from '../../utils/labelGenerator'
+import labelPrintService from '../../services/labelPrintService'
 
 const BarcodeDispatcher = () => {
   const { orders, updateOrderStatus } = useData()
@@ -50,13 +51,13 @@ const BarcodeDispatcher = () => {
 
   const handlePrint = async (order) => {
     try {
-      const labelData = await labelGenerator.generateLabel(order, selectedCarrier)
       if (printFormat === 'zpl') {
-        const zpl = labelGenerator.generateZPL(labelData)
+        const zpl = labelPrintService.generateZPL(order, { name: selectedCarrier })
         console.log('Sending ZPL to thermal printer:', zpl)
+        labelPrintService.printLabel(order)
         alert(`ZPL Generated for ${order.id}. Check console for raw code.`)
       } else {
-        await labelGenerator.exportLabelAsPDF(labelData)
+        await labelGenerator.generateInternalLabel(order)
         alert(`PDF Label Generated for ${order.id}`)
       }
     } catch (error) {

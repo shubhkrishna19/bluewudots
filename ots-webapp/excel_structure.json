@@ -1,0 +1,405 @@
+{
+  "SKU Aliases, Parent & Child Master Data (1).xlsx": {
+    "sheets": [
+      "Child SKUs - Alias Master",
+      "Sheet1",
+      "MTP SKUs - Master Data",
+      "pIVOT",
+      "Archived Data "
+    ],
+    "headers": {
+      "Child SKUs - Alias Master": [
+        "SKU Code",
+        "Chk",
+        "OSR",
+        "MTP SKU",
+        "MTP Name",
+        " Child Color",
+        "SKU Product Name",
+        "MRP",
+        "Barcode",
+        "FNSKU",
+        "ASIN",
+        "FK FSN",
+        "FK List.ID",
+        "UL",
+        "PF ",
+        "Myntra"
+      ],
+      "Sheet1": [
+        "ASIN",
+        "SKU",
+        "PF",
+        "UL",
+        "Competitor URL",
+        "Amazon Price",
+        "Lowest competitor price",
+        "SDF"
+      ],
+      "MTP SKUs - Master Data": [
+        "MTP SKU",
+        "Master MTP Product Name ",
+        "MRP",
+        "CHP",
+        "U.DP",
+        "MOQ"
+      ],
+      "pIVOT": [
+        "Chk",
+        "Count of ASIN",
+        "Count of FK FSN",
+        "Count of UL",
+        "Count of PF "
+      ],
+      "Archived Data ": [
+        "SKU Code",
+        "Chk",
+        "OSR",
+        "MTP SKU",
+        "Product Name",
+        "FNSKU",
+        "ASIN",
+        "FK FSN",
+        "FK List.ID",
+        "UL",
+        "PF "
+      ]
+    }
+  },
+  "Order Tracking Sheet OTS - Master 24-25.xlsx": {
+    "sheets": [
+      "Sheet1",
+      "AWB Tracking - Master",
+      "Pending Order Analysis",
+      "Detail1",
+      "Sheet2",
+      "HELP",
+      "Sheet3",
+      "Affinity"
+    ],
+    "headers": {
+      "Sheet1": [
+        "order-id",
+        "Mplace",
+        "Customer Name",
+        "City",
+        "SKU",
+        "Qty",
+        "No of Boxes",
+        "Contact",
+        "Purchase Date",
+        "Shiping date",
+        "AWB",
+        "Shipping Service",
+        "Ship.Type",
+        "Pickdate",
+        "D.OD",
+        "D.PD",
+        "STT.SD",
+        "URET.STT",
+        "Ref/CAN",
+        "DRET Trk",
+        "Days2",
+        "Reship Trk ",
+        "Days3",
+        "Column1",
+        "MIS STATUS",
+        "Billing ",
+        "CC Comments",
+        "DBD",
+        "D-Date",
+        "Logi.TAT",
+        "Tot.TAT",
+        "Ticket Id",
+        "ZOHO Case Status ",
+        "Debit Remarks ",
+        "Billing",
+        "issue",
+        "Type",
+        "RETURN Date in Bluewud Warehouse",
+        "Column2"
+      ],
+      "AWB Tracking - Master": [
+        "Order ID",
+        "Mplace",
+        "Customer Name",
+        "City",
+        "SKU",
+        "Qty",
+        "No of Boxes",
+        "Contact",
+        "Ship.Type",
+        "Ord.Date",
+        "Ship Date",
+        "Pickdate",
+        "Promise Del.Date",
+        "AWB",
+        "Shipping Service",
+        "D.OD",
+        "D.PD",
+        "STT.SD",
+        "URET.ST",
+        "Ref/CAN",
+        "DRET Trk",
+        "DRET.std",
+        "Reship Trk ",
+        "Reship  status",
+        "MIS ",
+        "Dret Mis",
+        "Column1",
+        "MIS Comments ",
+        "CC TEAM UPDATE",
+        "DBD",
+        "case",
+        "D-Date",
+        "Logi.TAT",
+        "Tot.TAT",
+        "Ticket Id",
+        "ZOHO Case Status ",
+        "Debit Remarks ",
+        "Billing",
+        "issue",
+        "Type",
+        "RETURN St Bluewud WH",
+        "Ins",
+        "ITS",
+        "Column2"
+      ],
+      "Pending Order Analysis": [
+        "Ship.Type",
+        "(All)"
+      ],
+      "Detail1": [
+        "Details for Count of D.PD - Ship.Type: (blank)"
+      ],
+      "Sheet2": [
+        "yty",
+        "date"
+      ],
+      "HELP": [
+        "Carrier",
+        "Parent Partner",
+        "D.OD"
+      ],
+      "Sheet3": [
+        "order",
+        "date"
+      ],
+      "Affinity": [
+        "Purchase Date",
+        "Shiping date",
+        "order-id",
+        "Selling Chanel",
+        "Waybill",
+        "Cou",
+        "days-past-promise",
+        "buyer-phone-number",
+        "sku",
+        "Length",
+        "Breadth",
+        "Height",
+        "PieceCount",
+        "Weight",
+        "quantity-to-ship",
+        "Amount",
+        "recipient-name",
+        "ship-address-1",
+        "ship-city",
+        "ship-state",
+        "ship-postal-code",
+        "Waybill",
+        "Cou",
+        "Statues",
+        "Delivery Date ",
+        "Pickup Date"
+      ]
+    }
+  },
+  "Dimensions Master.xlsx": {
+    "sheets": [
+      "Billing Dimensions",
+      "Audit Dimensions",
+      "Audit VAR",
+      "HELP",
+      "DW.OLD",
+      "DW (Dec18 Old)",
+      "Physical weight.OLD",
+      "Archive",
+      "Billing Dim (delete later)"
+    ],
+    "headers": {
+      "Billing Dimensions": [
+        "MANUAL ENTRIES HERE",
+        "Box 1 Dimension Details",
+        "Box 2 Dimension Details",
+        "Box 3 Dimension Details",
+        "Vol.Wht",
+        "Total Weight",
+        "Chg.Wht",
+        "Theoretical Weight "
+      ],
+      "Audit Dimensions": [
+        "Box 1 Dimension Details",
+        "Box 2 Dimension Details",
+        "Box 3 Dimension Details",
+        "Vol.Wht",
+        "Total Weight",
+        "Chg.Wht",
+        "Theoretical Weight "
+      ],
+      "Audit VAR": [
+        "MANUAL ENTRIES HERE",
+        "Box 1 Dimension Details",
+        "Box 2 Dimension Details",
+        "Box 3 Dimension Details",
+        "Total Weight"
+      ],
+      "HELP": [
+        "Guidelines"
+      ],
+      "DW.OLD": [
+        0.393701,
+        0.393701,
+        0.393701,
+        0.001
+      ],
+      "DW (Dec18 Old)": [
+        "Long",
+        "Med",
+        "Smal",
+        "ACTUALS",
+        "x",
+        "Long",
+        "Med",
+        "Smal",
+        43435,
+        "x",
+        "Long",
+        "Med",
+        "Smal",
+        "Audit",
+        "x",
+        "Audit Remarks"
+      ],
+      "Physical weight.OLD": [
+        "Box 01",
+        "Box 02",
+        "Box 03",
+        45263
+      ],
+      "Archive": [
+        "Box 1 Dimension Details",
+        "Box 2 Dimension Details",
+        "Box 3 Dimension Details",
+        "Total Weight",
+        "Theoretical Weight ",
+        "Audit "
+      ],
+      "Billing Dim (delete later)": [
+        "MANUAL ENTRIES HERE",
+        "Box 1 Dimension Details",
+        "Box 2 Dimension Details",
+        "Box 3 Dimension Details",
+        "Vol.Wht",
+        "Total Weight",
+        "Chg.Wht",
+        "Theoretical Weight "
+      ]
+    }
+  },
+  "Sales Trends FY2024-25 (1).xlsx": {
+    "sheets": [
+      "Final Sale Data",
+      "Category-wise Sales Over Year",
+      "Sheet1",
+      "Sales RTO Analysis (Order Wise)",
+      "Real Sales Summary & Forecast",
+      "SKU-Wise Sales Over Year",
+      "As per P&L Summary & Foreca"
+    ],
+    "headers": {
+      "Final Sale Data": [
+        "Transaction Type",
+        "VchNo",
+        "VchDate",
+        "Vch Series",
+        "Tax Type",
+        "Billed Party Name",
+        "Alias",
+        "Group Name",
+        "Item Desc",
+        "NameAlias",
+        "HSNCode",
+        "Qty. ",
+        "Tax Rate",
+        "Taxable Value",
+        "Tax Value",
+        "Final Invoice Value",
+        "OrgVchNo",
+        "OrgVchDate",
+        "StockUpdationDate",
+        "Order ID",
+        "Narration",
+        "Sale (Qty.)",
+        "Sale Return (Qty.)",
+        "Sale (Amt.)",
+        "Sale Return (Amt.)",
+        "Party Name",
+        "Main Parties",
+        "Final Order date",
+        "Unique ids",
+        "Refund Reasons"
+      ],
+      "Category-wise Sales Over Year": [
+        "Transaction Type",
+        "(All)"
+      ],
+      "Sheet1": [
+        "Transaction Type",
+        "VchNo",
+        "VchDate",
+        "Vch Series",
+        "Tax Type",
+        "Party Name",
+        "Billed Party Name",
+        "Item Desc",
+        "Alias",
+        "Group Name",
+        "NameAlias",
+        "HSNCode",
+        "Qty. ",
+        "Order ID",
+        "Narration",
+        "Tax Rate",
+        "Taxable Value",
+        "Tax Value",
+        "Invoice Amt",
+        "OrgVchNo",
+        "StockUpdationDate",
+        "Org..VchDate",
+        "Final Order date",
+        "Sale (Qty.)",
+        "Sale Return (Qty.)",
+        "Sale (Amt.)",
+        "Sale Return (Amt.)",
+        "Main Parties",
+        "Refund Reasons",
+        "Dispatch Coruier partner",
+        "Dispatch Status"
+      ],
+      "Sales RTO Analysis (Order Wise)": [
+        "Show Value as Party wise"
+      ],
+      "Real Sales Summary & Forecast": [
+        "BLUEWUD CONCEPTS PVT LTD"
+      ],
+      "SKU-Wise Sales Over Year": [
+        "Transaction Type",
+        "(All)"
+      ],
+      "As per P&L Summary & Foreca": [
+        "BLUEWUD CONCEPTS PVT LTD"
+      ]
+    }
+  }
+}

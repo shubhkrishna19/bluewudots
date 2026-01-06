@@ -24,9 +24,12 @@ class MLForecastService {
    * @returns {Object} Forecast results with decomposition
    */
   predictDemand(orders, sku, forecastDays = 30) {
-    const skuOrders = orders
-      .filter((o) => o.sku === sku)
-      .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt))
+    // If orders are already filtered for this SKU, we can skip filter() to save O(N)
+    const skuOrders = (orders.length > 0 && orders[0].sku === sku && orders.every(o => o.sku === sku))
+      ? [...orders]
+      : orders.filter((o) => o.sku === sku);
+
+    skuOrders.sort((a, b) => new Date(a.orderDate || a.createdAt) - new Date(b.orderDate || b.createdAt))
 
     if (skuOrders.length < 5) {
       return { error: 'Insufficient data for ML forecasting' }
@@ -115,7 +118,8 @@ class MLForecastService {
   _groupByDay(orders) {
     const groups = {}
     orders.forEach((o) => {
-      const date = o.createdAt.split('T')[0]
+      const dateVal = o.orderDate || o.createdAt || new Date().toISOString()
+      const date = dateVal.split('T')[0]
       groups[date] = (groups[date] || 0) + (o.quantity || 1)
     })
 
@@ -207,7 +211,7 @@ class MLForecastService {
       const dayDiff =
         Math.abs(
           new Date(date.getFullYear(), month - 1, day) -
-            new Date(date.getFullYear(), holiday.month - 1, holiday.day)
+          new Date(date.getFullYear(), holiday.month - 1, holiday.day)
         ) /
         (1000 * 60 * 60 * 24)
 

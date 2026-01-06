@@ -5,16 +5,16 @@ import InventoryOptimizer from '../../services/InventoryOptimizer'
 import { AlertTriangle, TrendingUp, Truck, Package, RefreshCw } from 'lucide-react'
 
 const StockOptix = () => {
-  const { skuMaster, orders, warehouses } = useData()
+  const { skuMaster, orders, ordersBySku, warehouses } = useData()
   const [selectedSKU, setSelectedSKU] = useState(null)
 
   // 1. Calculate Inventory Health for all SKUs
   const inventoryHealth = useMemo(() => {
     return skuMaster
       .map((sku) => {
-        // Mock forecast data if not available
-        const forecast = mlForecastService.predictDemand(orders, sku.sku, 30)
-        const rop = mlForecastService.calculateReorderPoint(forecast, 7) // 7-day lead time default
+        const skuOrders = ordersBySku[sku.sku] || []
+        const forecast = mlForecastService.predictDemand(skuOrders, sku.sku, 30)
+        const rop = mlForecastService.calculateReorderPoint(forecast, 7)
         const dailyVelocity = parseFloat(forecast?.metrics?.avgDemand) || 0
         const daysOfSupply = dailyVelocity > 0 ? (sku.stock / dailyVelocity).toFixed(1) : 999
 

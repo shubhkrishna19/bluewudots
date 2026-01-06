@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react'
-import { useData } from '../../context/DataContext'
+import { useData } from '@/context/DataContext'
 import {
   AreaChart,
   Area,

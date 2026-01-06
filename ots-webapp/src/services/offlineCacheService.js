@@ -133,7 +133,7 @@ class OfflineCacheService {
       const store = tx.objectStore(storeName)
 
       return new Promise((resolve, reject) => {
-        const request = store.get(key)
+        const request = key !== undefined ? store.get(key) : store.getAll()
         request.onsuccess = () => {
           const entry = request.result
           if (!entry) return resolve(null)

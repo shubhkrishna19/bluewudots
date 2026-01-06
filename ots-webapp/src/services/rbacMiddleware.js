@@ -7,9 +7,9 @@ export const ROLES = {
   ADMIN: 'admin',
   MANAGER: 'manager',
   OPERATOR: 'operator',
-  VIEWER: 'viewer',
+  WAREHOUSE: 'warehouse',
+  SALES: 'sales',
   DEALER: 'dealer',
-  GUEST: 'guest',
 }
 
 export const PERMISSIONS = {
@@ -17,16 +17,11 @@ export const PERMISSIONS = {
   VIEW_REPORTS: 'view_reports',
   MANAGE_ORDERS: 'manage_orders',
   MANAGE_INVENTORY: 'manage_inventory',
-  MANAGE_DEALERS: 'manage_dealers',
-  MANAGE_USERS: 'manage_users',
-  MANAGE_SETTINGS: 'manage_settings',
-  MANAGE_CARRIERS: 'manage_carriers',
-  PROCESS_PAYMENTS: 'process_payments',
-  PLACE_WHOLESALE_ORDER: 'place_wholesale_order',
-  VIEW_ALL_ORDERS: 'view_all_orders',
-  VIEW_OWN_ORDERS: 'view_own_orders',
-  PROCESS_QC: 'process_qc',
-  VIEW_ACTIVITY_LOG: 'view_activity_log',
+  MANAGE_LOGISTICS: 'manage_logistics',
+  VIEW_FINANCIALS: 'view_financials',
+  MANAGE_WH_OPS: 'manage_wh_ops',
+  SYSTEM_ADMIN: 'system_admin',
+  PLACE_DEALER_ORDER: 'place_dealer_order',
 }
 
 const ROLE_PERMISSIONS = {
@@ -36,29 +31,28 @@ const ROLE_PERMISSIONS = {
     PERMISSIONS.VIEW_REPORTS,
     PERMISSIONS.MANAGE_ORDERS,
     PERMISSIONS.MANAGE_INVENTORY,
-    PERMISSIONS.MANAGE_CARRIERS,
-    PERMISSIONS.PROCESS_PAYMENTS,
-    PERMISSIONS.PLACE_WHOLESALE_ORDER,
-    PERMISSIONS.VIEW_ALL_ORDERS,
-    PERMISSIONS.PROCESS_QC,
-    PERMISSIONS.VIEW_ACTIVITY_LOG,
+    PERMISSIONS.MANAGE_LOGISTICS,
+    PERMISSIONS.VIEW_FINANCIALS,
   ],
   [ROLES.OPERATOR]: [
     PERMISSIONS.VIEW_ANALYTICS,
     PERMISSIONS.MANAGE_ORDERS,
-    PERMISSIONS.VIEW_ALL_ORDERS,
+    PERMISSIONS.MANAGE_INVENTORY,
   ],
-  [ROLES.VIEWER]: [
+  [ROLES.WAREHOUSE]: [
+    PERMISSIONS.MANAGE_INVENTORY,
+    PERMISSIONS.MANAGE_WH_OPS,
+    PERMISSIONS.MANAGE_ORDERS, // For picking/packing
+  ],
+  [ROLES.SALES]: [
     PERMISSIONS.VIEW_ANALYTICS,
+    PERMISSIONS.MANAGE_ORDERS, // For lookup
     PERMISSIONS.VIEW_REPORTS,
-    PERMISSIONS.VIEW_ALL_ORDERS,
   ],
   [ROLES.DEALER]: [
-    PERMISSIONS.PLACE_WHOLESALE_ORDER,
-    PERMISSIONS.VIEW_OWN_ORDERS,
+    PERMISSIONS.PLACE_DEALER_ORDER,
     PERMISSIONS.VIEW_ANALYTICS,
   ],
-  [ROLES.GUEST]: [],
 }
 
 /**

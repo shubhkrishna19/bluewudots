@@ -1,0 +1,2109 @@
+{
+  "B-MLT-KT": {
+    "l": 204,
+    "b": 39,
+    "h": 6,
+    "weight": 26.8,
+    "boxes": 2
+  },
+  "B-MLT-QT": {
+    "l": 204,
+    "b": 39,
+    "h": 7,
+    "weight": 25.77,
+    "boxes": 2
+  },
+  "B-POL-KN": {
+    "l": 205,
+    "b": 54,
+    "h": 10,
+    "weight": 35,
+    "boxes": 2
+  },
+  "B-POL-KT": {
+    "l": 207,
+    "b": 38,
+    "h": 8,
+    "weight": 34.8,
+    "boxes": 2
+  },
+  "B-POL-QN": {
+    "l": 206,
+    "b": 50,
+    "h": 10,
+    "weight": 46,
+    "boxes": 2
+  },
+  "B-POL-QT": {
+    "l": 202,
+    "b": 40,
+    "h": 9,
+    "weight": 34.29,
+    "boxes": 2
+  },
+  "B-POL-SN": {
+    "l": 204,
+    "b": 48,
+    "h": 6,
+    "weight": 31,
+    "boxes": 2
+  },
+  "B-RVB-D30N": {
+    "l": 0,
+    "b": 0,
+    "h": 0,
+    "weight": 0,
+    "boxes": 1
+  },
+  "B-RVB-D36N": {
+    "l": 188,
+    "b": 44,
+    "h": 9,
+    "weight": 33.27,
+    "boxes": 1
+  },
+  "B-RVB-KN": {
+    "l": 206,
+    "b": 50,
+    "h": 8,
+    "weight": 45.6,
+    "boxes": 2
+  },
+  "B-RVB-QN": {
+    "l": 205,
+    "b": 50,
+    "h": 8,
+    "weight": 41.95,
+    "boxes": 2
+  },
+  "B-RVB-SN": {
+    "l": 199,
+    "b": 38,
+    "h": 9,
+    "weight": 30.46,
+    "boxes": 2
+  },
+  "BT-CO": {
+    "l": 72,
+    "b": 39,
+    "h": 5,
+    "weight": 6.47,
+    "boxes": 1
+  },
+  "BT-HE": {
+    "l": 42,
+    "b": 41,
+    "h": 6,
+    "weight": 4.3,
+    "boxes": 1
+  },
+  "BT-LE-B": {
+    "l": 64,
+    "b": 58,
+    "h": 12,
+    "weight": 15,
+    "boxes": 1
+  },
+  "BT-LE-S": {
+    "l": 0,
+    "b": 0,
+    "h": 0,
+    "weight": 0,
+    "boxes": 1
+  },
+  "BT-OL": {
+    "l": 48,
+    "b": 45,
+    "h": 5,
+    "weight": 7.7,
+    "boxes": 1
+  },
+  "BT-OL-D": {
+    "l": 60,
+    "b": 44,
+    "h": 7,
+    "weight": 10.49,
+    "boxes": 1
+  },
+  "CMB-RELO": {
+    "l": 0,
+    "b": 0,
+    "h": 0,
+    "weight": 0,
+    "boxes": 1
+  },
+  "CT-ATD-LA": {
+    "l": 123,
+    "b": 56,
+    "h": 5,
+    "weight": 24.49,
+    "boxes": 1
+  },
+  "CT-ATD": {
+    "l": 0,
+    "b": 0,
+    "h": 0,
+    "weight": 15.8,
+    "boxes": 1
+  },
+  "CT-ATD-ST": {
+    "l": 112,
+    "b": 51,
+    "h": 5,
+    "weight": 14.8,
+    "boxes": 1
+  },
+  "CT-DOV": {
+    "l": 111,
+    "b": 50,
+    "h": 8,
+    "weight": 21.75,
+    "boxes": 1
+  },
+  "CT-ETE": {
+    "l": 106,
+    "b": 50,
+    "h": 7,
+    "weight": 12.4,
+    "boxes": 1
+  },
+  "CT-GSE-RT": {
+    "l": 99,
+    "b": 50,
+    "h": 4,
+    "weight": 6.12,
+    "boxes": 1
+  },
+  "CT-GSE-RT2": {
+    "l": 98,
+    "b": 51,
+    "h": 4,
+    "weight": 11.39,
+    "boxes": 1
+  },
+  "CT-GSE-SQ": {
+    "l": 75,
+    "b": 75,
+    "h": 4,
+    "weight": 8.2,
+    "boxes": 1
+  },
+  "CT-GSE-SQ2": {
+    "l": 76,
+    "b": 76,
+    "h": 4,
+    "weight": 12.2,
+    "boxes": 1
+  },
+  "CT-KV-RT": {
+    "l": 105,
+    "b": 51,
+    "h": 7,
+    "weight": 11.8,
+    "boxes": 1
+  },
+  "CT-KV-SQ": {
+    "l": 81,
+    "b": 80,
+    "h": 7,
+    "weight": 16.9,
+    "boxes": 1
+  },
+  "CT-LE": {
+    "l": 114,
+    "b": 56,
+    "h": 7,
+    "weight": 10.85,
+    "boxes": 1
+  },
+  "CT-MD-RT": {
+    "l": 104,
+    "b": 60,
+    "h": 7,
+    "weight": 17.7,
+    "boxes": 1
+  },
+  "CT-MD-SQ": {
+    "l": 85,
+    "b": 84,
+    "h": 6,
+    "weight": 17.4,
+    "boxes": 1
+  },
+  "CT-MT-RO": {
+    "l": 70,
+    "b": 68,
+    "h": 8,
+    "weight": 6.92,
+    "boxes": 2
+  },
+  "CT-MT-RT": {
+    "l": 100,
+    "b": 54,
+    "h": 4,
+    "weight": 5.4,
+    "boxes": 2
+  },
+  "CT-MT-SQ": {
+    "l": 80,
+    "b": 80,
+    "h": 5,
+    "weight": 6.195,
+    "boxes": 2
+  },
+  "CT-NO-RT": {
+    "l": 85,
+    "b": 45,
+    "h": 6,
+    "weight": 10.8,
+    "boxes": 1
+  },
+  "CT-NO-SQ": {
+    "l": 76,
+    "b": 76,
+    "h": 5,
+    "weight": 12.46,
+    "boxes": 1
+  },
+  "CT-OL": {
+    "l": 101,
+    "b": 47,
+    "h": 5,
+    "weight": 12.4,
+    "boxes": 1
+  },
+  "CT-OSN-OV": {
+    "l": 105,
+    "b": 65,
+    "h": 4,
+    "weight": 9.64,
+    "boxes": 1
+  },
+  "CT-OSN-RT": {
+    "l": 100,
+    "b": 50,
+    "h": 5,
+    "weight": 9,
+    "boxes": 1
+  },
+  "CT-SH": {
+    "l": 85,
+    "b": 49,
+    "h": 7,
+    "weight": 11.89,
+    "boxes": 1
+  },
+  "CT-SY": {
+    "l": 80,
+    "b": 66,
+    "h": 8,
+    "weight": 11.85,
+    "boxes": 1
+  },
+  "CT-TLY": {
+    "l": 95,
+    "b": 50,
+    "h": 7,
+    "weight": 12.85,
+    "boxes": 1
+  },
+  "CT-TR-RT": {
+    "l": 102,
+    "b": 57,
+    "h": 6,
+    "weight": 12,
+    "boxes": 1
+  },
+  "CT-TR-RTS": {
+    "l": 110,
+    "b": 50,
+    "h": 5,
+    "weight": 12.75,
+    "boxes": 1
+  },
+  "CT-TYU": {
+    "l": 87,
+    "b": 45,
+    "h": 8,
+    "weight": 9.5,
+    "boxes": 1
+  },
+  "CT-VC": {
+    "l": 88,
+    "b": 45,
+    "h": 9,
+    "weight": 15.4,
+    "boxes": 1
+  },
+  "DC-CLV": {
+    "l": 85,
+    "b": 49,
+    "h": 7,
+    "weight": 35.69,
+    "boxes": 1
+  },
+  "DC-MYN-LA": {
+    "l": 127,
+    "b": 45,
+    "h": 13,
+    "weight": 43.22,
+    "boxes": 2
+  },
+  "DC-MYN-ST": {
+    "l": 85,
+    "b": 50,
+    "h": 18,
+    "weight": 40.84,
+    "boxes": 1
+  },
+  "DT-GRA": {
+    "l": 67,
+    "b": 40,
+    "h": 4,
+    "weight": 5.35,
+    "boxes": 1
+  },
+  "DT-HE-3": {
+    "l": 85,
+    "b": 85,
+    "h": 5,
+    "weight": 9.92,
+    "boxes": 1
+  },
+  "DT-HE-4": {
+    "l": 158,
+    "b": 80,
+    "h": 4,
+    "weight": 15.11,
+    "boxes": 1
+  },
+  "DT-MR": {
+    "l": 116,
+    "b": 40,
+    "h": 6,
+    "weight": 6,
+    "boxes": 1
+  },
+  "FT-EDR": {
+    "l": 68,
+    "b": 46,
+    "h": 5,
+    "weight": 8.81,
+    "boxes": 1
+  },
+  "GH-CE": {
+    "l": 83,
+    "b": 35,
+    "h": 7,
+    "weight": 3.7,
+    "boxes": 1
+  },
+  "GH-IS": {
+    "l": 31,
+    "b": 27,
+    "h": 6,
+    "weight": 1.25,
+    "boxes": 1
+  },
+  "KH-EDL": {
+    "l": 24,
+    "b": 11,
+    "h": 5,
+    "weight": 0.3,
+    "boxes": 1
+  },
+  "KH-LKN-6": {
+    "l": 26,
+    "b": 25,
+    "h": 5,
+    "weight": 0.8,
+    "boxes": 1
+  },
+  "KH-RMT": {
+    "l": 22,
+    "b": 22,
+    "h": 4,
+    "weight": 0.4,
+    "boxes": 1
+  },
+  "KH-RZ": {
+    "l": 35,
+    "b": 32,
+    "h": 6,
+    "weight": 0.9,
+    "boxes": 1
+  },
+  "KHS-SW-W1": {
+    "l": 28,
+    "b": 20,
+    "h": 6,
+    "weight": 0.84,
+    "boxes": 1
+  },
+  "KH-SW-W10": {
+    "l": 25,
+    "b": 24,
+    "h": 5,
+    "weight": 0.7,
+    "boxes": 1
+  },
+  "KH-SW-W21": {
+    "l": 33,
+    "b": 32,
+    "h": 6,
+    "weight": 1.2,
+    "boxes": 1
+  },
+  "KH-SW-WB": {
+    "l": 24,
+    "b": 11,
+    "h": 5,
+    "weight": 0.195,
+    "boxes": 1
+  },
+  "KH-TO-18": {
+    "l": 39,
+    "b": 30,
+    "h": 8,
+    "weight": 3.2,
+    "boxes": 1
+  },
+  "KH-TO-40": {
+    "l": 60,
+    "b": 35,
+    "h": 8,
+    "weight": 5.245,
+    "boxes": 1
+  },
+  "KH-VD": {
+    "l": 25,
+    "b": 20,
+    "h": 5,
+    "weight": 0.43,
+    "boxes": 1
+  },
+  "KH-WLR": {
+    "l": 35,
+    "b": 14,
+    "h": 4,
+    "weight": 0.39,
+    "boxes": 1
+  },
+  "KR-JSD": {
+    "l": 82,
+    "b": 20,
+    "h": 10,
+    "weight": 7.5,
+    "boxes": 1
+  },
+  "LT-FN": {
+    "l": 67,
+    "b": 40,
+    "h": 4,
+    "weight": 3.3,
+    "boxes": 1
+  },
+  "MD-TNO-L": {
+    "l": 100,
+    "b": 46,
+    "h": 9,
+    "weight": 12.2,
+    "boxes": 1
+  },
+  "MD-TNO-S": {
+    "l": 65,
+    "b": 46,
+    "h": 9,
+    "weight": 8.7,
+    "boxes": 1
+  },
+  "PF-MIS-RT": {
+    "l": 38,
+    "b": 33,
+    "h": 32,
+    "weight": 1.7,
+    "boxes": 1
+  },
+  "PF-NAH-RO": {
+    "l": 39,
+    "b": 27,
+    "h": 24,
+    "weight": 1.7,
+    "boxes": 1
+  },
+  "PU-SDI-ST": {
+    "l": 73,
+    "b": 51,
+    "h": 8,
+    "weight": 7.89,
+    "boxes": 1
+  },
+  "RH-OT": {
+    "l": 24,
+    "b": 19,
+    "h": 9,
+    "weight": 0.73,
+    "boxes": 1
+  },
+  "RH-RL": {
+    "l": 20,
+    "b": 17,
+    "h": 12,
+    "weight": 0.71,
+    "boxes": 1
+  },
+  "RH-SU-2-2": {
+    "l": 0,
+    "b": 0,
+    "h": 0,
+    "weight": 0,
+    "boxes": 1
+  },
+  "RH-SU-4": {
+    "l": 37,
+    "b": 13,
+    "h": 7,
+    "weight": 1,
+    "boxes": 1
+  },
+  "RT-ALY": {
+    "l": 130,
+    "b": 54,
+    "h": 9,
+    "weight": 24.45,
+    "boxes": 1
+  },
+  "RT-AT": {
+    "l": 130,
+    "b": 42,
+    "h": 5,
+    "weight": 17.4,
+    "boxes": 1
+  },
+  "RT-DR": {
+    "l": 137,
+    "b": 70,
+    "h": 9,
+    "weight": 39.45,
+    "boxes": 1
+  },
+  "RT-FR": {
+    "l": 162,
+    "b": 73,
+    "h": 8,
+    "weight": 24.45,
+    "boxes": 1
+  },
+  "RT-RI": {
+    "l": 103,
+    "b": 57,
+    "h": 7,
+    "weight": 10.8,
+    "boxes": 1
+  },
+  "RT-RI-M": {
+    "l": 78,
+    "b": 62,
+    "h": 7,
+    "weight": 7.69,
+    "boxes": 1
+  },
+  "RT-T": {
+    "l": 51,
+    "b": 17,
+    "h": 4,
+    "weight": 1.1,
+    "boxes": 1
+  },
+  "S-AB": {
+    "l": 94,
+    "b": 36,
+    "h": 6,
+    "weight": 5.89,
+    "boxes": 1
+  },
+  "S-AE": {
+    "l": 144,
+    "b": 41,
+    "h": 5,
+    "weight": 13.62,
+    "boxes": 1
+  },
+  "S-AI": {
+    "l": 134,
+    "b": 20,
+    "h": 5,
+    "weight": 3.89,
+    "boxes": 1
+  },
+  "S-AO": {
+    "l": 95,
+    "b": 27,
+    "h": 6,
+    "weight": 5.85,
+    "boxes": 1
+  },
+  "S-ATL": {
+    "l": 76,
+    "b": 19,
+    "h": 9,
+    "weight": 3.8,
+    "boxes": 1
+  },
+  "SB-AA": {
+    "l": 24,
+    "b": 19,
+    "h": 11,
+    "weight": 1.64,
+    "boxes": 1
+  },
+  "SB-AL-2": {
+    "l": 23,
+    "b": 19,
+    "h": 12,
+    "weight": 1.89,
+    "boxes": 1
+  },
+  "SB-AL-4": {
+    "l": 23,
+    "b": 19,
+    "h": 20,
+    "weight": 2.89,
+    "boxes": 1
+  },
+  "SB-ASG": {
+    "l": 100,
+    "b": 29,
+    "h": 8,
+    "weight": 15.8,
+    "boxes": 1
+  },
+  "SB-AXA-4": {
+    "l": 160,
+    "b": 34,
+    "h": 10,
+    "weight": 25.79,
+    "boxes": 1
+  },
+  "SB-AXA-51": {
+    "l": 170,
+    "b": 32,
+    "h": 7,
+    "weight": 19.85,
+    "boxes": 1
+  },
+  "SB-AXA-52": {
+    "l": 173,
+    "b": 36,
+    "h": 10,
+    "weight": 30.45,
+    "boxes": 1
+  },
+  "SB-CA": {
+    "l": 71.5,
+    "b": 16,
+    "h": 6,
+    "weight": 2.85,
+    "boxes": 1
+  },
+  "SB-CB": {
+    "l": 66,
+    "b": 30,
+    "h": 23,
+    "weight": 20.89,
+    "boxes": 1
+  },
+  "SB-CB.P-T": {
+    "l": 128,
+    "b": 30,
+    "h": 9,
+    "weight": 24,
+    "boxes": 1
+  },
+  "SB-CS-LA": {
+    "l": 98,
+    "b": 29,
+    "h": 8,
+    "weight": 6.8,
+    "boxes": 1
+  },
+  "SB-CS-ST": {
+    "l": 67,
+    "b": 19,
+    "h": 10,
+    "weight": 4.3,
+    "boxes": 1
+  },
+  "SB-JMY": {
+    "l": 84,
+    "b": 28,
+    "h": 19,
+    "weight": 22.3,
+    "boxes": 1
+  },
+  "SB-LGN": {
+    "l": 143,
+    "b": 28,
+    "h": 7,
+    "weight": 10.5,
+    "boxes": 1
+  },
+  "SB-MOL": {
+    "l": 185,
+    "b": 32,
+    "h": 8,
+    "weight": 18.85,
+    "boxes": 1
+  },
+  "SB-MPL": {
+    "l": 87,
+    "b": 20,
+    "h": 9,
+    "weight": 5.89,
+    "boxes": 1
+  },
+  "SB-MXL-LA": {
+    "l": 159,
+    "b": 30,
+    "h": 10,
+    "weight": 24.45,
+    "boxes": 1
+  },
+  "SB-MXL-ST": {
+    "l": 84,
+    "b": 29,
+    "h": 10,
+    "weight": 10.85,
+    "boxes": 1
+  },
+  "SB-NBK": {
+    "l": 165,
+    "b": 36,
+    "h": 9,
+    "weight": 24.45,
+    "boxes": 1
+  },
+  "SB-OS": {
+    "l": 121,
+    "b": 45,
+    "h": 6,
+    "weight": 9.85,
+    "boxes": 1
+  },
+  "SB-PH": {
+    "l": 74,
+    "b": 17,
+    "h": 5,
+    "weight": 2.35,
+    "boxes": 1
+  },
+  "S-BR-4": {
+    "l": 75,
+    "b": 36,
+    "h": 5,
+    "weight": 3.725,
+    "boxes": 1
+  },
+  "S-BR-6": {
+    "l": 68,
+    "b": 37,
+    "h": 6,
+    "weight": 3.89,
+    "boxes": 1
+  },
+  "S-BR-F6": {
+    "l": 119,
+    "b": 30,
+    "h": 6,
+    "weight": 6.5,
+    "boxes": 1
+  },
+  "SB-SML": {
+    "l": 0,
+    "b": 0,
+    "h": 0,
+    "weight": 0,
+    "boxes": 1
+  },
+  "SB-SN-D": {
+    "l": 181,
+    "b": 32,
+    "h": 9,
+    "weight": 31.75,
+    "boxes": 1
+  },
+  "SB-SN-N": {
+    "l": 165,
+    "b": 34,
+    "h": 9,
+    "weight": 21.8,
+    "boxes": 1
+  },
+  "SB-WA": {
+    "l": 144,
+    "b": 31,
+    "h": 5,
+    "weight": 7.6,
+    "boxes": 1
+  },
+  "SB-WA-WM": {
+    "l": 144,
+    "b": 21,
+    "h": 7,
+    "weight": 7.51,
+    "boxes": 1
+  },
+  "SB-WLB": {
+    "l": 158,
+    "b": 31,
+    "h": 9,
+    "weight": 18.485,
+    "boxes": 1
+  },
+  "S-CC": {
+    "l": 187,
+    "b": 43,
+    "h": 5,
+    "weight": 13.8,
+    "boxes": 1
+  },
+  "S-CK-2": {
+    "l": 0,
+    "b": 0,
+    "h": 0,
+    "weight": 0,
+    "boxes": 1
+  },
+  "S-CRF": {
+    "l": 97,
+    "b": 20,
+    "h": 10,
+    "weight": 8.895,
+    "boxes": 1
+  },
+  "S-ERA": {
+    "l": 69,
+    "b": 35,
+    "h": 8,
+    "weight": 9.89,
+    "boxes": 1
+  },
+  "S-ETN": {
+    "l": 87,
+    "b": 19,
+    "h": 8,
+    "weight": 4.36,
+    "boxes": 1
+  },
+  "S-FE-W2": {
+    "l": 19.5,
+    "b": 19,
+    "h": 7,
+    "weight": 0.9,
+    "boxes": 1
+  },
+  "S-GRB": {
+    "l": 69,
+    "b": 19,
+    "h": 9,
+    "weight": 3.89,
+    "boxes": 1
+  },
+  "SH-CHR": {
+    "l": 0,
+    "b": 0,
+    "h": 0,
+    "weight": 1.26,
+    "boxes": 1
+  },
+  "S-JVS": {
+    "l": 82,
+    "b": 20,
+    "h": 9,
+    "weight": 6.8,
+    "boxes": 1
+  },
+  "S-LC": {
+    "l": 61,
+    "b": 17,
+    "h": 6,
+    "weight": 1.89,
+    "boxes": 1
+  },
+  "S-LO": {
+    "l": 113,
+    "b": 18,
+    "h": 4,
+    "weight": 2.89,
+    "boxes": 1
+  },
+  "SL-VE-18": {
+    "l": 0,
+    "b": 0,
+    "h": 0,
+    "weight": 0,
+    "boxes": 1
+  },
+  "SL-VE-P": {
+    "l": 50,
+    "b": 29,
+    "h": 8,
+    "weight": 1.89,
+    "boxes": 1
+  },
+  "S-MO-3": {
+    "l": 27.5,
+    "b": 27.5,
+    "h": 17.5,
+    "weight": 2.89,
+    "boxes": 1
+  },
+  "S-MO-5": {
+    "l": 26,
+    "b": 25,
+    "h": 25,
+    "weight": 4.5,
+    "boxes": 1
+  },
+  "S-PTE": {
+    "l": 144,
+    "b": 20,
+    "h": 8,
+    "weight": 11.6,
+    "boxes": 1
+  },
+  "S-PTE-W": {
+    "l": 145,
+    "b": 22,
+    "h": 9,
+    "weight": 11.43,
+    "boxes": 1
+  },
+  "SR-BKN-2": {
+    "l": 83,
+    "b": 43,
+    "h": 15,
+    "weight": 19.85,
+    "boxes": 1
+  },
+  "SR-CLE": {
+    "l": 81,
+    "b": 43,
+    "h": 14,
+    "weight": 20.8,
+    "boxes": 1
+  },
+  "SR-CLM-2": {
+    "l": 82,
+    "b": 43,
+    "h": 13,
+    "weight": 16.85,
+    "boxes": 1
+  },
+  "SR-CLM-3": {
+    "l": 129,
+    "b": 43,
+    "h": 13,
+    "weight": 26.3,
+    "boxes": 1
+  },
+  "SR-CLM-T": {
+    "l": 129,
+    "b": 43,
+    "h": 13,
+    "weight": 30,
+    "boxes": 1
+  },
+  "SR-KPN": {
+    "l": 148,
+    "b": 40,
+    "h": 12,
+    "weight": 33.5,
+    "boxes": 1
+  },
+  "SR-LRL": {
+    "l": 103,
+    "b": 35,
+    "h": 7,
+    "weight": 12.21,
+    "boxes": 1
+  },
+  "SR-MVS": {
+    "l": 93,
+    "b": 42,
+    "h": 9,
+    "weight": 30.65,
+    "boxes": 1
+  },
+  "SR-OLY": {
+    "l": 147,
+    "b": 38,
+    "h": 11,
+    "weight": 29.45,
+    "boxes": 1
+  },
+  "SR-PRG": {
+    "l": 140,
+    "b": 49,
+    "h": 12,
+    "weight": 35.72,
+    "boxes": 1
+  },
+  "SR-WHTO": {
+    "l": 117,
+    "b": 42,
+    "h": 17,
+    "weight": 24.4,
+    "boxes": 1
+  },
+  "S-RY": {
+    "l": 67,
+    "b": 19,
+    "h": 9,
+    "weight": 3.89,
+    "boxes": 1
+  },
+  "S-SB-S3": {
+    "l": 32,
+    "b": 32,
+    "h": 12,
+    "weight": 1.89,
+    "boxes": 1
+  },
+  "S-T-16S4": {
+    "l": 86.5,
+    "b": 16,
+    "h": 6,
+    "weight": 3.89,
+    "boxes": 1
+  },
+  "ST-AML": {
+    "l": 122,
+    "b": 63,
+    "h": 8,
+    "weight": 18.89,
+    "boxes": 1
+  },
+  "ST-CBN": {
+    "l": 152,
+    "b": 58,
+    "h": 9,
+    "weight": 31.89,
+    "boxes": 1
+  },
+  "ST-CBN-LS": {
+    "l": 125,
+    "b": 53,
+    "h": 13,
+    "weight": 17.6,
+    "boxes": 1
+  },
+  "ST-CBN-S": {
+    "l": 107,
+    "b": 59,
+    "h": 8,
+    "weight": 12.7,
+    "boxes": 1
+  },
+  "ST-CND-LA": {
+    "l": 112,
+    "b": 51,
+    "h": 8,
+    "weight": 14.55,
+    "boxes": 1
+  },
+  "ST-CND-ST": {
+    "l": 85.7,
+    "b": 45.7,
+    "h": 6.5,
+    "weight": 12,
+    "boxes": 1
+  },
+  "S-TCW-10P2": {
+    "l": 35,
+    "b": 33,
+    "h": 7,
+    "weight": 1.535,
+    "boxes": 1
+  },
+  "S-TCW-8P2": {
+    "l": 76,
+    "b": 26,
+    "h": 5,
+    "weight": 0.945,
+    "boxes": 1
+  },
+  "ST-EFI-LA": {
+    "l": 114,
+    "b": 60,
+    "h": 5,
+    "weight": 13.2,
+    "boxes": 1
+  },
+  "ST-EFI-ST": {
+    "l": 97,
+    "b": 51,
+    "h": 5,
+    "weight": 9.14,
+    "boxes": 1
+  },
+  "ST-GSE-LA": {
+    "l": 121,
+    "b": 63,
+    "h": 5,
+    "weight": 13.215,
+    "boxes": 1
+  },
+  "ST-GSE-ST": {
+    "l": 97,
+    "b": 56,
+    "h": 4,
+    "weight": 9.55,
+    "boxes": 1
+  },
+  "ST-GSE-WMN": {
+    "l": 87,
+    "b": 59,
+    "h": 5,
+    "weight": 6.36,
+    "boxes": 1
+  },
+  "ST-GSE-WMS": {
+    "l": 86,
+    "b": 60,
+    "h": 5,
+    "weight": 8,
+    "boxes": 1
+  },
+  "ST-GSE-WMSF": {
+    "l": 0,
+    "b": 0,
+    "h": 0,
+    "weight": 0,
+    "boxes": 1
+  },
+  "ST-GSE-WMSW": {
+    "l": 87,
+    "b": 59,
+    "h": 5,
+    "weight": 6.36,
+    "boxes": 1
+  },
+  "ST-HE": {
+    "l": 85,
+    "b": 58,
+    "h": 4,
+    "weight": 7,
+    "boxes": 1
+  },
+  "ST-HES": {
+    "l": 85,
+    "b": 66,
+    "h": 5,
+    "weight": 10.75,
+    "boxes": 1
+  },
+  "ST-KYA": {
+    "l": 85,
+    "b": 54,
+    "h": 11,
+    "weight": 24.5,
+    "boxes": 1
+  },
+  "ST-MLM-L": {
+    "l": 111,
+    "b": 48,
+    "h": 10,
+    "weight": 20.5,
+    "boxes": 1
+  },
+  "ST-MLM-N": {
+    "l": 109,
+    "b": 47,
+    "h": 9,
+    "weight": 18.3,
+    "boxes": 1
+  },
+  "ST-RDO": {
+    "l": 123,
+    "b": 30,
+    "h": 13,
+    "weight": 25,
+    "boxes": 1
+  },
+  "ST-RE": {
+    "l": 97,
+    "b": 49,
+    "h": 8,
+    "weight": 16.992,
+    "boxes": 1
+  },
+  "S-TW12-S4": {
+    "l": 55,
+    "b": 17,
+    "h": 5,
+    "weight": 1.79,
+    "boxes": 1
+  },
+  "ST-WLD": {
+    "l": 136,
+    "b": 77,
+    "h": 10,
+    "weight": 47.55,
+    "boxes": 1
+  },
+  "S-XD": {
+    "l": 98,
+    "b": 25,
+    "h": 10,
+    "weight": 9.7,
+    "boxes": 1
+  },
+  "TP-MTA": {
+    "l": 145,
+    "b": 26,
+    "h": 10,
+    "weight": 16,
+    "boxes": 1
+  },
+  "TS-FV": {
+    "l": 56,
+    "b": 29,
+    "h": 9,
+    "weight": 5.525,
+    "boxes": 1
+  },
+  "TS-NL": {
+    "l": 35,
+    "b": 25,
+    "h": 5,
+    "weight": 1.1,
+    "boxes": 1
+  },
+  "TS-NL-A": {
+    "l": 36,
+    "b": 25,
+    "h": 5,
+    "weight": 1.515,
+    "boxes": 1
+  },
+  "TU-ARO-LA": {
+    "l": 47,
+    "b": 35,
+    "h": 8,
+    "weight": 6,
+    "boxes": 1
+  },
+  "TU-ARO-ST": {
+    "l": 35,
+    "b": 30,
+    "h": 9,
+    "weight": 3.725,
+    "boxes": 1
+  },
+  "TU-ATD": {
+    "l": 175,
+    "b": 42,
+    "h": 6,
+    "weight": 21.43,
+    "boxes": 1
+  },
+  "TU-AYL": {
+    "l": 156,
+    "b": 40,
+    "h": 7,
+    "weight": 16.8,
+    "boxes": 1
+  },
+  "TU-BKMT": {
+    "l": 195,
+    "b": 40,
+    "h": 10,
+    "weight": 32.7,
+    "boxes": 1
+  },
+  "TU-BKY": {
+    "l": 195,
+    "b": 40,
+    "h": 10,
+    "weight": 32.7,
+    "boxes": 1
+  },
+  "TU-BVN": {
+    "l": 91,
+    "b": 54,
+    "h": 9,
+    "weight": 28.3,
+    "boxes": 1
+  },
+  "TU-CBR-LA": {
+    "l": 117,
+    "b": 30,
+    "h": 6,
+    "weight": 8.5,
+    "boxes": 1
+  },
+  "TU-CBR-ST": {
+    "l": 69,
+    "b": 28,
+    "h": 6,
+    "weight": 5,
+    "boxes": 1
+  },
+  "TU-CRL": {
+    "l": 144,
+    "b": 42,
+    "h": 10,
+    "weight": 27.5,
+    "boxes": 1
+  },
+  "TU-DAR": {
+    "l": 149,
+    "b": 46,
+    "h": 7,
+    "weight": 23.5,
+    "boxes": 1
+  },
+  "TU-DRN": {
+    "l": 164,
+    "b": 40,
+    "h": 7,
+    "weight": 17.4,
+    "boxes": 1
+  },
+  "TU-DSK": {
+    "l": 100,
+    "b": 53,
+    "h": 9,
+    "weight": 28.5,
+    "boxes": 1
+  },
+  "TU-ETY-LA": {
+    "l": 127,
+    "b": 30,
+    "h": 9,
+    "weight": 13.4,
+    "boxes": 1
+  },
+  "TU-ETY-M": {
+    "l": 98,
+    "b": 27,
+    "h": 6,
+    "weight": 6.23,
+    "boxes": 1
+  },
+  "TU-ETY-ST": {
+    "l": 97,
+    "b": 31,
+    "h": 8,
+    "weight": 11.5,
+    "boxes": 1
+  },
+  "TU-FL": {
+    "l": 207,
+    "b": 45,
+    "h": 10,
+    "weight": 47.4,
+    "boxes": 2
+  },
+  "TU-GAU": {
+    "l": 92,
+    "b": 53,
+    "h": 9,
+    "weight": 19,
+    "boxes": 1
+  },
+  "TU-HMD": {
+    "l": 134,
+    "b": 44,
+    "h": 10,
+    "weight": 26.5,
+    "boxes": 1
+  },
+  "TU-KU-LA": {
+    "l": 127,
+    "b": 35,
+    "h": 7,
+    "weight": 12,
+    "boxes": 1
+  },
+  "TU-KU-ST": {
+    "l": 85,
+    "b": 29,
+    "h": 6,
+    "weight": 6,
+    "boxes": 1
+  },
+  "TU-KVD-LA": {
+    "l": 97,
+    "b": 30,
+    "h": 5,
+    "weight": 4,
+    "boxes": 1
+  },
+  "TU-KVD-ST": {
+    "l": 66,
+    "b": 29,
+    "h": 5,
+    "weight": 3.31,
+    "boxes": 1
+  },
+  "TU-LE": {
+    "l": 123,
+    "b": 40,
+    "h": 9,
+    "weight": 16,
+    "boxes": 1
+  },
+  "TU-MA-LA": {
+    "l": 96,
+    "b": 31,
+    "h": 4,
+    "weight": 4.5,
+    "boxes": 1
+  },
+  "TU-MA-ST": {
+    "l": 68,
+    "b": 31,
+    "h": 5,
+    "weight": 3,
+    "boxes": 1
+  },
+  "TU-MLE": {
+    "l": 65.7,
+    "b": 29.2,
+    "h": 5,
+    "weight": 4,
+    "boxes": 1
+  },
+  "TU-MYN": {
+    "l": 194,
+    "b": 44,
+    "h": 8,
+    "weight": 31.5,
+    "boxes": 1
+  },
+  "TU-NVH-M": {
+    "l": 127,
+    "b": 46,
+    "h": 7,
+    "weight": 22.4,
+    "boxes": 1
+  },
+  "TU-NVH-ST": {
+    "l": 0,
+    "b": 0,
+    "h": 0,
+    "weight": 0,
+    "boxes": 1
+  },
+  "TU-OL": {
+    "l": 116,
+    "b": 40,
+    "h": 7,
+    "weight": 12.5,
+    "boxes": 1
+  },
+  "TU-PMG-LA": {
+    "l": 163,
+    "b": 30,
+    "h": 9,
+    "weight": 20.85,
+    "boxes": 1
+  },
+  "TU-PMG-ST": {
+    "l": 135,
+    "b": 35,
+    "h": 8,
+    "weight": 14.85,
+    "boxes": 1
+  },
+  "TU-PM-LA": {
+    "l": 165,
+    "b": 36,
+    "h": 7,
+    "weight": 15.85,
+    "boxes": 1
+  },
+  "TU-PMP-L": {
+    "l": 166,
+    "b": 37,
+    "h": 8,
+    "weight": 18.77,
+    "boxes": 1
+  },
+  "TU-PMP-S": {
+    "l": 136,
+    "b": 35,
+    "h": 8,
+    "weight": 17.6,
+    "boxes": 1
+  },
+  "TU-PMS-LA": {
+    "l": 154,
+    "b": 37,
+    "h": 6,
+    "weight": 10.85,
+    "boxes": 1
+  },
+  "TU-PMS-ST": {
+    "l": 135,
+    "b": 36,
+    "h": 7,
+    "weight": 8.735,
+    "boxes": 1
+  },
+  "TU-PM-ST": {
+    "l": 135,
+    "b": 36,
+    "h": 7,
+    "weight": 10.8,
+    "boxes": 1
+  },
+  "TU-PR": {
+    "l": 126,
+    "b": 29,
+    "h": 6,
+    "weight": 7.7,
+    "boxes": 1
+  },
+  "TU-PTL": {
+    "l": 100,
+    "b": 30,
+    "h": 8,
+    "weight": 20,
+    "boxes": 1
+  },
+  "TU-RE-LA": {
+    "l": 148,
+    "b": 35,
+    "h": 6,
+    "weight": 12.8,
+    "boxes": 1
+  },
+  "TU-RE-ST": {
+    "l": 82,
+    "b": 36,
+    "h": 7,
+    "weight": 8,
+    "boxes": 1
+  },
+  "TU-RWT-LA": {
+    "l": 188,
+    "b": 48,
+    "h": 9,
+    "weight": 37.8,
+    "boxes": 2
+  },
+  "TU-RWT-M": {
+    "l": 158,
+    "b": 45,
+    "h": 13,
+    "weight": 42.6,
+    "boxes": 1
+  },
+  "TU-RYE-LA": {
+    "l": 167,
+    "b": 40,
+    "h": 8,
+    "weight": 28.56,
+    "boxes": 1
+  },
+  "TU-RYE-ST": {
+    "l": 137,
+    "b": 30,
+    "h": 10,
+    "weight": 18.445,
+    "boxes": 1
+  },
+  "TU-SKD": {
+    "l": 153,
+    "b": 43,
+    "h": 9,
+    "weight": 27.63,
+    "boxes": 1
+  },
+  "TU-SNQ-LA": {
+    "l": 150,
+    "b": 34,
+    "h": 5,
+    "weight": 15.5,
+    "boxes": 1
+  },
+  "TU-TK-LA": {
+    "l": 87,
+    "b": 29,
+    "h": 9,
+    "weight": 7.8,
+    "boxes": 1
+  },
+  "TU-TK-ST": {
+    "l": 58,
+    "b": 30,
+    "h": 9,
+    "weight": 6.5,
+    "boxes": 1
+  },
+  "TU-TP": {
+    "l": 45,
+    "b": 24.5,
+    "h": 5,
+    "weight": 2,
+    "boxes": 1
+  },
+  "TU-TT-L": {
+    "l": 55,
+    "b": 32,
+    "h": 3.5,
+    "weight": 2,
+    "boxes": 1
+  },
+  "TU-TT-S": {
+    "l": 41,
+    "b": 25,
+    "h": 4,
+    "weight": 1,
+    "boxes": 1
+  },
+  "TU-VC": {
+    "l": 120,
+    "b": 36,
+    "h": 7,
+    "weight": 10,
+    "boxes": 1
+  },
+  "TU-WBM": {
+    "l": 196,
+    "b": 43,
+    "h": 8,
+    "weight": 31.955,
+    "boxes": 1
+  },
+  "WA-BLS": {
+    "l": 0,
+    "b": 0,
+    "h": 0,
+    "weight": 0,
+    "boxes": 1
+  },
+  "WA-CCI.P-DW": {
+    "l": 0,
+    "b": 0,
+    "h": 0,
+    "weight": 0,
+    "boxes": 1
+  },
+  "WA-FBA.P-DW": {
+    "l": 24,
+    "b": 23,
+    "h": 9,
+    "weight": 0.755,
+    "boxes": 1
+  },
+  "W-AND-10N": {
+    "l": 185,
+    "b": 50,
+    "h": 9,
+    "weight": 45,
+    "boxes": 1
+  },
+  "W-AND-11N": {
+    "l": 185,
+    "b": 51,
+    "h": 10,
+    "weight": 47.9,
+    "boxes": 1
+  },
+  "W-AND-12N": {
+    "l": 186,
+    "b": 51,
+    "h": 10,
+    "weight": 48.4,
+    "boxes": 1
+  },
+  "W-AND-2M": {
+    "l": 123,
+    "b": 53,
+    "h": 11,
+    "weight": 33.9,
+    "boxes": 2
+  },
+  "W-AND-2N": {
+    "l": 123,
+    "b": 53,
+    "h": 11,
+    "weight": 33.901,
+    "boxes": 2
+  },
+  "W-AND-3M": {
+    "l": 130,
+    "b": 54,
+    "h": 9,
+    "weight": 29.14,
+    "boxes": 2
+  },
+  "W-AND-3N": {
+    "l": 130,
+    "b": 54,
+    "h": 9,
+    "weight": 29.14,
+    "boxes": 2
+  },
+  "W-AND-4M": {
+    "l": 166,
+    "b": 53,
+    "h": 10,
+    "weight": 44.65,
+    "boxes": 2
+  },
+  "W-AND-4N": {
+    "l": 166,
+    "b": 53,
+    "h": 10,
+    "weight": 44.65,
+    "boxes": 2
+  },
+  "W-MLT-2N": {
+    "l": 185,
+    "b": 49,
+    "h": 13,
+    "weight": 51.9,
+    "boxes": 2
+  },
+  "W-MLT-3N": {
+    "l": 192,
+    "b": 46,
+    "h": 12,
+    "weight": 48.55,
+    "boxes": 2
+  },
+  "W-MLT-4N": {
+    "l": 157,
+    "b": 47,
+    "h": 9,
+    "weight": 32,
+    "boxes": 2
+  },
+  "WT-EA": {
+    "l": 0,
+    "b": 0,
+    "h": 0,
+    "weight": 0,
+    "boxes": 1
+  },
+  "KH-SUT-5": {
+    "l": 24,
+    "b": 11,
+    "h": 5,
+    "weight": 0.3,
+    "boxes": 1
+  },
+  "KH-SUT-10": {
+    "l": 25,
+    "b": 25,
+    "h": 6,
+    "weight": 0.7,
+    "boxes": 1
+  },
+  "KH-SUT-21": {
+    "l": 36,
+    "b": 33,
+    "h": 6,
+    "weight": 1.36,
+    "boxes": 1
+  },
+  "TU-BKY-ST": {
+    "l": 153,
+    "b": 43,
+    "h": 9,
+    "weight": 26,
+    "boxes": 1
+  },
+  "TU-WBM-ST": {
+    "l": 153,
+    "b": 43,
+    "h": 9,
+    "weight": 23,
+    "boxes": 1
+  },
+  "KH-TOC-18": {
+    "l": 39,
+    "b": 30,
+    "h": 8,
+    "weight": 3,
+    "boxes": 1
+  },
+  "KH-TOC-40": {
+    "l": 65,
+    "b": 35,
+    "h": 8,
+    "weight": 5,
+    "boxes": 1
+  },
+  "SR-BKN-T": {
+    "l": 150,
+    "b": 42,
+    "h": 14,
+    "weight": 40,
+    "boxes": 1
+  },
+  "TS-NL-ST": {
+    "l": 112,
+    "b": 28,
+    "h": 4,
+    "weight": 4,
+    "boxes": 1
+  },
+  "TS-NL-LA": {
+    "l": 36,
+    "b": 25,
+    "h": 5,
+    "weight": 3.8,
+    "boxes": 1
+  },
+  "WA-PYS-S": {
+    "l": 70,
+    "b": 25,
+    "h": 5,
+    "weight": 2.5,
+    "boxes": 1
+  },
+  "WA-PYS-N": {
+    "l": 78,
+    "b": 23,
+    "h": 6,
+    "weight": 2.2,
+    "boxes": 1
+  },
+  "SH-YBO": {
+    "l": 55,
+    "b": 17,
+    "h": 8,
+    "weight": 2.5,
+    "boxes": 1
+  },
+  "SH-DVN": {
+    "l": 40,
+    "b": 20,
+    "h": 5,
+    "weight": 1.7,
+    "boxes": 1
+  },
+  "ST-CBN-P": {
+    "l": 152,
+    "b": 58,
+    "h": 9,
+    "weight": 25,
+    "boxes": 1
+  },
+  "BT-NHE": {
+    "l": 56,
+    "b": 30,
+    "h": 11,
+    "weight": 7.1,
+    "boxes": 1
+  },
+  "KC-OPT-1N": {
+    "l": 78,
+    "b": 36,
+    "h": 15,
+    "weight": 16.1,
+    "boxes": 1
+  },
+  "KC-OPT-1S": {
+    "l": 86,
+    "b": 36,
+    "h": 15,
+    "weight": 18,
+    "boxes": 1
+  },
+  "KC-SRN": {
+    "l": 136,
+    "b": 44,
+    "h": 14,
+    "weight": 40,
+    "boxes": 1
+  },
+  "SR-BKN-H": {
+    "l": 187,
+    "b": 43,
+    "h": 14,
+    "weight": 59.9,
+    "boxes": 1
+  },
+  "SR-MVS-IT": {
+    "l": 146,
+    "b": 48,
+    "h": 10,
+    "weight": 29,
+    "boxes": 1
+  },
+  "W-BNO": {
+    "l": 154,
+    "b": 49,
+    "h": 13,
+    "weight": 39,
+    "boxes": 1
+  },
+  "W-CLO-345": {
+    "l": 106,
+    "b": 44,
+    "h": 10,
+    "weight": 19,
+    "boxes": 1
+  },
+  "W-CLO-3": {
+    "l": 106,
+    "b": 44,
+    "h": 10,
+    "weight": 19,
+    "boxes": 1
+  },
+  "W-CLO-4": {
+    "l": 145,
+    "b": 44,
+    "h": 9,
+    "weight": 25.8,
+    "boxes": 1
+  },
+  "W-CLO-5": {
+    "l": 169,
+    "b": 36,
+    "h": 9,
+    "weight": 28,
+    "boxes": 1
+  },
+  "W-MLT-M": {
+    "l": 185,
+    "b": 46,
+    "h": 12,
+    "weight": 50,
+    "boxes": 1
+  },
+  "KC-OPT-2N": {
+    "l": 78,
+    "b": 36,
+    "h": 15,
+    "weight": 16.1,
+    "boxes": 1
+  },
+  "KC-OPT-2S": {
+    "l": 86,
+    "b": 36,
+    "h": 15,
+    "weight": 18,
+    "boxes": 1
+  },
+  "SR-MVS-I": {
+    "l": 104,
+    "b": 42,
+    "h": 16,
+    "weight": 20,
+    "boxes": 1
+  },
+  "SR-MVS-T": {
+    "l": 146,
+    "b": 48,
+    "h": 10,
+    "weight": 29,
+    "boxes": 1
+  },
+  "B-MLT-D30T": {
+    "l": 190,
+    "b": 43,
+    "h": 9,
+    "weight": 25,
+    "boxes": 1
+  },
+  "PU-SNM": {
+    "l": 85,
+    "b": 50,
+    "h": 23,
+    "weight": 28.2,
+    "boxes": 1
+  },
+  "SB-BNA": {
+    "l": 85,
+    "b": 37,
+    "h": 15,
+    "weight": 16,
+    "boxes": 1
+  },
+  "SR-FYN": {
+    "l": 120,
+    "b": 50,
+    "h": 18,
+    "weight": 47,
+    "boxes": 1
+  },
+  "TU-SKDL": {
+    "l": 158,
+    "b": 38,
+    "h": 9,
+    "weight": 22.9,
+    "boxes": 1
+  },
+  "SB-VNO": {
+    "l": 90,
+    "b": 36,
+    "h": 14,
+    "weight": 18,
+    "boxes": 1
+  },
+  "SF-WBR-4LI": {
+    "l": 1,
+    "b": 1,
+    "h": 1,
+    "weight": 56,
+    "boxes": 1
+  },
+  "SH-GTA": {
+    "l": 52,
+    "b": 32,
+    "h": 10,
+    "weight": 3.65,
+    "boxes": 1
+  },
+  "PU-SUB": {
+    "l": 87,
+    "b": 42,
+    "h": 1,
+    "weight": 25.3,
+    "boxes": 1
+  },
+  "SR-WMO": {
+    "l": 129,
+    "b": 43,
+    "h": 13,
+    "weight": 26.5,
+    "boxes": 1
+  },
+  "ST-RDO-ST": {
+    "l": 87,
+    "b": 45,
+    "h": 8,
+    "weight": 14.7,
+    "boxes": 1
+  },
+  "PU-SUB-ST": {
+    "l": 82,
+    "b": 42,
+    "h": 11,
+    "weight": 13.2,
+    "boxes": 1
+  },
+  "PU-DRV": {
+    "l": 48,
+    "b": 30,
+    "h": 8,
+    "weight": 4.8,
+    "boxes": 1
+  },
+  "SH-DVN-ST": {
+    "l": 37,
+    "b": 10,
+    "h": 6,
+    "weight": 0.6,
+    "boxes": 1
+  }
+}

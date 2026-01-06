@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react'
-import { useData } from '../../context/DataContext'
+import { useData } from '@/context/DataContext'
+import { useLocalization } from '@/context/LocalizationContext'
 import mlForecastService from '../../services/mlForecastService'
 import {
   LineChart,
@@ -18,23 +19,31 @@ import {
 import { TrendingUp, AlertTriangle, Calendar, Target } from 'lucide-react'
 
 const DemandForecast = () => {
-  const { orders, skuMaster } = useData()
+  const { t } = useLocalization()
+  const { orders, ordersBySku, skuMaster } = useData()
   const [selectedSKU, setSelectedSKU] = useState('')
   const [forecastDays, setForecastDays] = useState(30)
   const [viewMode, setViewMode] = useState('FORECAST') // FORECAST | DECOMPOSITION | BATCH
 
   // Generate forecast for selected SKU
   const forecastData = useMemo(() => {
-    if (!selectedSKU || !orders.length) return null
-    return mlForecastService.predictDemand(orders, selectedSKU, forecastDays)
-  }, [selectedSKU, orders, forecastDays])
+    if (!selectedSKU || !ordersBySku[selectedSKU]) return null
+    return mlForecastService.predictDemand(ordersBySku[selectedSKU], selectedSKU, forecastDays)
+  }, [selectedSKU, ordersBySku, forecastDays])
 
   // Batch forecast for top SKUs
   const batchData = useMemo(() => {
     if (viewMode !== 'BATCH' || !orders.length) return null
-    const topSKUs = [...new Set(orders.map((o) => o.sku))].slice(0, 10)
+    const topSKUs = skuMaster.slice(0, 10).map(s => s.sku);
+    const topOrders = topSKUs.reduce((acc, sku) => {
+      acc[sku] = ordersBySku[sku] || [];
+      return acc;
+    }, {});
+
+    // Batch forecast expects array of orders and skus, but we can pass individual orders if service allows
+    // Let's stick to service API but we can optimize it if needed.
     return mlForecastService.batchForecast(orders, topSKUs, 7)
-  }, [orders, viewMode])
+  }, [orders, ordersBySku, skuMaster, viewMode])
 
   // Prepare chart data
   const chartData = useMemo(() => {
@@ -74,32 +83,24 @@ const DemandForecast = () => {
   return (
     <div className="demand-forecast animate-fade">
       {/* Header */}
-      <div className="section-header">
+      <div className="section-header" style={{ marginBottom: '32px' }}>
         <div>
-          <h2>📈 ML Demand Forecast</h2>
+          <h2 style={{ fontSize: '1.8rem', fontWeight: '800' }}>{t('analytics.demand_forecast', 'Demand Forecasting')}</h2>
           <p className="text-muted">
-            Prophet-inspired forecasting with holiday effects & changepoint detection
+            <TrendingUp className="inline-block w-4 h-4 mr-1 text-primary" />
+            AI-driven inventory predictions using historical sales velocity.
           </p>
         </div>
-        <div style={{ display: 'flex', gap: '10px' }}>
-          <button
-            className={`btn-${viewMode === 'FORECAST' ? 'primary' : 'secondary'} glass-hover`}
-            onClick={() => setViewMode('FORECAST')}
-          >
-            📊 Forecast
-          </button>
-          <button
-            className={`btn-${viewMode === 'DECOMPOSITION' ? 'primary' : 'secondary'} glass-hover`}
-            onClick={() => setViewMode('DECOMPOSITION')}
-          >
-            🔬 Decomposition
-          </button>
-          <button
-            className={`btn-${viewMode === 'BATCH' ? 'primary' : 'secondary'} glass-hover`}
-            onClick={() => setViewMode('BATCH')}
-          >
-            ⚡ Batch Analysis
-          </button>
+        <div className="glass p-1 rounded-xl flex gap-1">
+          {['FORECAST', 'DECOMPOSITION', 'BATCH'].map(mode => (
+            <button
+              key={mode}
+              className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${viewMode === mode ? 'bg-primary text-white shadow-lg' : 'text-slate-400 hover:text-white'}`}
+              onClick={() => setViewMode(mode)}
+            >
+              {t(`analytics.view_${mode.toLowerCase()}`, mode)}
+            </button>
+          ))}
         </div>
       </div>
 

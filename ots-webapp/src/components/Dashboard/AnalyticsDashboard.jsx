@@ -1,18 +1,20 @@
 import React, { useMemo, useState } from 'react';
-import { useData } from '../../context/DataContext';
+import { useData } from '@/context/DataContext';
+import { useLocalization } from '@/context/LocalizationContext';
 import { calculateSMAForecast, predictVendorArrival } from '../../services/forecastService';
 import vendorService from '../../services/vendorService';
 import {
     AreaChart, Area, BarChart, Bar, PieChart, Pie, Cell,
     XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend
 } from 'recharts';
-import DemandForecast from './DemandForecast';
+import DemandForecast from '../Analytics/DemandForecast';
 import PredictiveAnalytics from './PredictiveAnalytics';
 
 const COLORS = ['var(--primary)', 'var(--accent)', 'var(--success)', 'var(--warning)', 'var(--info)'];
 
 const AnalyticsDashboard = () => {
-    const { orders = [], logistics = [], skuMaster = [], syncAllMarketplaces, syncStatus = 'offline' } = useData();
+    const { t } = useLocalization();
+    const { orders = [], sales = [], skuMaster = [], syncAllMarketplaces, syncStatus = 'offline' } = useData();
     const [timeRange, setTimeRange] = useState('30days');
 
     const vendors = useMemo(() => vendorService.getVendors(), []);
@@ -20,10 +22,13 @@ const AnalyticsDashboard = () => {
     // Summary Metrics
     const metrics = useMemo(() => {
         const totalOrders = orders.length;
-        const revenue = orders.reduce((sum, o) => sum + (o.amount || 0), 0);
+        // Map revenue from Sales data
+        const revenue = sales.reduce((sum, s) => sum + (s.amount || 0), 0);
         const delivered = orders.filter(o => o.status === 'Delivered').length;
         const deliveryRate = totalOrders > 0 ? ((delivered / totalOrders) * 100).toFixed(1) : 0;
-        const avgOrderValue = totalOrders > 0 ? Math.round(revenue / totalOrders) : 0;
+
+        // Count unique order IDs in sales file for true AOV if possible, or just use count
+        const avgOrderValue = sales.length > 0 ? Math.round(revenue / sales.length) : 0;
 
         return {
             totalOrders,
@@ -32,7 +37,7 @@ const AnalyticsDashboard = () => {
             deliveryRate,
             avgOrderValue
         };
-    }, [orders]);
+    }, [orders, sales]);
 
     const arrivalPredictions = useMemo(() => {
         if (!skuMaster || skuMaster.length === 0 || !vendors || vendors.length === 0) {
@@ -56,13 +61,14 @@ const AnalyticsDashboard = () => {
         { name: 'Sun', orders: 35, dispatched: 32 }
     ];
 
-    // Status Distribution
-    const statusData = [
-        { name: 'Imported', value: orders.filter(o => o?.status === 'Imported').length || 3 },
-        { name: 'Processing', value: orders.filter(o => o?.status === 'Processing' || o?.status === 'MTP-Applied').length || 2 },
-        { name: 'In-Transit', value: orders.filter(o => o?.status === 'In-Transit').length || 5 },
-        { name: 'Delivered', value: orders.filter(o => o?.status === 'Delivered').length || 8 }
-    ];
+    // Status Distribution based on Real Data
+    const statusData = useMemo(() => {
+        const statuses = ['Pending', 'Processing', 'In-Transit', 'Delivered', 'Cancelled', 'Returned'];
+        return statuses.map(s => ({
+            name: s,
+            value: orders.filter(o => o.status === s).length
+        })).filter(s => s.value > 0);
+    }, [orders]);
 
     const formatCurrency = (val) => `₹${val.toLocaleString('en-IN')}`;
 
@@ -70,8 +76,8 @@ const AnalyticsDashboard = () => {
         <div className="analytics-dashboard animate-fade">
             <div className="section-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                 <div>
-                    <h2>Operational Intelligence</h2>
-                    <p className="text-muted">Real-time performance & predictive insights</p>
+                    <h2>{t('dashboard.operational_intelligence', 'Operational Intelligence')}</h2>
+                    <p className="text-muted">{t('dashboard.subtitle', 'Real-time performance & predictive insights')}</p>
                 </div>
                 <div style={{ display: 'flex', gap: '12px' }}>
                     <div className="glass" style={{ padding: '4px', borderRadius: '8px', display: 'flex', gap: '4px' }}>

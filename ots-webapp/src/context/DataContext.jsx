@@ -18,9 +18,8 @@ import warehouseOptimizer from '../services/warehouseOptimizer';
 import mlForecastService from '../services/mlForecastService';
 import dealerService from '../services/dealerService';
 import rtoService from '../services/rtoService';
-import reverseLogisticsService from '../services/reverseLogisticsService';
 import visionService from '../services/visionService';
-import { SKU_MASTER, SKU_ALIASES } from '../data/skuMasterData';
+import { SKU_MASTER as MOCK_SKU_MASTER, SKU_ALIASES } from '../data/skuMasterData';
 
 const DataContext = createContext();
 
@@ -28,8 +27,9 @@ export const DataProvider = ({ children }) => {
     const { isAuthenticated } = useAuth();
     // --- STATE ---
     const [orders, setOrders] = useState([]);
-    const [logistics, setLogistics] = useState([]);
-    const [skuMaster, setSkuMaster] = useState(SKU_MASTER);
+    const [ordersBySku, setOrdersBySku] = useState({});
+    const [sales, setSales] = useState([]);
+    const [skuMaster, setSkuMaster] = useState([]);
     const [skuAliases, setSkuAliases] = useState(SKU_ALIASES);
     const [inventoryLevels, setInventoryLevels] = useState({}); // { skuId: { inStock, reserved, location } }
     const [customerMaster, setCustomerMaster] = useState([]);
@@ -91,28 +91,52 @@ export const DataProvider = ({ children }) => {
                 const cachedActivityLog = await cacheService.retrieveCachedData('activityLog');
                 const cachedMetadata = await cacheService.retrieveCachedData('metadata');
 
-                if (cachedOrders && cachedOrders.length > 0) {
+                // Data Versioning: If cached orders are small (mock data), override with real seed
+                const isMockData = cachedOrders && cachedOrders.length < 50;
+
+                if (cachedOrders && cachedOrders.length > 0 && !isMockData) {
                     setOrders(cachedOrders);
+                    const indexed = cachedOrders.reduce((acc, o) => {
+                        if (!acc[o.sku]) acc[o.sku] = [];
+                        acc[o.sku].push(o);
+                        return acc;
+                    }, {});
+                    setOrdersBySku(indexed);
                 } else {
-                    // Seed Mock Orders
-                    const mockOrders = [
-                        ...Array(6).fill(0).map((_, i) => ({
-                            id: `BWD-${1000 + i}`,
-                            customerName: 'Sameer Malhotra',
-                            phone: '9876543210',
-                            amount: 15000 + (i * 1000),
-                            status: 'Delivered',
-                            sku: 'SR-CLM-TM',
-                            createdAt: new Date(Date.now() - (i * 2) * 24 * 60 * 60 * 1000).toISOString()
-                        })),
-                        { id: 'BWD-2001', customerName: 'Anjali Sharma', phone: '9123456789', amount: 8500, status: 'In-Transit', sku: 'SR-CLM-TM', createdAt: new Date().toISOString() },
-                        { id: 'BWD-2002', customerName: 'Anjali Sharma', phone: '9123456789', amount: 3200, status: 'Delivered', sku: 'SR-CLM-TM', createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString() },
-                        { id: 'BWD-3001', customerName: 'Priya Verma', phone: '7766554433', amount: 12000, status: 'Delivered', sku: 'SR-CLM-TM', createdAt: new Date(Date.now() - 100 * 24 * 60 * 60 * 1000).toISOString() }
-                    ];
-                    setOrders(mockOrders);
+                    console.log('[Bluewud-AI] 📥 Initializing primary order book (32k+ records)...');
+                    const response = await fetch('/data/orders.json');
+                    const seededOrders = await response.json();
+                    if (seededOrders && seededOrders.length > 0) {
+                        setOrders(seededOrders);
+                        const indexed = seededOrders.reduce((acc, o) => {
+                            if (!acc[o.sku]) acc[o.sku] = [];
+                            acc[o.sku].push(o);
+                            return acc;
+                        }, {});
+                        setOrdersBySku(indexed);
+                        await cacheService.cacheData('orders', seededOrders);
+                    }
                 }
 
-                if (cachedSkuMaster) setSkuMaster(cachedSkuMaster);
+                if (cachedSkuMaster && cachedSkuMaster.length > 0) {
+                    setSkuMaster(cachedSkuMaster);
+                } else {
+                    const response = await fetch('/data/skuMaster.json');
+                    const seededSkuMaster = await response.json();
+                    if (seededSkuMaster && seededSkuMaster.length > 0) {
+                        setSkuMaster(seededSkuMaster);
+                        await cacheService.cacheData('skuMaster', seededSkuMaster);
+                    }
+                }
+
+                try {
+                    const response = await fetch('/data/sales.json');
+                    const seededSales = await response.json();
+                    setSales(seededSales || []);
+                } catch (e) {
+                    console.warn('Sales data not available', e);
+                }
+
                 if (cachedCustomers) setCustomerMaster(cachedCustomers);
                 else {
                     setCustomerMaster([
@@ -131,11 +155,13 @@ export const DataProvider = ({ children }) => {
                 if (invEntry) setInventoryLevels(invEntry.data);
                 else {
                     const initialInventory = {};
-                    SKU_MASTER.filter(s => !s.isParent).forEach(child => {
+                    // Use actual skuMaster if available, fallback to mock only if necessary
+                    const sourceSKUs = (skuMaster && skuMaster.length > 0) ? skuMaster : MOCK_SKU_MASTER;
+                    sourceSKUs.forEach(child => {
                         initialInventory[child.sku] = {
-                            inStock: child.initialStock || 25,
+                            inStock: child.stock || 25,
                             reserved: 0,
-                            location: child.defaultLocation || `WH-A1`
+                            location: `WH-A1`
                         };
                     });
                     setInventoryLevels(initialInventory);
@@ -350,6 +376,8 @@ export const DataProvider = ({ children }) => {
     // --- CONTEXT VALUE ---
     const value = {
         orders,
+        ordersBySku,
+        sales,
         skuMaster,
         skuAliases,
         inventoryLevels,
@@ -378,6 +406,7 @@ export const DataProvider = ({ children }) => {
         activityLog: getActivityLog(),
         kpiGoals,
         updateKpiGoals: (newGoals) => setKpiGoals(prev => ({ ...prev, ...newGoals })),
+        warehouses: warehouseOptimizer.getWarehouses(),
         logActivity
     };
 

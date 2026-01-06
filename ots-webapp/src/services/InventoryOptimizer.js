@@ -53,6 +53,52 @@ class InventoryOptimizer {
     const forecast = mlForecastService.predictDemand(orders, sku)
     return mlForecastService.calculateRRQ(forecast, leadTime)
   }
+
+  /**
+   * Suggest stock transfers between warehouses to balance inventory based on demand.
+   * @param {string} sku - SKU ID
+   * @param {Object} demandMap - { warehouseId: predictedDemand }
+   * @param {Array} warehouses - List of warehouse objects with current stock
+   * @returns {Array} List of suggested transfers
+   */
+  suggestTransfers(sku, demandMap, warehouses = []) {
+    const suggestions = []
+    if (!warehouses || warehouses.length === 0) return []
+
+    // 1. Identify Surpluses and Deficits
+    const status = warehouses.map(wh => {
+      const stock = wh.inventory?.[sku] || 0
+      const demand = demandMap[wh.id] || 0
+      const balance = stock - demand
+      return { id: wh.id, name: wh.name, balance, stock }
+    })
+
+    const deficits = status.filter(s => s.balance < 0).sort((a, b) => a.balance - b.balance)
+    const surpluses = status.filter(s => s.balance > 0).sort((a, b) => b.balance - a.balance)
+
+    // 2. Pair Deficits with Surpluses
+    deficits.forEach(def => {
+      let needed = Math.abs(def.balance)
+      for (const sur of surpluses) {
+        if (needed <= 0) break
+        if (sur.balance <= 0) continue
+
+        const transferQty = Math.min(needed, sur.balance)
+        suggestions.push({
+          from: sur.name,
+          to: def.name,
+          quantity: transferQty,
+          sku,
+          reason: `High predicted demand in ${def.name}`
+        })
+
+        sur.balance -= transferQty
+        needed -= transferQty
+      }
+    })
+
+    return suggestions
+  }
 }
 
 export default new InventoryOptimizer()

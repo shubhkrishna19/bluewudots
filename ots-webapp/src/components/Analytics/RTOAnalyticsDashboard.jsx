@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react'
 import { useData } from '../../context/DataContext'
-import { rtoService } from '../../services/rtoService'
+import rtoService from '../../services/rtoService'
 import {
   BarChart,
   Bar,
