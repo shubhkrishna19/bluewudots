@@ -140,6 +140,47 @@ class MarketplaceService {
     return this.getMockOrders('amazon') // Fallback for now even if "Live" flag is on, to prevent breaking
   }
 
+  /**
+   * Calculate Marketplace Fees
+   * @param {string} platform 
+   * @param {number} amount 
+   */
+  calculateFees(platform, amount) {
+    const p = platform.toLowerCase()
+    const rates = {
+      amazon: { commission: 0.15, closing: 40, shipping: 60, fixed: 20 },
+      flipkart: { commission: 0.12, closing: 25, shipping: 55, fixed: 15 }
+    }
+
+    const r = rates[p] || rates.amazon
+    const commission = amount * r.commission
+    const totalFee = commission + r.closing + r.shipping + r.fixed
+    const netPayout = amount - totalFee
+
+    return {
+      commission: Math.round(commission),
+      closing: r.closing,
+      shipping: r.shipping,
+      fixed: r.fixed,
+      totalFee: Math.round(totalFee),
+      netPayout: Math.round(netPayout)
+    }
+  }
+
+  /**
+   * Fetch Settlement Report (Mock)
+   * @param {string} platform 
+   */
+  async fetchSettlementReport(platform) {
+    await new Promise(r => setTimeout(r, 800))
+    // Return mock settlements with some random discrepancies
+    return [
+      { orderId: 'AMZ-123456-7890', amount: 4500, netPayout: 3800, status: 'Settled' },
+      { orderId: 'AMZ-998877-1122', amount: 2400, netPayout: 1900, status: 'Settled' },
+      { orderId: 'FK-554433-2211', amount: 3200, netPayout: 2750, status: 'Settled' }
+    ]
+  }
+
   async fetchFlipkartRealOrders() {
     console.log('Fetching from Flipkart API...')
     return this.getMockOrders('flipkart')

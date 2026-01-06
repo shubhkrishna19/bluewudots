@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react'
 import { useData } from '@/context/DataContext'
 import { calculateProfitability, getEnhancedSKU } from '../utils/commercialUtils'
+import marketplaceService from '../services/marketplaceService'
 
 const FinancialContext = createContext()
 
@@ -30,6 +31,8 @@ export const FinancialProvider = ({ children }) => {
         totalShipping: 0,
         totalBom: 0,
         netProfit: 0,
+        totalGateway: 0,
+        totalReturnProvision: 0
       }
 
       orders.forEach((order) => {
@@ -40,6 +43,7 @@ export const FinancialProvider = ({ children }) => {
             bomCost: skuData.bomCost * (order.quantity || 1),
             commissionPercent: skuData.commissionPercent,
             tmsLevel: skuData.tmsLevel,
+            shippingCost: order.shippingCost
           })
 
           stats.totalRevenue += order.amount
@@ -47,9 +51,8 @@ export const FinancialProvider = ({ children }) => {
           stats.totalCommissions += analysis.breakdown.commission
           stats.totalOverhead += analysis.breakdown.overhead
           stats.totalShipping += analysis.breakdown.shipping
-          stats.totalGateway = (stats.totalGateway || 0) + (analysis.breakdown.gateway || 0)
-          stats.totalReturnProvision =
-            (stats.totalReturnProvision || 0) + (analysis.breakdown.returnProvision || 0)
+          stats.totalGateway += analysis.breakdown.gateway || 0
+          stats.totalReturnProvision += analysis.breakdown.returnProvision || 0
           stats.totalBom += analysis.bomCost
           stats.netRevenue += analysis.netRevenue
           stats.netProfit += analysis.netProfit
@@ -61,25 +64,37 @@ export const FinancialProvider = ({ children }) => {
 
       setFinStats(stats)
 
-      // Fetch Real Settlement Data from Commercial Backend
+      // Fetch Real Settlement Data
       const fetchSettlements = async () => {
         try {
-          const response = await fetch('/server/finance/settlements')
-          const contentType = response.headers.get('content-type');
-          if (response.ok && contentType && contentType.includes('application/json')) {
-            const data = await response.json()
-            setSettlements(data)
-          } else {
-            // Fallback logic for demo/dev
-            const mockSettlements = orders.map((order) => ({
-              orderId: order.id,
-              amount: order.status === 'Delivered' ? order.amount * 0.82 : 0,
-              status: order.status === 'Delivered' ? 'Matched' : 'Pending',
-              type: 'Marketplace Remittance',
-              timestamp: new Date().toISOString(),
-            }))
-            setSettlements(mockSettlements)
+          // Attempt to get data from Marketplace Service instead of raw fetch for consistency
+          const platforms = ['amazon', 'flipkart']
+          let allSettlements = []
+
+          for (const p of platforms) {
+            const report = await marketplaceService.fetchSettlementReport(p)
+            allSettlements = [
+              ...allSettlements,
+              ...report.map(s => ({
+                ...s,
+                type: 'Marketplace Remittance',
+                timestamp: new Date().toISOString()
+              }))
+            ]
           }
+
+          // Merge with order-based pending settlements
+          const pendingSettlements = orders
+            .filter(o => !allSettlements.find(s => s.orderId === o.id))
+            .map(o => ({
+              orderId: o.id,
+              amount: o.status === 'Delivered' ? o.amount * 0.82 : 0,
+              status: o.status === 'Delivered' ? 'Matched' : 'Pending',
+              type: 'Marketplace Remittance',
+              timestamp: new Date().toISOString()
+            }))
+
+          setSettlements([...allSettlements, ...pendingSettlements])
         } catch (error) {
           console.error('Financial Recon Sync Error:', error)
         }

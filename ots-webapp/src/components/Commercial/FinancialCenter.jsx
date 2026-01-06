@@ -15,6 +15,20 @@ const FinancialCenter = () => {
       maximumFractionDigits: 0,
     }).format(val)
 
+  // Fix: Define flaggedOrders based on margin health
+  const flaggedOrders = orders.filter(order => {
+    const skuData = getEnhancedSKU(order.sku, skuMaster)
+    if (!skuData) return false
+    const analysis = calculateProfitability({
+      sellingPrice: order.amount,
+      bomCost: skuData.bomCost,
+      commissionPercent: skuData.commissionPercent,
+      tmsLevel: skuData.tmsLevel,
+      shippingCost: order.shippingCost
+    })
+    return !analysis.isHealthy
+  })
+
   return (
     <div className="financial-center-view animate-fade">
       <div
@@ -54,7 +68,7 @@ const FinancialCenter = () => {
         className="stats-grid"
         style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(4, 1fr)',
+          gridTemplateColumns: 'repeat(5, 1fr)',
           gap: '20px',
           marginTop: '32px',
         }}
@@ -81,13 +95,15 @@ const FinancialCenter = () => {
           <h2 style={{ marginTop: '8px' }}>
             {formatINR(
               finStats.totalCommissions +
-                finStats.totalGst +
-                finStats.totalOverhead +
-                finStats.totalShipping
+              finStats.totalGst +
+              finStats.totalOverhead +
+              finStats.totalShipping +
+              (finStats.totalGateway || 0) +
+              (finStats.totalReturnProvision || 0)
             )}
           </h2>
           <p style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: '4px' }}>
-            Comms + GST + Ops + Ship
+            Comms + GST + Ops + Ship + PG
           </p>
         </div>
         <div
@@ -147,7 +163,7 @@ const FinancialCenter = () => {
       >
         <div className="ledger-section">
           <div className="glass" style={{ padding: '24px' }}>
-            <h3>Recent Transactions</h3>
+            <h3>{selectedView === 'audit' ? 'Logistics Audit' : selectedView === 'settlements' ? 'Settlement History' : 'Recent Transactions'}</h3>
             <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '20px' }}>
               <thead>
                 <tr
@@ -172,18 +188,66 @@ const FinancialCenter = () => {
               <tbody>
                 {selectedView === 'overview'
                   ? orders.slice(0, 8).map((order) => {
-                      const skuData = getEnhancedSKU(order.sku, skuMaster)
-                      const analysis = calculateProfitability({
-                        sellingPrice: order.amount,
-                        bomCost: 0,
-                        commissionPercent: 18,
-                        tmsLevel: 'TL2',
-                      })
-                      const deductions =
-                        analysis.breakdown.tax +
-                        analysis.breakdown.commission +
-                        analysis.breakdown.overhead +
-                        analysis.breakdown.shipping
+                    const skuData = getEnhancedSKU(order.sku, skuMaster)
+                    const analysis = calculateProfitability({
+                      sellingPrice: order.amount,
+                      bomCost: skuData?.bomCost || 0,
+                      commissionPercent: skuData?.commissionPercent || 18,
+                      tmsLevel: skuData?.tmsLevel || 'TL2',
+                      shippingCost: order.shippingCost
+                    })
+                    const deductions =
+                      analysis.breakdown.tax +
+                      analysis.breakdown.commission +
+                      analysis.breakdown.overhead +
+                      analysis.breakdown.shipping +
+                      analysis.breakdown.gateway +
+                      analysis.breakdown.returnProvision
+
+                    return (
+                      <tr
+                        key={order.id}
+                        style={{
+                          borderBottom: '1px solid rgba(255,255,255,0.05)',
+                          fontSize: '0.85rem',
+                        }}
+                      >
+                        <td style={{ padding: '12px' }}>
+                          {order.id} <br />
+                          <span className="text-muted" style={{ fontSize: '0.7rem' }}>
+                            {order.source}
+                          </span>
+                        </td>
+                        <td style={{ padding: '12px' }}>{formatINR(order.amount)}</td>
+                        <td style={{ padding: '12px', color: 'var(--danger)' }}>
+                          - {formatINR(deductions)}
+                        </td>
+                        <td style={{ padding: '12px', fontWeight: '700' }}>
+                          {formatINR(analysis.netRevenue)}
+                        </td>
+                        <td style={{ padding: '12px' }}>
+                          <span
+                            className="badge"
+                            style={{
+                              background:
+                                order.status === 'Delivered'
+                                  ? 'var(--success)'
+                                  : 'var(--warning)',
+                              fontSize: '0.6rem',
+                            }}
+                          >
+                            {order.status === 'Delivered' ? 'Remitted' : 'Pending'}
+                          </span>
+                        </td>
+                      </tr>
+                    )
+                  })
+                  : selectedView === 'audit'
+                    ? orders.slice(0, 10).map((order) => {
+                      // Dynamic Audit logic
+                      const expectedCost = Math.round(order.amount * 0.08)
+                      const actualCost = order.shippingCost || (order.amount > 5000 ? expectedCost * 1.5 : expectedCost * 1.1)
+                      const diff = actualCost - expectedCost
 
                       return (
                         <tr
@@ -193,110 +257,66 @@ const FinancialCenter = () => {
                             fontSize: '0.85rem',
                           }}
                         >
-                          <td style={{ padding: '12px' }}>
-                            {order.id} <br />
-                            <span className="text-muted" style={{ fontSize: '0.7rem' }}>
-                              {order.source}
-                            </span>
-                          </td>
-                          <td style={{ padding: '12px' }}>{formatINR(order.amount)}</td>
-                          <td style={{ padding: '12px', color: 'var(--danger)' }}>
-                            - {formatINR(deductions)}
+                          <td style={{ padding: '12px' }}>{order.id}</td>
+                          <td style={{ padding: '12px' }}>{formatINR(expectedCost)}</td>
+                          <td
+                            style={{
+                              padding: '12px',
+                              color: diff > 0 ? 'var(--danger)' : 'var(--success)',
+                            }}
+                          >
+                            {formatINR(actualCost)}
                           </td>
                           <td style={{ padding: '12px', fontWeight: '700' }}>
-                            {formatINR(analysis.netRevenue)}
+                            {formatINR(diff)}
                           </td>
                           <td style={{ padding: '12px' }}>
                             <span
                               className="badge"
                               style={{
                                 background:
-                                  order.status === 'Delivered'
-                                    ? 'var(--success)'
-                                    : 'var(--warning)',
+                                  Math.abs(diff) > 20 ? 'var(--danger)' : 'var(--success)',
                                 fontSize: '0.6rem',
                               }}
                             >
-                              {order.status === 'Delivered' ? 'Remitted' : 'Pending'}
+                              {Math.abs(diff) > 20 ? 'Flagged' : 'Verified'}
                             </span>
                           </td>
                         </tr>
                       )
                     })
-                  : selectedView === 'audit'
-                    ? orders.slice(0, 10).map((order) => {
-                        const expectedCost = 150
-                        const actualCost = order.shippingCost || (order.amount > 5000 ? 250 : 175)
-                        const diff = actualCost - expectedCost
-
-                        return (
-                          <tr
-                            key={order.id}
+                    : settlements.slice(0, 15).map((set) => (
+                      <tr
+                        key={set.orderId}
+                        style={{
+                          borderBottom: '1px solid rgba(255,255,255,0.05)',
+                          fontSize: '0.85rem',
+                        }}
+                      >
+                        <td style={{ padding: '12px' }}>{set.orderId}</td>
+                        <td style={{ padding: '12px' }}>{formatINR(set.amount)}</td>
+                        <td style={{ padding: '12px' }}>Marketplace</td>
+                        <td style={{ padding: '12px' }}>
+                          {new Date(set.timestamp).toLocaleDateString()}
+                        </td>
+                        <td style={{ padding: '12px' }}>
+                          <span
+                            className="badge"
                             style={{
-                              borderBottom: '1px solid rgba(255,255,255,0.05)',
-                              fontSize: '0.85rem',
+                              background:
+                                set.status === 'Matched' || set.status === 'Settled'
+                                  ? 'var(--success)'
+                                  : set.status === 'Discrepancy'
+                                    ? 'var(--danger)'
+                                    : 'var(--warning)',
+                              fontSize: '0.6rem',
                             }}
                           >
-                            <td style={{ padding: '12px' }}>{order.id}</td>
-                            <td style={{ padding: '12px' }}>{formatINR(expectedCost)}</td>
-                            <td
-                              style={{
-                                padding: '12px',
-                                color: diff > 0 ? 'var(--danger)' : 'var(--success)',
-                              }}
-                            >
-                              {formatINR(actualCost)}
-                            </td>
-                            <td style={{ padding: '12px', fontWeight: '700' }}>
-                              {formatINR(diff)}
-                            </td>
-                            <td style={{ padding: '12px' }}>
-                              <span
-                                className="badge"
-                                style={{
-                                  background:
-                                    Math.abs(diff) > 20 ? 'var(--danger)' : 'var(--success)',
-                                  fontSize: '0.6rem',
-                                }}
-                              >
-                                {Math.abs(diff) > 20 ? 'Flagged' : 'Verified'}
-                              </span>
-                            </td>
-                          </tr>
-                        )
-                      })
-                    : settlements.map((set) => (
-                        <tr
-                          key={set.orderId}
-                          style={{
-                            borderBottom: '1px solid rgba(255,255,255,0.05)',
-                            fontSize: '0.85rem',
-                          }}
-                        >
-                          <td style={{ padding: '12px' }}>{set.orderId}</td>
-                          <td style={{ padding: '12px' }}>{formatINR(set.amount)}</td>
-                          <td style={{ padding: '12px' }}>Marketplace</td>
-                          <td style={{ padding: '12px' }}>
-                            {new Date(set.timestamp).toLocaleDateString()}
-                          </td>
-                          <td style={{ padding: '12px' }}>
-                            <span
-                              className="badge"
-                              style={{
-                                background:
-                                  set.status === 'Matched'
-                                    ? 'var(--success)'
-                                    : set.status === 'Discrepancy'
-                                      ? 'var(--danger)'
-                                      : 'var(--warning)',
-                                fontSize: '0.6rem',
-                              }}
-                            >
-                              {set.status}
-                            </span>
-                          </td>
-                        </tr>
-                      ))}
+                            {set.status}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
               </tbody>
             </table>
           </div>
