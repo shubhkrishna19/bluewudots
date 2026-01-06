@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { useAuth } from './AuthContext';
 import { transitionOrder, bulkTransition, ORDER_STATUSES, getValidNextStatuses } from '../services/orderStateMachine';
 import { getAllRates, getRecommendation } from '../services/carrierRateEngine';
 import { logOrderCreate, logOrderStatusChange, logBulkUpdate, logCarrierAssign, logImportComplete, initializeActivityLog as loadActivityCache, getActivityLog, logActivity } from '../services/activityLogger';
@@ -24,6 +25,7 @@ import { SKU_MASTER, SKU_ALIASES } from '../data/skuMasterData';
 const DataContext = createContext();
 
 export const DataProvider = ({ children }) => {
+    const { isAuthenticated } = useAuth();
     // --- STATE ---
     const [orders, setOrders] = useState([]);
     const [logistics, setLogistics] = useState([]);
