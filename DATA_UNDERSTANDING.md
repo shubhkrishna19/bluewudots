@@ -18,18 +18,22 @@ The application is now being populated with **real historical data** extracted f
 As we transition from a prototype to a live operational tool, we need your guidance on the following "Business Rules":
 
 ### A. Order Status & Priorities
+*   **Source File**: `Order Tracking Sheet OTS - Master 24-25.xlsx`
 *   **The Question**: In your Order Tracking Sheet, we see statuses like "MIS", "D.OD", "STT.SD". Which of these means an order is "Critical" or "Delayed"?
 *   **Normal Talk**: How should the system alert you if an order is stuck? For example, if an order hasn't moved in 3 days, should it turn red on the dashboard?
 
 ### B. "Alias" Handling
+*   **Source File**: `Order Tracking Sheet OTS - Master 24-25.xlsx` (Column: "SKU" vs "Mplace")
 *   **The Question**: You sell the same products on Amazon, Myntra, and Pepperfry under different names (Aliases). Should the "Stock" view show them individually per platform, or grouped as one single product?
 *   **Normal Talk**: If you have 10 units of a Shoe Rack, do you want to see that Amazon has 5 and Myntra has 5, or just that you have 10 in total?
 
 ### C. Predictive Risk (RTO/Returns)
+*   **Source File**: `Sales Trends FY2024-25 (1).xlsx` & `Order Tracking Sheet OTS - Master 24-25.xlsx`
 *   **The Question**: Our AI flags certain cities or payment methods (COD) as "High Risk". At what point should the system "Block" an order from shipping?
 *   **Normal Talk**: Should the system automatically hold a COD order if the customer has returned 2 items in the past, or just send an alert for manual review?
 
 ### D. User Access (Roles)
+*   **Source Context**: Internal System Architecture
 *   **The Question**: Currently, we have "Admin", "Warehouse", and "Finance" roles. Who should be allowed to edit SKU prices or approve courier refunds?
 *   **Normal Talk**: Should the warehouse team be able to see the profit margins on an order, or should that only be visible to Finance?
 
