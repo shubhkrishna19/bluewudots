@@ -17,7 +17,7 @@ export const LocalizationProvider = ({ children }) => {
         setVersion(v => v + 1)
     }, [])
 
-    const t = useCallback((key) => localizationService.t(key), [version])
+    const t = useCallback((key, params) => localizationService.t(key, params), [version])
 
     // Sync initial state with localStorage/Service defaults
     useEffect(() => {

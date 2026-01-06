@@ -3,7 +3,7 @@ import { useData } from '../../context/DataContext'
 import KPIGoalSetter from './KPIGoalSetter'
 
 const PerformanceMetrics = () => {
-  const { orders, logistics, skuMaster, kpiGoals } = useData()
+  const { orders = [], skuMaster = [], kpiGoals = {} } = useData()
   const [showGoalSetter, setShowGoalSetter] = useState(false)
 
   // Calculate metrics

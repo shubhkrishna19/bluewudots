@@ -9,7 +9,7 @@
     "platform": "Urban Ladder",
     "stock": 60,
     "price": 10199,
-    "bomCost": 4820,
+    "bomCost": 4656,
     "tmsLevel": "TL1",
     "category": "Furniture"
   },
@@ -21,10 +21,10 @@
     "asin": "B0CJC6PTKS",
     "fkfsn": "TVUGUGZ55QPQGEHY",
     "platform": "Urban Ladder",
-    "stock": 86,
+    "stock": 127,
     "price": 10799,
-    "bomCost": 5079,
-    "tmsLevel": "TL3",
+    "bomCost": 5083,
+    "tmsLevel": "TL1",
     "category": "Furniture"
   },
   {
@@ -35,10 +35,10 @@
     "asin": "B0BCZ4GVFM",
     "fkfsn": "TVUGG2FKZKVE897E",
     "platform": "Urban Ladder",
-    "stock": 100,
+    "stock": 142,
     "price": 9599,
-    "bomCost": 4716,
-    "tmsLevel": "TL2",
+    "bomCost": 4490,
+    "tmsLevel": "TL1",
     "category": "Furniture"
   },
   {
@@ -49,10 +49,10 @@
     "asin": "B0DGCY3HW8",
     "fkfsn": "TVUH63FQ8JG2UPFD",
     "platform": "Urban Ladder",
-    "stock": 64,
+    "stock": 83,
     "price": 15799,
-    "bomCost": 7477,
-    "tmsLevel": "TL1",
+    "bomCost": 7191,
+    "tmsLevel": "TL3",
     "category": "Furniture"
   },
   {
@@ -63,9 +63,9 @@
     "asin": "B0DFPSHRLG",
     "fkfsn": "TVUH48ZZFZFFTYZH",
     "platform": "Urban Ladder",
-    "stock": 46,
+    "stock": 28,
     "price": 8999,
-    "bomCost": 4539,
+    "bomCost": 4142,
     "tmsLevel": "TL1",
     "category": "Furniture"
   },
@@ -77,10 +77,10 @@
     "asin": "B0CJLRT2TR",
     "fkfsn": "TVUGUGZAHZGDRSFH",
     "platform": "Urban Ladder",
-    "stock": 141,
+    "stock": 113,
     "price": 9599,
-    "bomCost": 4789,
-    "tmsLevel": "TL1",
+    "bomCost": 4622,
+    "tmsLevel": "TL3",
     "category": "Furniture"
   },
   {
@@ -91,10 +91,10 @@
     "asin": "B0CJML27W6",
     "fkfsn": "SHKGUJF3UF2DGWVH",
     "platform": "Urban Ladder",
-    "stock": 54,
+    "stock": 84,
     "price": 12399,
-    "bomCost": 5798,
-    "tmsLevel": "TL2",
+    "bomCost": 5654,
+    "tmsLevel": "TL3",
     "category": "Furniture"
   },
   {
@@ -105,9 +105,9 @@
     "asin": "B0BCZ699P2",
     "fkfsn": "TVUGG2FKGHH8SXA9",
     "platform": "Urban Ladder",
-    "stock": 41,
+    "stock": 136,
     "price": 9599,
-    "bomCost": 4675,
+    "bomCost": 4612,
     "tmsLevel": "TL2",
     "category": "Furniture"
   },
@@ -119,10 +119,10 @@
     "asin": "B0DSQ5MH6T",
     "fkfsn": "SHKH95M3REHRAZHJ",
     "platform": "Urban Ladder",
-    "stock": 145,
+    "stock": 14,
     "price": 13499,
-    "bomCost": 6386,
-    "tmsLevel": "TL2",
+    "bomCost": 6319,
+    "tmsLevel": "TL3",
     "category": "Furniture"
   },
   {
@@ -133,10 +133,10 @@
     "asin": "B0F91468XK",
     "fkfsn": "WCLHCARGJE9DFNG7",
     "platform": "Urban Ladder",
-    "stock": 66,
+    "stock": 41,
     "price": 10499,
-    "bomCost": 4836,
-    "tmsLevel": "TL3",
+    "bomCost": 5224,
+    "tmsLevel": "TL1",
     "category": "Furniture"
   },
   {
@@ -147,9 +147,9 @@
     "asin": "B0CV33DPSP",
     "fkfsn": "SHKGXUTFT7GNNTMQ",
     "platform": "Urban Ladder",
-    "stock": 134,
+    "stock": 126,
     "price": 8599,
-    "bomCost": 4337,
+    "bomCost": 4298,
     "tmsLevel": "TL3",
     "category": "Furniture"
   },
@@ -161,10 +161,10 @@
     "asin": "B0CJC2W6D5",
     "fkfsn": "TVUGUGZAGAPNY5GG",
     "platform": "Urban Ladder",
-    "stock": 13,
+    "stock": 110,
     "price": 6199,
-    "bomCost": 2888,
-    "tmsLevel": "TL2",
+    "bomCost": 2863,
+    "tmsLevel": "TL3",
     "category": "Furniture"
   },
   {
@@ -175,10 +175,10 @@
     "asin": "B0CJMLPGLL",
     "fkfsn": "TVUH2Z7H6EAGCGZH",
     "platform": "Urban Ladder",
-    "stock": 36,
+    "stock": 139,
     "price": 25799,
-    "bomCost": 11744,
-    "tmsLevel": "TL1",
+    "bomCost": 11909,
+    "tmsLevel": "TL3",
     "category": "Furniture"
   },
   {
@@ -189,9 +189,9 @@
     "asin": "B0F91299Q2",
     "fkfsn": "SHKHCAT3GDMYGRFN",
     "platform": "Urban Ladder",
-    "stock": 64,
+    "stock": 14,
     "price": 15999,
-    "bomCost": 7308,
+    "bomCost": 7241,
     "tmsLevel": "TL1",
     "category": "Furniture"
   },
@@ -203,10 +203,10 @@
     "asin": "B09XJ3Y86J",
     "fkfsn": "TVUH4MFSZKDU3XHM",
     "platform": "Urban Ladder",
-    "stock": 115,
+    "stock": 106,
     "price": 25799,
-    "bomCost": 12005,
-    "tmsLevel": "TL3",
+    "bomCost": 11846,
+    "tmsLevel": "TL2",
     "category": "Furniture"
   },
   {
@@ -217,9 +217,9 @@
     "asin": "B0DSQ3TL2Q",
     "fkfsn": "TVUH8GZ2FZTB4FXF",
     "platform": "Urban Ladder",
-    "stock": 82,
+    "stock": 67,
     "price": 8999,
-    "bomCost": 4445,
+    "bomCost": 4402,
     "tmsLevel": "TL2",
     "category": "Furniture"
   },
@@ -231,10 +231,10 @@
     "asin": "B0CV3HL1JS",
     "fkfsn": "TVUGXUTJUQHJ9KJS",
     "platform": "Urban Ladder",
-    "stock": 97,
+    "stock": 61,
     "price": 6199,
-    "bomCost": 3035,
-    "tmsLevel": "TL3",
+    "bomCost": 2990,
+    "tmsLevel": "TL2",
     "category": "Furniture"
   },
   {
@@ -245,9 +245,9 @@
     "asin": "B0DFQ1Q1LJ",
     "fkfsn": "OSTHAYGSVZ5TZJRE",
     "platform": "Urban Ladder",
-    "stock": 86,
+    "stock": 32,
     "price": 6599,
-    "bomCost": 3399,
+    "bomCost": 3449,
     "tmsLevel": "TL2",
     "category": "Furniture"
   },
@@ -259,10 +259,10 @@
     "asin": "B07N3WXJJ5",
     "fkfsn": "OSTGUJYGB83ZH9PB",
     "platform": "Urban Ladder",
-    "stock": 30,
+    "stock": 7,
     "price": 7299,
-    "bomCost": 3383,
-    "tmsLevel": "TL2",
+    "bomCost": 3351,
+    "tmsLevel": "TL3",
     "category": "Furniture"
   },
   {
@@ -273,10 +273,10 @@
     "asin": "B0CQNX8LKS",
     "fkfsn": "BSFGWYJSA2HHHPHT",
     "platform": "Urban Ladder",
-    "stock": 32,
+    "stock": 26,
     "price": 4499,
-    "bomCost": 2275,
-    "tmsLevel": "TL2",
+    "bomCost": 2220,
+    "tmsLevel": "TL3",
     "category": "Furniture"
   },
   {
@@ -287,10 +287,10 @@
     "asin": "B09TXMJP9P",
     "fkfsn": "CSDGCHW3YYJEYG6A",
     "platform": "Urban Ladder",
-    "stock": 79,
+    "stock": 53,
     "price": 12399,
-    "bomCost": 5897,
-    "tmsLevel": "TL1",
+    "bomCost": 5690,
+    "tmsLevel": "TL2",
     "category": "Furniture"
   },
   {
@@ -301,9 +301,9 @@
     "asin": "B09XJ24NG8",
     "fkfsn": "TVUH7RE5XBS4HBXR",
     "platform": "Urban Ladder",
-    "stock": 68,
+    "stock": 108,
     "price": 25799,
-    "bomCost": 11935,
+    "bomCost": 11671,
     "tmsLevel": "TL1",
     "category": "Furniture"
   },
@@ -315,10 +315,10 @@
     "asin": "B0CJBVQFC4",
     "fkfsn": "OSTGUGZH7B4UXDFZ",
     "platform": "Urban Ladder",
-    "stock": 85,
+    "stock": 89,
     "price": 8899,
-    "bomCost": 4021,
-    "tmsLevel": "TL2",
+    "bomCost": 4335,
+    "tmsLevel": "TL1",
     "category": "Furniture"
   },
   {
@@ -329,10 +329,10 @@
     "asin": "B0CR69LX8T",
     "fkfsn": "CSDGWZYSKGJSWHK6",
     "platform": "Urban Ladder",
-    "stock": 38,
+    "stock": 34,
     "price": 10599,
-    "bomCost": 5202,
-    "tmsLevel": "TL1",
+    "bomCost": 5227,
+    "tmsLevel": "TL3",
     "category": "Furniture"
   },
   {
@@ -343,10 +343,10 @@
     "asin": "B0CR6B1KPV",
     "fkfsn": "CSDGXYYPHCGGZQWS",
     "platform": "Urban Ladder",
-    "stock": 92,
+    "stock": 56,
     "price": 7799,
-    "bomCost": 3632,
-    "tmsLevel": "TL2",
+    "bomCost": 3997,
+    "tmsLevel": "TL3",
     "category": "Furniture"
   },
   {
@@ -357,9 +357,9 @@
     "asin": "B0D9HDHH7T",
     "fkfsn": "OSTH3CFVGZGGFBHY",
     "platform": "Urban Ladder",
-    "stock": 63,
+    "stock": 111,
     "price": 8149,
-    "bomCost": 3844,
+    "bomCost": 4013,
     "tmsLevel": "TL1",
     "category": "Furniture"
   },
@@ -371,10 +371,10 @@
     "asin": "B0CP7G5QDT",
     "fkfsn": "SHKH7GBQ3Y5UGHY6",
     "platform": "Urban Ladder",
-    "stock": 73,
+    "stock": 66,
     "price": 7999,
-    "bomCost": 4003,
-    "tmsLevel": "TL2",
+    "bomCost": 3737,
+    "tmsLevel": "TL3",
     "category": "Furniture"
   },
   {
@@ -385,10 +385,10 @@
     "asin": "B0DFHFPL32",
     "fkfsn": "BACH45NRKZGZEQJN",
     "platform": "Urban Ladder",
-    "stock": 20,
+    "stock": 129,
     "price": 9299,
-    "bomCost": 4402,
-    "tmsLevel": "TL1",
+    "bomCost": 4337,
+    "tmsLevel": "TL2",
     "category": "Furniture"
   },
   {
@@ -399,10 +399,10 @@
     "asin": "B0DSQ19SZT",
     "fkfsn": "TVUH8GYTFPGJXSNX",
     "platform": "Urban Ladder",
-    "stock": 148,
+    "stock": 143,
     "price": 9299,
-    "bomCost": 4534,
-    "tmsLevel": "TL1",
+    "bomCost": 4457,
+    "tmsLevel": "TL2",
     "category": "Furniture"
   },
   {
@@ -413,10 +413,10 @@
     "asin": "B0F9139B7X",
     "fkfsn": "SHKHCAS8YHF9HXMA",
     "platform": "Urban Ladder",
-    "stock": 23,
+    "stock": 33,
     "price": 18299,
-    "bomCost": 8305,
-    "tmsLevel": "TL2",
+    "bomCost": 8249,
+    "tmsLevel": "TL1",
     "category": "Furniture"
   },
   {
@@ -427,10 +427,10 @@
     "asin": "B0CPC1LQSV",
     "fkfsn": "BACGVHFJYWJFGBYZ",
     "platform": "Urban Ladder",
-    "stock": 125,
+    "stock": 126,
     "price": 9299,
-    "bomCost": 4250,
-    "tmsLevel": "TL1",
+    "bomCost": 4588,
+    "tmsLevel": "TL2",
     "category": "Furniture"
   },
   {
@@ -441,9 +441,9 @@
     "asin": "B0CK5TZTNF",
     "fkfsn": "TVUGVG6QPFPWDQRG",
     "platform": "Urban Ladder",
-    "stock": 80,
+    "stock": 34,
     "price": 6899,
-    "bomCost": 3538,
+    "bomCost": 3346,
     "tmsLevel": "TL1",
     "category": "Furniture"
   },
@@ -455,10 +455,10 @@
     "asin": "B0CK2PLPCY",
     "fkfsn": "TVUGVG6GDSWGBU8F",
     "platform": "Urban Ladder",
-    "stock": 149,
+    "stock": 48,
     "price": 21599,
-    "bomCost": 10094,
-    "tmsLevel": "TL2",
+    "bomCost": 10084,
+    "tmsLevel": "TL3",
     "category": "Furniture"
   },
   {
@@ -471,8 +471,8 @@
     "platform": "Urban Ladder",
     "stock": 57,
     "price": 21499,
-    "bomCost": 9715,
-    "tmsLevel": "TL3",
+    "bomCost": 9769,
+    "tmsLevel": "TL2",
     "category": "Furniture"
   },
   {
@@ -483,10 +483,10 @@
     "asin": "B0CP93LCVW",
     "fkfsn": "CFTGWDMF66BKQHEN",
     "platform": "Urban Ladder",
-    "stock": 86,
+    "stock": 50,
     "price": 6599,
-    "bomCost": 3317,
-    "tmsLevel": "TL2",
+    "bomCost": 3214,
+    "tmsLevel": "TL1",
     "category": "Furniture"
   },
   {
@@ -497,10 +497,10 @@
     "asin": "B0C8J81BP6",
     "fkfsn": "CFTH2QF2E6NJTFGD",
     "platform": "Urban Ladder",
-    "stock": 139,
+    "stock": 41,
     "price": 5749,
-    "bomCost": 2858,
-    "tmsLevel": "TL1",
+    "bomCost": 3078,
+    "tmsLevel": "TL3",
     "category": "Furniture"
   },
   {
@@ -511,10 +511,10 @@
     "asin": "B0F8ZT7YCR",
     "fkfsn": "KTCHCASRYPGKK7AF",
     "platform": "Urban Ladder",
-    "stock": 1,
+    "stock": 118,
     "price": 12399,
-    "bomCost": 5861,
-    "tmsLevel": "TL3",
+    "bomCost": 6070,
+    "tmsLevel": "TL1",
     "category": "Furniture"
   },
   {
@@ -525,9 +525,9 @@
     "asin": "B0D9HHMNMB",
     "fkfsn": "TVUH3BM6JZSR9HGN",
     "platform": "Urban Ladder",
-    "stock": 11,
+    "stock": 70,
     "price": 8999,
-    "bomCost": 4358,
+    "bomCost": 4060,
     "tmsLevel": "TL3",
     "category": "Furniture"
   },
@@ -539,10 +539,10 @@
     "asin": "B09WR9FZXZ",
     "fkfsn": "CSDGDC3QJKBD2EFA",
     "platform": "Urban Ladder",
-    "stock": 54,
+    "stock": 37,
     "price": 12399,
-    "bomCost": 5899,
-    "tmsLevel": "TL1",
+    "bomCost": 5708,
+    "tmsLevel": "TL2",
     "category": "Furniture"
   },
   {
@@ -553,9 +553,9 @@
     "asin": "B0CMLV7KNG",
     "fkfsn": "TVUH4M232FUMGQJF",
     "platform": "Urban Ladder",
-    "stock": 46,
+    "stock": 65,
     "price": 6899,
-    "bomCost": 3563,
+    "bomCost": 3183,
     "tmsLevel": "TL3",
     "category": "Furniture"
   },
@@ -567,10 +567,10 @@
     "asin": "B0CVN4PGRQ",
     "fkfsn": "SHKGYH55S26RRHND",
     "platform": "Urban Ladder",
-    "stock": 138,
+    "stock": 58,
     "price": 10999,
-    "bomCost": 5345,
-    "tmsLevel": "TL1",
+    "bomCost": 5203,
+    "tmsLevel": "TL3",
     "category": "Furniture"
   },
   {
@@ -581,10 +581,10 @@
     "asin": "B0CNXGMJ6H",
     "fkfsn": "TVUGWDHNHGEWWVYY",
     "platform": "Urban Ladder",
-    "stock": 138,
+    "stock": 136,
     "price": 8149,
-    "bomCost": 4109,
-    "tmsLevel": "TL2",
+    "bomCost": 3755,
+    "tmsLevel": "TL3",
     "category": "Furniture"
   },
   {
@@ -595,10 +595,10 @@
     "asin": "B0BCZ57BV8",
     "fkfsn": "WCLGG2YP4TDN5FCG",
     "platform": "Urban Ladder",
-    "stock": 112,
+    "stock": 113,
     "price": 15799,
-    "bomCost": 7318,
-    "tmsLevel": "TL2",
+    "bomCost": 7300,
+    "tmsLevel": "TL1",
     "category": "Furniture"
   },
   {
@@ -609,9 +609,9 @@
     "asin": "B07N41C315",
     "fkfsn": "TVUGVHFNDSJJDECC",
     "platform": "Urban Ladder",
-    "stock": 106,
+    "stock": 116,
     "price": 9999,
-    "bomCost": 4587,
+    "bomCost": 4657,
     "tmsLevel": "TL3",
     "category": "Furniture"
   },
@@ -623,10 +623,10 @@
     "asin": "B0CJCHPL4Z",
     "fkfsn": "CSDGUGVE64QRTE3F",
     "platform": "Urban Ladder",
-    "stock": 25,
+    "stock": 115,
     "price": 14299,
-    "bomCost": 6458,
-    "tmsLevel": "TL2",
+    "bomCost": 6924,
+    "tmsLevel": "TL1",
     "category": "Furniture"
   },
   {
@@ -637,9 +637,9 @@
     "asin": "B0FBM1HTL7",
     "fkfsn": "SHKHCSGK2HQ3ZUPD",
     "platform": "Urban Ladder",
-    "stock": 31,
+    "stock": 32,
     "price": 8599,
-    "bomCost": 4163,
+    "bomCost": 4104,
     "tmsLevel": "TL2",
     "category": "Furniture"
   },
@@ -651,10 +651,10 @@
     "asin": "B0CV3CFF9C",
     "fkfsn": "SHKH4FRRPNHUEGXB",
     "platform": "Urban Ladder",
-    "stock": 109,
+    "stock": 97,
     "price": 9299,
-    "bomCost": 4264,
-    "tmsLevel": "TL1",
+    "bomCost": 4507,
+    "tmsLevel": "TL2",
     "category": "Furniture"
   },
   {
@@ -665,10 +665,10 @@
     "asin": "B0CPJGM9LK",
     "fkfsn": "BSFGWYK9HARSNFE3",
     "platform": "Urban Ladder",
-    "stock": 120,
+    "stock": 27,
     "price": 4299,
-    "bomCost": 2083,
-    "tmsLevel": "TL2",
+    "bomCost": 2257,
+    "tmsLevel": "TL3",
     "category": "Furniture"
   },
   {
@@ -679,10 +679,10 @@
     "asin": "B09PBSL1M2",
     "fkfsn": "TVUGAB6HTH3Z7CEK",
     "platform": "Urban Ladder",
-    "stock": 65,
+    "stock": 111,
     "price": 8149,
-    "bomCost": 3779,
-    "tmsLevel": "TL3",
+    "bomCost": 3761,
+    "tmsLevel": "TL2",
     "category": "Furniture"
   },
   {
@@ -693,10 +693,10 @@
     "asin": "B08XW1VX4Q",
     "fkfsn": "BDDGUJ245EZV5GRZ",
     "platform": "Urban Ladder",
-    "stock": 90,
+    "stock": 145,
     "price": 18599,
-    "bomCost": 8825,
-    "tmsLevel": "TL1",
+    "bomCost": 8495,
+    "tmsLevel": "TL3",
     "category": "Furniture"
   },
   {
@@ -707,7 +707,7 @@
     "asin": "B09XBDHDPW",
     "fkfsn": "CSDGVWVPZGESQVSN",
     "platform": "Urban Ladder",
-    "stock": 48,
+    "stock": 61,
     "price": 10499,
     "bomCost": 5041,
     "tmsLevel": "TL1",
@@ -721,10 +721,10 @@
     "asin": "B09YRHB62S",
     "fkfsn": "TVUGG8JJFZAM9MBJ",
     "platform": "Urban Ladder",
-    "stock": 39,
+    "stock": 118,
     "price": 13599,
-    "bomCost": 6445,
-    "tmsLevel": "TL3",
+    "bomCost": 6138,
+    "tmsLevel": "TL2",
     "category": "Furniture"
   },
   {
@@ -735,10 +735,10 @@
     "asin": "B0D4DB18VF",
     "fkfsn": "TVUH2APAX4RGTQ35",
     "platform": "Urban Ladder",
-    "stock": 48,
+    "stock": 89,
     "price": 7499,
-    "bomCost": 3753,
-    "tmsLevel": "TL2",
+    "bomCost": 3752,
+    "tmsLevel": "TL1",
     "category": "Furniture"
   },
   {
@@ -749,10 +749,10 @@
     "asin": "B0CJCLT2M9",
     "fkfsn": "CSDGUGWYHH2WCNKW",
     "platform": "Urban Ladder",
-    "stock": 58,
+    "stock": 125,
     "price": 22899,
-    "bomCost": 10524,
-    "tmsLevel": "TL2",
+    "bomCost": 10594,
+    "tmsLevel": "TL3",
     "category": "Furniture"
   },
   {
@@ -763,10 +763,10 @@
     "asin": "B09Y5SY1FT",
     "fkfsn": "BSFGG8HTV922UEJH",
     "platform": "Urban Ladder",
-    "stock": 95,
+    "stock": 21,
     "price": 4499,
-    "bomCost": 2025,
-    "tmsLevel": "TL1",
+    "bomCost": 2214,
+    "tmsLevel": "TL3",
     "category": "Furniture"
   },
   {
@@ -777,9 +777,9 @@
     "asin": "B07D6SJYVN",
     "fkfsn": "TVUGWDJWVAP6PPGW",
     "platform": "Urban Ladder",
-    "stock": 4,
+    "stock": 15,
     "price": 3799,
-    "bomCost": 1863,
+    "bomCost": 1993,
     "tmsLevel": "TL3",
     "category": "Furniture"
   },
@@ -791,10 +791,10 @@
     "asin": "B0CP3L1R7C",
     "fkfsn": "BDDGVWRPKDPG8ENT",
     "platform": "Urban Ladder",
-    "stock": 48,
+    "stock": 104,
     "price": 23599,
-    "bomCost": 10818,
-    "tmsLevel": "TL1",
+    "bomCost": 11045,
+    "tmsLevel": "TL3",
     "category": "Furniture"
   },
   {
@@ -805,10 +805,10 @@
     "asin": "B0CK5QKMHP",
     "fkfsn": "TVUGWG73GTZSTCB6",
     "platform": "Urban Ladder",
-    "stock": 25,
+    "stock": 132,
     "price": 2399,
-    "bomCost": 1190,
-    "tmsLevel": "TL1",
+    "bomCost": 1167,
+    "tmsLevel": "TL2",
     "category": "Furniture"
   },
   {
@@ -819,9 +819,9 @@
     "asin": "B00OESB8NM",
     "fkfsn": "RSFE3E9AWDNPGQPG",
     "platform": "Pepperfry",
-    "stock": 49,
+    "stock": 5,
     "price": 999,
-    "bomCost": 596,
+    "bomCost": 569,
     "tmsLevel": "TL3",
     "category": "Furniture"
   },
@@ -833,10 +833,10 @@
     "asin": "B0CR4D1HLL",
     "fkfsn": "DTBGWZXDGMTHG5GZ",
     "platform": "Urban Ladder",
-    "stock": 137,
+    "stock": 27,
     "price": 17199,
-    "bomCost": 8084,
-    "tmsLevel": "TL2",
+    "bomCost": 7777,
+    "tmsLevel": "TL3",
     "category": "Furniture"
   },
   {
@@ -847,9 +847,9 @@
     "asin": "B0CP94C3ZR",
     "fkfsn": "BSFGWM9NY3JHADDH",
     "platform": "Urban Ladder",
-    "stock": 86,
+    "stock": 28,
     "price": 7799,
-    "bomCost": 3942,
+    "bomCost": 3682,
     "tmsLevel": "TL1",
     "category": "Furniture"
   },
@@ -861,10 +861,10 @@
     "asin": "B01NCJJHJ6",
     "fkfsn": "BSFETYJKKYVGXHQJ",
     "platform": "Urban Ladder",
-    "stock": 38,
+    "stock": 139,
     "price": 10499,
-    "bomCost": 4988,
-    "tmsLevel": "TL2",
+    "bomCost": 5062,
+    "tmsLevel": "TL1",
     "category": "Furniture"
   },
   {
@@ -875,10 +875,10 @@
     "asin": "B0D9H9NBG2",
     "fkfsn": "OSTH3CFTSQDAKVZC",
     "platform": "Urban Ladder",
-    "stock": 64,
+    "stock": 46,
     "price": 8299,
-    "bomCost": 3848,
-    "tmsLevel": "TL2",
+    "bomCost": 4082,
+    "tmsLevel": "TL3",
     "category": "Furniture"
   },
   {
@@ -889,10 +889,10 @@
     "asin": "B0DFGZJT6J",
     "fkfsn": "OSTH45Z8Y5BHYPDH",
     "platform": "Urban Ladder",
-    "stock": 127,
+    "stock": 47,
     "price": 7499,
-    "bomCost": 3614,
-    "tmsLevel": "TL1",
+    "bomCost": 3683,
+    "tmsLevel": "TL3",
     "category": "Furniture"
   },
   {
@@ -903,10 +903,10 @@
     "asin": "B06VWXSCPF",
     "fkfsn": "DTBHBZRA4MNW9DHD",
     "platform": "Urban Ladder",
-    "stock": 125,
+    "stock": 27,
     "price": 10999,
-    "bomCost": 5267,
-    "tmsLevel": "TL3",
+    "bomCost": 4995,
+    "tmsLevel": "TL2",
     "category": "Furniture"
   },
   {
@@ -917,10 +917,10 @@
     "asin": "B0CJCJJJ54",
     "fkfsn": "CSDGUGVTFGESHDZU",
     "platform": "Urban Ladder",
-    "stock": 90,
+    "stock": 105,
     "price": 16599,
-    "bomCost": 7472,
-    "tmsLevel": "TL1",
+    "bomCost": 7920,
+    "tmsLevel": "TL2",
     "category": "Furniture"
   },
   {
@@ -931,10 +931,10 @@
     "asin": "B09XBK1XZL",
     "fkfsn": "CSDGDC3H5ZPBBDQS",
     "platform": "Urban Ladder",
-    "stock": 145,
+    "stock": 36,
     "price": 10599,
-    "bomCost": 4956,
-    "tmsLevel": "TL2",
+    "bomCost": 4816,
+    "tmsLevel": "TL1",
     "category": "Furniture"
   },
   {
@@ -945,9 +945,9 @@
     "asin": "B0D9QLHQLV",
     "fkfsn": "BSFGVWXTHFAFHAAR",
     "platform": "Urban Ladder",
-    "stock": 91,
+    "stock": 29,
     "price": 6449,
-    "bomCost": 3092,
+    "bomCost": 3008,
     "tmsLevel": "TL2",
     "category": "Furniture"
   },
@@ -959,9 +959,9 @@
     "asin": "B0CJRPVG58",
     "fkfsn": "BSFGVG62THPCMQPN",
     "platform": "Urban Ladder",
-    "stock": 99,
+    "stock": 70,
     "price": 10499,
-    "bomCost": 4745,
+    "bomCost": 4943,
     "tmsLevel": "TL2",
     "category": "Furniture"
   },
@@ -975,8 +975,8 @@
     "platform": "Urban Ladder",
     "stock": 139,
     "price": 3599,
-    "bomCost": 1729,
-    "tmsLevel": "TL3",
+    "bomCost": 1869,
+    "tmsLevel": "TL2",
     "category": "Furniture"
   },
   {
@@ -987,10 +987,10 @@
     "asin": "B09T3DJLGR",
     "fkfsn": "BSFGCABBQUZFQJHE",
     "platform": "Urban Ladder",
-    "stock": 133,
+    "stock": 123,
     "price": 7799,
-    "bomCost": 3837,
-    "tmsLevel": "TL3",
+    "bomCost": 3794,
+    "tmsLevel": "TL1",
     "category": "Furniture"
   },
   {
@@ -1001,10 +1001,10 @@
     "asin": "B07VSRQB89",
     "fkfsn": "OSTFGGYHA7KD5K6Z",
     "platform": "Urban Ladder",
-    "stock": 136,
+    "stock": 49,
     "price": 7499,
-    "bomCost": 3868,
-    "tmsLevel": "TL1",
+    "bomCost": 3541,
+    "tmsLevel": "TL3",
     "category": "Furniture"
   },
   {
@@ -1015,9 +1015,9 @@
     "asin": "B0DHL26N3W",
     "fkfsn": "OSTH4WFAEEFKH56X",
     "platform": "Urban Ladder",
-    "stock": 44,
+    "stock": 51,
     "price": 5299,
-    "bomCost": 2547,
+    "bomCost": 2463,
     "tmsLevel": "TL3",
     "category": "Furniture"
   },
@@ -1029,10 +1029,10 @@
     "asin": "B0F916LBY9",
     "fkfsn": "WCLHCARGGWNAWKHC",
     "platform": "Urban Ladder",
-    "stock": 115,
+    "stock": 76,
     "price": 8899,
-    "bomCost": 4475,
-    "tmsLevel": "TL3",
+    "bomCost": 4358,
+    "tmsLevel": "TL2",
     "category": "Furniture"
   },
   {
@@ -1043,10 +1043,10 @@
     "asin": "B07RSZD7Q9",
     "fkfsn": "OSTFNFWGJSNYJXW8",
     "platform": "Urban Ladder",
-    "stock": 20,
+    "stock": 9,
     "price": 5299,
-    "bomCost": 2515,
-    "tmsLevel": "TL2",
+    "bomCost": 2706,
+    "tmsLevel": "TL1",
     "category": "Furniture"
   },
   {
@@ -1057,9 +1057,9 @@
     "asin": "B0CP97NG2T",
     "fkfsn": "TVUGWDKEZTKACFZP",
     "platform": "Urban Ladder",
-    "stock": 70,
+    "stock": 101,
     "price": 8599,
-    "bomCost": 4187,
+    "bomCost": 4000,
     "tmsLevel": "TL3",
     "category": "Furniture"
   },
@@ -1071,10 +1071,10 @@
     "asin": "B0C43R6BDK",
     "fkfsn": "BSFGPPC4THYJBGCR",
     "platform": "Urban Ladder",
-    "stock": 89,
+    "stock": 36,
     "price": 4299,
-    "bomCost": 2051,
-    "tmsLevel": "TL2",
+    "bomCost": 2061,
+    "tmsLevel": "TL1",
     "category": "Furniture"
   },
   {
@@ -1085,10 +1085,10 @@
     "asin": "B01FOAFXLQ",
     "fkfsn": "BSFETYFVRDHUHU9Z",
     "platform": "Urban Ladder",
-    "stock": 22,
+    "stock": 80,
     "price": 7999,
-    "bomCost": 4010,
-    "tmsLevel": "TL2",
+    "bomCost": 3795,
+    "tmsLevel": "TL3",
     "category": "Furniture"
   },
   {
@@ -1099,9 +1099,9 @@
     "asin": "B0D4QM611T",
     "fkfsn": "CFTH2QGHWFZEUDHT",
     "platform": "Urban Ladder",
-    "stock": 27,
+    "stock": 51,
     "price": 6449,
-    "bomCost": 3278,
+    "bomCost": 2988,
     "tmsLevel": "TL1",
     "category": "Furniture"
   },
@@ -1113,9 +1113,9 @@
     "asin": "B0F8ZYDHKR",
     "fkfsn": "WCLHCARG9TGYQJRF",
     "platform": "Urban Ladder",
-    "stock": 141,
+    "stock": 73,
     "price": 23999,
-    "bomCost": 10994,
+    "bomCost": 10880,
     "tmsLevel": "TL3",
     "category": "Furniture"
   },
@@ -1127,9 +1127,9 @@
     "asin": "B0CJCKKYJ3",
     "fkfsn": "TVUGUGZAU64G8PJB",
     "platform": "Urban Ladder",
-    "stock": 98,
+    "stock": 88,
     "price": 15799,
-    "bomCost": 7417,
+    "bomCost": 7571,
     "tmsLevel": "TL1",
     "category": "Furniture"
   },
@@ -1141,9 +1141,9 @@
     "asin": "B08YWPGQ65",
     "fkfsn": "BSFGF9PA3FDZUTB7",
     "platform": "Urban Ladder",
-    "stock": 149,
+    "stock": 112,
     "price": 8499,
-    "bomCost": 3938,
+    "bomCost": 4021,
     "tmsLevel": "TL1",
     "category": "Furniture"
   },
@@ -1155,10 +1155,10 @@
     "asin": "B0B8J7J2K1",
     "fkfsn": "WCLGHCBMXMYDWS8Z",
     "platform": "Urban Ladder",
-    "stock": 94,
+    "stock": 43,
     "price": 24299,
-    "bomCost": 10982,
-    "tmsLevel": "TL2",
+    "bomCost": 11305,
+    "tmsLevel": "TL3",
     "category": "Furniture"
   },
   {
@@ -1169,9 +1169,9 @@
     "asin": "B0F914627M",
     "fkfsn": "WCLHCARGGQHJGZVB",
     "platform": "Urban Ladder",
-    "stock": 2,
+    "stock": 126,
     "price": 7299,
-    "bomCost": 3668,
+    "bomCost": 3411,
     "tmsLevel": "TL3",
     "category": "Furniture"
   },
@@ -1183,10 +1183,10 @@
     "asin": "B0CKLBGNBG",
     "fkfsn": "BSFGVG6AURDBWWX4",
     "platform": "Urban Ladder",
-    "stock": 140,
+    "stock": 0,
     "price": 10999,
-    "bomCost": 5013,
-    "tmsLevel": "TL2",
+    "bomCost": 5336,
+    "tmsLevel": "TL3",
     "category": "Furniture"
   },
   {
@@ -1197,10 +1197,10 @@
     "asin": "B0BCZ7QS8Q",
     "fkfsn": "WCLGG2F5CBADX7WZ",
     "platform": "Urban Ladder",
-    "stock": 133,
+    "stock": 38,
     "price": 18899,
-    "bomCost": 8544,
-    "tmsLevel": "TL3",
+    "bomCost": 8866,
+    "tmsLevel": "TL1",
     "category": "Furniture"
   },
   {
@@ -1211,9 +1211,9 @@
     "asin": "B0FDVHM7XN",
     "fkfsn": "WCLHDTDAXGCVRGGD",
     "platform": "Urban Ladder",
-    "stock": 143,
+    "stock": 105,
     "price": 31999,
-    "bomCost": 14662,
+    "bomCost": 14870,
     "tmsLevel": "TL3",
     "category": "Furniture"
   },
@@ -1225,10 +1225,10 @@
     "asin": "B0DH8HFRS6",
     "fkfsn": "BSFH4RWXN5H4XHFG",
     "platform": "Urban Ladder",
-    "stock": 86,
+    "stock": 37,
     "price": 7599,
-    "bomCost": 3585,
-    "tmsLevel": "TL2",
+    "bomCost": 3706,
+    "tmsLevel": "TL1",
     "category": "Furniture"
   },
   {
@@ -1239,9 +1239,9 @@
     "asin": "B0DFPPJ56P",
     "fkfsn": "TVUH48P7MDAMZY3E",
     "platform": "Urban Ladder",
-    "stock": 9,
+    "stock": 141,
     "price": 9299,
-    "bomCost": 4343,
+    "bomCost": 4532,
     "tmsLevel": "TL2",
     "category": "Furniture"
   },
@@ -1253,10 +1253,10 @@
     "asin": "B0BQWLXVX8",
     "fkfsn": "TVUGW3ZQ3T3GQSBD",
     "platform": "Urban Ladder",
-    "stock": 11,
+    "stock": 40,
     "price": 3499,
-    "bomCost": 1847,
-    "tmsLevel": "TL2",
+    "bomCost": 1614,
+    "tmsLevel": "TL1",
     "category": "Furniture"
   },
   {
@@ -1267,9 +1267,9 @@
     "asin": "B06VWV8XVD",
     "fkfsn": "CFTGW3KGDBBDXSZF",
     "platform": "Urban Ladder",
-    "stock": 1,
+    "stock": 54,
     "price": 5199,
-    "bomCost": 2757,
+    "bomCost": 2402,
     "tmsLevel": "TL3",
     "category": "Furniture"
   },
@@ -1281,10 +1281,10 @@
     "asin": "B0CDLQ8B41",
     "fkfsn": "TVUHDUEWGYRCH3GH",
     "platform": "Urban Ladder",
-    "stock": 88,
+    "stock": 51,
     "price": 8599,
-    "bomCost": 3957,
-    "tmsLevel": "TL3",
+    "bomCost": 3964,
+    "tmsLevel": "TL1",
     "category": "Furniture"
   },
   {
@@ -1295,10 +1295,10 @@
     "asin": "B0CVN9LTNC",
     "fkfsn": "OSTGYH5Q4QZCH9C2",
     "platform": "Urban Ladder",
-    "stock": 28,
+    "stock": 11,
     "price": 5199,
-    "bomCost": 2776,
-    "tmsLevel": "TL3",
+    "bomCost": 2698,
+    "tmsLevel": "TL1",
     "category": "Furniture"
   },
   {
@@ -1309,9 +1309,9 @@
     "asin": "B01FNYMQFE",
     "fkfsn": "RSFEKHY8SGDBDUZ9",
     "platform": "Urban Ladder",
-    "stock": 49,
+    "stock": 59,
     "price": 1999,
-    "bomCost": 1009,
+    "bomCost": 1226,
     "tmsLevel": "TL2",
     "category": "Furniture"
   },
@@ -1323,10 +1323,10 @@
     "asin": "B0CP7FFSG5",
     "fkfsn": "BSFH2QBMHN2GGXSS",
     "platform": "Urban Ladder",
-    "stock": 99,
+    "stock": 116,
     "price": 7599,
-    "bomCost": 3762,
-    "tmsLevel": "TL2",
+    "bomCost": 3682,
+    "tmsLevel": "TL3",
     "category": "Furniture"
   },
   {
@@ -1337,10 +1337,10 @@
     "asin": "B0FGV1B3SF",
     "fkfsn": "SHKHDTCHJX3RARFD",
     "platform": "Urban Ladder",
-    "stock": 9,
+    "stock": 73,
     "price": 13599,
-    "bomCost": 6595,
-    "tmsLevel": "TL2",
+    "bomCost": 6577,
+    "tmsLevel": "TL1",
     "category": "Furniture"
   },
   {
@@ -1351,10 +1351,10 @@
     "asin": "B07CVHM2RJ",
     "fkfsn": "BSFFBPZU3FSFZTWH",
     "platform": "Urban Ladder",
-    "stock": 47,
+    "stock": 126,
     "price": 3199,
-    "bomCost": 1642,
-    "tmsLevel": "TL1",
+    "bomCost": 1539,
+    "tmsLevel": "TL2",
     "category": "Furniture"
   },
   {
@@ -1365,9 +1365,9 @@
     "asin": "B0CT2ZMKGM",
     "fkfsn": "TVUGZN6UWAZSAYZE",
     "platform": "Urban Ladder",
-    "stock": 26,
+    "stock": 143,
     "price": 7199,
-    "bomCost": 3551,
+    "bomCost": 3373,
     "tmsLevel": "TL3",
     "category": "Furniture"
   },
@@ -1379,9 +1379,9 @@
     "asin": "B0CQMFNHTH",
     "fkfsn": "RSFGXBSHZKZR3ZE7",
     "platform": "Urban Ladder",
-    "stock": 117,
+    "stock": 128,
     "price": 3099,
-    "bomCost": 1886,
+    "bomCost": 1757,
     "tmsLevel": "TL1",
     "category": "Furniture"
   },
@@ -1393,10 +1393,10 @@
     "asin": "B06WLNKHXD",
     "fkfsn": "CFTET3C435FSJRF6",
     "platform": "Urban Ladder",
-    "stock": 50,
+    "stock": 73,
     "price": 6999,
-    "bomCost": 3278,
-    "tmsLevel": "TL3",
+    "bomCost": 3307,
+    "tmsLevel": "TL2",
     "category": "Furniture"
   },
   {
@@ -1407,9 +1407,9 @@
     "asin": "B07RW913XG",
     "fkfsn": "RSFFGWA2XRZYWGEQ",
     "platform": "Urban Ladder",
-    "stock": 140,
+    "stock": 32,
     "price": 3099,
-    "bomCost": 1753,
+    "bomCost": 1776,
     "tmsLevel": "TL3",
     "category": "Furniture"
   },
@@ -1421,10 +1421,10 @@
     "asin": "B09XBFG42M",
     "fkfsn": "CSDGDC3HRKZZWKZM",
     "platform": "Urban Ladder",
-    "stock": 93,
+    "stock": 61,
     "price": 7799,
-    "bomCost": 3588,
-    "tmsLevel": "TL1",
+    "bomCost": 3894,
+    "tmsLevel": "TL3",
     "category": "Furniture"
   },
   {
@@ -1435,10 +1435,10 @@
     "asin": "B0DFWSWC7P",
     "fkfsn": "BSFGW3NDDM4YNBSF",
     "platform": "Urban Ladder",
-    "stock": 114,
+    "stock": 147,
     "price": 7599,
-    "bomCost": 3530,
-    "tmsLevel": "TL2",
+    "bomCost": 3801,
+    "tmsLevel": "TL3",
     "category": "Furniture"
   },
   {
@@ -1449,9 +1449,9 @@
     "asin": "B08YX76Y3Q",
     "fkfsn": "BSFGF9PAVXZMX2BV",
     "platform": "Urban Ladder",
-    "stock": 47,
+    "stock": 43,
     "price": 10999,
-    "bomCost": 5116,
+    "bomCost": 5330,
     "tmsLevel": "TL2",
     "category": "Furniture"
   },
@@ -1463,10 +1463,10 @@
     "asin": "B08XWB6RDQ",
     "fkfsn": "TVUGD37H8ZS3YBPU",
     "platform": "Urban Ladder",
-    "stock": 97,
+    "stock": 106,
     "price": 21599,
-    "bomCost": 10058,
-    "tmsLevel": "TL3",
+    "bomCost": 10016,
+    "tmsLevel": "TL1",
     "category": "Furniture"
   },
   {
@@ -1477,10 +1477,10 @@
     "asin": "B0D4HRH2ZL",
     "fkfsn": "OSTHFRUZHPMABGER",
     "platform": "Urban Ladder",
-    "stock": 86,
+    "stock": 75,
     "price": 5999,
-    "bomCost": 3048,
-    "tmsLevel": "TL1",
+    "bomCost": 2844,
+    "tmsLevel": "TL3",
     "category": "Furniture"
   },
   {
@@ -1491,9 +1491,9 @@
     "asin": "B09PBSNBQB",
     "fkfsn": "TVUGAB6EGEJMKKYY",
     "platform": "Urban Ladder",
-    "stock": 46,
+    "stock": 86,
     "price": 6899,
-    "bomCost": 3450,
+    "bomCost": 3276,
     "tmsLevel": "TL2",
     "category": "Furniture"
   },
@@ -1505,9 +1505,9 @@
     "asin": "B09Y5V46GY",
     "fkfsn": "BSFGG8HNDBZ8AGSH",
     "platform": "Urban Ladder",
-    "stock": 124,
+    "stock": 21,
     "price": 3599,
-    "bomCost": 1677,
+    "bomCost": 1742,
     "tmsLevel": "TL1",
     "category": "Furniture"
   },
@@ -1519,10 +1519,10 @@
     "asin": "B0CV5R64K5",
     "fkfsn": "SITGP9UFBHUVTBEG",
     "platform": "Urban Ladder",
-    "stock": 129,
+    "stock": 147,
     "price": 4149,
-    "bomCost": 2156,
-    "tmsLevel": "TL2",
+    "bomCost": 1924,
+    "tmsLevel": "TL3",
     "category": "Furniture"
   },
   {
@@ -1533,9 +1533,9 @@
     "asin": "B07D7W1RQX",
     "fkfsn": "CFTGW3NQFZCAFKTF",
     "platform": "Urban Ladder",
-    "stock": 2,
+    "stock": 134,
     "price": 4149,
-    "bomCost": 1978,
+    "bomCost": 2228,
     "tmsLevel": "TL2",
     "category": "Furniture"
   },
@@ -1547,9 +1547,9 @@
     "asin": "B06WLNKHXC",
     "fkfsn": "CFTH89D5BUVCGSSG",
     "platform": "Urban Ladder",
-    "stock": 50,
+    "stock": 16,
     "price": 6449,
-    "bomCost": 3387,
+    "bomCost": 3160,
     "tmsLevel": "TL3",
     "category": "Furniture"
   },
@@ -1561,10 +1561,10 @@
     "asin": "B0CGRPJN9Z",
     "fkfsn": "TVUGUGZASASTJCSZ",
     "platform": "Urban Ladder",
-    "stock": 37,
+    "stock": 41,
     "price": 4099,
-    "bomCost": 2012,
-    "tmsLevel": "TL2",
+    "bomCost": 2018,
+    "tmsLevel": "TL3",
     "category": "Furniture"
   },
   {
@@ -1575,10 +1575,10 @@
     "asin": "B0D9HFGGQ9",
     "fkfsn": "TVUH3BMY2HKQQF6D",
     "platform": "Urban Ladder",
-    "stock": 74,
+    "stock": 97,
     "price": 6449,
-    "bomCost": 2963,
-    "tmsLevel": "TL3",
+    "bomCost": 3297,
+    "tmsLevel": "TL2",
     "category": "Furniture"
   },
   {
@@ -1589,10 +1589,10 @@
     "asin": "B0F8ZQGWZM",
     "fkfsn": "WCLHC8TZMCYUGJ2H",
     "platform": "Urban Ladder",
-    "stock": 43,
+    "stock": 35,
     "price": 15999,
-    "bomCost": 7360,
-    "tmsLevel": "TL1",
+    "bomCost": 7517,
+    "tmsLevel": "TL2",
     "category": "Furniture"
   },
   {
@@ -1603,10 +1603,10 @@
     "asin": "B0CJRS1LB2",
     "fkfsn": "SHKGUJYVKZPFWZA7",
     "platform": "Urban Ladder",
-    "stock": 109,
+    "stock": 98,
     "price": 7999,
-    "bomCost": 4080,
-    "tmsLevel": "TL1",
+    "bomCost": 4027,
+    "tmsLevel": "TL3",
     "category": "Furniture"
   },
   {
@@ -1617,9 +1617,9 @@
     "asin": "B07MZKFKZ7",
     "fkfsn": "RSFFD2CZYFJ5RHFX",
     "platform": "Urban Ladder",
-    "stock": 62,
+    "stock": 124,
     "price": 3299,
-    "bomCost": 1506,
+    "bomCost": 1906,
     "tmsLevel": "TL3",
     "category": "Furniture"
   },
@@ -1631,9 +1631,9 @@
     "asin": "B0F8ZSS6BZ",
     "fkfsn": "SITHCASHGFFHJWTF",
     "platform": "Urban Ladder",
-    "stock": 110,
+    "stock": 112,
     "price": 2799,
-    "bomCost": 1723,
+    "bomCost": 1496,
     "tmsLevel": "TL2",
     "category": "Furniture"
   },
@@ -1645,10 +1645,10 @@
     "asin": "B0CP674RGQ",
     "fkfsn": "BSFGW3GGQFAYWSZU",
     "platform": "Urban Ladder",
-    "stock": 87,
+    "stock": 107,
     "price": 3499,
-    "bomCost": 1980,
-    "tmsLevel": "TL1",
+    "bomCost": 1608,
+    "tmsLevel": "TL3",
     "category": "Furniture"
   },
   {
@@ -1659,10 +1659,10 @@
     "asin": "B0CP3KM5LW",
     "fkfsn": "BDDGW3NEJCUXZEM4",
     "platform": "Urban Ladder",
-    "stock": 87,
+    "stock": 95,
     "price": 25799,
-    "bomCost": 11673,
-    "tmsLevel": "TL2",
+    "bomCost": 11737,
+    "tmsLevel": "TL3",
     "category": "Furniture"
   },
   {
@@ -1673,10 +1673,10 @@
     "asin": "B06WGS759B",
     "fkfsn": "TVUGWM9QHXHETNY7",
     "platform": "Urban Ladder",
-    "stock": 104,
+    "stock": 62,
     "price": 4599,
-    "bomCost": 2385,
-    "tmsLevel": "TL2",
+    "bomCost": 2449,
+    "tmsLevel": "TL1",
     "category": "Furniture"
   },
   {
@@ -1687,10 +1687,10 @@
     "asin": "B09X1H9HXP",
     "fkfsn": "CFTGDCFZFVFUYVBQ",
     "platform": "Urban Ladder",
-    "stock": 21,
+    "stock": 80,
     "price": 4299,
-    "bomCost": 1980,
-    "tmsLevel": "TL2",
+    "bomCost": 2254,
+    "tmsLevel": "TL3",
     "category": "Furniture"
   },
   {
@@ -1701,10 +1701,10 @@
     "asin": "B08YWLTJYN",
     "fkfsn": "BSFGF9PBFMBPQQ54",
     "platform": "Urban Ladder",
-    "stock": 86,
+    "stock": 65,
     "price": 7599,
-    "bomCost": 3779,
-    "tmsLevel": "TL2",
+    "bomCost": 3654,
+    "tmsLevel": "TL1",
     "category": "Furniture"
   },
   {
@@ -1715,10 +1715,10 @@
     "asin": "B0CQK3JNW2",
     "fkfsn": "BSFGWDKT5UJTM7HA",
     "platform": "Urban Ladder",
-    "stock": 4,
+    "stock": 66,
     "price": 7299,
-    "bomCost": 3750,
-    "tmsLevel": "TL3",
+    "bomCost": 3624,
+    "tmsLevel": "TL1",
     "category": "Furniture"
   },
   {
@@ -1729,10 +1729,10 @@
     "asin": "B0B8MXTLK2",
     "fkfsn": "WCLGHCFHGA2YHGHM",
     "platform": "Urban Ladder",
-    "stock": 6,
+    "stock": 18,
     "price": 39999,
-    "bomCost": 18417,
-    "tmsLevel": "TL3",
+    "bomCost": 18109,
+    "tmsLevel": "TL1",
     "category": "Furniture"
   },
   {
@@ -1743,10 +1743,10 @@
     "asin": "B0CK1RQWFF",
     "fkfsn": "BSFGZMABGQVB6X36",
     "platform": "Urban Ladder",
-    "stock": 117,
+    "stock": 145,
     "price": 8499,
-    "bomCost": 4234,
-    "tmsLevel": "TL2",
+    "bomCost": 4092,
+    "tmsLevel": "TL3",
     "category": "Furniture"
   },
   {
@@ -1757,9 +1757,9 @@
     "asin": "B0BQWQ76V9",
     "fkfsn": "TVUGW3PYNG4GFURQ",
     "platform": "Urban Ladder",
-    "stock": 19,
+    "stock": 110,
     "price": 2949,
-    "bomCost": 1532,
+    "bomCost": 1512,
     "tmsLevel": "TL1",
     "category": "Furniture"
   },
@@ -1771,7 +1771,7 @@
     "asin": "B06XMXN38X",
     "fkfsn": "TVUH2APYR3HJFGMF",
     "platform": "Urban Ladder",
-    "stock": 115,
+    "stock": 10,
     "price": 7999,
     "bomCost": 3840,
     "tmsLevel": "TL1",
@@ -1785,10 +1785,10 @@
     "asin": "B07D1KM4DJ",
     "fkfsn": "BSFFC9GTGK4ZRR4U",
     "platform": "Urban Ladder",
-    "stock": 133,
+    "stock": 40,
     "price": 3499,
-    "bomCost": 1812,
-    "tmsLevel": "TL3",
+    "bomCost": 1596,
+    "tmsLevel": "TL1",
     "category": "Furniture"
   },
   {
@@ -1799,10 +1799,10 @@
     "asin": "B00IPAT3OG",
     "fkfsn": "HOKE5EE9WGTZJZUG",
     "platform": "Pepperfry",
-    "stock": 16,
+    "stock": 127,
     "price": 999,
-    "bomCost": 725,
-    "tmsLevel": "TL1",
+    "bomCost": 642,
+    "tmsLevel": "TL2",
     "category": "Furniture"
   },
   {
@@ -1813,10 +1813,10 @@
     "asin": "B0DFHF5SZZ",
     "fkfsn": "BSFH45Z63EYHWFHP",
     "platform": "Urban Ladder",
-    "stock": 57,
+    "stock": 122,
     "price": 1999,
-    "bomCost": 1379,
-    "tmsLevel": "TL3",
+    "bomCost": 1064,
+    "tmsLevel": "TL1",
     "category": "Furniture"
   },
   {
@@ -1827,10 +1827,10 @@
     "asin": "B0B8MY8Q7G",
     "fkfsn": "WCLGHCCJKZWHHXNV",
     "platform": "Urban Ladder",
-    "stock": 116,
+    "stock": 77,
     "price": 41599,
-    "bomCost": 18737,
-    "tmsLevel": "TL3",
+    "bomCost": 19004,
+    "tmsLevel": "TL1",
     "category": "Furniture"
   },
   {
@@ -1841,10 +1841,10 @@
     "asin": "B0FBMBTKGQ",
     "fkfsn": "KTCHCSG7SU3ZEEBB",
     "platform": "Urban Ladder",
-    "stock": 18,
+    "stock": 30,
     "price": 13599,
-    "bomCost": 6398,
-    "tmsLevel": "TL3",
+    "bomCost": 6617,
+    "tmsLevel": "TL2",
     "category": "Furniture"
   },
   {
@@ -1855,9 +1855,9 @@
     "asin": "B0B8J5QLZR",
     "fkfsn": "WCLGS2ZB9JCRBMBZ",
     "platform": "Urban Ladder",
-    "stock": 19,
+    "stock": 143,
     "price": 25799,
-    "bomCost": 11893,
+    "bomCost": 11920,
     "tmsLevel": "TL1",
     "category": "Furniture"
   },
@@ -1869,10 +1869,10 @@
     "asin": "B0DFHFQZRB",
     "fkfsn": "RSFH45NYDYEWWYP3",
     "platform": "Urban Ladder",
-    "stock": 113,
+    "stock": 43,
     "price": 2699,
-    "bomCost": 1417,
-    "tmsLevel": "TL3",
+    "bomCost": 1700,
+    "tmsLevel": "TL1",
     "category": "Furniture"
   },
   {
@@ -1883,10 +1883,10 @@
     "asin": "B0CR3TPG1P",
     "fkfsn": "TVUGWNDBFTR2HYJK",
     "platform": "Urban Ladder",
-    "stock": 137,
+    "stock": 66,
     "price": 3299,
-    "bomCost": 1720,
-    "tmsLevel": "TL2",
+    "bomCost": 1860,
+    "tmsLevel": "TL3",
     "category": "Furniture"
   },
   {
@@ -1897,10 +1897,10 @@
     "asin": "B07RS2L6TV",
     "fkfsn": "TVUFGGYNY9XEZHWG",
     "platform": "Urban Ladder",
-    "stock": 50,
+    "stock": 39,
     "price": 5299,
-    "bomCost": 2738,
-    "tmsLevel": "TL2",
+    "bomCost": 2491,
+    "tmsLevel": "TL1",
     "category": "Furniture"
   },
   {
@@ -1911,9 +1911,9 @@
     "asin": "B092S7SQ6C",
     "fkfsn": "BDDGD38FYRYW2H5Z",
     "platform": "Urban Ladder",
-    "stock": 139,
+    "stock": 38,
     "price": 24999,
-    "bomCost": 11520,
+    "bomCost": 11342,
     "tmsLevel": "TL1",
     "category": "Furniture"
   },
@@ -1925,9 +1925,9 @@
     "asin": "B01FNXRXVM",
     "fkfsn": "BSFESMZZZFTS67J6",
     "platform": "Urban Ladder",
-    "stock": 97,
+    "stock": 44,
     "price": 1999,
-    "bomCost": 1351,
+    "bomCost": 1285,
     "tmsLevel": "TL2",
     "category": "Furniture"
   },
@@ -1939,10 +1939,10 @@
     "asin": "B09LD599CZ",
     "fkfsn": "RSFFB6HHRGKSPDXW",
     "platform": "Urban Ladder",
-    "stock": 34,
+    "stock": 123,
     "price": 2699,
-    "bomCost": 1624,
-    "tmsLevel": "TL2",
+    "bomCost": 1643,
+    "tmsLevel": "TL3",
     "category": "Furniture"
   },
   {
@@ -1953,9 +1953,9 @@
     "asin": "B07MZPNN9J",
     "fkfsn": "OSTFD2FCDQWKGGXJ",
     "platform": "Urban Ladder",
-    "stock": 126,
+    "stock": 1,
     "price": 5899,
-    "bomCost": 3133,
+    "bomCost": 2813,
     "tmsLevel": "TL2",
     "category": "Furniture"
   },
@@ -1967,10 +1967,10 @@
     "asin": "B0B8MVG5YX",
     "fkfsn": "WCLGHCC7YS3EYJFX",
     "platform": "Urban Ladder",
-    "stock": 50,
+    "stock": 86,
     "price": 28699,
-    "bomCost": 13389,
-    "tmsLevel": "TL2",
+    "bomCost": 13148,
+    "tmsLevel": "TL1",
     "category": "Furniture"
   },
   {
@@ -1981,9 +1981,9 @@
     "asin": "B0CK2GCBYM",
     "fkfsn": "HTEGVG9FE9EK6VGG",
     "platform": "Urban Ladder",
-    "stock": 54,
+    "stock": 109,
     "price": 4099,
-    "bomCost": 1950,
+    "bomCost": 2005,
     "tmsLevel": "TL2",
     "category": "Furniture"
   },
@@ -1995,10 +1995,10 @@
     "asin": "B0DK38L15H",
     "fkfsn": "OSTH63GVZG8SFV5E",
     "platform": "Urban Ladder",
-    "stock": 138,
+    "stock": 62,
     "price": 4399,
-    "bomCost": 2435,
-    "tmsLevel": "TL1",
+    "bomCost": 2231,
+    "tmsLevel": "TL2",
     "category": "Furniture"
   },
   {
@@ -2009,10 +2009,10 @@
     "asin": "B0DK38L15H",
     "fkfsn": "OSTH63GVZG8SFV5E",
     "platform": "Urban Ladder",
-    "stock": 9,
+    "stock": 56,
     "price": 4399,
-    "bomCost": 2457,
-    "tmsLevel": "TL2",
+    "bomCost": 2078,
+    "tmsLevel": "TL3",
     "category": "Furniture"
   },
   {
@@ -2023,10 +2023,10 @@
     "asin": "B07V3H9VBF",
     "fkfsn": "TVUFGGYN3JFTTQFH",
     "platform": "Urban Ladder",
-    "stock": 137,
+    "stock": 131,
     "price": 6449,
-    "bomCost": 3252,
-    "tmsLevel": "TL1",
+    "bomCost": 3067,
+    "tmsLevel": "TL3",
     "category": "Furniture"
   },
   {
@@ -2037,10 +2037,10 @@
     "asin": "B08YWV5WK8",
     "fkfsn": "TVUGFGC28GXRGV6K",
     "platform": "Urban Ladder",
-    "stock": 54,
+    "stock": 104,
     "price": 2599,
-    "bomCost": 1625,
-    "tmsLevel": "TL2",
+    "bomCost": 1414,
+    "tmsLevel": "TL1",
     "category": "Furniture"
   },
   {
@@ -2051,10 +2051,10 @@
     "asin": "B0CT2RB6PY",
     "fkfsn": "TVUGZN5SWTXXGCSF",
     "platform": "Urban Ladder",
-    "stock": 66,
+    "stock": 7,
     "price": 4299,
-    "bomCost": 2177,
-    "tmsLevel": "TL3",
+    "bomCost": 2111,
+    "tmsLevel": "TL1",
     "category": "Furniture"
   },
   {
@@ -2065,10 +2065,10 @@
     "asin": "B0DFHGF1VX",
     "fkfsn": "RSFH45NYYHHBBG4P",
     "platform": "Urban Ladder",
-    "stock": 32,
+    "stock": 128,
     "price": 5749,
-    "bomCost": 3071,
-    "tmsLevel": "TL2",
+    "bomCost": 2740,
+    "tmsLevel": "TL1",
     "category": "Furniture"
   },
   {
@@ -2079,10 +2079,10 @@
     "asin": "B0BQWQ6BR1",
     "fkfsn": "TVUGWFVQHHZ5UFFY",
     "platform": "Urban Ladder",
-    "stock": 24,
+    "stock": 32,
     "price": 1999,
-    "bomCost": 919,
-    "tmsLevel": "TL2",
+    "bomCost": 1060,
+    "tmsLevel": "TL3",
     "category": "Furniture"
   },
   {
@@ -2093,10 +2093,10 @@
     "asin": "B0CV38YYV2",
     "fkfsn": "CFTGXUTCUAG3Z8YU",
     "platform": "Urban Ladder",
-    "stock": 77,
+    "stock": 28,
     "price": 5099,
-    "bomCost": 2490,
-    "tmsLevel": "TL3",
+    "bomCost": 2759,
+    "tmsLevel": "TL1",
     "category": "Furniture"
   },
   {
@@ -2107,9 +2107,9 @@
     "asin": "B0CQK28HLN",
     "fkfsn": "TVUGWMG8FFGJDPHG",
     "platform": "Urban Ladder",
-    "stock": 24,
+    "stock": 45,
     "price": 4799,
-    "bomCost": 2168,
+    "bomCost": 2271,
     "tmsLevel": "TL2",
     "category": "Furniture"
   },
@@ -2121,10 +2121,10 @@
     "asin": "B09TXLNBYQ",
     "fkfsn": "BDDGCHV6B4QVYJZA",
     "platform": "Urban Ladder",
-    "stock": 128,
+    "stock": 30,
     "price": 18599,
-    "bomCost": 8443,
-    "tmsLevel": "TL3",
+    "bomCost": 8450,
+    "tmsLevel": "TL2",
     "category": "Furniture"
   },
   {
@@ -2135,9 +2135,9 @@
     "asin": "B00PS6MFM2",
     "fkfsn": "HOKE5EE9H83BFNUZ",
     "platform": "Pepperfry",
-    "stock": 97,
+    "stock": 84,
     "price": 649,
-    "bomCost": 655,
+    "bomCost": 376,
     "tmsLevel": "TL2",
     "category": "Furniture"
   },
@@ -2149,10 +2149,10 @@
     "asin": "B09PBNSQBK",
     "fkfsn": "TVUGABYHTYBCZV2H",
     "platform": "Urban Ladder",
-    "stock": 10,
+    "stock": 23,
     "price": 5199,
-    "bomCost": 2602,
-    "tmsLevel": "TL1",
+    "bomCost": 2406,
+    "tmsLevel": "TL3",
     "category": "Furniture"
   },
   {
@@ -2163,9 +2163,9 @@
     "asin": "B07D3SW8NK",
     "fkfsn": "DNTFHHQCWEJXTGPD",
     "platform": "Urban Ladder",
-    "stock": 112,
+    "stock": 85,
     "price": 9299,
-    "bomCost": 4558,
+    "bomCost": 4638,
     "tmsLevel": "TL3",
     "category": "Furniture"
   },
@@ -2177,10 +2177,10 @@
     "asin": "B09LCBRTQT",
     "fkfsn": "RSFFBZZ3UAP2XSNP",
     "platform": "Urban Ladder",
-    "stock": 18,
+    "stock": 11,
     "price": 2699,
-    "bomCost": 1235,
-    "tmsLevel": "TL1",
+    "bomCost": 1564,
+    "tmsLevel": "TL3",
     "category": "Furniture"
   },
   {
@@ -2191,10 +2191,10 @@
     "asin": "B0DG8HC545",
     "fkfsn": "TVUH4ES8EN3VCTG4",
     "platform": "Urban Ladder",
-    "stock": 104,
+    "stock": 94,
     "price": 4899,
-    "bomCost": 2677,
-    "tmsLevel": "TL3",
+    "bomCost": 2612,
+    "tmsLevel": "TL1",
     "category": "Furniture"
   },
   {
@@ -2205,9 +2205,9 @@
     "asin": "B099DT5CR3",
     "fkfsn": "TVUGWMGRG26HXHMG",
     "platform": "Urban Ladder",
-    "stock": 45,
+    "stock": 7,
     "price": 5299,
-    "bomCost": 2785,
+    "bomCost": 2551,
     "tmsLevel": "TL1",
     "category": "Furniture"
   },
@@ -2219,10 +2219,10 @@
     "asin": "B0CJBV5CWY",
     "fkfsn": "OSTH7RE2R3YFECUV",
     "platform": "Urban Ladder",
-    "stock": 98,
+    "stock": 128,
     "price": 16599,
-    "bomCost": 7629,
-    "tmsLevel": "TL2",
+    "bomCost": 7579,
+    "tmsLevel": "TL1",
     "category": "Furniture"
   },
   {
@@ -2233,10 +2233,10 @@
     "asin": "B06VX47DM9",
     "fkfsn": "TVUEUPDZK7ACGY4F",
     "platform": "Urban Ladder",
-    "stock": 149,
+    "stock": 110,
     "price": 4099,
-    "bomCost": 2056,
-    "tmsLevel": "TL2",
+    "bomCost": 2341,
+    "tmsLevel": "TL1",
     "category": "Furniture"
   },
   {
@@ -2247,9 +2247,9 @@
     "asin": "B0CR4BQFMW",
     "fkfsn": "WCLGWZZNHBB9FHNY",
     "platform": "Urban Ladder",
-    "stock": 74,
+    "stock": 5,
     "price": 39999,
-    "bomCost": 18478,
+    "bomCost": 18052,
     "tmsLevel": "TL3",
     "category": "Furniture"
   },
@@ -2261,10 +2261,10 @@
     "asin": "B06WRTMT7T",
     "fkfsn": "BSFF4HQ4HR4MZUEZ",
     "platform": "Urban Ladder",
-    "stock": 11,
+    "stock": 15,
     "price": 3499,
-    "bomCost": 1765,
-    "tmsLevel": "TL2",
+    "bomCost": 2022,
+    "tmsLevel": "TL1",
     "category": "Furniture"
   },
   {
@@ -2275,10 +2275,10 @@
     "asin": "B0D4V1BC73",
     "fkfsn": "BSFH3YS2WQTFNYDY",
     "platform": "Urban Ladder",
-    "stock": 22,
+    "stock": 131,
     "price": 4799,
-    "bomCost": 2196,
-    "tmsLevel": "TL3",
+    "bomCost": 2460,
+    "tmsLevel": "TL2",
     "category": "Furniture"
   },
   {
@@ -2289,10 +2289,10 @@
     "asin": "B09LD22YFC",
     "fkfsn": "BSFFBPZUDDHGG28P",
     "platform": "Urban Ladder",
-    "stock": 12,
+    "stock": 126,
     "price": 3199,
-    "bomCost": 1540,
-    "tmsLevel": "TL2",
+    "bomCost": 1724,
+    "tmsLevel": "TL1",
     "category": "Furniture"
   },
   {
@@ -2303,10 +2303,10 @@
     "asin": "B07D7W5QW6",
     "fkfsn": "SOXFC8JGPGF6PVFY",
     "platform": "Pepperfry",
-    "stock": 4,
+    "stock": 102,
     "price": 1199,
-    "bomCost": 806,
-    "tmsLevel": "TL2",
+    "bomCost": 896,
+    "tmsLevel": "TL1",
     "category": "Furniture"
   },
   {
@@ -2317,9 +2317,9 @@
     "asin": "B0CP968FV1",
     "fkfsn": "RSFGVWVGFSDCKWRA",
     "platform": "Urban Ladder",
-    "stock": 93,
+    "stock": 106,
     "price": 3399,
-    "bomCost": 1793,
+    "bomCost": 1795,
     "tmsLevel": "TL2",
     "category": "Furniture"
   },
@@ -2331,10 +2331,10 @@
     "asin": "B0CP6347KN",
     "fkfsn": "CFTGW3G6BVGX3UBB",
     "platform": "Urban Ladder",
-    "stock": 94,
+    "stock": 76,
     "price": 6999,
-    "bomCost": 3581,
-    "tmsLevel": "TL2",
+    "bomCost": 3470,
+    "tmsLevel": "TL3",
     "category": "Furniture"
   },
   {
@@ -2345,9 +2345,9 @@
     "asin": "B0CR4B4ZMP",
     "fkfsn": "BSFH2QG68X46NNXX",
     "platform": "Urban Ladder",
-    "stock": 122,
+    "stock": 61,
     "price": 3199,
-    "bomCost": 1571,
+    "bomCost": 1505,
     "tmsLevel": "TL3",
     "category": "Furniture"
   },
@@ -2359,9 +2359,9 @@
     "asin": "B0FBM7C35S",
     "fkfsn": "SHKHCSGQGTHDWQP8",
     "platform": "Urban Ladder",
-    "stock": 3,
+    "stock": 37,
     "price": 10499,
-    "bomCost": 5113,
+    "bomCost": 5044,
     "tmsLevel": "TL1",
     "category": "Furniture"
   },
@@ -2373,10 +2373,10 @@
     "asin": "B08XJNTSSN",
     "fkfsn": "DTBG465CMFJDQKZP",
     "platform": "Urban Ladder",
-    "stock": 90,
+    "stock": 110,
     "price": 7299,
-    "bomCost": 3718,
-    "tmsLevel": "TL1",
+    "bomCost": 3452,
+    "tmsLevel": "TL3",
     "category": "Furniture"
   },
   {
@@ -2387,10 +2387,10 @@
     "asin": "B0CJRXHWR5",
     "fkfsn": "TVUH7GJ2RUGGBJVN",
     "platform": "Urban Ladder",
-    "stock": 114,
+    "stock": 146,
     "price": 7299,
-    "bomCost": 3534,
-    "tmsLevel": "TL2",
+    "bomCost": 3663,
+    "tmsLevel": "TL3",
     "category": "Furniture"
   },
   {
@@ -2401,10 +2401,10 @@
     "asin": "B07RV9W52P",
     "fkfsn": "KHRH2QB9WNXUECGF",
     "platform": "Pepperfry",
-    "stock": 139,
+    "stock": 54,
     "price": 1999,
-    "bomCost": 1315,
-    "tmsLevel": "TL3",
+    "bomCost": 990,
+    "tmsLevel": "TL1",
     "category": "Furniture"
   },
   {
@@ -2415,10 +2415,10 @@
     "asin": "B0F9173CCD",
     "fkfsn": "WCLHC8U9KUQEJBZE",
     "platform": "Urban Ladder",
-    "stock": 8,
+    "stock": 26,
     "price": 12599,
-    "bomCost": 6161,
-    "tmsLevel": "TL2",
+    "bomCost": 6014,
+    "tmsLevel": "TL3",
     "category": "Furniture"
   },
   {
@@ -2429,9 +2429,9 @@
     "asin": "B09X2CC6PJ",
     "fkfsn": "CFTGDCFZJTFYCUJU",
     "platform": "Urban Ladder",
-    "stock": 38,
+    "stock": 44,
     "price": 3899,
-    "bomCost": 2139,
+    "bomCost": 2196,
     "tmsLevel": "TL1",
     "category": "Furniture"
   },
@@ -2443,9 +2443,9 @@
     "asin": "B09TXMR5YG",
     "fkfsn": "SITGCNMNRQ3CG2JQ",
     "platform": "Urban Ladder",
-    "stock": 139,
+    "stock": 64,
     "price": 3099,
-    "bomCost": 1811,
+    "bomCost": 1479,
     "tmsLevel": "TL1",
     "category": "Furniture"
   },
@@ -2457,9 +2457,9 @@
     "asin": "B09YRPFNVT",
     "fkfsn": "CFTGG8GZKRJFZXF3",
     "platform": "Urban Ladder",
-    "stock": 126,
+    "stock": 84,
     "price": 7599,
-    "bomCost": 3702,
+    "bomCost": 3760,
     "tmsLevel": "TL2",
     "category": "Furniture"
   },
@@ -2471,10 +2471,10 @@
     "asin": "B06VX456SW",
     "fkfsn": "BSFEVAQXA8S3XXRX",
     "platform": "Urban Ladder",
-    "stock": 12,
+    "stock": 65,
     "price": 3499,
-    "bomCost": 1804,
-    "tmsLevel": "TL1",
+    "bomCost": 1850,
+    "tmsLevel": "TL2",
     "category": "Furniture"
   },
   {
@@ -2485,9 +2485,9 @@
     "asin": "B0B8MY6R22",
     "fkfsn": "WCLGHCC3BKEDHRZ4",
     "platform": "Urban Ladder",
-    "stock": 59,
+    "stock": 30,
     "price": 31599,
-    "bomCost": 14715,
+    "bomCost": 14467,
     "tmsLevel": "TL1",
     "category": "Furniture"
   },
@@ -2499,10 +2499,10 @@
     "asin": "B09X1LH2VV",
     "fkfsn": "CFTGDCFVN5C2DDN9",
     "platform": "Urban Ladder",
-    "stock": 20,
+    "stock": 45,
     "price": 3899,
-    "bomCost": 1880,
-    "tmsLevel": "TL1",
+    "bomCost": 1881,
+    "tmsLevel": "TL3",
     "category": "Furniture"
   },
   {
@@ -2513,9 +2513,9 @@
     "asin": "B0F8Z3R239",
     "fkfsn": "KTCHCARETSNRMJBD",
     "platform": "Urban Ladder",
-    "stock": 126,
+    "stock": 49,
     "price": 7299,
-    "bomCost": 3400,
+    "bomCost": 3775,
     "tmsLevel": "TL2",
     "category": "Furniture"
   },
@@ -2527,10 +2527,10 @@
     "asin": "B099DVN6WY",
     "fkfsn": "BSFG53DZ5WHFRX9V",
     "platform": "Urban Ladder",
-    "stock": 36,
+    "stock": 92,
     "price": 2299,
-    "bomCost": 1109,
-    "tmsLevel": "TL3",
+    "bomCost": 1197,
+    "tmsLevel": "TL2",
     "category": "Furniture"
   },
   {
@@ -2541,10 +2541,10 @@
     "asin": "B01FO8HFT6",
     "fkfsn": "BSFETYADMNVRTZNG",
     "platform": "Urban Ladder",
-    "stock": 78,
+    "stock": 45,
     "price": 2799,
-    "bomCost": 1634,
-    "tmsLevel": "TL1",
+    "bomCost": 1508,
+    "tmsLevel": "TL3",
     "category": "Furniture"
   },
   {
@@ -2555,10 +2555,10 @@
     "asin": "B0FDW98P3K",
     "fkfsn": "WCLHDTBWZ5XXGEHT",
     "platform": "Urban Ladder",
-    "stock": 139,
+    "stock": 4,
     "price": 15799,
-    "bomCost": 7129,
-    "tmsLevel": "TL2",
+    "bomCost": 7481,
+    "tmsLevel": "TL3",
     "category": "Furniture"
   },
   {
@@ -2569,10 +2569,10 @@
     "asin": "B0CMM8KQH8",
     "fkfsn": "LASH2QEQMXT6Z8HN",
     "platform": "Pepperfry",
-    "stock": 50,
+    "stock": 45,
     "price": 1999,
-    "bomCost": 1268,
-    "tmsLevel": "TL1",
+    "bomCost": 974,
+    "tmsLevel": "TL2",
     "category": "Furniture"
   },
   {
@@ -2583,9 +2583,9 @@
     "asin": "B0CBSLL2FN",
     "fkfsn": "CFTH2QEES2DWHHQ4",
     "platform": "Urban Ladder",
-    "stock": 77,
+    "stock": 25,
     "price": 5299,
-    "bomCost": 2468,
+    "bomCost": 2831,
     "tmsLevel": "TL3",
     "category": "Furniture"
   },
@@ -2597,10 +2597,10 @@
     "asin": "B09Y5VL36M",
     "fkfsn": "BSFGG8HY8HXHCZAQ",
     "platform": "Urban Ladder",
-    "stock": 37,
+    "stock": 0,
     "price": 3899,
-    "bomCost": 1947,
-    "tmsLevel": "TL2",
+    "bomCost": 2249,
+    "tmsLevel": "TL3",
     "category": "Furniture"
   },
   {
@@ -2611,10 +2611,10 @@
     "asin": "B0DJMMFVV7",
     "fkfsn": "KHRH7PCHZHDPPMZH",
     "platform": "Pepperfry",
-    "stock": 76,
+    "stock": 31,
     "price": 649,
-    "bomCost": 328,
-    "tmsLevel": "TL1",
+    "bomCost": 774,
+    "tmsLevel": "TL2",
     "category": "Furniture"
   },
   {
@@ -2625,9 +2625,9 @@
     "asin": "B09T3D9K1Z",
     "fkfsn": "RSFGBTHUZACX46D8",
     "platform": "Urban Ladder",
-    "stock": 25,
+    "stock": 144,
     "price": 2499,
-    "bomCost": 1468,
+    "bomCost": 1387,
     "tmsLevel": "TL2",
     "category": "Furniture"
   },
@@ -2639,9 +2639,9 @@
     "asin": "B0CT2V51VB",
     "fkfsn": "TVUGZN6YFECXZQAA",
     "platform": "Urban Ladder",
-    "stock": 96,
+    "stock": 105,
     "price": 8999,
-    "bomCost": 4149,
+    "bomCost": 4361,
     "tmsLevel": "TL3",
     "category": "Furniture"
   },
@@ -2653,10 +2653,10 @@
     "asin": "B08XWL3ZBP",
     "fkfsn": "DTBGFYHCZ8Y4UZQG",
     "platform": "Urban Ladder",
-    "stock": 83,
+    "stock": 46,
     "price": 9999,
-    "bomCost": 4585,
-    "tmsLevel": "TL3",
+    "bomCost": 4546,
+    "tmsLevel": "TL2",
     "category": "Furniture"
   },
   {
@@ -2667,10 +2667,10 @@
     "asin": "B0F8ZH3X7Q",
     "fkfsn": "KTCHCARUDGCFWGYT",
     "platform": "Urban Ladder",
-    "stock": 116,
+    "stock": 37,
     "price": 7299,
-    "bomCost": 3775,
-    "tmsLevel": "TL3",
+    "bomCost": 3537,
+    "tmsLevel": "TL2",
     "category": "Furniture"
   },
   {
@@ -2681,10 +2681,10 @@
     "asin": "B0F6D9DH3F",
     "fkfsn": "OSTHBWCGVJHARYP3",
     "platform": "Urban Ladder",
-    "stock": 30,
+    "stock": 116,
     "price": 6499,
-    "bomCost": 3233,
-    "tmsLevel": "TL1",
+    "bomCost": 3162,
+    "tmsLevel": "TL2",
     "category": "Furniture"
   },
   {
@@ -2695,9 +2695,9 @@
     "asin": "B099DBMWDG",
     "fkfsn": "BSFG53CEEENPVYBY",
     "platform": "Urban Ladder",
-    "stock": 122,
+    "stock": 75,
     "price": 2099,
-    "bomCost": 1427,
+    "bomCost": 1416,
     "tmsLevel": "TL1",
     "category": "Furniture"
   },
@@ -2709,10 +2709,10 @@
     "asin": "B09X1HTQYK",
     "fkfsn": "CFTGDCFRN4H4N8BW",
     "platform": "Urban Ladder",
-    "stock": 76,
+    "stock": 24,
     "price": 4299,
-    "bomCost": 2262,
-    "tmsLevel": "TL1",
+    "bomCost": 2064,
+    "tmsLevel": "TL3",
     "category": "Furniture"
   },
   {
@@ -2723,10 +2723,10 @@
     "asin": "B07HKXP3CG",
     "fkfsn": "TVUHBWGAJT4GDRJS",
     "platform": "Urban Ladder",
-    "stock": 104,
+    "stock": 45,
     "price": 2199,
-    "bomCost": 1055,
-    "tmsLevel": "TL1",
+    "bomCost": 1342,
+    "tmsLevel": "TL2",
     "category": "Furniture"
   },
   {
@@ -2737,9 +2737,9 @@
     "asin": "B0CJRX5M44",
     "fkfsn": "BDDGUJ24RAZM6RP6",
     "platform": "Urban Ladder",
-    "stock": 47,
+    "stock": 11,
     "price": 13599,
-    "bomCost": 6601,
+    "bomCost": 6134,
     "tmsLevel": "TL1",
     "category": "Furniture"
   },
@@ -2751,10 +2751,10 @@
     "asin": "B09SHWVM7W",
     "fkfsn": "BSFGBSHHASEZ5KT5",
     "platform": "Urban Ladder",
-    "stock": 101,
+    "stock": 47,
     "price": 3099,
-    "bomCost": 1578,
-    "tmsLevel": "TL1",
+    "bomCost": 1831,
+    "tmsLevel": "TL3",
     "category": "Furniture"
   },
   {
@@ -2767,8 +2767,8 @@
     "platform": "Omnichannel",
     "stock": 97,
     "price": 3649,
-    "bomCost": 2003,
-    "tmsLevel": "TL3",
+    "bomCost": 2109,
+    "tmsLevel": "TL2",
     "category": "Furniture"
   },
   {
@@ -2779,10 +2779,10 @@
     "asin": "B0D9HKF635",
     "fkfsn": "MWMH96KWD8VJAY9G",
     "platform": "Omnichannel",
-    "stock": 130,
+    "stock": 112,
     "price": 4899,
-    "bomCost": 2698,
-    "tmsLevel": "TL2",
+    "bomCost": 2381,
+    "tmsLevel": "TL1",
     "category": "Furniture"
   },
   {
@@ -2793,10 +2793,10 @@
     "asin": "",
     "fkfsn": "",
     "platform": "Pepperfry",
-    "stock": 14,
+    "stock": 49,
     "price": 9999,
-    "bomCost": 4631,
-    "tmsLevel": "TL2",
+    "bomCost": 4505,
+    "tmsLevel": "TL1",
     "category": "Furniture"
   },
   {
@@ -2807,10 +2807,10 @@
     "asin": "B0D9LLB6HS",
     "fkfsn": "OTPH4RNTZ6F7HFDD",
     "platform": "Urban Ladder",
-    "stock": 75,
+    "stock": 95,
     "price": 1999,
-    "bomCost": 1164,
-    "tmsLevel": "TL1",
+    "bomCost": 1383,
+    "tmsLevel": "TL3",
     "category": "Furniture"
   },
   {
@@ -2821,10 +2821,10 @@
     "asin": "B0FGTVTZFS",
     "fkfsn": "BDDHDTC8CFHQU3Z8",
     "platform": "Pepperfry",
-    "stock": 87,
+    "stock": 12,
     "price": 15799,
-    "bomCost": 7235,
-    "tmsLevel": "TL1",
+    "bomCost": 7201,
+    "tmsLevel": "TL2",
     "category": "Furniture"
   },
   {
@@ -2835,10 +2835,10 @@
     "asin": "B0DM29T59F",
     "fkfsn": "RSFHDWJT5SVBNFZG",
     "platform": "Urban Ladder",
-    "stock": 72,
+    "stock": 126,
     "price": 2199,
-    "bomCost": 1302,
-    "tmsLevel": "TL1",
+    "bomCost": 1233,
+    "tmsLevel": "TL2",
     "category": "Furniture"
   },
   {
@@ -2849,10 +2849,10 @@
     "asin": "B0DGLVGZ55",
     "fkfsn": "TVUH4HF7QGTVRCYG",
     "platform": "Urban Ladder",
-    "stock": 16,
+    "stock": 115,
     "price": 1649,
-    "bomCost": 876,
-    "tmsLevel": "TL2",
+    "bomCost": 887,
+    "tmsLevel": "TL3",
     "category": "Furniture"
   },
   {
@@ -2863,10 +2863,10 @@
     "asin": "B00IPAT2G0",
     "fkfsn": "HOKE5EE9E2TPEYFY",
     "platform": "Pepperfry",
-    "stock": 27,
+    "stock": 103,
     "price": 1999,
-    "bomCost": 1290,
-    "tmsLevel": "TL2",
+    "bomCost": 1359,
+    "tmsLevel": "TL3",
     "category": "Furniture"
   },
   {
@@ -2877,10 +2877,10 @@
     "asin": "B06W9LS166",
     "fkfsn": "DKOET2ACAZJDSQZF",
     "platform": "Pepperfry",
-    "stock": 60,
+    "stock": 53,
     "price": 1199,
-    "bomCost": 1025,
-    "tmsLevel": "TL3",
+    "bomCost": 547,
+    "tmsLevel": "TL1",
     "category": "Furniture"
   },
   {
@@ -2891,9 +2891,9 @@
     "asin": "B099DBZJ1K",
     "fkfsn": "TVUG5CCNE7MBNGTY",
     "platform": "Urban Ladder",
-    "stock": 120,
+    "stock": 100,
     "price": 8999,
-    "bomCost": 4200,
+    "bomCost": 4247,
     "tmsLevel": "TL1",
     "category": "Furniture"
   },
@@ -2905,10 +2905,10 @@
     "asin": "B06WGS777J",
     "fkfsn": "SITH2QGZGKVWXJ24",
     "platform": "Urban Ladder",
-    "stock": 106,
+    "stock": 36,
     "price": 3599,
-    "bomCost": 2102,
-    "tmsLevel": "TL3",
+    "bomCost": 1735,
+    "tmsLevel": "TL1",
     "category": "Furniture"
   },
   {
@@ -2919,9 +2919,9 @@
     "asin": "B0CMM5M79P",
     "fkfsn": "LASGVG8BZHMFRMJN",
     "platform": "Pepperfry",
-    "stock": 58,
+    "stock": 149,
     "price": 899,
-    "bomCost": 717,
+    "bomCost": 727,
     "tmsLevel": "TL2",
     "category": "Furniture"
   },
@@ -2933,9 +2933,9 @@
     "asin": "B0BCZ54CNJ",
     "fkfsn": "BDDGHZHW6DRYQUH9",
     "platform": "Urban Ladder",
-    "stock": 80,
+    "stock": 97,
     "price": 15799,
-    "bomCost": 7321,
+    "bomCost": 7130,
     "tmsLevel": "TL3",
     "category": "Furniture"
   },
@@ -2947,10 +2947,10 @@
     "asin": "B019HBPT76",
     "fkfsn": "BSFEUKMDNTVVGZ4U",
     "platform": "Urban Ladder",
-    "stock": 59,
+    "stock": 20,
     "price": 1749,
-    "bomCost": 833,
-    "tmsLevel": "TL1",
+    "bomCost": 916,
+    "tmsLevel": "TL3",
     "category": "Furniture"
   },
   {
@@ -2961,9 +2961,9 @@
     "asin": "B01FO9D8LY",
     "fkfsn": "BSFESN7ZZ5MFKJDV",
     "platform": "Urban Ladder",
-    "stock": 69,
+    "stock": 85,
     "price": 3299,
-    "bomCost": 1534,
+    "bomCost": 1744,
     "tmsLevel": "TL3",
     "category": "Furniture"
   },
@@ -2975,10 +2975,10 @@
     "asin": "",
     "fkfsn": "",
     "platform": "Pepperfry",
-    "stock": 99,
+    "stock": 103,
     "price": 9999,
-    "bomCost": 4837,
-    "tmsLevel": "TL1",
+    "bomCost": 4535,
+    "tmsLevel": "TL3",
     "category": "Furniture"
   },
   {
@@ -2989,9 +2989,9 @@
     "asin": "B0DFWPT67K",
     "fkfsn": "BSFH7GBGCGSVWS67",
     "platform": "Urban Ladder",
-    "stock": 47,
+    "stock": 133,
     "price": 7799,
-    "bomCost": 3888,
+    "bomCost": 3723,
     "tmsLevel": "TL2",
     "category": "Furniture"
   },
@@ -3003,10 +3003,10 @@
     "asin": "B0FBMC4KNW",
     "fkfsn": "KTCHCSGDHUKWRCH6",
     "platform": "Urban Ladder",
-    "stock": 23,
+    "stock": 141,
     "price": 13199,
-    "bomCost": 6418,
-    "tmsLevel": "TL3",
+    "bomCost": 6078,
+    "tmsLevel": "TL2",
     "category": "Furniture"
   },
   {
@@ -3017,9 +3017,9 @@
     "asin": "B0C8J4PN4Q",
     "fkfsn": "BDDHYHDZMSFXQYWM",
     "platform": "Urban Ladder",
-    "stock": 21,
+    "stock": 106,
     "price": 11599,
-    "bomCost": 5595,
+    "bomCost": 5596,
     "tmsLevel": "TL3",
     "category": "Furniture"
   },
@@ -3031,10 +3031,10 @@
     "asin": "",
     "fkfsn": "",
     "platform": "Pepperfry",
-    "stock": 83,
+    "stock": 88,
     "price": 9999,
-    "bomCost": 4992,
-    "tmsLevel": "TL3",
+    "bomCost": 4754,
+    "tmsLevel": "TL1",
     "category": "Furniture"
   },
   {
@@ -3045,10 +3045,10 @@
     "asin": "B0C43M1HTN",
     "fkfsn": "SITGPPCN6UJAUHHX",
     "platform": "Urban Ladder",
-    "stock": 44,
+    "stock": 15,
     "price": 3599,
-    "bomCost": 1819,
-    "tmsLevel": "TL1",
+    "bomCost": 1784,
+    "tmsLevel": "TL3",
     "category": "Furniture"
   },
   {
@@ -3059,10 +3059,10 @@
     "asin": "B0DFPPGZY5",
     "fkfsn": "TVUH48PVGQZ2FTBF",
     "platform": "Pepperfry",
-    "stock": 72,
+    "stock": 42,
     "price": 5449,
-    "bomCost": 2884,
-    "tmsLevel": "TL3",
+    "bomCost": 2453,
+    "tmsLevel": "TL2",
     "category": "Furniture"
   },
   {
@@ -3073,10 +3073,10 @@
     "asin": "B09T3FKXLG",
     "fkfsn": "RSFGBTHYAPHPTHAG",
     "platform": "Urban Ladder",
-    "stock": 76,
+    "stock": 6,
     "price": 2499,
-    "bomCost": 1254,
-    "tmsLevel": "TL1",
+    "bomCost": 1382,
+    "tmsLevel": "TL3",
     "category": "Furniture"
   },
   {
@@ -3087,9 +3087,9 @@
     "asin": "B09B41HCTM",
     "fkfsn": "RSFG5CF4G7AYHCTQ",
     "platform": "Urban Ladder",
-    "stock": 68,
+    "stock": 83,
     "price": 5749,
-    "bomCost": 2672,
+    "bomCost": 2763,
     "tmsLevel": "TL2",
     "category": "Furniture"
   },
@@ -3101,9 +3101,9 @@
     "asin": "B07V5LZ84X",
     "fkfsn": "KHRH2QB9WJTZ96Q8",
     "platform": "Pepperfry",
-    "stock": 54,
+    "stock": 71,
     "price": 2999,
-    "bomCost": 1655,
+    "bomCost": 1611,
     "tmsLevel": "TL1",
     "category": "Furniture"
   },
@@ -3115,9 +3115,9 @@
     "asin": "B0DJMLST1B",
     "fkfsn": "KHRH7PG79JYCCEDF",
     "platform": "Pepperfry",
-    "stock": 27,
+    "stock": 38,
     "price": 999,
-    "bomCost": 865,
+    "bomCost": 751,
     "tmsLevel": "TL1",
     "category": "Furniture"
   },
@@ -3129,10 +3129,10 @@
     "asin": "B0D4QLXVJD",
     "fkfsn": "CFTH2QGBRZRP8WMV",
     "platform": "Urban Ladder",
-    "stock": 36,
+    "stock": 137,
     "price": 4899,
-    "bomCost": 2490,
-    "tmsLevel": "TL1",
+    "bomCost": 2344,
+    "tmsLevel": "TL3",
     "category": "Furniture"
   },
   {
@@ -3143,10 +3143,10 @@
     "asin": "B0DG98BKCP",
     "fkfsn": "BSFH4FQHRU2WR4GV",
     "platform": "Urban Ladder",
-    "stock": 86,
+    "stock": 57,
     "price": 6449,
-    "bomCost": 3166,
-    "tmsLevel": "TL2",
+    "bomCost": 3098,
+    "tmsLevel": "TL1",
     "category": "Furniture"
   },
   {
@@ -3157,10 +3157,10 @@
     "asin": "B0DJMLBSSD",
     "fkfsn": "KHRH7PGGDCCCJ7FX",
     "platform": "Pepperfry",
-    "stock": 112,
+    "stock": 42,
     "price": 1999,
-    "bomCost": 1395,
-    "tmsLevel": "TL1",
+    "bomCost": 984,
+    "tmsLevel": "TL2",
     "category": "Furniture"
   },
   {
@@ -3171,9 +3171,9 @@
     "asin": "B08CZH6LT9",
     "fkfsn": "BSFFUDQACYYWSZMD",
     "platform": "Urban Ladder",
-    "stock": 138,
+    "stock": 20,
     "price": 1999,
-    "bomCost": 1259,
+    "bomCost": 1390,
     "tmsLevel": "TL3",
     "category": "Furniture"
   },
@@ -3185,10 +3185,10 @@
     "asin": "B0FGV4VKVR",
     "fkfsn": "BSFHDTCRGH6MCMGT",
     "platform": "Urban Ladder",
-    "stock": 128,
+    "stock": 91,
     "price": 6199,
-    "bomCost": 3001,
-    "tmsLevel": "TL3",
+    "bomCost": 3005,
+    "tmsLevel": "TL1",
     "category": "Furniture"
   },
   {
@@ -3199,9 +3199,9 @@
     "asin": "B0DHNGJFQF",
     "fkfsn": "CFTH4WFMZDHZPBPV",
     "platform": "Urban Ladder",
-    "stock": 142,
+    "stock": 5,
     "price": 6199,
-    "bomCost": 2881,
+    "bomCost": 3232,
     "tmsLevel": "TL3",
     "category": "Furniture"
   },
@@ -3213,10 +3213,10 @@
     "asin": "B0DG6Q5654",
     "fkfsn": "TVUH4EQWX9ZQBV58",
     "platform": "Urban Ladder",
-    "stock": 116,
+    "stock": 78,
     "price": 5499,
-    "bomCost": 2709,
-    "tmsLevel": "TL3",
+    "bomCost": 2893,
+    "tmsLevel": "TL2",
     "category": "Furniture"
   },
   {
@@ -3227,10 +3227,10 @@
     "asin": "B0DVSS7LSR",
     "fkfsn": "CFTH95PPZHRHGF8Y",
     "platform": "Urban Ladder",
-    "stock": 3,
+    "stock": 65,
     "price": 4299,
-    "bomCost": 2135,
-    "tmsLevel": "TL2",
+    "bomCost": 2291,
+    "tmsLevel": "TL3",
     "category": "Furniture"
   },
   {
@@ -3241,10 +3241,10 @@
     "asin": "B08YX235BT",
     "fkfsn": "LASGFPYBV59XBPFH",
     "platform": "Urban Ladder",
-    "stock": 145,
+    "stock": 53,
     "price": 2299,
-    "bomCost": 1054,
-    "tmsLevel": "TL3",
+    "bomCost": 1434,
+    "tmsLevel": "TL2",
     "category": "Furniture"
   },
   {
@@ -3255,10 +3255,10 @@
     "asin": "B0F6D7KWNQ",
     "fkfsn": "DSUHBWCRUUJHZGPK",
     "platform": "Omnichannel",
-    "stock": 144,
+    "stock": 52,
     "price": 2099,
-    "bomCost": 1071,
-    "tmsLevel": "TL3",
+    "bomCost": 970,
+    "tmsLevel": "TL1",
     "category": "Furniture"
   },
   {
@@ -3269,9 +3269,9 @@
     "asin": "B01FQHBLW2",
     "fkfsn": "OSTEKNZ9RX3F26H8",
     "platform": "Urban Ladder",
-    "stock": 2,
+    "stock": 57,
     "price": 5199,
-    "bomCost": 2679,
+    "bomCost": 2698,
     "tmsLevel": "TL1",
     "category": "Furniture"
   },
@@ -3283,10 +3283,10 @@
     "asin": "B09SGHLZYT",
     "fkfsn": "DTBGCA9NJKXZGW4Y",
     "platform": "Urban Ladder",
-    "stock": 58,
+    "stock": 143,
     "price": 4299,
-    "bomCost": 2017,
-    "tmsLevel": "TL1",
+    "bomCost": 2210,
+    "tmsLevel": "TL2",
     "category": "Furniture"
   },
   {
@@ -3297,10 +3297,10 @@
     "asin": "B0F6D6P1FZ",
     "fkfsn": "RSFHBWFHPRS2YQBK",
     "platform": "Omnichannel",
-    "stock": 109,
+    "stock": 73,
     "price": 1649,
-    "bomCost": 781,
-    "tmsLevel": "TL1",
+    "bomCost": 967,
+    "tmsLevel": "TL3",
     "category": "Furniture"
   },
   {
@@ -3311,9 +3311,9 @@
     "asin": "B0DSVPRZMS",
     "fkfsn": "KHRH8JBRD6MHFHVU",
     "platform": "Omnichannel",
-    "stock": 80,
+    "stock": 98,
     "price": 2799,
-    "bomCost": 1491,
+    "bomCost": 1282,
     "tmsLevel": "TL1",
     "category": "Furniture"
   },
@@ -3325,9 +3325,9 @@
     "asin": "B099DJNDK9",
     "fkfsn": "CFTG5Y2B66BKERPW",
     "platform": "Urban Ladder",
-    "stock": 40,
+    "stock": 60,
     "price": 3499,
-    "bomCost": 1626,
+    "bomCost": 1757,
     "tmsLevel": "TL1",
     "category": "Furniture"
   },
@@ -3339,10 +3339,10 @@
     "asin": "B0D9LKN5GC",
     "fkfsn": "OTPH4RNTJ5F8GWPT",
     "platform": "Urban Ladder",
-    "stock": 45,
+    "stock": 93,
     "price": 1999,
-    "bomCost": 1091,
-    "tmsLevel": "TL3",
+    "bomCost": 1078,
+    "tmsLevel": "TL2",
     "category": "Furniture"
   },
   {
@@ -3353,10 +3353,10 @@
     "asin": "B0DSVQBXV6",
     "fkfsn": "KHRH8JBKVQMZAX4Y",
     "platform": "Omnichannel",
-    "stock": 55,
+    "stock": 80,
     "price": 3499,
-    "bomCost": 1874,
-    "tmsLevel": "TL3",
+    "bomCost": 1994,
+    "tmsLevel": "TL2",
     "category": "Furniture"
   },
   {
@@ -3367,10 +3367,10 @@
     "asin": "B0DFPS4R2M",
     "fkfsn": "KHRH48QEVDJKAKJ6",
     "platform": "Pepperfry",
-    "stock": 53,
+    "stock": 6,
     "price": 499,
-    "bomCost": 237,
-    "tmsLevel": "TL1",
+    "bomCost": 679,
+    "tmsLevel": "TL2",
     "category": "Furniture"
   },
   {
@@ -3381,9 +3381,9 @@
     "asin": "B0F6D7FKTV",
     "fkfsn": "RSFHBWFFZUETWJXX",
     "platform": "Omnichannel",
-    "stock": 84,
+    "stock": 86,
     "price": 1349,
-    "bomCost": 712,
+    "bomCost": 947,
     "tmsLevel": "TL2",
     "category": "Furniture"
   },
@@ -3395,10 +3395,10 @@
     "asin": "B0DGCYWWVC",
     "fkfsn": "KHRH48Q5FTHZZTKA",
     "platform": "Pepperfry",
-    "stock": 87,
+    "stock": 7,
     "price": 499,
-    "bomCost": 326,
-    "tmsLevel": "TL1",
+    "bomCost": 686,
+    "tmsLevel": "TL2",
     "category": "Furniture"
   },
   {
@@ -3409,10 +3409,10 @@
     "asin": "B0DGCW4XVH",
     "fkfsn": "KHRH4FR9DWGGFZRJ",
     "platform": "Pepperfry",
-    "stock": 28,
+    "stock": 18,
     "price": 599,
-    "bomCost": 737,
-    "tmsLevel": "TL1",
+    "bomCost": 543,
+    "tmsLevel": "TL3",
     "category": "Furniture"
   },
   {
@@ -3423,10 +3423,10 @@
     "asin": "B019K1OVJK",
     "fkfsn": "BSFEVYFZPNVCNKJG",
     "platform": "Urban Ladder",
-    "stock": 143,
+    "stock": 6,
     "price": 1199,
-    "bomCost": 585,
-    "tmsLevel": "TL2",
+    "bomCost": 853,
+    "tmsLevel": "TL1",
     "category": "Furniture"
   },
   {
@@ -3437,10 +3437,10 @@
     "asin": "B0D9LKVBQM",
     "fkfsn": "OTPH4RNTSJU2VU8B",
     "platform": "Urban Ladder",
-    "stock": 30,
+    "stock": 147,
     "price": 1749,
-    "bomCost": 925,
-    "tmsLevel": "TL1",
+    "bomCost": 1168,
+    "tmsLevel": "TL3",
     "category": "Furniture"
   },
   {
@@ -3451,10 +3451,10 @@
     "asin": "B08YWYYXV7",
     "fkfsn": "TVUGFGDYUTNCGZJP",
     "platform": "Urban Ladder",
-    "stock": 61,
+    "stock": 15,
     "price": 1999,
-    "bomCost": 935,
-    "tmsLevel": "TL1",
+    "bomCost": 1217,
+    "tmsLevel": "TL3",
     "category": "Furniture"
   },
   {
@@ -3465,10 +3465,10 @@
     "asin": "B0785GFD58",
     "fkfsn": "CPTFCAGVEZMXKDRN",
     "platform": "Urban Ladder",
-    "stock": 25,
+    "stock": 71,
     "price": 899,
-    "bomCost": 560,
-    "tmsLevel": "TL2",
+    "bomCost": 687,
+    "tmsLevel": "TL1",
     "category": "Furniture"
   },
   {
@@ -3479,10 +3479,10 @@
     "asin": "B07D1M29LM",
     "fkfsn": "CPTFCAGWZXJQSEFN",
     "platform": "Urban Ladder",
-    "stock": 53,
+    "stock": 9,
     "price": 1199,
-    "bomCost": 563,
-    "tmsLevel": "TL1",
+    "bomCost": 963,
+    "tmsLevel": "TL2",
     "category": "Furniture"
   },
   {
@@ -3493,9 +3493,9 @@
     "asin": "B092SMVLBD",
     "fkfsn": "BDDH2P3FZPXMFGSV",
     "platform": "Urban Ladder",
-    "stock": 96,
+    "stock": 87,
     "price": 28599,
-    "bomCost": 13357,
+    "bomCost": 13072,
     "tmsLevel": "TL1",
     "category": "Furniture"
   },
@@ -3507,10 +3507,10 @@
     "asin": "B0CR4BK46M",
     "fkfsn": "WCLGWZZNVVSVHHJH",
     "platform": "Urban Ladder",
-    "stock": 133,
+    "stock": 123,
     "price": 41599,
-    "bomCost": 19166,
-    "tmsLevel": "TL3",
+    "bomCost": 18901,
+    "tmsLevel": "TL2",
     "category": "Furniture"
   },
   {
@@ -3521,10 +3521,10 @@
     "asin": "B0CR469F3M",
     "fkfsn": "WCLGWYH2FPJGJURK",
     "platform": "Urban Ladder",
-    "stock": 92,
+    "stock": 115,
     "price": 25799,
-    "bomCost": 11815,
-    "tmsLevel": "TL3",
+    "bomCost": 11843,
+    "tmsLevel": "TL1",
     "category": "Furniture"
   },
   {
@@ -3535,10 +3535,10 @@
     "asin": "B099DTPB9X",
     "fkfsn": "TVUG5CG5H9HNBNNF",
     "platform": "Urban Ladder",
-    "stock": 27,
+    "stock": 103,
     "price": 7199,
-    "bomCost": 3727,
-    "tmsLevel": "TL3",
+    "bomCost": 3260,
+    "tmsLevel": "TL1",
     "category": "Furniture"
   },
   {
@@ -3549,10 +3549,10 @@
     "asin": "B0CR464G3J",
     "fkfsn": "WCLGWYKNFPGAQM88",
     "platform": "Urban Ladder",
-    "stock": 123,
+    "stock": 111,
     "price": 24299,
-    "bomCost": 11258,
-    "tmsLevel": "TL3",
+    "bomCost": 10984,
+    "tmsLevel": "TL1",
     "category": "Furniture"
   },
   {
@@ -3563,10 +3563,10 @@
     "asin": "B08XKM34YM",
     "fkfsn": "DTBGYV89GHVNHGGH",
     "platform": "Urban Ladder",
-    "stock": 46,
+    "stock": 13,
     "price": 17199,
-    "bomCost": 7787,
-    "tmsLevel": "TL3",
+    "bomCost": 7756,
+    "tmsLevel": "TL1",
     "category": "Furniture"
   },
   {
@@ -3577,10 +3577,10 @@
     "asin": "B0CP66B2J6",
     "fkfsn": "BSFGW3GRJRUPXWMR",
     "platform": "Urban Ladder",
-    "stock": 87,
+    "stock": 18,
     "price": 9299,
-    "bomCost": 4501,
-    "tmsLevel": "TL1",
+    "bomCost": 4241,
+    "tmsLevel": "TL2",
     "category": "Furniture"
   },
   {
@@ -3591,10 +3591,10 @@
     "asin": "B09QS83C86",
     "fkfsn": "CFTGBSG3A3GTR6QF",
     "platform": "Urban Ladder",
-    "stock": 92,
+    "stock": 80,
     "price": 6199,
-    "bomCost": 3123,
-    "tmsLevel": "TL3",
+    "bomCost": 3254,
+    "tmsLevel": "TL1",
     "category": "Furniture"
   },
   {
@@ -3605,9 +3605,9 @@
     "asin": "B092S8DTLP",
     "fkfsn": "BDDGD38YKZVZVGPG",
     "platform": "Urban Ladder",
-    "stock": 12,
+    "stock": 107,
     "price": 20799,
-    "bomCost": 9422,
+    "bomCost": 9747,
     "tmsLevel": "TL2",
     "category": "Furniture"
   },
@@ -3619,10 +3619,10 @@
     "asin": "B06WD67PF1",
     "fkfsn": "DTBF2PYFZ3UHXNWY",
     "platform": "Urban Ladder",
-    "stock": 65,
+    "stock": 76,
     "price": 5199,
-    "bomCost": 2464,
-    "tmsLevel": "TL1",
+    "bomCost": 2475,
+    "tmsLevel": "TL3",
     "category": "Furniture"
   },
   {
@@ -3633,10 +3633,10 @@
     "asin": "B06WD66S6Y",
     "fkfsn": "SLTET5ZCRWG5P9MJ",
     "platform": "Urban Ladder",
-    "stock": 56,
+    "stock": 134,
     "price": 2199,
-    "bomCost": 1261,
-    "tmsLevel": "TL2",
+    "bomCost": 1058,
+    "tmsLevel": "TL3",
     "category": "Furniture"
   },
   {
@@ -3647,10 +3647,10 @@
     "asin": "B0CJRXN75L",
     "fkfsn": "BDDGUJ24KCGFF36G",
     "platform": "Urban Ladder",
-    "stock": 123,
+    "stock": 95,
     "price": 20799,
-    "bomCost": 9365,
-    "tmsLevel": "TL2",
+    "bomCost": 9737,
+    "tmsLevel": "TL3",
     "category": "Furniture"
   },
   {
@@ -3661,10 +3661,10 @@
     "asin": "B09YRQDTY5",
     "fkfsn": "CFTGG8K2GTFVU6EZ",
     "platform": "Urban Ladder",
-    "stock": 136,
+    "stock": 42,
     "price": 4999,
-    "bomCost": 2357,
-    "tmsLevel": "TL2",
+    "bomCost": 2620,
+    "tmsLevel": "TL1",
     "category": "Furniture"
   },
   {
@@ -3675,10 +3675,10 @@
     "asin": "B0CQTJ11F9",
     "fkfsn": "KHRGVE4FSFSXZKBH",
     "platform": "Pepperfry",
-    "stock": 111,
+    "stock": 37,
     "price": 1299,
-    "bomCost": 786,
-    "tmsLevel": "TL2",
+    "bomCost": 1079,
+    "tmsLevel": "TL3",
     "category": "Furniture"
   },
   {
@@ -3689,9 +3689,9 @@
     "asin": "",
     "fkfsn": "RSFEEZXY7YKH9EYQ",
     "platform": "Urban Ladder",
-    "stock": 28,
+    "stock": 65,
     "price": 9999,
-    "bomCost": 4882,
+    "bomCost": 4729,
     "tmsLevel": "TL2",
     "category": "Furniture"
   },
@@ -3703,10 +3703,10 @@
     "asin": "B0CR47QKV6",
     "fkfsn": "WCLGWYHDFNGWAGDG",
     "platform": "Urban Ladder",
-    "stock": 124,
+    "stock": 43,
     "price": 31599,
-    "bomCost": 14538,
-    "tmsLevel": "TL2",
+    "bomCost": 14585,
+    "tmsLevel": "TL1",
     "category": "Furniture"
   },
   {
@@ -3717,10 +3717,10 @@
     "asin": "B01GO3VYBK",
     "fkfsn": "OSTEKNZ9TDDXBZEQ",
     "platform": "Urban Ladder",
-    "stock": 28,
+    "stock": 93,
     "price": 4599,
-    "bomCost": 2174,
-    "tmsLevel": "TL2",
+    "bomCost": 2301,
+    "tmsLevel": "TL3",
     "category": "Furniture"
   },
   {
@@ -3731,9 +3731,9 @@
     "asin": "B0DGCNPQN9",
     "fkfsn": "RSFH48QSABQBXNNF",
     "platform": "Pepperfry",
-    "stock": 81,
+    "stock": 70,
     "price": 1449,
-    "bomCost": 868,
+    "bomCost": 707,
     "tmsLevel": "TL1",
     "category": "Furniture"
   },
@@ -3745,9 +3745,9 @@
     "asin": "B0999MVVPS",
     "fkfsn": "OSTG5CGAUUHVREP2",
     "platform": "Urban Ladder",
-    "stock": 37,
+    "stock": 78,
     "price": 5899,
-    "bomCost": 2659,
+    "bomCost": 2962,
     "tmsLevel": "TL3",
     "category": "Furniture"
   },
@@ -3759,10 +3759,10 @@
     "asin": "B099DFK1Z3",
     "fkfsn": "CFTG5Y2HEAFESGB2",
     "platform": "Urban Ladder",
-    "stock": 42,
+    "stock": 47,
     "price": 3499,
-    "bomCost": 1797,
-    "tmsLevel": "TL3",
+    "bomCost": 2044,
+    "tmsLevel": "TL1",
     "category": "Furniture"
   },
   {
@@ -3773,10 +3773,10 @@
     "asin": "B09YRQHCQG",
     "fkfsn": "CFTGG8K3WS9KJMZZ",
     "platform": "Urban Ladder",
-    "stock": 91,
+    "stock": 20,
     "price": 4899,
-    "bomCost": 2342,
-    "tmsLevel": "TL3",
+    "bomCost": 2610,
+    "tmsLevel": "TL1",
     "category": "Furniture"
   },
   {
@@ -3787,10 +3787,10 @@
     "asin": "B09YRQMJ2N",
     "fkfsn": "CFTGG8K2EZTGRHH6",
     "platform": "Urban Ladder",
-    "stock": 54,
+    "stock": 18,
     "price": 4899,
-    "bomCost": 2590,
-    "tmsLevel": "TL3",
+    "bomCost": 2405,
+    "tmsLevel": "TL2",
     "category": "Furniture"
   },
   {
@@ -3801,10 +3801,10 @@
     "asin": "",
     "fkfsn": "",
     "platform": "Omnichannel",
-    "stock": 8,
+    "stock": 100,
     "price": 15799,
-    "bomCost": 7574,
-    "tmsLevel": "TL2",
+    "bomCost": 7279,
+    "tmsLevel": "TL1",
     "category": "Furniture"
   },
   {
@@ -3815,9 +3815,9 @@
     "asin": "",
     "fkfsn": "",
     "platform": "Omnichannel",
-    "stock": 39,
+    "stock": 1,
     "price": 31999,
-    "bomCost": 14797,
+    "bomCost": 14444,
     "tmsLevel": "TL3",
     "category": "Furniture"
   },
@@ -3829,9 +3829,9 @@
     "asin": "B0D9LLC7JB",
     "fkfsn": "OTPH4RNTCGR9BATZ",
     "platform": "Urban Ladder",
-    "stock": 3,
+    "stock": 121,
     "price": 1749,
-    "bomCost": 984,
+    "bomCost": 807,
     "tmsLevel": "TL3",
     "category": "Furniture"
   },
@@ -3843,10 +3843,10 @@
     "asin": "B09QL2YBD5",
     "fkfsn": "OSTGBSGXZUWNGHYE",
     "platform": "Urban Ladder",
-    "stock": 22,
+    "stock": 54,
     "price": 4499,
-    "bomCost": 2208,
-    "tmsLevel": "TL1",
+    "bomCost": 2399,
+    "tmsLevel": "TL3",
     "category": "Furniture"
   },
   {
@@ -3857,10 +3857,10 @@
     "asin": "B0F6D8BJ7K",
     "fkfsn": "DSUHBWCGRKQBWPMH",
     "platform": "Omnichannel",
-    "stock": 16,
+    "stock": 132,
     "price": 2399,
-    "bomCost": 1255,
-    "tmsLevel": "TL2",
+    "bomCost": 1296,
+    "tmsLevel": "TL1",
     "category": "Furniture"
   },
   {
@@ -3871,10 +3871,10 @@
     "asin": "B0FGVBK5KB",
     "fkfsn": "HTEHDWFAK35EYHA3",
     "platform": "Urban Ladder",
-    "stock": 86,
+    "stock": 54,
     "price": 13599,
-    "bomCost": 6227,
-    "tmsLevel": "TL2",
+    "bomCost": 6493,
+    "tmsLevel": "TL3",
     "category": "Furniture"
   },
   {
@@ -3885,9 +3885,9 @@
     "asin": "B0FSKNWX7X",
     "fkfsn": "HTEHGGW9FV5M3RTZ",
     "platform": "Omnichannel",
-    "stock": 116,
+    "stock": 79,
     "price": 4999,
-    "bomCost": 2424,
+    "bomCost": 2305,
     "tmsLevel": "TL3",
     "category": "Furniture"
   },
@@ -3899,10 +3899,10 @@
     "asin": "B0FPR7JXCG",
     "fkfsn": "HTEHGGVN5BUSYZFY",
     "platform": "Omnichannel",
-    "stock": 43,
+    "stock": 85,
     "price": 9499,
-    "bomCost": 4687,
-    "tmsLevel": "TL3",
+    "bomCost": 4284,
+    "tmsLevel": "TL1",
     "category": "Furniture"
   },
   {
@@ -3913,10 +3913,10 @@
     "asin": "B0FPR86F6F",
     "fkfsn": "HTEHGGVNH77K924P",
     "platform": "Omnichannel",
-    "stock": 5,
+    "stock": 72,
     "price": 9499,
-    "bomCost": 4507,
-    "tmsLevel": "TL2",
+    "bomCost": 4672,
+    "tmsLevel": "TL1",
     "category": "Furniture"
   },
   {
@@ -3927,9 +3927,9 @@
     "asin": "B0FGV4V8CC",
     "fkfsn": "BSFHDTCWNHFDM8KQ",
     "platform": "Urban Ladder",
-    "stock": 12,
+    "stock": 54,
     "price": 7299,
-    "bomCost": 3472,
+    "bomCost": 3474,
     "tmsLevel": "TL2",
     "category": "Furniture"
   },
@@ -3941,9 +3941,9 @@
     "asin": "B0FHBCDD2D",
     "fkfsn": "KRKHDUF5VZGZZHCP",
     "platform": "Omnichannel",
-    "stock": 48,
+    "stock": 111,
     "price": 2599,
-    "bomCost": 1493,
+    "bomCost": 1634,
     "tmsLevel": "TL3",
     "category": "Furniture"
   },
@@ -3955,9 +3955,9 @@
     "asin": "B0FSCSPF5X",
     "fkfsn": "HTEHGGWYKCC8ZHPR",
     "platform": "Omnichannel",
-    "stock": 94,
+    "stock": 139,
     "price": 7999,
-    "bomCost": 3993,
+    "bomCost": 3713,
     "tmsLevel": "TL2",
     "category": "Furniture"
   },
@@ -3969,9 +3969,9 @@
     "asin": "B0FS6GDH6B",
     "fkfsn": "HTEHGGWYZ67P2ZCK",
     "platform": "Omnichannel",
-    "stock": 144,
+    "stock": 146,
     "price": 7999,
-    "bomCost": 3643,
+    "bomCost": 4066,
     "tmsLevel": "TL2",
     "category": "Furniture"
   },
@@ -3983,10 +3983,10 @@
     "asin": "B0FGXPNSFF",
     "fkfsn": "",
     "platform": "Omnichannel",
-    "stock": 114,
+    "stock": 47,
     "price": 25799,
-    "bomCost": 11735,
-    "tmsLevel": "TL2",
+    "bomCost": 11659,
+    "tmsLevel": "TL1",
     "category": "Furniture"
   },
   {
@@ -3997,9 +3997,9 @@
     "asin": "B0FGXP793C",
     "fkfsn": "",
     "platform": "Omnichannel",
-    "stock": 69,
+    "stock": 119,
     "price": 25799,
-    "bomCost": 12076,
+    "bomCost": 11865,
     "tmsLevel": "TL2",
     "category": "Furniture"
   },
@@ -4011,10 +4011,10 @@
     "asin": "B09VP3CVVQ",
     "fkfsn": "",
     "platform": "Omnichannel",
-    "stock": 103,
+    "stock": 90,
     "price": 25799,
-    "bomCost": 11893,
-    "tmsLevel": "TL3",
+    "bomCost": 12047,
+    "tmsLevel": "TL2",
     "category": "Furniture"
   },
   {
@@ -4025,10 +4025,10 @@
     "asin": "B0FSKVZRFL",
     "fkfsn": "",
     "platform": "Omnichannel",
-    "stock": 4,
+    "stock": 133,
     "price": 1299,
-    "bomCost": 987,
-    "tmsLevel": "TL1",
+    "bomCost": 683,
+    "tmsLevel": "TL3",
     "category": "Furniture"
   },
   {
@@ -4039,9 +4039,9 @@
     "asin": "B07D16ZFBM",
     "fkfsn": "MGHFC89Q2FFQYCTB",
     "platform": "Pepperfry",
-    "stock": 6,
+    "stock": 98,
     "price": 999,
-    "bomCost": 949,
+    "bomCost": 645,
     "tmsLevel": "TL1",
     "category": "Furniture"
   },
@@ -4053,10 +4053,10 @@
     "asin": "B0CR4BB847",
     "fkfsn": "WCLGWYHKVHCDHHGG",
     "platform": "Urban Ladder",
-    "stock": 76,
+    "stock": 109,
     "price": 28699,
-    "bomCost": 13315,
-    "tmsLevel": "TL2",
+    "bomCost": 13387,
+    "tmsLevel": "TL1",
     "category": "Furniture"
   },
   {
@@ -4067,9 +4067,9 @@
     "asin": "B0CR49Z3QQ",
     "fkfsn": "WCLGZN5GWFH2EMBH",
     "platform": "Urban Ladder",
-    "stock": 93,
+    "stock": 127,
     "price": 15799,
-    "bomCost": 7315,
+    "bomCost": 7240,
     "tmsLevel": "TL2",
     "category": "Furniture"
   },
@@ -4081,9 +4081,9 @@
     "asin": "B06VWXSCPF",
     "fkfsn": "DTBEUZBGNHBXCYCZ",
     "platform": "Urban Ladder",
-    "stock": 101,
+    "stock": 78,
     "price": 10999,
-    "bomCost": 5223,
+    "bomCost": 5231,
     "tmsLevel": "TL3",
     "category": "Furniture"
   },
@@ -4095,10 +4095,10 @@
     "asin": "B0CQNMYL8T",
     "fkfsn": "BDDGZ5JZ2EZMTQSN",
     "platform": "Urban Ladder",
-    "stock": 52,
+    "stock": 99,
     "price": 28599,
-    "bomCost": 13256,
-    "tmsLevel": "TL2",
+    "bomCost": 13010,
+    "tmsLevel": "TL3",
     "category": "Furniture"
   },
   {
@@ -4109,10 +4109,10 @@
     "asin": "B06WRTY881",
     "fkfsn": "CFTEUJ2ZH8EZ6SBF",
     "platform": "Urban Ladder",
-    "stock": 142,
+    "stock": 40,
     "price": 6449,
-    "bomCost": 3238,
-    "tmsLevel": "TL2",
+    "bomCost": 3390,
+    "tmsLevel": "TL3",
     "category": "Furniture"
   },
   {
@@ -4123,10 +4123,10 @@
     "asin": "B07HKXP3CG",
     "fkfsn": "TVUFC8DGJMZUU9CT",
     "platform": "Urban Ladder",
-    "stock": 54,
+    "stock": 66,
     "price": 2199,
-    "bomCost": 1122,
-    "tmsLevel": "TL2",
+    "bomCost": 1297,
+    "tmsLevel": "TL3",
     "category": "Furniture"
   },
   {
@@ -4137,10 +4137,10 @@
     "asin": "B0DFWSGG44",
     "fkfsn": "TVUH7GGKGUPAXSQE",
     "platform": "Omnichannel",
-    "stock": 20,
+    "stock": 126,
     "price": 4799,
-    "bomCost": 2319,
-    "tmsLevel": "TL2",
+    "bomCost": 2536,
+    "tmsLevel": "TL1",
     "category": "Furniture"
   },
   {
@@ -4151,10 +4151,10 @@
     "asin": "B09X1KDDHF",
     "fkfsn": "CFTGDC22K4JQMW6H",
     "platform": "Urban Ladder",
-    "stock": 38,
+    "stock": 23,
     "price": 9999,
-    "bomCost": 4732,
-    "tmsLevel": "TL3",
+    "bomCost": 4672,
+    "tmsLevel": "TL2",
     "category": "Furniture"
   },
   {
@@ -4165,10 +4165,10 @@
     "asin": "B0DJC1TF83",
     "fkfsn": "BDDGF9Z3JBKGRMCV",
     "platform": "Urban Ladder",
-    "stock": 63,
+    "stock": 64,
     "price": 18599,
-    "bomCost": 8595,
-    "tmsLevel": "TL1",
+    "bomCost": 8821,
+    "tmsLevel": "TL2",
     "category": "Furniture"
   },
   {
@@ -4179,9 +4179,9 @@
     "asin": "B0CQNMZQMH",
     "fkfsn": "BDDGZ5KFQP9RXHQR",
     "platform": "Urban Ladder",
-    "stock": 14,
+    "stock": 88,
     "price": 24999,
-    "bomCost": 11723,
+    "bomCost": 11431,
     "tmsLevel": "TL2",
     "category": "Furniture"
   },
@@ -4193,10 +4193,10 @@
     "asin": "B0C43M2SHP",
     "fkfsn": "SITGPPCNQWFRHXQG",
     "platform": "Urban Ladder",
-    "stock": 122,
+    "stock": 148,
     "price": 3599,
-    "bomCost": 1743,
-    "tmsLevel": "TL2",
+    "bomCost": 1830,
+    "tmsLevel": "TL1",
     "category": "Furniture"
   },
   {
@@ -4207,10 +4207,10 @@
     "asin": "B09YRQ16CR",
     "fkfsn": "CFTGG8JXMH3KJ4SP",
     "platform": "Urban Ladder",
-    "stock": 24,
+    "stock": 70,
     "price": 4999,
-    "bomCost": 2696,
-    "tmsLevel": "TL3",
+    "bomCost": 2569,
+    "tmsLevel": "TL2",
     "category": "Furniture"
   },
   {
@@ -4221,10 +4221,10 @@
     "asin": "B06WD67MLP",
     "fkfsn": "DKOF3PHHHT8EYDGW",
     "platform": "Pepperfry",
-    "stock": 115,
+    "stock": 19,
     "price": 1199,
-    "bomCost": 768,
-    "tmsLevel": "TL1",
+    "bomCost": 803,
+    "tmsLevel": "TL2",
     "category": "Furniture"
   },
   {
@@ -4235,10 +4235,10 @@
     "asin": "B092SCNKFB",
     "fkfsn": "WCLH2AQGRX8BMXVN",
     "platform": "Urban Ladder",
-    "stock": 103,
+    "stock": 140,
     "price": 21499,
-    "bomCost": 9865,
-    "tmsLevel": "TL2",
+    "bomCost": 9907,
+    "tmsLevel": "TL3",
     "category": "Furniture"
   },
   {
@@ -4249,10 +4249,10 @@
     "asin": "B0BCZ5XLC3",
     "fkfsn": "BDDGHZNJWB8RETAZ",
     "platform": "Urban Ladder",
-    "stock": 12,
+    "stock": 96,
     "price": 15799,
-    "bomCost": 7213,
-    "tmsLevel": "TL1",
+    "bomCost": 7608,
+    "tmsLevel": "TL2",
     "category": "Furniture"
   },
   {
@@ -4263,10 +4263,10 @@
     "asin": "B099DRR4GJ",
     "fkfsn": "CFTG5YFQN2NYSFRY",
     "platform": "Urban Ladder",
-    "stock": 136,
+    "stock": 4,
     "price": 3599,
-    "bomCost": 1852,
-    "tmsLevel": "TL1",
+    "bomCost": 2003,
+    "tmsLevel": "TL3",
     "category": "Furniture"
   },
   {
@@ -4277,10 +4277,10 @@
     "asin": "B0CT2ZLF3B",
     "fkfsn": "TVUGZN6BZDHJNKMB",
     "platform": "Urban Ladder",
-    "stock": 71,
+    "stock": 15,
     "price": 5299,
-    "bomCost": 2395,
-    "tmsLevel": "TL3",
+    "bomCost": 2394,
+    "tmsLevel": "TL2",
     "category": "Furniture"
   },
   {
@@ -4291,9 +4291,9 @@
     "asin": "",
     "fkfsn": "RSFFC9VEEZHEKD7V",
     "platform": "Urban Ladder",
-    "stock": 42,
+    "stock": 56,
     "price": 9999,
-    "bomCost": 4989,
+    "bomCost": 4966,
     "tmsLevel": "TL3",
     "category": "Furniture"
   },
@@ -4305,10 +4305,10 @@
     "asin": "",
     "fkfsn": "",
     "platform": "Pepperfry",
-    "stock": 58,
+    "stock": 28,
     "price": 9999,
-    "bomCost": 4855,
-    "tmsLevel": "TL1",
+    "bomCost": 4984,
+    "tmsLevel": "TL3",
     "category": "Furniture"
   },
   {
@@ -4319,10 +4319,10 @@
     "asin": "B0B8J7HST4",
     "fkfsn": "WCLGHCBZFKMAFZXP",
     "platform": "Urban Ladder",
-    "stock": 131,
+    "stock": 110,
     "price": 24299,
-    "bomCost": 11063,
-    "tmsLevel": "TL1",
+    "bomCost": 10965,
+    "tmsLevel": "TL3",
     "category": "Furniture"
   },
   {
@@ -4333,10 +4333,10 @@
     "asin": "B09ST5XFYJ",
     "fkfsn": "BDDGCAB7G2U4HKWH",
     "platform": "Urban Ladder",
-    "stock": 76,
+    "stock": 125,
     "price": 23599,
-    "bomCost": 10928,
-    "tmsLevel": "TL3",
+    "bomCost": 10755,
+    "tmsLevel": "TL1",
     "category": "Furniture"
   },
   {
@@ -4347,10 +4347,10 @@
     "asin": "B09ST4HND8",
     "fkfsn": "BDDGCAB7W4WQMGVZ",
     "platform": "Urban Ladder",
-    "stock": 46,
+    "stock": 133,
     "price": 25799,
-    "bomCost": 11977,
-    "tmsLevel": "TL3",
+    "bomCost": 11768,
+    "tmsLevel": "TL1",
     "category": "Furniture"
   },
   {
@@ -4361,9 +4361,9 @@
     "asin": "B0B8MX5GJQ",
     "fkfsn": "WCLGHCFZQGS3UUMH",
     "platform": "Urban Ladder",
-    "stock": 131,
+    "stock": 147,
     "price": 41599,
-    "bomCost": 19084,
+    "bomCost": 18865,
     "tmsLevel": "TL2",
     "category": "Furniture"
   },
@@ -4375,10 +4375,10 @@
     "asin": "B07MZNVQS9",
     "fkfsn": "TVUFD2CAWZGSVJTD",
     "platform": "Urban Ladder",
-    "stock": 55,
+    "stock": 92,
     "price": 7499,
-    "bomCost": 3505,
-    "tmsLevel": "TL3",
+    "bomCost": 3799,
+    "tmsLevel": "TL1",
     "category": "Furniture"
   },
   {
@@ -4389,10 +4389,10 @@
     "asin": "B09QCQTHTS",
     "fkfsn": "OSTGAN6ZZHWWKGSZ",
     "platform": "Urban Ladder",
-    "stock": 140,
+    "stock": 141,
     "price": 4399,
-    "bomCost": 2445,
-    "tmsLevel": "TL1",
+    "bomCost": 2472,
+    "tmsLevel": "TL2",
     "category": "Furniture"
   },
   {
@@ -4403,9 +4403,9 @@
     "asin": "B09TXN6QVT",
     "fkfsn": "BDDGCHVBVRMNJVZG",
     "platform": "Urban Ladder",
-    "stock": 68,
+    "stock": 149,
     "price": 18599,
-    "bomCost": 8645,
+    "bomCost": 8587,
     "tmsLevel": "TL1",
     "category": "Furniture"
   },
@@ -4417,10 +4417,10 @@
     "asin": "B0C43LNB9Y",
     "fkfsn": "BSFGPPBVFJFZSWGW",
     "platform": "Urban Ladder",
-    "stock": 1,
+    "stock": 3,
     "price": 7799,
-    "bomCost": 3966,
-    "tmsLevel": "TL1",
+    "bomCost": 3577,
+    "tmsLevel": "TL2",
     "category": "Furniture"
   },
   {
@@ -4431,9 +4431,9 @@
     "asin": "B09PN63DBS",
     "fkfsn": "CFTGAEBQGPZP7HJN",
     "platform": "Urban Ladder",
-    "stock": 108,
+    "stock": 9,
     "price": 9999,
-    "bomCost": 4971,
+    "bomCost": 4501,
     "tmsLevel": "TL3",
     "category": "Furniture"
   },
@@ -4445,9 +4445,9 @@
     "asin": "B08XJWS65L",
     "fkfsn": "BSFGYU4SD2AGB7HK",
     "platform": "Urban Ladder",
-    "stock": 59,
+    "stock": 145,
     "price": 7599,
-    "bomCost": 3713,
+    "bomCost": 3458,
     "tmsLevel": "TL3",
     "category": "Furniture"
   },
@@ -4459,9 +4459,9 @@
     "asin": "B0BCZ57FNT",
     "fkfsn": "WCLGG2YUKK3ZHYKX",
     "platform": "Urban Ladder",
-    "stock": 32,
+    "stock": 23,
     "price": 18899,
-    "bomCost": 8772,
+    "bomCost": 8565,
     "tmsLevel": "TL1",
     "category": "Furniture"
   },
@@ -4473,10 +4473,10 @@
     "asin": "B09B4217CV",
     "fkfsn": "RSFGAC72BQNABZEG",
     "platform": "Urban Ladder",
-    "stock": 148,
+    "stock": 92,
     "price": 5749,
-    "bomCost": 2951,
-    "tmsLevel": "TL1",
+    "bomCost": 3048,
+    "tmsLevel": "TL2",
     "category": "Furniture"
   },
   {
@@ -4489,8 +4489,8 @@
     "platform": "Urban Ladder",
     "stock": 103,
     "price": 15799,
-    "bomCost": 7562,
-    "tmsLevel": "TL2",
+    "bomCost": 7500,
+    "tmsLevel": "TL1",
     "category": "Furniture"
   },
   {
@@ -4501,10 +4501,10 @@
     "asin": "B0CKF9VBWN",
     "fkfsn": "",
     "platform": "Urban Ladder",
-    "stock": 121,
+    "stock": 147,
     "price": 7599,
-    "bomCost": 3694,
-    "tmsLevel": "TL2",
+    "bomCost": 3686,
+    "tmsLevel": "TL1",
     "category": "Furniture"
   },
   {
@@ -4515,10 +4515,10 @@
     "asin": "B09QKZJ3BH",
     "fkfsn": "OSTGBSGYGF3YHYAY",
     "platform": "Urban Ladder",
-    "stock": 148,
+    "stock": 58,
     "price": 4499,
-    "bomCost": 2504,
-    "tmsLevel": "TL1",
+    "bomCost": 2287,
+    "tmsLevel": "TL2",
     "category": "Furniture"
   },
   {
@@ -4529,10 +4529,10 @@
     "asin": "B09B43TTKD",
     "fkfsn": "TVUG5CHY3MUCFC3H",
     "platform": "Urban Ladder",
-    "stock": 82,
+    "stock": 55,
     "price": 4799,
-    "bomCost": 2634,
-    "tmsLevel": "TL2",
+    "bomCost": 2366,
+    "tmsLevel": "TL1",
     "category": "Furniture"
   },
   {
@@ -4543,10 +4543,10 @@
     "asin": "B09Q6D5BBV",
     "fkfsn": "OSTGAN6USBME5VPE",
     "platform": "Urban Ladder",
-    "stock": 79,
+    "stock": 148,
     "price": 5999,
-    "bomCost": 3147,
-    "tmsLevel": "TL2",
+    "bomCost": 2724,
+    "tmsLevel": "TL3",
     "category": "Furniture"
   },
   {
@@ -4557,9 +4557,9 @@
     "asin": "B0CP7HSJVJ",
     "fkfsn": "BSFGW3NMEWYEQ28D",
     "platform": "Urban Ladder",
-    "stock": 9,
+    "stock": 66,
     "price": 4599,
-    "bomCost": 2268,
+    "bomCost": 2174,
     "tmsLevel": "TL3",
     "category": "Furniture"
   },
@@ -4571,10 +4571,10 @@
     "asin": "B09B42198Z",
     "fkfsn": "RSFG5CG4M8RFYHZG",
     "platform": "Urban Ladder",
-    "stock": 85,
+    "stock": 9,
     "price": 5749,
-    "bomCost": 2646,
-    "tmsLevel": "TL1",
+    "bomCost": 2838,
+    "tmsLevel": "TL2",
     "category": "Furniture"
   },
   {
@@ -4585,9 +4585,9 @@
     "asin": "B099DKKFJ1",
     "fkfsn": "TVUG5CF7KY757XXS",
     "platform": "Urban Ladder",
-    "stock": 66,
+    "stock": 113,
     "price": 4799,
-    "bomCost": 2217,
+    "bomCost": 2462,
     "tmsLevel": "TL1",
     "category": "Furniture"
   },
@@ -4599,10 +4599,10 @@
     "asin": "B01NBI0YE0",
     "fkfsn": "BSFEWFQDJRJ9KN7G",
     "platform": "Urban Ladder",
-    "stock": 1,
+    "stock": 0,
     "price": 9299,
-    "bomCost": 4313,
-    "tmsLevel": "TL2",
+    "bomCost": 4659,
+    "tmsLevel": "TL1",
     "category": "Furniture"
   },
   {
@@ -4613,9 +4613,9 @@
     "asin": "B07D18984S",
     "fkfsn": "RSFFFEQZA6D6F3WU",
     "platform": "Urban Ladder",
-    "stock": 74,
+    "stock": 41,
     "price": 3399,
-    "bomCost": 1792,
+    "bomCost": 1967,
     "tmsLevel": "TL3",
     "category": "Furniture"
   },
@@ -4627,10 +4627,10 @@
     "asin": "B07CZKS1G2",
     "fkfsn": "RSFFC7ZGB43M7QZH",
     "platform": "Urban Ladder",
-    "stock": 15,
+    "stock": 18,
     "price": 1999,
-    "bomCost": 1098,
-    "tmsLevel": "TL3",
+    "bomCost": 981,
+    "tmsLevel": "TL2",
     "category": "Furniture"
   },
   {
@@ -4641,10 +4641,10 @@
     "asin": "B06WLNKKTS",
     "fkfsn": "BSFET2N7JW8RERF8",
     "platform": "Urban Ladder",
-    "stock": 147,
+    "stock": 40,
     "price": 2199,
-    "bomCost": 1391,
-    "tmsLevel": "TL1",
+    "bomCost": 1300,
+    "tmsLevel": "TL3",
     "category": "Furniture"
   },
   {
@@ -4655,9 +4655,9 @@
     "asin": "B079CLH4KN",
     "fkfsn": "",
     "platform": "Urban Ladder",
-    "stock": 147,
+    "stock": 73,
     "price": 1749,
-    "bomCost": 1091,
+    "bomCost": 986,
     "tmsLevel": "TL2",
     "category": "Furniture"
   },
@@ -4669,9 +4669,9 @@
     "asin": "B01MQTGOJB",
     "fkfsn": "BSFEWEUDRF5UCV3J",
     "platform": "Urban Ladder",
-    "stock": 96,
+    "stock": 60,
     "price": 9299,
-    "bomCost": 4459,
+    "bomCost": 4424,
     "tmsLevel": "TL3",
     "category": "Furniture"
   },
@@ -4683,9 +4683,9 @@
     "asin": "B09V86NLZ8",
     "fkfsn": "TVUGDC43NKTFCZHR",
     "platform": "Urban Ladder",
-    "stock": 6,
+    "stock": 23,
     "price": 3899,
-    "bomCost": 2141,
+    "bomCost": 2115,
     "tmsLevel": "TL3",
     "category": "Furniture"
   },
@@ -4697,10 +4697,10 @@
     "asin": "B0CP23TNK7",
     "fkfsn": "BSFGVNWDMHCQY2VS",
     "platform": "Urban Ladder",
-    "stock": 9,
+    "stock": 28,
     "price": 7799,
-    "bomCost": 3694,
-    "tmsLevel": "TL2",
+    "bomCost": 3730,
+    "tmsLevel": "TL3",
     "category": "Furniture"
   },
   {
@@ -4711,9 +4711,9 @@
     "asin": "B099DKSKGP",
     "fkfsn": "CFTG5YFN5BFYFGPW",
     "platform": "Urban Ladder",
-    "stock": 142,
+    "stock": 97,
     "price": 3599,
-    "bomCost": 2085,
+    "bomCost": 1623,
     "tmsLevel": "TL2",
     "category": "Furniture"
   },
@@ -4725,10 +4725,10 @@
     "asin": "B09QS76DX4",
     "fkfsn": "CFTGBSGA9YAQTMPN",
     "platform": "Urban Ladder",
-    "stock": 31,
+    "stock": 136,
     "price": 9999,
-    "bomCost": 4868,
-    "tmsLevel": "TL3",
+    "bomCost": 4883,
+    "tmsLevel": "TL1",
     "category": "Furniture"
   },
   {
@@ -4739,9 +4739,9 @@
     "asin": "B09X1QL8Z3",
     "fkfsn": "CFTGDCF27JRBAYXZ",
     "platform": "Urban Ladder",
-    "stock": 41,
+    "stock": 142,
     "price": 9999,
-    "bomCost": 4923,
+    "bomCost": 4681,
     "tmsLevel": "TL1",
     "category": "Furniture"
   },
@@ -4753,9 +4753,9 @@
     "asin": "B06VX43PCL",
     "fkfsn": "CFTEXAEKNUVNRPE8",
     "platform": "Urban Ladder",
-    "stock": 147,
+    "stock": 4,
     "price": 6999,
-    "bomCost": 3528,
+    "bomCost": 3631,
     "tmsLevel": "TL1",
     "category": "Furniture"
   },
@@ -4767,9 +4767,9 @@
     "asin": "B099DHQZ2Q",
     "fkfsn": "OSTG5CC2QHYQGX8J",
     "platform": "Urban Ladder",
-    "stock": 88,
+    "stock": 113,
     "price": 5899,
-    "bomCost": 2747,
+    "bomCost": 2926,
     "tmsLevel": "TL3",
     "category": "Furniture"
   },
@@ -4781,10 +4781,10 @@
     "asin": "B06VWM8J7D",
     "fkfsn": "CFTEUKFC4YCTZZ6P",
     "platform": "Urban Ladder",
-    "stock": 109,
+    "stock": 100,
     "price": 6999,
-    "bomCost": 3218,
-    "tmsLevel": "TL1",
+    "bomCost": 3463,
+    "tmsLevel": "TL3",
     "category": "Furniture"
   },
   {
@@ -4795,10 +4795,10 @@
     "asin": "",
     "fkfsn": "PLLEAD5HNCXFVZPW",
     "platform": "Omnichannel",
-    "stock": 134,
+    "stock": 78,
     "price": 9999,
-    "bomCost": 4974,
-    "tmsLevel": "TL2",
+    "bomCost": 4556,
+    "tmsLevel": "TL1",
     "category": "Furniture"
   },
   {
@@ -4809,9 +4809,9 @@
     "asin": "B099DFLKL2",
     "fkfsn": "OSTG5YF4WWEG9G6Y",
     "platform": "Urban Ladder",
-    "stock": 97,
+    "stock": 81,
     "price": 2999,
-    "bomCost": 1626,
+    "bomCost": 1464,
     "tmsLevel": "TL1",
     "category": "Furniture"
   },
@@ -4823,10 +4823,10 @@
     "asin": "B019HACORU",
     "fkfsn": "KHREFZ4SUEQVHMCS",
     "platform": "Pepperfry",
-    "stock": 54,
+    "stock": 15,
     "price": 9999,
-    "bomCost": 4640,
-    "tmsLevel": "TL2",
+    "bomCost": 4563,
+    "tmsLevel": "TL3",
     "category": "Furniture"
   },
   {
@@ -4837,10 +4837,10 @@
     "asin": "B092S8MRGZ",
     "fkfsn": "BDDG4S4BCHNY7FZG",
     "platform": "Urban Ladder",
-    "stock": 34,
+    "stock": 129,
     "price": 21799,
-    "bomCost": 10298,
-    "tmsLevel": "TL1",
+    "bomCost": 10179,
+    "tmsLevel": "TL3",
     "category": "Furniture"
   },
   {
@@ -4851,9 +4851,9 @@
     "asin": "B07CWTR1BL",
     "fkfsn": "RSFFC896GFH8KVXJ",
     "platform": "Urban Ladder",
-    "stock": 136,
+    "stock": 18,
     "price": 9999,
-    "bomCost": 4745,
+    "bomCost": 4652,
     "tmsLevel": "TL1",
     "category": "Furniture"
   },
@@ -4865,10 +4865,10 @@
     "asin": "B019HCCD56",
     "fkfsn": "BSFEUSK9CGZSZZ2Z",
     "platform": "Urban Ladder",
-    "stock": 132,
+    "stock": 74,
     "price": 2399,
-    "bomCost": 1525,
-    "tmsLevel": "TL1",
+    "bomCost": 1561,
+    "tmsLevel": "TL3",
     "category": "Furniture"
   },
   {
@@ -4879,10 +4879,10 @@
     "asin": "B01FOASQO2",
     "fkfsn": "OSTEKNZ9ZPBFAYH7",
     "platform": "Urban Ladder",
-    "stock": 127,
+    "stock": 70,
     "price": 4599,
-    "bomCost": 2143,
-    "tmsLevel": "TL2",
+    "bomCost": 2148,
+    "tmsLevel": "TL3",
     "category": "Furniture"
   },
   {
@@ -4893,10 +4893,10 @@
     "asin": "B0BCZ5QMBC",
     "fkfsn": "WCLGG2YXGC6QUGJZ",
     "platform": "Urban Ladder",
-    "stock": 61,
+    "stock": 29,
     "price": 18899,
-    "bomCost": 8550,
-    "tmsLevel": "TL2",
+    "bomCost": 8970,
+    "tmsLevel": "TL3",
     "category": "Furniture"
   },
   {
@@ -4907,10 +4907,10 @@
     "asin": "",
     "fkfsn": "KHRESX49GDCXGSEZ",
     "platform": "Omnichannel",
-    "stock": 123,
+    "stock": 124,
     "price": 9999,
-    "bomCost": 4623,
-    "tmsLevel": "TL3",
+    "bomCost": 4868,
+    "tmsLevel": "TL1",
     "category": "Furniture"
   },
   {
@@ -4921,10 +4921,10 @@
     "asin": "B01FQI1SYC",
     "fkfsn": "OSTEKNZ99SUZKHVS",
     "platform": "Urban Ladder",
-    "stock": 36,
+    "stock": 82,
     "price": 5199,
-    "bomCost": 2407,
-    "tmsLevel": "TL1",
+    "bomCost": 2665,
+    "tmsLevel": "TL3",
     "category": "Furniture"
   },
   {
@@ -4935,10 +4935,10 @@
     "asin": "B06VWMF1R3",
     "fkfsn": "KHRESX3DWP6GFTZK",
     "platform": "Pepperfry",
-    "stock": 79,
+    "stock": 106,
     "price": 9999,
-    "bomCost": 4537,
-    "tmsLevel": "TL2",
+    "bomCost": 4899,
+    "tmsLevel": "TL1",
     "category": "Furniture"
   },
   {
@@ -4949,10 +4949,10 @@
     "asin": "B0BNJ3R6C3",
     "fkfsn": "DTBGQ9HZGNDECHCJ",
     "platform": "Urban Ladder",
-    "stock": 15,
+    "stock": 32,
     "price": 9999,
-    "bomCost": 4674,
-    "tmsLevel": "TL1",
+    "bomCost": 4879,
+    "tmsLevel": "TL3",
     "category": "Furniture"
   },
   {
@@ -4963,10 +4963,10 @@
     "asin": "B0B8J3J77N",
     "fkfsn": "WCLGHCBVPSH5QUG8",
     "platform": "Urban Ladder",
-    "stock": 3,
+    "stock": 33,
     "price": 25799,
-    "bomCost": 11687,
-    "tmsLevel": "TL3",
+    "bomCost": 12004,
+    "tmsLevel": "TL1",
     "category": "Furniture"
   },
   {
@@ -4977,10 +4977,10 @@
     "asin": "B0CG3KWL8C",
     "fkfsn": "TVUFGHZNXJGPN4HV",
     "platform": "Urban Ladder",
-    "stock": 109,
+    "stock": 21,
     "price": 9999,
-    "bomCost": 4877,
-    "tmsLevel": "TL2",
+    "bomCost": 4663,
+    "tmsLevel": "TL3",
     "category": "Furniture"
   },
   {
@@ -4991,10 +4991,10 @@
     "asin": "B09YRMVTGM",
     "fkfsn": "TVUGG8JPECZXJRER",
     "platform": "Urban Ladder",
-    "stock": 66,
+    "stock": 37,
     "price": 13599,
-    "bomCost": 6343,
-    "tmsLevel": "TL2",
+    "bomCost": 6204,
+    "tmsLevel": "TL1",
     "category": "Furniture"
   },
   {
@@ -5005,10 +5005,10 @@
     "asin": "B015VINANO",
     "fkfsn": "RSFEC88ZKH4Q8BHM",
     "platform": "Urban Ladder",
-    "stock": 90,
+    "stock": 57,
     "price": 9999,
-    "bomCost": 4969,
-    "tmsLevel": "TL3",
+    "bomCost": 4951,
+    "tmsLevel": "TL1",
     "category": "Furniture"
   },
   {
@@ -5019,10 +5019,10 @@
     "asin": "B0CJRXHWR5",
     "fkfsn": "TVUGPA5SZZHZBSD8",
     "platform": "Urban Ladder",
-    "stock": 97,
+    "stock": 109,
     "price": 7299,
-    "bomCost": 3417,
-    "tmsLevel": "TL2",
+    "bomCost": 3678,
+    "tmsLevel": "TL3",
     "category": "Furniture"
   },
   {
@@ -5033,9 +5033,9 @@
     "asin": "B0C43R7KCT",
     "fkfsn": "BSFGPPCGK2QYYHXG",
     "platform": "Pepperfry",
-    "stock": 56,
+    "stock": 30,
     "price": 3899,
-    "bomCost": 2100,
+    "bomCost": 1879,
     "tmsLevel": "TL1",
     "category": "Furniture"
   },
@@ -5047,9 +5047,9 @@
     "asin": "",
     "fkfsn": "",
     "platform": "Omnichannel",
-    "stock": 19,
+    "stock": 4,
     "price": 11599,
-    "bomCost": 5301,
+    "bomCost": 5652,
     "tmsLevel": "TL3",
     "category": "Furniture"
   },
@@ -5061,10 +5061,10 @@
     "asin": "B01NAFUY45",
     "fkfsn": "BSFEWFPKMGDF2Y5D",
     "platform": "Urban Ladder",
-    "stock": 55,
+    "stock": 10,
     "price": 7299,
-    "bomCost": 3639,
-    "tmsLevel": "TL1",
+    "bomCost": 3564,
+    "tmsLevel": "TL3",
     "category": "Furniture"
   },
   {
@@ -5075,9 +5075,9 @@
     "asin": "B099DKZQRR",
     "fkfsn": "BSFG53EDGRGCFBER",
     "platform": "Urban Ladder",
-    "stock": 123,
+    "stock": 115,
     "price": 2299,
-    "bomCost": 1357,
+    "bomCost": 1253,
     "tmsLevel": "TL2",
     "category": "Furniture"
   },
@@ -5089,10 +5089,10 @@
     "asin": "B0D4DXXYFG",
     "fkfsn": "CFTH2AZFMHEFWZAM",
     "platform": "Urban Ladder",
-    "stock": 110,
+    "stock": 92,
     "price": 7599,
-    "bomCost": 3794,
-    "tmsLevel": "TL1",
+    "bomCost": 3600,
+    "tmsLevel": "TL3",
     "category": "Furniture"
   },
   {
@@ -5103,10 +5103,10 @@
     "asin": "B0D9LLKPBF",
     "fkfsn": "",
     "platform": "Omnichannel",
-    "stock": 31,
+    "stock": 135,
     "price": 9999,
-    "bomCost": 4626,
-    "tmsLevel": "TL3",
+    "bomCost": 4942,
+    "tmsLevel": "TL2",
     "category": "Furniture"
   },
   {
@@ -5117,10 +5117,10 @@
     "asin": "B0D9LKFY53",
     "fkfsn": "",
     "platform": "Omnichannel",
-    "stock": 48,
+    "stock": 59,
     "price": 9999,
-    "bomCost": 4884,
-    "tmsLevel": "TL1",
+    "bomCost": 4552,
+    "tmsLevel": "TL2",
     "category": "Furniture"
   },
   {
@@ -5131,10 +5131,10 @@
     "asin": "B08YX85FCK",
     "fkfsn": "BSFGFAVB8P5GCZMJ",
     "platform": "Urban Ladder",
-    "stock": 32,
+    "stock": 25,
     "price": 6449,
-    "bomCost": 3277,
-    "tmsLevel": "TL1",
+    "bomCost": 3162,
+    "tmsLevel": "TL3",
     "category": "Furniture"
   },
   {
@@ -5145,10 +5145,10 @@
     "asin": "B08CND9FLZ",
     "fkfsn": "BACGYCFGAHXFHEHN",
     "platform": "Urban Ladder",
-    "stock": 82,
+    "stock": 141,
     "price": 9299,
-    "bomCost": 4583,
-    "tmsLevel": "TL1",
+    "bomCost": 4425,
+    "tmsLevel": "TL3",
     "category": "Furniture"
   },
   {
@@ -5159,9 +5159,9 @@
     "asin": "B06WLNHWBK",
     "fkfsn": "CFTF2SE9HVCDFEJ5",
     "platform": "Urban Ladder",
-    "stock": 64,
+    "stock": 100,
     "price": 9999,
-    "bomCost": 4628,
+    "bomCost": 4755,
     "tmsLevel": "TL1",
     "category": "Furniture"
   },
@@ -5173,10 +5173,10 @@
     "asin": "B0CBV3KSMP",
     "fkfsn": "",
     "platform": "Omnichannel",
-    "stock": 138,
+    "stock": 42,
     "price": 9999,
-    "bomCost": 4866,
-    "tmsLevel": "TL2",
+    "bomCost": 4895,
+    "tmsLevel": "TL1",
     "category": "Furniture"
   },
   {
@@ -5187,10 +5187,10 @@
     "asin": "B0FNMLFK2K",
     "fkfsn": "SHKHH6GXCXBTNYNC",
     "platform": "Omnichannel",
-    "stock": 59,
+    "stock": 97,
     "price": 12399,
-    "bomCost": 5624,
-    "tmsLevel": "TL1",
+    "bomCost": 5760,
+    "tmsLevel": "TL3",
     "category": "Furniture"
   },
   {
@@ -5201,10 +5201,10 @@
     "asin": "B0FPR98T9T",
     "fkfsn": "SHKHH6J5DFFH3BZV",
     "platform": "Omnichannel",
-    "stock": 101,
+    "stock": 8,
     "price": 10999,
-    "bomCost": 5442,
-    "tmsLevel": "TL3",
+    "bomCost": 5046,
+    "tmsLevel": "TL1",
     "category": "Furniture"
   },
   {
@@ -5215,9 +5215,9 @@
     "asin": "B0FRFN4MXV",
     "fkfsn": "",
     "platform": "Omnichannel",
-    "stock": 30,
+    "stock": 92,
     "price": 8999,
-    "bomCost": 4549,
+    "bomCost": 4441,
     "tmsLevel": "TL3",
     "category": "Furniture"
   },
@@ -5229,9 +5229,9 @@
     "asin": "B0FRFKPW75",
     "fkfsn": "",
     "platform": "Omnichannel",
-    "stock": 121,
+    "stock": 33,
     "price": 8599,
-    "bomCost": 3999,
+    "bomCost": 4352,
     "tmsLevel": "TL2",
     "category": "Furniture"
   },
@@ -5243,10 +5243,10 @@
     "asin": "B0FS6BXRGZ",
     "fkfsn": "OSTHGGYB6AUHSBNN",
     "platform": "Omnichannel",
-    "stock": 69,
+    "stock": 142,
     "price": 7999,
-    "bomCost": 3604,
-    "tmsLevel": "TL3",
+    "bomCost": 4034,
+    "tmsLevel": "TL2",
     "category": "Furniture"
   },
   {
@@ -5257,10 +5257,10 @@
     "asin": "B0FS7CG55C",
     "fkfsn": "OSTHGGYBKQP77YFF",
     "platform": "Omnichannel",
-    "stock": 96,
+    "stock": 113,
     "price": 7999,
-    "bomCost": 3998,
-    "tmsLevel": "TL2",
+    "bomCost": 3943,
+    "tmsLevel": "TL1",
     "category": "Furniture"
   },
   {
@@ -5271,10 +5271,10 @@
     "asin": "B0FNMP7PS2",
     "fkfsn": "TVUHH6GHKZ7UEFD2",
     "platform": "Omnichannel",
-    "stock": 81,
+    "stock": 57,
     "price": 25799,
-    "bomCost": 11842,
-    "tmsLevel": "TL2",
+    "bomCost": 11994,
+    "tmsLevel": "TL3",
     "category": "Furniture"
   },
   {
@@ -5285,9 +5285,9 @@
     "asin": "B0FNMKSVYJ",
     "fkfsn": "TVUHH6GPYWDFP4HT",
     "platform": "Omnichannel",
-    "stock": 104,
+    "stock": 24,
     "price": 9599,
-    "bomCost": 4798,
+    "bomCost": 4700,
     "tmsLevel": "TL3",
     "category": "Furniture"
   },
@@ -5299,10 +5299,10 @@
     "asin": "B06X3XP3PM",
     "fkfsn": "TVUHHBRJBZYKNZFX",
     "platform": "Omnichannel",
-    "stock": 126,
+    "stock": 147,
     "price": 5799,
-    "bomCost": 2903,
-    "tmsLevel": "TL3",
+    "bomCost": 2778,
+    "tmsLevel": "TL1",
     "category": "Furniture"
   }
 ]

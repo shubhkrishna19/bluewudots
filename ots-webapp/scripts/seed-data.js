@@ -102,7 +102,11 @@ function extractOrders() {
     const file = 'Order Tracking Sheet OTS - Master 24-25.xlsx';
     const workbook = XLSX.readFile(path.join(legacyDir, file));
     const sheet = workbook.Sheets['AWB Tracking - Master'];
-    const rawData = XLSX.utils.sheet_to_json(sheet);
+    const rawData = XLSX.utils.sheet_to_json(sheet).map(row => {
+        const normalized = {};
+        Object.keys(row).forEach(k => normalized[k.trim()] = row[k]);
+        return normalized;
+    });
 
     const orders = rawData.filter(row => row['Order ID'] || row['AWB']).map((row, i) => ({
         id: String(row['Order ID'] || `UNK-${i}`),
@@ -115,7 +119,7 @@ function extractOrders() {
         orderDate: parseExcelDate(row['Ord.Date']),
         awb: String(row['AWB'] || ''),
         carrier: String(row['Shipping Service'] || 'TBD'),
-        status: String(row['MIS '] || 'Pending'),
+        status: String(row['MIS'] || 'Pending'),
         shipType: String(row['Ship.Type'] || 'Standard'),
         amount: parseFloat(row['Amount']) || 0
     }));
@@ -130,14 +134,18 @@ function extractSales() {
     const file = 'Sales Trends FY2024-25 (1).xlsx';
     const workbook = XLSX.readFile(path.join(legacyDir, file));
     const sheet = workbook.Sheets['Final Sale Data'];
-    const rawData = XLSX.utils.sheet_to_json(sheet);
+    const rawData = XLSX.utils.sheet_to_json(sheet).map(row => {
+        const normalized = {};
+        Object.keys(row).forEach(k => normalized[k.trim()] = row[k]);
+        return normalized;
+    });
 
     const sales = rawData.map(row => ({
         date: parseExcelDate(row['VchDate']),
         orderId: String(row['Order ID'] || ''),
         party: String(row['Billed Party Name'] || ''),
         item: String(row['Item Desc'] || ''),
-        qty: parseInt(row['Qty. ']) || 0,
+        qty: parseInt(row['Qty.']) || 0,
         taxableValue: parseFloat(row['Taxable Value']) || 0,
         amount: parseFloat(row['Final Invoice Value']) || 0,
         type: String(row['Transaction Type'] || 'Sale')
