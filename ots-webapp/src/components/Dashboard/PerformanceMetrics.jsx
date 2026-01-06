@@ -1,8 +1,10 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useData } from '../../context/DataContext'
+import KPIGoalSetter from './KPIGoalSetter'
 
 const PerformanceMetrics = () => {
-  const { orders, logistics, skuMaster } = useData()
+  const { orders, logistics, skuMaster, kpiGoals } = useData()
+  const [showGoalSetter, setShowGoalSetter] = useState(false)
 
   // Calculate metrics
   const totalOrders = orders.length
@@ -28,6 +30,7 @@ const PerformanceMetrics = () => {
     {
       label: 'Delivery Rate',
       value: `${deliveryRate}%`,
+      goal: `${kpiGoals.deliveryRate}%`,
       icon: '📈',
       color: 'var(--success)',
       desc: 'Orders successfully delivered',
@@ -35,6 +38,7 @@ const PerformanceMetrics = () => {
     {
       label: 'RTO Rate',
       value: `${rtoRate}%`,
+      goal: '5.0%', // Usually fixed low
       icon: '↩️',
       color: 'var(--danger)',
       desc: 'Returned to Origin rate',
@@ -42,6 +46,7 @@ const PerformanceMetrics = () => {
     {
       label: 'SKU Catalog',
       value: skuMaster.length,
+      goal: 'N/A',
       icon: '🏷️',
       color: 'var(--accent)',
       desc: 'Products tracked',
@@ -49,6 +54,7 @@ const PerformanceMetrics = () => {
     {
       label: 'Avg Weight',
       value: `${avgWeight} kg`,
+      goal: 'N/A',
       icon: '⚖️',
       color: 'var(--warning)',
       desc: 'Per order average',
@@ -57,9 +63,14 @@ const PerformanceMetrics = () => {
 
   return (
     <div className="performance-metrics animate-fade">
-      <div className="section-header">
-        <h2>Performance Metrics</h2>
-        <p className="text-muted">Key operational KPIs</p>
+      <div className="section-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div>
+          <h2>Performance Metrics</h2>
+          <p className="text-muted">Key operational KPIs</p>
+        </div>
+        <button className="btn-secondary glass" onClick={() => setShowGoalSetter(true)}>
+          🎯 Set Goals
+        </button>
       </div>
 
       {/* Main KPIs */}
@@ -76,10 +87,15 @@ const PerformanceMetrics = () => {
           <div
             key={idx}
             className="kpi-card glass glass-hover"
-            style={{ padding: '24px', textAlign: 'center' }}
+            style={{ padding: '24px', textAlign: 'center', position: 'relative' }}
           >
             <div style={{ fontSize: '2rem', marginBottom: '12px' }}>{m.icon}</div>
             <p style={{ fontSize: '2.5rem', fontWeight: '800', color: m.color }}>{m.value}</p>
+            {m.goal !== 'N/A' && (
+              <div className="goal-tag" style={{ fontSize: '10px', color: '#94a3b8', marginBottom: '8px' }}>
+                TARGET: {m.goal}
+              </div>
+            )}
             <p style={{ fontWeight: '700', marginTop: '8px' }}>{m.label}</p>
             <p className="text-muted" style={{ fontSize: '0.75rem', marginTop: '6px' }}>
               {m.desc}
@@ -87,6 +103,12 @@ const PerformanceMetrics = () => {
           </div>
         ))}
       </div>
+
+      {showGoalSetter && (
+        <div className="modal-overlay" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
+          <KPIGoalSetter onClose={() => setShowGoalSetter(false)} />
+        </div>
+      )}
 
       {/* Status Breakdown */}
       <div className="status-breakdown glass" style={{ marginTop: '32px', padding: '28px' }}>

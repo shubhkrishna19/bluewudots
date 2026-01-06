@@ -43,6 +43,35 @@ export const DataProvider = ({ children }) => {
     const [lastSyncTime, setLastSyncTime] = useState(null);
     const [pushEnabled, setPushEnabled] = useState(false);
     const [offlineQueue, setOfflineQueue] = useState([]);
+    const [kpiGoals, setKpiGoals] = useState({
+        monthlyRevenue: 5000000,
+        dailyOrders: 150,
+        deliveryRate: 95,
+        avgTicket: 12000
+    });
+
+    // --- REAL-TIME SIMULATION (Phase 37.2) ---
+    useEffect(() => {
+        if (!isAuthenticated) return;
+
+        const interval = setInterval(() => {
+            // Simulate random weight updates or external status changes
+            setOrders(prev => prev.map(order => {
+                if (Math.random() > 0.95 && order.status === 'In-Transit') {
+                    return { ...order, lastUpdated: new Date().toISOString() };
+                }
+                return order;
+            }));
+
+            // Occasionally inject a "live" event
+            if (Math.random() > 0.98) {
+                console.log('[Bluewud-AI] 📡 Real-time update received via simulated WebSocket');
+                setSyncStatus('online');
+            }
+        }, 10000); // Pulse every 10s
+
+        return () => clearInterval(interval);
+    }, [isAuthenticated]);
 
     // --- INITIALIZATION ---
     useEffect(() => {
@@ -345,6 +374,8 @@ export const DataProvider = ({ children }) => {
         getCarrierRecommendation: (s, p) => getRecommendation(s, p),
         universalSearch: (q) => searchService.universalSearch({ orders, skuMaster }, q),
         activityLog: getActivityLog(),
+        kpiGoals,
+        updateKpiGoals: (newGoals) => setKpiGoals(prev => ({ ...prev, ...newGoals })),
         logActivity
     };
 
