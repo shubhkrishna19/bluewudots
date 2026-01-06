@@ -40,6 +40,8 @@ const ZoneMap = lazy(() => import('@/components/Logistics/ZoneMap'))
 const CarrierPerformance = lazy(() => import('@/components/Logistics/CarrierPerformance'))
 const ShipmentTracker = lazy(() => import('@/components/Tracking/ShipmentTracker'))
 const InternationalShipping = lazy(() => import('@/components/Logistics/InternationalShipping'))
+const LogisticsHQ = lazy(() => import('@/components/Logistics/LogisticsHQ'))
+const LabelTemplateManager = lazy(() => import('@/components/Logistics/LabelTemplateManager'))
 
 // Inventory & Warehouse
 const SKUMaster = lazy(() => import('@/components/Commercial/SKUMaster'))
@@ -53,9 +55,9 @@ const AmazonMapper = lazy(() => import('@/components/Automation/AmazonMapper'))
 const FinancialCenter = lazy(() => import('@/components/Commercial/FinancialCenter'))
 const CommercialHub = lazy(() => import('@/components/Commercial/CommercialHub'))
 const GlobalLedger = lazy(() => import('@/components/Commercial/GlobalLedger'))
+const CODReconciliation = lazy(() => import('@/components/Commercial/CODReconciliation'))
 const MarginGuard = lazy(() => import('@/components/Commercial/MarginGuard'))
 const InvoiceGenerator = lazy(() => import('@/components/Commercial/InvoiceGenerator'))
-const CODReconciliation = lazy(() => import('@/components/Commercial/CODReconciliation'))
 const MarketplaceReconciliation = lazy(() => import('@/components/Commercial/MarketplaceReconciliation'))
 
 // CRM & Marketing
@@ -64,6 +66,7 @@ const CustomerLookup = lazy(() => import('@/components/Customers/CustomerLookup'
 const CustomerAnalytics = lazy(() => import('@/components/Customers/CustomerAnalytics'))
 const MarketingCenter = lazy(() => import('@/components/Marketing/MarketingCenter'))
 const DealerPortal = lazy(() => import('@/components/Dealers/DealerPortal'))
+const WhatsAppTemplateManager = lazy(() => import('@/components/Marketing/WhatsAppTemplateManager'))
 
 // Supply Chain
 const ProductionTracker = lazy(() => import('@/components/SupplyChain/ProductionTracker'))
@@ -215,6 +218,9 @@ function App() {
               <li className={activeTab === 'bulk' ? 'active' : ''} onClick={() => { setActiveTab('bulk'); setIsMobileMenuOpen(false); }}>
                 ⚡ {t('nav.bulk', 'Bulk')}
               </li>
+              <li className={activeTab === 'importer' ? 'active' : ''} onClick={() => { setActiveTab('importer'); setIsMobileMenuOpen(false); }}>
+                📥 {t('nav.importer', 'Import')}
+              </li>
               <li className={activeTab === 'rto' ? 'active' : ''} onClick={() => { setActiveTab('rto'); setIsMobileMenuOpen(false); }}>
                 ↩️ {t('nav.rto', 'RTO')}
               </li>
@@ -222,18 +228,35 @@ function App() {
             <li className={activeTab === 'returns' ? 'active' : ''} onClick={() => { setActiveTab('returns'); setIsMobileMenuOpen(false); }}>
               🔄 {t('nav.returns', 'Returns')}
             </li>
-            <li className={activeTab === 'tracking' ? 'active' : ''} onClick={() => { setActiveTab('tracking'); setIsMobileMenuOpen(false); }}>
-              📡 {t('nav.tracking', 'Tracking')}
-            </li>
           </ul>
         </div>
 
-        <Guard user={user} permission={PERMISSIONS.MANAGE_INVENTORY}>
+        <Guard user={user} permission={PERMISSIONS.MANAGE_LOGISTICS} role={ROLES.ADMIN}>
+          <div className="nav-group">
+            <label>{t('nav.logistics_group', 'LOGISTICS')}</label>
+            <ul className="nav-links">
+              <li className={activeTab === 'logisticshq' ? 'active' : ''} onClick={() => { setActiveTab('logisticshq'); setIsMobileMenuOpen(false); }}>
+                🏢 {t('nav.logistics_hq', 'Logistics HQ')}
+              </li>
+              <li className={activeTab === 'tracking' ? 'active' : ''} onClick={() => { setActiveTab('tracking'); setIsMobileMenuOpen(false); }}>
+                📡 {t('nav.tracking', 'Tracking')}
+              </li>
+              <li className={activeTab === 'label-templates' ? 'active' : ''} onClick={() => { setActiveTab('label-templates'); setIsMobileMenuOpen(false); }}>
+                🏷️ {t('nav.label_templates', 'Labels')}
+              </li>
+              <li className={activeTab === 'intlship' ? 'active' : ''} onClick={() => { setActiveTab('intlship'); setIsMobileMenuOpen(false); }}>
+                🌐 {t('nav.intl_shipping', 'Intl Shipping')}
+              </li>
+            </ul>
+          </div>
+        </Guard>
+
+        <Guard user={user} permission={PERMISSIONS.MANAGE_INVENTORY} role={ROLES.ADMIN}>
           <div className="nav-group">
             <label>{t('nav.fulfillment', 'FULFILLMENT')}</label>
             <ul className="nav-links">
               <li className={activeTab === 'inventory' ? 'active' : ''} onClick={() => { setActiveTab('inventory'); setIsMobileMenuOpen(false); }}>
-                🏷️ {t('nav.sku_master', 'SKU Master')}
+                📦 {t('nav.sku_master', 'SKU Master')}
               </li>
               <li className={activeTab === 'warehouse' ? 'active' : ''} onClick={() => { setActiveTab('warehouse'); setIsMobileMenuOpen(false); }}>
                 🏭 {t('nav.warehouse', 'Warehouse')}
@@ -244,28 +267,68 @@ function App() {
               <li className={activeTab === 'stockoptix' ? 'active' : ''} onClick={() => { setActiveTab('stockoptix'); setIsMobileMenuOpen(false); }}>
                 🧠 {t('nav.stockoptix', 'StockOptix')}
               </li>
-              <li className={activeTab === 'logistics' ? 'active' : ''} onClick={() => { setActiveTab('logistics'); setIsMobileMenuOpen(false); }}>
-                🚚 {t('nav.logistics', 'Carriers')}
-              </li>
-              <li className={activeTab === 'intlship' ? 'active' : ''} onClick={() => { setActiveTab('intlship'); setIsMobileMenuOpen(false); }}>
-                🌐 {t('nav.intl_shipping', 'Intl Shipping')}
-              </li>
             </ul>
           </div>
         </Guard>
 
-        <Guard user={user} permission={PERMISSIONS.VIEW_FINANCIALS}>
+        <Guard user={user} permission={PERMISSIONS.VIEW_FINANCIALS} role={ROLES.ADMIN}>
           <div className="nav-group">
             <label>{t('nav.finance', 'FINANCE')}</label>
             <ul className="nav-links">
               <li className={activeTab === 'finance' ? 'active' : ''} onClick={() => { setActiveTab('finance'); setIsMobileMenuOpen(false); }}>
                 💹 {t('nav.finance', 'Financials')}
               </li>
+              <li className={activeTab === 'invoice' ? 'active' : ''} onClick={() => { setActiveTab('invoice'); setIsMobileMenuOpen(false); }}>
+                🧾 {t('nav.invoice', 'Invoicing')}
+              </li>
+              <li className={activeTab === 'margin-guard' ? 'active' : ''} onClick={() => { setActiveTab('margin-guard'); setIsMobileMenuOpen(false); }}>
+                🛡️ {t('nav.margin_guard', 'Margin Guard')}
+              </li>
               <li className={activeTab === 'globalledger' ? 'active' : ''} onClick={() => { setActiveTab('globalledger'); setIsMobileMenuOpen(false); }}>
                 🌍 {t('nav.ledger', 'Global Ledger')}
               </li>
               <li className={activeTab === 'marketplace-recon' ? 'active' : ''} onClick={() => { setActiveTab('marketplace-recon'); setIsMobileMenuOpen(false); }}>
                 📊 {t('nav.audit', 'Marketplace Audit')}
+              </li>
+            </ul>
+          </div>
+        </Guard>
+
+        <Guard user={user} role={ROLES.ADMIN}>
+          <div className="nav-group">
+            <label>{t('nav.growth', 'GROWTH')}</label>
+            <ul className="nav-links">
+              <li className={activeTab === 'dealers' ? 'active' : ''} onClick={() => { setActiveTab('dealers'); setIsMobileMenuOpen(false); }}>
+                🤝 {t('nav.dealer_lookup', 'Dealers')}
+              </li>
+              <li className={activeTab === 'customers' ? 'active' : ''} onClick={() => { setActiveTab('customers'); setIsMobileMenuOpen(false); }}>
+                👥 {t('nav.customer_lookup', 'Customers')}
+              </li>
+              <li className={activeTab === 'custintel' ? 'active' : ''} onClick={() => { setActiveTab('custintel'); setIsMobileMenuOpen(false); }}>
+                🧠 {t('nav.cust_intel', 'Customer Intel')}
+              </li>
+              <li className={activeTab === 'marketing' ? 'active' : ''} onClick={() => { setActiveTab('marketing'); setIsMobileMenuOpen(false); }}>
+                📣 {t('nav.marketing', 'Marketing')}
+              </li>
+              <li className={activeTab === 'whatsapp-templates' ? 'active' : ''} onClick={() => { setActiveTab('whatsapp-templates'); setIsMobileMenuOpen(false); }}>
+                💬 {t('nav.whatsapp_templates', 'WA Templates')}
+              </li>
+            </ul>
+          </div>
+        </Guard>
+
+        <Guard user={user} role={ROLES.ADMIN}>
+          <div className="nav-group">
+            <label>{t('nav.advanced', 'ADVANCED')}</label>
+            <ul className="nav-links">
+              <li className={activeTab === 'production' ? 'active' : ''} onClick={() => { setActiveTab('production'); setIsMobileMenuOpen(false); }}>
+                🏭 {t('nav.production', 'Production')}
+              </li>
+              <li className={activeTab === 'qa' ? 'active' : ''} onClick={() => { setActiveTab('qa'); setIsMobileMenuOpen(false); }}>
+                ✅ {t('nav.qa', 'Quality Assurance')}
+              </li>
+              <li className={activeTab === 'amazon-mapper' ? 'active' : ''} onClick={() => { setActiveTab('amazon-mapper'); setIsMobileMenuOpen(false); }}>
+                🗺️ {t('nav.amazon_mapper', 'Amazon Mapper')}
               </li>
             </ul>
           </div>
@@ -289,7 +352,7 @@ function App() {
         </div>
 
         <div className="nav-group">
-          <label>SYSTEM</label>
+          <label>{t('nav.system', 'SYSTEM')}</label>
           <ul className="nav-links">
             <Guard user={user} permission={PERMISSIONS.SYSTEM_ADMIN}>
               <li className={activeTab === 'activity' ? 'active' : ''} onClick={() => { setActiveTab('activity'); setIsMobileMenuOpen(false); }}>
@@ -377,9 +440,11 @@ function App() {
       case 'metrics': return wrap(<PerformanceMetrics />, PERMISSIONS.VIEW_REPORTS)
       case 'orderlist': return wrap(<OrderList />, PERMISSIONS.MANAGE_ORDERS)
       case 'bulk': return wrap(<BulkActions />, PERMISSIONS.MANAGE_ORDERS)
+      case 'importer': return wrap(<UniversalImporter />, PERMISSIONS.MANAGE_ORDERS)
       case 'rto': return wrap(<RTOManager />, PERMISSIONS.MANAGE_ORDERS)
       case 'returns': return wrap(<ReturnsManager />, PERMISSIONS.MANAGE_ORDERS)
-      case 'logistics': return wrap(<CarrierSelection />, PERMISSIONS.MANAGE_LOGISTICS)
+      case 'logisticshq': return wrap(<LogisticsHQ />, PERMISSIONS.MANAGE_LOGISTICS)
+      case 'label-templates': return wrap(<LabelTemplateManager />, PERMISSIONS.MANAGE_LOGISTICS)
       case 'intlship': return wrap(<InternationalShipping />, PERMISSIONS.MANAGE_LOGISTICS)
       case 'zones': return wrap(<ZoneMap />, PERMISSIONS.MANAGE_LOGISTICS)
       case 'carrierperf': return wrap(<CarrierPerformance />, PERMISSIONS.MANAGE_LOGISTICS)
@@ -390,11 +455,21 @@ function App() {
       case 'stockoptix': return wrap(<StockOptix />, PERMISSIONS.MANAGE_INVENTORY)
       case 'dispatcher': return wrap(<BarcodeDispatcher />, PERMISSIONS.MANAGE_WH_OPS)
       case 'finance': return wrap(<FinancialCenter />, PERMISSIONS.VIEW_FINANCIALS)
+      case 'invoice': return wrap(<InvoiceGenerator />, PERMISSIONS.VIEW_FINANCIALS)
+      case 'margin-guard': return wrap(<MarginGuard />, PERMISSIONS.VIEW_FINANCIALS)
       case 'commhub': return wrap(<CommercialHub />, PERMISSIONS.VIEW_FINANCIALS)
       case 'globalledger': return wrap(<GlobalLedger />, PERMISSIONS.VIEW_FINANCIALS)
       case 'marketplace-recon': return wrap(<MarketplaceReconciliation />, PERMISSIONS.VIEW_FINANCIALS)
       case 'cod': return wrap(<CODReconciliation />, PERMISSIONS.VIEW_FINANCIALS)
       case 'dealer-portal': return wrap(<DealerPortal />, PERMISSIONS.PLACE_DEALER_ORDER)
+      case 'dealers': return wrap(<DealerLookup />, PERMISSIONS.MANAGE_DEALERS)
+      case 'customers': return wrap(<CustomerLookup />, PERMISSIONS.MANAGE_USERS)
+      case 'custintel': return wrap(<CustomerAnalytics />, PERMISSIONS.VIEW_ANALYTICS)
+      case 'marketing': return wrap(<MarketingCenter />, PERMISSIONS.SYSTEM_ADMIN)
+      case 'whatsapp-templates': return wrap(<WhatsAppTemplateManager />, PERMISSIONS.SYSTEM_ADMIN)
+      case 'production': return wrap(<ProductionTracker />, PERMISSIONS.MANAGE_WH_OPS)
+      case 'qa': return wrap(<QualityGate />, PERMISSIONS.MANAGE_WH_OPS)
+      case 'amazon-mapper': return wrap(<AmazonMapper />, PERMISSIONS.MANAGE_ORDERS)
       case 'activity': return wrap(<ActivityLog />, PERMISSIONS.SYSTEM_ADMIN)
       case 'settings': return wrap(<SettingsPanel />, PERMISSIONS.SYSTEM_ADMIN)
       case 'help': return <HelpCenter />

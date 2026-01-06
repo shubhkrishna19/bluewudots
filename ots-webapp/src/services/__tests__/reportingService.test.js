@@ -4,16 +4,16 @@ import reportingService from '../reportingService';
 // Mock dependencies
 vi.mock('jspdf', () => {
     return {
-        jsPDF: class {
-            constructor() {
-                this.text = vi.fn();
-                this.line = vi.fn();
-                this.addPage = vi.fn();
-                this.save = vi.fn();
-                this.setFontSize = vi.fn();
-                this.setTextColor = vi.fn();
-            }
-        }
+        jsPDF: vi.fn().mockImplementation(() => {
+            return {
+                text: vi.fn(),
+                line: vi.fn(),
+                addPage: vi.fn(),
+                save: vi.fn(),
+                setFontSize: vi.fn(),
+                setTextColor: vi.fn(),
+            };
+        })
     };
 });
 

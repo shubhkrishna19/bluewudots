@@ -12,7 +12,8 @@ import marketplaceService from '../services/marketplaceService';
 import searchService from '../services/searchService';
 import marginProtectionService from '../services/marginProtectionService';
 import { getWhatsAppService } from '../services/whatsappService';
-import webhookService from '../services/zohoWebhookService';
+import zohoWebhookService from '../services/zohoWebhookService'; // Renamed to avoid conflict
+import webhookService from '../services/webhookService'; // New import for generic webhook service
 import cacheService, { initOfflineCacheService } from '../services/offlineCacheService';
 import warehouseOptimizer from '../services/warehouseOptimizer';
 import mlForecastService from '../services/mlForecastService';
@@ -46,11 +47,13 @@ export const DataProvider = ({ children }) => {
     const [pushEnabled, setPushEnabled] = useState(false);
     const [offlineQueue, setOfflineQueue] = useState([]);
     const [kpiGoals, setKpiGoals] = useState({
-        monthlyRevenue: 5000000,
-        dailyOrders: 150,
-        deliveryRate: 95,
-        avgTicket: 12000
+        revenue: 1500000,
+        orders: 450,
+        aov: 3200,
+        conversion: 4.2
     });
+    const [recentEvents, setRecentEvents] = useState([]);
+
 
     // --- REAL-TIME SIMULATION (Phase 37.2) ---
     useEffect(() => {
@@ -73,6 +76,29 @@ export const DataProvider = ({ children }) => {
         }, 10000); // Pulse every 10s
 
         return () => clearInterval(interval);
+    }, [isAuthenticated]);
+
+    // Initialize Webhook Service
+    useEffect(() => {
+        if (isAuthenticated) {
+            webhookService.start();
+            const unsubscribe = webhookService.subscribe((event) => {
+                setRecentEvents(prev => [event, ...prev].slice(0, 10));
+
+                // If it's a new sale, update metrics dynamically
+                if (event.type === 'NEW_SALE' || event.type === 'PAYMENT_RECEIVED') {
+                    setKpiGoals(prev => ({
+                        ...prev,
+                        revenue: prev.revenue + (event.payload.value || 0),
+                        orders: prev.orders + 1
+                    }));
+                }
+            });
+            return () => {
+                unsubscribe();
+                webhookService.stop();
+            };
+        }
     }, [isAuthenticated]);
 
     // --- INITIALIZATION ---
@@ -407,7 +433,8 @@ export const DataProvider = ({ children }) => {
         kpiGoals,
         updateKpiGoals: (newGoals) => setKpiGoals(prev => ({ ...prev, ...newGoals })),
         warehouses: warehouseOptimizer.getWarehouses(),
-        logActivity
+        logActivity,
+        recentEvents
     };
 
     return (

@@ -14,7 +14,7 @@ const COLORS = ['var(--primary)', 'var(--accent)', 'var(--success)', 'var(--warn
 
 const AnalyticsDashboard = () => {
     const { t } = useLocalization();
-    const { orders = [], sales = [], skuMaster = [], syncAllMarketplaces, syncStatus = 'offline' } = useData();
+    const { orders = [], sales = [], logistics = [], skuMaster = [], syncAllMarketplaces, syncStatus = 'offline', recentEvents = [], kpiGoals = {} } = useData();
     const [timeRange, setTimeRange] = useState('30days');
 
     const vendors = useMemo(() => vendorService.getVendors(), []);
@@ -38,6 +38,13 @@ const AnalyticsDashboard = () => {
             avgOrderValue
         };
     }, [orders, sales]);
+
+    const kpiProgress = useMemo(() => {
+        return {
+            revenue: (metrics.totalRevenue / (kpiGoals.revenue || 1000000)) * 100,
+            orders: (metrics.totalOrders / (kpiGoals.orders || 100)) * 100
+        };
+    }, [metrics, kpiGoals]);
 
     const arrivalPredictions = useMemo(() => {
         if (!skuMaster || skuMaster.length === 0 || !vendors || vendors.length === 0) {
@@ -119,16 +126,24 @@ const AnalyticsDashboard = () => {
                         <span className="text-muted" style={{ fontSize: '0.7rem', fontWeight: '800' }}>TOTAL ORDERS</span>
                     </div>
                     <h2 style={{ margin: '12px 0 4px 0' }}>{metrics.totalOrders}</h2>
-                    <p style={{ fontSize: '0.75rem', color: 'var(--success)' }}>↑ 12.5% vs last period</p>
+                    <div style={{ width: '100%', height: '4px', background: 'rgba(255,255,255,0.1)', borderRadius: '2px', overflow: 'hidden' }}>
+                        <div style={{ width: `${Math.min(kpiProgress.orders, 100)}%`, height: '100%', background: 'var(--primary)', transition: 'width 0.5s' }}></div>
+                    </div>
+                    <p style={{ fontSize: '0.7rem', color: '#94a3b8', marginTop: '8px' }}>Target: {kpiGoals.orders} orders</p>
                 </div>
+
                 <div className="metric-card glass glass-hover" style={{ padding: '24px' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                         <span style={{ fontSize: '1.5rem' }}>💰</span>
                         <span className="text-muted" style={{ fontSize: '0.7rem', fontWeight: '800' }}>REVENUE</span>
                     </div>
                     <h2 style={{ margin: '12px 0 4px 0' }}>{formatCurrency(metrics.totalRevenue)}</h2>
-                    <p style={{ fontSize: '0.75rem', color: 'var(--success)' }}>↑ 8.2% conversion</p>
+                    <div style={{ width: '100%', height: '4px', background: 'rgba(255,255,255,0.1)', borderRadius: '2px', overflow: 'hidden' }}>
+                        <div style={{ width: `${Math.min(kpiProgress.revenue, 100)}%`, height: '100%', background: 'var(--success)', transition: 'width 0.5s' }}></div>
+                    </div>
+                    <p style={{ fontSize: '0.7rem', color: '#94a3b8', marginTop: '8px' }}>Target: {formatCurrency(kpiGoals.revenue)}</p>
                 </div>
+
                 <div className="metric-card glass glass-hover" style={{ padding: '24px' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                         <span style={{ fontSize: '1.5rem' }}>🎯</span>
@@ -139,18 +154,26 @@ const AnalyticsDashboard = () => {
                         {metrics.deliveredOrders} orders fulfilled
                     </p>
                 </div>
+
                 <div className="metric-card glass glass-hover" style={{ padding: '24px' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                        <span style={{ fontSize: '1.5rem' }}>💳</span>
-                        <span className="text-muted" style={{ fontSize: '0.7rem', fontWeight: '800' }}>AVG ORDER VALUE</span>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <span className="text-muted" style={{ fontSize: '0.7rem', fontWeight: '800' }}>LIVE PULSE</span>
+                        <span className="pulse-dot"></span>
                     </div>
-                    <h2 style={{ margin: '12px 0 4px 0' }}>{formatCurrency(metrics.avgOrderValue)}</h2>
-                    <p style={{ fontSize: '0.75rem', color: 'var(--info)' }}>Optimized via MTP</p>
+                    <div className="event-scroller" style={{ marginTop: '10px', maxHeight: '60px', overflow: 'hidden' }}>
+                        {recentEvents.length > 0 ? (
+                            <div className="event-item" key={recentEvents[0].id} style={{ animation: 'slideIn 0.3s ease-out' }}>
+                                <p style={{ fontSize: '0.8rem', color: '#fff' }}>{recentEvents[0].payload.message}</p>
+                                <span style={{ fontSize: '0.65rem', color: '#94a3b8' }}>{new Date(recentEvents[0].timestamp).toLocaleTimeString()}</span>
+                            </div>
+                        ) : (
+                            <p style={{ fontSize: '0.75rem', color: '#64748b' }}>Awaiting data streams...</p>
+                        )}
+                    </div>
                 </div>
             </div>
 
             <div className="analytics-grid responsive-grid-2-1" style={{ marginTop: '24px' }}>
-                {/* Velocity Chart */}
                 <div className="chart-card glass" style={{ padding: '24px' }}>
                     <h3>Shipment Velocity (Weekly)</h3>
                     <ResponsiveContainer width="100%" height={280}>
@@ -176,7 +199,38 @@ const AnalyticsDashboard = () => {
                     </ResponsiveContainer>
                 </div>
 
-                {/* Status Distribution */}
+                <div className="activity-feed glass" style={{ padding: '24px', display: 'flex', flexDirection: 'column' }}>
+                    <h3>Live Activity Feed</h3>
+                    <div className="feed-items" style={{ marginTop: '15px', overflowY: 'auto', flex: 1 }}>
+                        {recentEvents.map(event => (
+                            <div key={event.id} className="feed-item" style={{ padding: '10px 0', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                                <div style={{ display: 'flex', gap: '10px' }}>
+                                    <span className={`severity-dot ${event.severity}`}></span>
+                                    <div>
+                                        <p style={{ fontSize: '0.8rem', margin: 0 }}>{event.payload.message}</p>
+                                        <div style={{ display: 'flex', gap: '10px', fontSize: '0.65rem', color: '#64748b', marginTop: '4px' }}>
+                                            <span>{event.source}</span>
+                                            <span>•</span>
+                                            <span>{new Date(event.timestamp).toLocaleTimeString()}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                        {recentEvents.length === 0 && <p className="text-muted" style={{ textAlign: 'center', marginTop: '40px' }}>No live activity yet.</p>}
+                    </div>
+                </div>
+            </div>
+
+            <div className="analytics-grid responsive-grid-2-1" style={{ marginTop: '24px' }}>
+                <div className="chart-card glass" style={{ padding: '24px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                        <h3>AI Demand Forecasting</h3>
+                        <span className="badge" style={{ background: 'var(--accent)', color: '#fff', fontSize: '0.7rem', padding: '4px 12px', borderRadius: '20px' }}>PREDICTIVE</span>
+                    </div>
+                    <DemandForecast />
+                </div>
+
                 <div className="chart-card glass" style={{ padding: '24px' }}>
                     <h3>Order Status Distribution</h3>
                     <ResponsiveContainer width="100%" height={280}>
@@ -203,23 +257,6 @@ const AnalyticsDashboard = () => {
                 </div>
             </div>
 
-            {/* Predictive Intelligence Section */}
-            <div className="analytics-grid responsive-grid-2-1" style={{ marginTop: '24px' }}>
-                <div className="chart-card glass" style={{ padding: '24px' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-                        <h3>AI Demand Forecasting</h3>
-                        <span className="badge" style={{ background: 'var(--accent)', color: '#fff', fontSize: '0.7rem', padding: '4px 12px', borderRadius: '20px' }}>PREDICTIVE</span>
-                    </div>
-                    <DemandForecast />
-                </div>
-
-                <div className="chart-card glass" style={{ padding: '24px' }}>
-                    <h3>Predictive Insights</h3>
-                    <PredictiveAnalytics />
-                </div>
-            </div>
-
-            {/* Vendor Predictions */}
             <div className="glass" style={{ padding: '24px', marginTop: '24px' }}>
                 <h3 style={{ marginBottom: '20px' }}>🚢 Supply Chain Intelligence (Inbound)</h3>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '16px' }}>
@@ -237,6 +274,36 @@ const AnalyticsDashboard = () => {
                     ))}
                 </div>
             </div>
+
+            <style jsx>{`
+                .pulse-dot {
+                    width: 8px;
+                    height: 8px;
+                    background: var(--primary);
+                    border-radius: 50%;
+                    box-shadow: 0 0 0 0 rgba(79, 70, 229, 0.7);
+                    animation: pulse 2s infinite;
+                }
+                .severity-dot {
+                    width: 8px;
+                    height: 8px;
+                    border-radius: 50%;
+                    margin-top: 5px;
+                }
+                .severity-dot.success { background: var(--success); }
+                .severity-dot.warning { background: var(--warning); }
+                .severity-dot.info { background: var(--info); }
+                
+                @keyframes pulse {
+                    0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(79, 70, 229, 0.7); }
+                    70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(79, 70, 229, 0); }
+                    100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(79, 70, 229, 0); }
+                }
+                @keyframes slideIn {
+                    from { opacity: 0; transform: translateY(-10px); }
+                    to { opacity: 1; transform: translateY(0); }
+                }
+            `}</style>
         </div>
     );
 };

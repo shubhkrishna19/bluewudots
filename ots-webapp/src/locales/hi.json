@@ -15,7 +15,8 @@
         "channel": "चैनल",
         "success": "सफल",
         "days": "दिन",
-        "orders": "ऑर्डर"
+        "orders": "ऑर्डर",
+        "language": "भाषा"
     },
     "nav": {
         "ops": "संचालन (OPS)",
@@ -52,9 +53,20 @@
         "performance": "प्रदर्शन",
         "ledger": "ग्लोबल लेजर",
         "audit": "मार्केटप्लेस ऑडिट",
-        "cust_intel": "ग्राहक बुद्धि",
         "marketing": "मार्केटिंग सेंटर",
-        "activity_log": "गतिविधि लॉग"
+        "activity": "गतिविधि",
+        "settings": "सेटिंग्स",
+        "reports": "रिपोर्ट्स",
+        "stock_audit": "स्टॉक ऑडिट",
+        "system": "सिस्टम",
+        "production": "प्रोडक्शन ट्रैकर",
+        "qa": "क्वालिटी गेट",
+        "whatsapp_templates": "व्हाट्सएप टेम्प्लेट",
+        "cust_intel": "ग्राहक बुद्धि",
+        "margin_guard": "मार्जिन गार्ड",
+        "invoice": "इनवॉइस जनरेटर",
+        "dealer_lookup": "डीलर लुकअप",
+        "customer_lookup": "ग्राहक लुकअप"
     },
     "dashboard": {
         "title": "ऑर्डर एनालिटिक्स",
@@ -65,7 +77,8 @@
         "delivered_orders": "डिलीवर ऑर्डर",
         "avg_delivery_time": "औसत डिलीवरी समय",
         "carrier_health": "कैरियर स्वास्थ्य",
-        "top_channels": "टॉप चैनल"
+        "top_channels": "टॉप चैनल",
+        "new_order": "नया ऑर्डर"
     },
     "orders": {
         "title": "ऑर्डर",

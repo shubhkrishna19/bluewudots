@@ -15,7 +15,8 @@
         "channel": "Channel",
         "success": "Success",
         "days": "Days",
-        "orders": "Orders"
+        "orders": "Orders",
+        "language": "Language"
     },
     "nav": {
         "ops": "OPERATIONS",
@@ -52,10 +53,20 @@
         "performance": "Performance",
         "ledger": "Global Ledger",
         "audit": "Marketplace Audit",
-        "cust_intel": "Customer Intel",
         "marketing": "Marketing Center",
-        "activity_log": "Activity Log",
-        "settings": "Settings"
+        "activity": "Activity",
+        "settings": "Settings",
+        "reports": "Reports",
+        "stock_audit": "Stock Audit",
+        "system": "SYSTEM",
+        "production": "Production Tracker",
+        "qa": "Quality Gate",
+        "whatsapp_templates": "WhatsApp Templates",
+        "cust_intel": "Customer Intel",
+        "margin_guard": "Margin Guard",
+        "invoice": "Invoice Generator",
+        "dealer_lookup": "Dealer Lookup",
+        "customer_lookup": "Customer Lookup"
     },
     "dashboard": {
         "title": "Order Analytics",

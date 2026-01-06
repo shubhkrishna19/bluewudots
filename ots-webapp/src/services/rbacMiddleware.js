@@ -12,17 +12,21 @@ export const ROLES = {
   DEALER: 'dealer',
 }
 
-export const PERMISSIONS = {
-  VIEW_ANALYTICS: 'view_analytics',
-  VIEW_REPORTS: 'view_reports',
-  MANAGE_ORDERS: 'manage_orders',
-  MANAGE_INVENTORY: 'manage_inventory',
-  MANAGE_LOGISTICS: 'manage_logistics',
+MANAGE_LOGISTICS: 'manage_logistics',
   VIEW_FINANCIALS: 'view_financials',
-  MANAGE_WH_OPS: 'manage_wh_ops',
-  SYSTEM_ADMIN: 'system_admin',
-  PLACE_DEALER_ORDER: 'place_dealer_order',
-}
+    MANAGE_WH_OPS: 'manage_wh_ops',
+      SYSTEM_ADMIN: 'system_admin',
+        PLACE_DEALER_ORDER: 'place_dealer_order',
+          MANAGE_DEALERS: 'manage_dealers',
+            MANAGE_USERS: 'manage_users',
+              MANAGE_SETTINGS: 'manage_settings',
+                MANAGE_CARRIERS: 'manage_carriers',
+                  PROCESS_PAYMENTS: 'manage_payments',
+                    PLACE_WHOLESALE_ORDER: 'place_wholesale_order',
+                      VIEW_ALL_ORDERS: 'view_all_orders',
+                        VIEW_OWN_ORDERS: 'view_own_orders',
+                          PROCESS_QC: 'process_qc',
+                            VIEW_ACTIVITY_LOG: 'view_activity_log',
 
 const ROLE_PERMISSIONS = {
   [ROLES.ADMIN]: Object.values(PERMISSIONS),
@@ -70,8 +74,11 @@ export const can = (user, permission) => {
 /**
  * Components wrapper for RBAC
  */
-export const Guard = ({ user, permission, children, fallback = null }) => {
-  if (can(user, permission)) {
+export const Guard = ({ user, permission, role, children, fallback = null }) => {
+  const hasPermission = permission ? can(user, permission) : true
+  const hasRole = role ? user?.role === role : true
+
+  if (hasPermission && hasRole) {
     return children
   }
   return fallback
