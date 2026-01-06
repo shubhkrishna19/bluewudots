@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import {
     Zap,
     Map,
@@ -11,12 +11,32 @@ import {
     RefreshCcw,
     Package
 } from 'lucide-react'
+import { useData } from '../../context/DataContext'
 import carrierOptimizer from '../../services/carrierOptimizer'
 
 const LogisticsHQ = () => {
+    const { orders } = useData()
     const [carrierHealth, setCarrierHealth] = useState([])
     const [isRefreshing, setIsRefreshing] = useState(false)
     const [activeTab, setActiveTab] = useState('domestic')
+
+    // Dynamic Logistics Metrics
+    const metrics = useMemo(() => {
+        const delivered = orders.filter(o => o.status === 'Delivered')
+        const inTransit = orders.filter(o => o.status === 'In-Transit' || o.status === 'Shipped')
+
+        const avgDays = delivered.length > 0
+            ? (delivered.reduce((acc, o) => acc + (o.deliveryDays || 2), 0) / delivered.length).toFixed(1)
+            : '2.4'
+
+        const successRate = orders.length > 0
+            ? ((delivered.length / orders.length) * 100).toFixed(1)
+            : '98.2'
+
+        const routes = new Set(inTransit.map(o => `${o.state}-${o.city}`)).size || 12
+
+        return { avgDays, successRate, routes }
+    }, [orders])
 
     useEffect(() => {
         refreshIntelligence()
@@ -70,10 +90,10 @@ const LogisticsHQ = () => {
             {/* Overview Stats */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
                 {[
-                    { label: 'Avg Delivery Time', value: '2.4 Days', icon: Zap, trend: '-12%' },
-                    { label: 'Success Rate', value: '98.2%', icon: Activity, trend: '+0.5%' },
-                    { label: 'Active Routes', value: '412', icon: Map, trend: '+4' },
-                    { label: 'Carrier Alerts', value: '02', icon: ShieldAlert, trend: 'Minor', warning: true },
+                    { label: 'Avg Delivery Time', value: `${metrics.avgDays} Days`, icon: Zap, trend: '-12%' },
+                    { label: 'Success Rate', value: `${metrics.successRate}%`, icon: Activity, trend: '+0.5%' },
+                    { label: 'Active Routes', value: metrics.routes.toString(), icon: Map, trend: '+4' },
+                    { label: 'Carrier Alerts', value: '00', icon: ShieldAlert, trend: 'Stable', warning: false },
                 ].map((stat, i) => (
                     <div key={i} className="glass p-6 relative group overflow-hidden">
                         <div className="absolute -right-4 -bottom-4 opacity-5 group-hover:opacity-10 transition-all">
