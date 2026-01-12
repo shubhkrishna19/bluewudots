@@ -111,6 +111,29 @@ Defined in `src/services/rbacMiddleware.js`.
 
 ---
 
+## 6. ✨ Quality Standards (Human-Grade Code)
+
+### **A. Error Handling**
+*   **Rule**: Every `try/catch` block must log to `activityLogger`.
+*   **Rule**: User-facing errors must show a friendly message, not raw exceptions.
+*   **Example**: `"Unable to load orders. Please refresh."` NOT `"TypeError: undefined"`
+
+### **B. Accessibility (a11y)**
+*   All buttons must have `aria-label` if icon-only.
+*   Forms must have `<label>` tags linked to inputs.
+*   Keyboard navigation must work (Tab order, Enter to submit).
+
+### **C. Code Comments**
+*   **Rule**: Every service file must have a header comment explaining its purpose.
+*   **Rule**: Complex logic (e.g., RTO risk calculation) must have inline comments.
+
+### **D. Performance**
+*   **Rule**: No synchronous loops over 32k+ records in the main thread.
+*   **Solution**: Use Web Workers or `requestIdleCallback` for heavy processing.
+
+---
+
 **SIGNED & RATIFIED**
 *   **Antigravity AI** (Infrastructure Lead)
-*   **Date**: 2026-01-06
+*   **Codex** (Lead Architect)
+*   **Date**: 2026-01-12
