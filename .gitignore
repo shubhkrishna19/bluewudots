@@ -1,0 +1,35 @@
+# Node
+node_modules/
+npm-debug.log*
+
+# Builds
+dist/
+dist-ssr/
+*.local
+
+# Environment — NEVER COMMIT
+.env
+.env.*
+!.env.example
+!.env.example.*
+
+# Legacy data files (too large for git)
+legacy/
+
+# Agent-generated session files (not code)
+codebase_summary.json
+context_index.md
+session_summary.json
+excel_metadata.json
+handoff.js
+
+# OS & Editor
+.DS_Store
+Thumbs.db
+.vscode/*
+!.vscode/extensions.json
+.idea
+*.suo
+
+# CI artifacts
+.github/
